@@ -123,9 +123,10 @@ main { padding-block: 18px 48px; }
 .card {
   background: var(--sheet); border: 1px solid var(--line); border-radius: 10px;
   padding: 16px 16px 14px;
-  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 14px;
-  align-content: start;
+  display: flex; flex-direction: column;
 }
+/* Inhalt oben, Knöpfe immer ganz unten: so stehen sie am PC bei nebeneinanderliegenden Karten auf einer Höhe */
+.cbody { flex: 1 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 14px; align-content: start; }
 .meta { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; font-size: 12px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; font-weight: 700; }
 .rank { font-variant-numeric: tabular-nums; color: var(--ink); }
 .card h2 { grid-column: 1; margin: 2px 0 2px; font-size: 18px; line-height: 1.25; font-weight: 700; text-wrap: balance; }
@@ -713,6 +714,7 @@ function card(it) {
   const isSaved = saved.has(it.id), isSeen = seen.has(it.id);
   return `
     <li class="card${isSeen ? " is-seen" : ""}">
+      <div class="cbody">
       <div class="meta"><span class="rank">${state.view === "genres" && state.g2 ? `Platz ${it.gr[state.g2]} in ${state.g2}` : `Platz ${it.rank}`}</span><span>${it.type === "F" ? "Film" : "Serie"}</span></div>
       <div class="score">
         <div class="stamp ${tier(it.mine)}" aria-label="Wertung ${fmt(it.mine)} von 10">${fmt(it.mine)}<small>/10</small></div>
@@ -725,6 +727,7 @@ function card(it) {
       </div>
       <p class="desc">${esc(it.desc)}</p>
       ${it.note ? `<p class="note"><b>Tipp:</b> ${esc(it.note)}</p>` : ""}
+      </div>
       <div class="foot">
         <a class="btn cr" href="${crUrl(it)}" target="_blank" rel="noopener">${ICON.out}${crLinkOf(it) ? "Auf Crunchyroll öffnen" : "Auf Crunchyroll suchen"}</a>
         <button type="button" class="btn seen" id="v-${it.id}" data-id="${it.id}" data-act="seen" aria-pressed="${isSeen}">${ICON.seen}${isSeen ? "Gesehen" : "Schon gesehen"}</button>
