@@ -7,6 +7,8 @@
 <meta name="theme-color" content="#0F1120">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Animes">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="apple-touch-icon.png">
 <meta property="og:title" content="Die besten Animes auf Crunchyroll">
 <meta property="og:description" content="Die besten Animes auf Crunchyroll Deutschland, mit Wertung und deutscher Synchro.">
 <title>Die besten Animes auf Crunchyroll</title>
@@ -271,6 +273,19 @@ html, body, button, a, summary, input, label { touch-action: manipulation; }
 .sharebox { grid-column: 1 / -1; display: grid; gap: 8px; background: var(--sheet); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 13px; color: var(--muted); }
 .sharebox textarea { font: inherit; font-size: 13px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 8px; min-height: 120px; resize: vertical; width: 100%; }
 .sharebox .row { justify-content: flex-end; }
+.install { width: 100%; max-width: 460px; justify-self: start; display: grid; gap: 10px; background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+.inst-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; }
+.inst-ico { width: 40px; height: 40px; font-size: 13px; border-width: 2px; }
+.inst-ico small { font-size: 7px; margin-top: 1px; }
+.inst-txt b { display: block; font-size: 15.5px; line-height: 1.25; }
+.inst-txt small { display: block; font-size: 12.5px; line-height: 1.3; color: var(--muted); margin-top: 1px; }
+.inst-x { width: 32px; height: 32px; border-radius: 50%; border: 0; background: var(--chip); color: var(--muted); display: grid; place-items: center; cursor: pointer; }
+.inst-x svg { width: 14px; height: 14px; }
+.inst-steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 8px; font-size: 14px; line-height: 1.45; }
+.inst-steps li { counter-increment: s; display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; }
+.inst-steps li::before { content: counter(s); width: 22px; height: 22px; border-radius: 50%; background: var(--chip); color: var(--ink); font-size: 12px; font-weight: 700; display: grid; place-items: center; }
+.key { display: inline-flex; align-items: center; gap: 4px; padding: 0 7px; border-radius: 6px; background: var(--chip); border: 1px solid var(--line); color: var(--ink); font-weight: 700; white-space: nowrap; }
+.key svg { width: 13px; height: 13px; }
 @media (max-width: 700px) {
   .bar { position: static; padding-block: 6px 10px; gap: 9px; }
   .toggle { padding: 6px 9px; }
@@ -297,6 +312,14 @@ html, body, button, a, summary, input, label { touch-action: manipulation; }
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
     <details class="why"><summary><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".95" fill="currentColor"/></svg>So entsteht die Wertung<svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="why-body"><p>Eine KI nimmt die Fan-Bewertungen von MyAnimeList und IMDb und passt sie um bis zu 1 Punkt an: mehr für gute Story, Figuren, Animation und Ende, weniger für Füllerfolgen und Längen.</p><p>Ab 9 herausragend · ab 8 sehr gut · ab 7 gut</p></div></details>
+    <div class="install" id="install" hidden>
+      <div class="inst-head">
+        <span class="stamp top inst-ico" aria-hidden="true">9,0<small>/10</small></span>
+        <div class="inst-txt"><b id="instTitle">Als App aufs iPhone</b><small>Dann öffnet sich die Liste wie eine echte App.</small></div>
+        <button type="button" class="inst-x" id="instClose" aria-label="Anleitung schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+      </div>
+      <ol class="inst-steps" id="instSteps"></ol>
+    </div>
   </header>
 
   <div class="bar">
@@ -512,7 +535,7 @@ const byImdb = [...items].sort((a, b) => (b.imdb ?? -1) - (a.imdb ?? -1) || (b.v
 const byAz = [...items].sort((a, b) => a.title.localeCompare(b.title, "de"));
 
 // Gespeicherte Daten (nur in diesem Browser)
-const KEY = { saved: "cr-top100-saved", seen: "cr-top100-seen", filters: "cr-top100-filters" };
+const KEY = { saved: "cr-top100-saved", seen: "cr-top100-seen", filters: "cr-top100-filters", install: "cr-top100-install" };
 function load(k, fallback) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; } }
 function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 // Ältere Einträge (a0, a1, …) auf Titel umstellen
@@ -853,6 +876,41 @@ $("#share").addEventListener("click", async () => {
   $("#sharetext").focus(); $("#sharetext").select();
 });
 $("#shareclose").addEventListener("click", () => { $("#sharebox").hidden = true; });
+
+// Anleitung: als App auf den Homescreen (nur im Handy-Browser, nicht in Claude)
+(() => {
+  try { if (window.self !== window.top) return; } catch (e) { return; }
+  const ua = navigator.userAgent;
+  const ipad = /iPad/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const ios = ipad || /iPhone|iPod/.test(ua);
+  const android = /Android/.test(ua);
+  const app = navigator.standalone === true || matchMedia("(display-mode: standalone)").matches;
+  if ((!ios && !android) || app || load(KEY.install, false)) return;
+  const SHARE = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.8v8.6M5.2 4.6L8 1.8l2.8 2.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.6 7H4.4A1.4 1.4 0 0 0 3 8.4v5.2A1.4 1.4 0 0 0 4.4 15h7.2a1.4 1.4 0 0 0 1.4-1.4V8.4A1.4 1.4 0 0 0 11.6 7h-1.2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
+  const PLUS = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 5.2v5.6M5.2 8h5.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
+  const k = t => '<span class="key">' + t + '</span>';
+  let steps;
+  if (ios) {
+    const safari = !/CriOS|FxiOS|EdgiOS|OPiOS/.test(ua);
+    $("#instTitle").textContent = ipad ? "Als App aufs iPad" : "Als App aufs iPhone";
+    steps = [
+      safari ? "Auf " + k("•••") + " tippen, dann auf " + k(SHARE + "Teilen") : "Auf " + k(SHARE + "Teilen") + " tippen",
+      "Runterscrollen und " + k(PLUS + "Zum Home-Bildschirm") + " wählen",
+      "Oben rechts auf " + k("Hinzufügen") + " tippen",
+    ];
+  } else {
+    $("#instTitle").textContent = "Als App aufs Handy";
+    steps = [
+      "Oben rechts auf " + k("⋮") + " tippen",
+      k("Zum Startbildschirm hinzufügen") + " wählen",
+      "Auf " + k("Hinzufügen") + " tippen",
+    ];
+  }
+  $("#instSteps").innerHTML = steps.map(s => "<li><span>" + s + "</span></li>").join("");
+  const box = $("#install");
+  box.hidden = false;
+  $("#instClose").addEventListener("click", () => { box.hidden = true; store(KEY.install, true); });
+})();
 
 sync();
 render();
