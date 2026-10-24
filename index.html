@@ -200,6 +200,7 @@ main { padding-block: 18px 48px; }
 .box a { color: var(--hanko); }
 
 [hidden] { display: none !important; }
+html, body, button, a, summary, input, label { touch-action: manipulation; }
 .pick-btn {
   width: 100%; max-width: 460px; justify-self: start;
   display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px;
@@ -300,7 +301,7 @@ main { padding-block: 18px 48px; }
 
   <div class="bar">
     <div class="tabs" role="tablist" aria-label="Ansicht">
-      <button type="button" role="tab" data-view="all" id="tab-all">Alle <span class="n" id="n-all">100</span></button>
+      <button type="button" role="tab" data-view="all" id="tab-all">Alle <span class="n" id="n-all">143</span></button>
       <button type="button" role="tab" data-view="genres" id="tab-genres">Genres</button>
       <button type="button" role="tab" data-view="saved" id="tab-saved">Gemerkt <span class="n" id="n-saved">0</span></button>
       <button type="button" role="tab" data-view="seen" id="tab-seen">Gesehen <span class="n" id="n-seen">0</span></button>
