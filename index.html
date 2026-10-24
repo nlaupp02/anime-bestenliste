@@ -256,6 +256,14 @@ button, a, summary, input, label { touch-action: manipulation; }
 .share-btn svg { width: 13px; height: 13px; }
 .card { scroll-margin-top: 20px; }
 .card.pick { outline: 3px solid var(--hanko); outline-offset: 3px; }
+.card:not(.open) .desc { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.card:not(.open) .note { display: none; }
+.more {
+  grid-column: 1 / -1; justify-self: start; margin: 0; padding: 4px 0 0;
+  font: inherit; font-size: 13.5px; font-weight: 700; color: var(--muted);
+  background: none; border: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px;
+  -webkit-tap-highlight-color: transparent;
+}
 .totop {
   position: fixed; z-index: 20;
   right: max(16px, env(safe-area-inset-right, 0px)); bottom: max(16px, env(safe-area-inset-bottom, 0px));
@@ -310,9 +318,8 @@ button, a, summary, input, label { touch-action: manipulation; }
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="eyebrow">Crunchyroll Deutschland · Oktober 2026</div>
+    <div class="eyebrow">Stand: Oktober 2026</div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
-    <p class="lede">143 Animes, die sich auf Crunchyroll lohnen.</p>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
     <details class="why"><summary><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".95" fill="currentColor"/></svg>So entsteht die Wertung<svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="why-body"><p>Eine KI nimmt die Fan-Bewertungen von MyAnimeList und IMDb und passt sie um bis zu 1 Punkt an: mehr für gute Story, Figuren, Animation und Ende, weniger für Füllerfolgen und Längen.</p><p>Ab 9 herausragend · ab 8 sehr gut · ab 7 gut</p></div></details>
@@ -738,6 +745,7 @@ function card(it) {
       </div>
       <p class="desc">${esc(it.desc)}</p>
       ${it.note ? `<p class="note"><b>Tipp:</b> ${esc(it.note)}</p>` : ""}
+      <button type="button" class="more" aria-expanded="false">Mehr lesen</button>
       <div class="foot">
         <a class="btn cr" href="${crUrl(it)}" target="_blank" rel="noopener">${ICON.out}${crLinkOf(it) ? "Auf Crunchyroll öffnen" : "Auf Crunchyroll suchen"}</a>
         <button type="button" class="btn seen" id="v-${it.id}" data-id="${it.id}" data-act="seen" aria-pressed="${isSeen}">${ICON.seen}${isSeen ? "Gesehen" : "Schon gesehen"}</button>
@@ -799,6 +807,7 @@ function render() {
   if (state.view === "genres") $("#gtitle").textContent = state.g2;
   const list = filtered();
   $("#list").innerHTML = list.map(card).join("");
+  fitMore();
   const e = $("#empty");
   e.hidden = list.length > 0;
   e.textContent = state.view === "saved" && !saved.size ? "Noch nichts gemerkt. Tippe bei einem Anime auf „Merken“, dann landet er hier."
@@ -807,7 +816,25 @@ function render() {
   status(list.length);
 }
 
+// Kompakte Karten: Beschreibung auf 2 Zeilen, „Mehr lesen“ nur, wenn es etwas aufzuklappen gibt
+function fitMore() {
+  document.querySelectorAll("#list .card").forEach(c => {
+    const d = c.querySelector(".desc"), m = c.querySelector(".more");
+    if (!m || c.classList.contains("open")) return;
+    m.hidden = !(c.querySelector(".note") || d.scrollHeight > d.clientHeight + 2);
+  });
+}
+function openCard(c, open) {
+  c.classList.toggle("open", open);
+  const m = c.querySelector(".more");
+  if (m) { m.setAttribute("aria-expanded", String(open)); m.textContent = open ? "Weniger" : "Mehr lesen"; }
+}
+let fitT;
+addEventListener("resize", () => { clearTimeout(fitT); fitT = setTimeout(fitMore, 150); });
+
 $("#list").addEventListener("click", e => {
+  const more = e.target.closest(".more");
+  if (more) { const c = more.closest(".card"); openCard(c, !c.classList.contains("open")); return; }
   const b = e.target.closest("button[data-act]");
   if (!b) return;
   const id = b.dataset.id, act = b.dataset.act;
@@ -851,6 +878,7 @@ $("#pick").addEventListener("click", () => {
   const el = btn.closest(".card");
   document.querySelectorAll(".card.pick").forEach(c => c.classList.remove("pick"));
   el.classList.add("pick");
+  openCard(el, true);
   el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
   toast("Wie wär's mit: " + pick.title + "?");
   clearTimeout(pickT); pickT = setTimeout(() => el.classList.remove("pick"), 6000);
