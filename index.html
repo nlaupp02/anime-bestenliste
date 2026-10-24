@@ -302,6 +302,8 @@ button, a, summary, input, label { touch-action: manipulation; }
   .stamp { width: 54px; height: 54px; font-size: 18px; }
   .card h2 { font-size: 17px; }
 }
+/* Als App vom Homescreen: Kopf unter den Unschärfe-Streifen der Statusleiste schieben */
+.app header.top { padding-top: 48px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 
@@ -368,6 +370,7 @@ button, a, summary, input, label { touch-action: manipulation; }
 </div>
 
 <script>
+if (navigator.standalone === true || matchMedia("(display-mode: standalone)").matches) document.documentElement.classList.add("app");
 // [Titel, Art S/F, Genres, meine Wertung, IMDb, IMDb-Stimmen in Tsd., Ton de/teil/sub/unk, Länge, Beschreibung, Tipp, Suchbegriffe, Stimmungen, Crunchyroll-Suchwort]
 const DATA = [
 ["Frieren – Nach dem Ende der Reise","S","Fantasy|Abenteuer|Drama",9.4,8.9,86,"de","2 Staffeln · 38 Folgen","Die Elfenmagierin Frieren hat mit ihren Gefährten den Dämonenkönig besiegt. Elfen leben über tausend Jahre, deshalb merkt sie erst nach dem Tod ihres Freundes Himmel, wie wenig sie die Menschen kannte. Also bricht sie zu einer neuen Reise auf. Ruhig, warm und mit herausragenden Kämpfen.","","sousou no frieren","chill|herz","Frieren"],
