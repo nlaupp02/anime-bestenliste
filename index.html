@@ -350,9 +350,6 @@ button, a, summary, input, label { touch-action: manipulation; }
         <button type="button" class="toggle" id="onlyDe" aria-pressed="false">Nur deutsche Synchro</button>
         <button type="button" class="toggle" id="hideSeen" aria-pressed="false">Gesehene ausblenden</button>
       </div>
-      <div class="prow" id="prow-genre"><span class="plabel">Genre</span>
-        <div class="chips" id="chips" role="group" aria-label="Genre"></div>
-      </div>
     </div>
     <div class="status"><span id="status" aria-live="polite"></span><button type="button" class="reset" id="reset" hidden>Filter zurücksetzen</button><button type="button" class="share-btn" id="share" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10V2.5M5 5.5l3-3 3 3M3 9v4.5h10V9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Merkliste teilen</button></div>
     <div class="sharebox" id="sharebox" hidden><span>Teilen ging hier nicht direkt. Kopier den Text und schick ihn per WhatsApp:</span><textarea id="sharetext" readonly></textarea><div class="row"><button type="button" class="btn" id="shareclose">Schließen</button></div></div>
@@ -549,8 +546,8 @@ const migrate = arr => arr.map(x => /^a\d+$/.test(x) && DATA[+x.slice(1)] ? slug
 let saved = new Set(migrate(load(KEY.saved, [])));
 let seen = new Set(migrate(load(KEY.seen, [])));
 store(KEY.saved, [...saved]); store(KEY.seen, [...seen]);
-const DEFAULTS = { type: "", genre: "", sort: "mine", onlyDe: false, hideSeen: false, view: "all", g2: "" };
-const FILTER_KEYS = ["type", "genre", "onlyDe", "hideSeen"];
+const DEFAULTS = { type: "", sort: "mine", onlyDe: false, hideSeen: false, view: "all", g2: "" };
+const FILTER_KEYS = ["type", "onlyDe", "hideSeen"];
 const loaded = load(KEY.filters, {});
 if (loaded.onlySaved && !loaded.view) loaded.view = "saved";
 delete loaded.onlySaved;
@@ -678,16 +675,6 @@ const nDe = topList.filter(i => i.dub === "de").length;
 $("#counts").innerHTML =
   `<span><b>${topList.length}</b>Titel</span><span><b>${nS}</b>Serien</span><span><b>${topList.length - nS}</b>Filme</span><span><b>${nDe}</b>mit deutscher Synchro</span>`;
 
-// Genre
-const chips = $("#chips");
-["", ...GENRES].forEach(g => {
-  const b = document.createElement("button");
-  b.type = "button"; b.className = "chip"; b.textContent = g || "Alle Genres";
-  b.dataset.genre = g; b.id = "g-" + (g || "alle").replace(/\W+/g, "-");
-  b.addEventListener("click", () => { state.genre = g; sync(); render(); });
-  chips.appendChild(b);
-});
-
 document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click", () => { state.type = b.dataset.type; sync(); render(); }));
 $("#q").addEventListener("input", e => { state.q = e.target.value.trim().toLowerCase(); render(); });
 ["onlyDe", "hideSeen"].forEach(k => $("#" + k).addEventListener("click", () => { state[k] = !state[k]; sync(); render(); }));
@@ -709,10 +696,8 @@ $("#reset").addEventListener("click", () => { FILTER_KEYS.forEach(k => { state[k
 
 function sync() {
   document.querySelectorAll(".seg button").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.type === state.type)));
-  chips.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(c.dataset.genre === state.genre)));
   ["onlyDe", "hideSeen"].forEach(k => $("#" + k).setAttribute("aria-pressed", String(state[k])));
   document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.view === state.view)));
-  $("#prow-genre").hidden = state.view === "genres";
   const nf = FILTER_KEYS.filter(k => state[k] !== DEFAULTS[k]).length;
   $("#fcount").textContent = nf; $("#fcount").hidden = !nf;
   saveFilters();
@@ -753,7 +738,6 @@ function filtered() {
   return byMine.filter(it =>
     (!inGenre || it.genres.includes(state.g2)) &&
     (!state.type || it.type === state.type) &&
-    (inGenre || !state.genre || it.genres.includes(state.genre)) &&
     (!state.onlyDe || it.dub === "de") &&
     (!state.hideSeen || state.view === "seen" || !seen.has(it.id)) &&
     (state.view !== "saved" || saved.has(it.id)) &&
