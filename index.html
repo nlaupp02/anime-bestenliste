@@ -148,7 +148,7 @@ main { padding-block: 18px 48px; }
 }
 .btn svg { width: 13px; height: 13px; flex: none; }
 .btn.cr { color: var(--ink); border-color: var(--ink); margin-right: auto; }
-.btn.cr:hover { background: var(--ink); color: var(--paper); }
+@media (hover: hover) { .btn.cr:hover { background: var(--ink); color: var(--paper); } }
 .btn[aria-pressed="true"].save { color: var(--ink); border-color: var(--ink); }
 .btn[aria-pressed="true"].save svg path { fill: currentColor; }
 .btn[aria-pressed="true"].seen { color: var(--ok); border-color: var(--ok); background: var(--ok-soft); }
@@ -180,7 +180,7 @@ main { padding-block: 18px 48px; }
   border-radius: 12px; padding: 10px 12px; cursor: pointer; display: grid; align-content: start; min-width: 0;
   grid-template-columns: auto minmax(0, 1fr); column-gap: 8px; row-gap: 2px; align-items: baseline;
 }
-.tile:hover { border-color: var(--ink); }
+@media (hover: hover) { .tile:hover { border-color: var(--ink); } }
 .tile b { font-size: 15.5px; }
 .tile .tn { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
 .tile .tt { grid-column: 1 / -1; font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -214,7 +214,7 @@ button, a, summary, input, label { touch-action: manipulation; }
   box-shadow: 0 6px 18px color-mix(in srgb, var(--hanko) 35%, transparent);
   transition: transform .12s, filter .12s;
 }
-.pick-btn:hover { filter: brightness(1.06); }
+@media (hover: hover) { .pick-btn:hover { filter: brightness(1.06); } }
 .pick-btn:active { transform: scale(.98); }
 .pick-ico { width: 42px; height: 42px; border-radius: 11px; display: grid; place-items: center; background: color-mix(in srgb, var(--on-hanko) 18%, transparent); }
 .pick-ico svg { width: 24px; height: 24px; animation: nudge 1.2s ease-in-out 1s 2; }
@@ -869,6 +869,25 @@ $("#share").addEventListener("click", async () => {
   $("#sharetext").focus(); $("#sharetext").select();
 });
 $("#shareclose").addEventListener("click", () => { $("#sharebox").hidden = true; });
+
+// Wischen ist kein Tippen: Genre-Kacheln und Karten-Knöpfe reagieren nur, wenn der Finger still war und die Seite nicht gescrollt hat
+let touchInfo = null, lastScroll = 0;
+addEventListener("scroll", () => { lastScroll = Date.now(); }, { passive: true });
+document.addEventListener("touchstart", e => {
+  const t = e.touches[0];
+  touchInfo = { x: t.clientX, y: t.clientY, sy: scrollY, moved: false, scrolling: Date.now() - lastScroll < 120 };
+}, { passive: true });
+document.addEventListener("touchmove", e => {
+  if (!touchInfo) return;
+  const t = e.touches[0];
+  if (Math.abs(t.clientX - touchInfo.x) > 8 || Math.abs(t.clientY - touchInfo.y) > 8) touchInfo.moved = true;
+}, { passive: true });
+document.addEventListener("click", e => {
+  if (!touchInfo || !e.target.closest(".tile, #list .btn")) return;
+  const bad = touchInfo.moved || touchInfo.scrolling || Math.abs(scrollY - touchInfo.sy) > 4;
+  touchInfo = null;
+  if (bad) { e.preventDefault(); e.stopImmediatePropagation(); }
+}, true);
 
 // Zoomen mit zwei Fingern verhindern (iPhone)
 ["gesturestart", "gesturechange", "gestureend"].forEach(t => document.addEventListener(t, e => e.preventDefault(), { passive: false }));
