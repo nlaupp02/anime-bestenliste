@@ -928,10 +928,11 @@ $("#shareclose").addEventListener("click", () => { $("#sharebox").hidden = true;
   if (ios) {
     const safari = !/CriOS|FxiOS|EdgiOS|OPiOS/.test(ua);
     $("#instTitle").textContent = ipad ? "Als App aufs iPad" : "Als App aufs iPhone";
+    const MENU = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 4h11M2.5 8h11M2.5 12h7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
     const MORE = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     steps = [
       safari
-        ? "Unten auf " + k(SHARE) + " tippen" + '<small class="inst-hint">Nicht zu sehen? Erst auf ' + k("•••") + " tippen, dann auf Teilen.</small>"
+        ? "Unten auf " + k(SHARE) + " tippen" + '<small class="inst-hint">Nicht zu sehen? Erst auf ' + k(MENU) + " links in der Adresszeile tippen, dann auf Teilen.</small>"
         : "Oben auf " + k(SHARE) + " tippen",
       "Auf " + k(MORE + "Mehr anzeigen") + " tippen",
       k(PLUS + "Zum Home-Bildschirm") + " tippen",
