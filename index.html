@@ -1,0 +1,862 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Die besten Animes auf Crunchyroll Deutschland, mit Wertung und deutscher Synchro.">
+<meta name="theme-color" content="#0F1120">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Animes">
+<meta property="og:title" content="Die besten Animes auf Crunchyroll">
+<meta property="og:description" content="Die besten Animes auf Crunchyroll Deutschland, mit Wertung und deutscher Synchro.">
+<title>Die besten Animes auf Crunchyroll</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Murecho:wght@400;500;700&display=swap">
+<style>
+/* Layout: Leihregal-Prinzip. Kopf mit Titel, Filterleiste, Karten im Raster, eigene Wertung als Hanko-Stempel, IMDb darunter. */
+:root {
+  --paper: #0F1120; --sheet: #181B2D; --ink: #E8EAF3; --muted: #9EA3BC; --line: #2A2F48;
+  --chip: #23273D; --hanko: #F05A50; --hanko-soft: #3A1E22; --on-hanko: #1A0C0B;
+  --gold: #F2C14E; --on-gold: #1C1503;
+  --ok: #5FD3A6; --ok-soft: #173329; --warn: #F0C064; --warn-soft: #3A2E14; --focus: #8FA6FF;
+  --f-display: "Dela Gothic One", "Arial Black", "Helvetica Neue", sans-serif;
+  --f-body: "Murecho", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 15px;
+  line-height: 1.55;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 10; background: var(--paper);
+}
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* Kopf */
+header.top { padding-block: 30px 14px; display: grid; gap: 10px; }
+.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+h1 {
+  font-family: var(--f-display); font-weight: 400;
+  font-size: clamp(2.3rem, 7vw, 4.4rem); line-height: 1.02; margin: 0;
+  text-wrap: balance; letter-spacing: -.01em;
+}
+h1 .red { color: var(--hanko); }
+.lede { max-width: 62ch; margin: 0; color: var(--muted); font-size: 15px; }
+.why { max-width: 70ch; font-size: 13.5px; color: var(--muted); }
+.why summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--muted); padding: 2px 0; }
+.why summary::-webkit-details-marker { display: none; }
+.why summary svg { width: 15px; height: 15px; flex: none; }
+.why summary .chev { transition: transform .2s; }
+.why[open] summary .chev { transform: rotate(180deg); }
+.why-body { margin-top: 6px; padding-left: 11px; border-left: 2px solid var(--line); line-height: 1.5; display: grid; gap: 6px; }
+.why-body p { margin: 0; }
+.why-body ol { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.why-body b { color: var(--ink); }
+.why-body b.g { color: var(--gold); }
+.why-body b.r { color: var(--hanko); }
+.why-body .scale { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.why-body .scale span { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+.dot { width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--hanko); display: inline-block; flex: none; }
+.dot.top { background: var(--gold); border-color: var(--gold); }
+.dot.mid { background: var(--hanko-soft); }
+.dot.low { border-color: var(--muted); }
+.counts { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 13.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.counts b { font-weight: 700; color: var(--ink); margin-right: 4px; }
+
+/* Filterleiste */
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--paper);
+  padding-block: 12px;
+  border-bottom: 1px solid var(--line);
+  display: grid; gap: 10px;
+}
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.rowlabel { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); min-width: 64px; }
+.search {
+  flex: 1 1 150px; min-width: 0;
+  font: inherit; font-size: 15px; color: var(--ink);
+  background: var(--sheet); border: 1px solid var(--line); border-radius: 8px;
+  padding: 9px 12px;
+}
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--sheet); }
+.seg button, .chip, .toggle, select { font: inherit; font-size: 13px; color: var(--ink); cursor: pointer; }
+.seg button { background: none; border: 0; padding: 8px 12px; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+select { background: var(--sheet); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; max-width: 100%; }
+.toggle {
+  background: var(--sheet); border: 1px solid var(--line); border-radius: 8px; padding: 7px 11px;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.toggle svg { width: 13px; height: 13px; flex: none; }
+.toggle[aria-pressed="true"] { border-color: var(--ink); color: var(--paper); background: var(--ink); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; flex: 1 1 auto; min-width: 0; }
+.chip { background: var(--chip); border: 1px solid transparent; border-radius: 999px; padding: 4px 11px; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.genre-select { display: none; }
+button:focus-visible, select:focus-visible, .search:focus-visible, a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.status { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; }
+.reset { font: inherit; font-size: 13px; color: var(--hanko); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; }
+
+/* Liste */
+main { padding-block: 18px 48px; }
+.grid {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr));
+}
+.card {
+  background: var(--sheet); border: 1px solid var(--line); border-radius: 10px;
+  padding: 16px 16px 14px;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 14px;
+  align-content: start;
+}
+.meta { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; font-size: 12px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; font-weight: 700; }
+.rank { font-variant-numeric: tabular-nums; color: var(--ink); }
+.card h2 { grid-column: 1; margin: 2px 0 2px; font-size: 18px; line-height: 1.25; font-weight: 700; text-wrap: balance; }
+.tags { grid-column: 1; display: flex; flex-wrap: wrap; gap: 5px; align-items: flex-start; align-self: start; }
+.tag { font-size: 12px; padding: 1px 8px; border-radius: 4px; background: var(--chip); color: var(--ink); }
+.facts { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; margin-top: 8px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.dub { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+.dub.de { background: var(--ok-soft); color: var(--ok); }
+.dub.teil { background: var(--warn-soft); color: var(--warn); }
+.dub.sub, .dub.unk { background: var(--chip); color: var(--muted); }
+.desc { grid-column: 1 / -1; margin: 8px 0 0; max-width: 68ch; }
+.note { grid-column: 1 / -1; margin: 8px 0 0; font-size: 13.5px; color: var(--muted); padding-left: 10px; border-left: 2px solid var(--line); }
+.note b { color: var(--ink); font-weight: 700; }
+.foot { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+.btn {
+  font: inherit; font-size: 13px; color: var(--muted); background: none; border: 1px solid var(--line);
+  border-radius: 6px; padding: 5px 10px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center;
+  text-decoration: none;
+}
+.btn svg { width: 13px; height: 13px; flex: none; }
+.btn.cr { color: var(--ink); border-color: var(--ink); margin-right: auto; }
+.btn.cr:hover { background: var(--ink); color: var(--paper); }
+.btn[aria-pressed="true"].save { color: var(--ink); border-color: var(--ink); }
+.btn[aria-pressed="true"].save svg path { fill: currentColor; }
+.btn[aria-pressed="true"].seen { color: var(--ok); border-color: var(--ok); background: var(--ok-soft); }
+.card.is-seen { background: var(--paper); }
+.card.is-seen h2, .card.is-seen .desc { color: var(--muted); }
+
+/* Wertungen */
+.score { grid-column: 2; grid-row: 1 / span 3; display: grid; justify-items: center; gap: 6px; align-self: start; }
+.stamp {
+  width: 62px; height: 62px; border-radius: 50%;
+  display: grid; place-items: center; text-align: center; align-content: center;
+  border: 2.5px solid var(--hanko); color: var(--hanko);
+  transform: rotate(-8deg);
+  font-family: var(--f-display); font-size: 21px; line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.stamp small { display: block; font-family: var(--f-body); font-size: 9px; font-weight: 700; letter-spacing: .08em; margin-top: 2px; }
+.stamp.top { background: var(--gold); border-color: var(--gold); color: var(--on-gold); }
+.stamp.mid { background: var(--hanko-soft); }
+.stamp.low { border-color: var(--muted); color: var(--muted); }
+.imdb { text-align: center; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.imdb .lbl { display: block; font-size: 9.5px; font-weight: 700; letter-spacing: .08em; color: var(--muted); }
+.imdb b { font-size: 15px; }
+.imdb .v { display: block; font-size: 10.5px; color: var(--muted); }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); gap: 10px; }
+.tile {
+  text-align: left; font: inherit; color: var(--ink); background: var(--sheet); border: 1px solid var(--line);
+  border-radius: 12px; padding: 14px; cursor: pointer; display: grid; gap: 3px; align-content: start; min-width: 0;
+}
+.tile:hover { border-color: var(--ink); }
+.tile b { font-size: 16.5px; }
+.tile .tn { font-size: 13px; color: var(--muted); }
+.tile .tt { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 4px; }
+.gbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.gback { font: inherit; font-size: 14px; font-weight: 700; color: var(--ink); background: var(--chip); border: 0; border-radius: 999px; padding: 7px 13px; cursor: pointer; }
+.gbar h3 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 22px; }
+.meta .xtra { color: var(--muted); }
+.empty { padding: 40px 0; text-align: center; color: var(--muted); }
+
+/* Unten */
+.info { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); padding-block: 26px 48px; }
+.box { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; min-width: 0; }
+.box h3 { margin: 0 0 8px; font-family: var(--f-display); font-weight: 400; font-size: 18px; }
+.box p, .box li { font-size: 14px; color: var(--ink); }
+.box p { margin: 0 0 8px; max-width: 65ch; }
+.box ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+.box .muted { color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 10px 14px; margin-top: 10px; font-size: 13px; color: var(--muted); align-items: center; }
+.legend .stamp { transform: none; width: 34px; height: 34px; font-size: 12px; border-width: 2px; }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.box a { color: var(--hanko); }
+
+[hidden] { display: none !important; }
+.pick-btn {
+  width: 100%; max-width: 460px; justify-self: start;
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px;
+  text-align: left; font: inherit; color: var(--on-hanko); background: var(--hanko);
+  border: 0; border-radius: 14px; padding: 12px 14px; cursor: pointer;
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--hanko) 35%, transparent);
+  transition: transform .12s, filter .12s;
+}
+.pick-btn:hover { filter: brightness(1.06); }
+.pick-btn:active { transform: scale(.98); }
+.pick-ico { width: 42px; height: 42px; border-radius: 11px; display: grid; place-items: center; background: color-mix(in srgb, var(--on-hanko) 18%, transparent); }
+.pick-ico svg { width: 24px; height: 24px; animation: nudge 1.2s ease-in-out 1s 2; }
+.pick-txt b { display: block; font-size: 16.5px; line-height: 1.25; }
+.pick-txt small { display: block; font-size: 12.5px; line-height: 1.3; opacity: .92; margin-top: 2px; }
+.pick-go { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--on-hanko) 18%, transparent); }
+.pick-go svg { width: 16px; height: 16px; }
+@keyframes nudge { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-14deg); } 40% { transform: rotate(12deg); } 60% { transform: rotate(-8deg); } 80% { transform: rotate(4deg); } }
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+.tabs button {
+  font: inherit; font-size: 14.5px; font-weight: 700; color: var(--muted); background: none; border: 0;
+  border-bottom: 2.5px solid transparent; margin-bottom: -1px; padding: 8px 10px 9px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 7px; white-space: nowrap;
+}
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); }
+.tabs .n { font-size: 12px; min-width: 22px; padding: 1px 7px; border-radius: 999px; background: var(--chip); color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; }
+.tabs button[aria-selected="true"] .n { background: var(--ink); color: var(--paper); }
+.searchrow { flex-wrap: nowrap; }
+.searchrow .search { flex: 1 1 0; width: 0; min-width: 0; }
+.bar { grid-template-columns: minmax(0, 1fr); }
+.wrap { overflow-x: clip; }
+.prow > .chips { flex: 1 1 100%; min-width: 0; }
+.filter-btn {
+  font: inherit; font-size: 14px; font-weight: 700; color: var(--ink); background: var(--sheet);
+  border: 1px solid var(--line); border-radius: 8px; padding: 9px 12px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 7px; flex: none;
+}
+.filter-btn svg { width: 15px; height: 15px; }
+.filter-btn[aria-expanded="true"] { border-color: var(--ink); }
+.badge { min-width: 19px; height: 19px; padding: 0 5px; border-radius: 999px; background: var(--ink); color: var(--paper); font-size: 11.5px; display: inline-grid; place-items: center; }
+.panel { display: grid; gap: 12px; background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+.prow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.plabel { width: 100%; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.panel .toggle, .panel .seg { background: var(--paper); }
+.panel .toggle[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.share-btn {
+  font: inherit; font-size: 13px; font-weight: 700; color: var(--ink); background: var(--chip);
+  border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.share-btn svg { width: 13px; height: 13px; }
+.card { scroll-margin-top: 20px; }
+.card.pick { outline: 3px solid var(--hanko); outline-offset: 3px; }
+.totop {
+  position: fixed; z-index: 20;
+  right: max(16px, env(safe-area-inset-right, 0px)); bottom: max(16px, env(safe-area-inset-bottom, 0px));
+  width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--line);
+  background: var(--sheet); color: var(--ink); display: grid; place-items: center; cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0,0,0,.18);
+}
+.totop svg { width: 18px; height: 18px; }
+.toast {
+  position: fixed; z-index: 30; left: 50%; transform: translateX(-50%);
+  bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + 58px);
+  width: max-content; max-width: min(88vw, 420px);
+  background: var(--ink); color: var(--paper); padding: 10px 14px; border-radius: 8px;
+  font-size: 14px; line-height: 1.4; box-shadow: 0 6px 20px rgba(0,0,0,.25);
+}
+.sharebox { grid-column: 1 / -1; display: grid; gap: 8px; background: var(--sheet); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 13px; color: var(--muted); }
+.sharebox textarea { font: inherit; font-size: 13px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 8px; min-height: 120px; resize: vertical; width: 100%; }
+.sharebox .row { justify-content: flex-end; }
+@media (max-width: 700px) {
+  .bar { position: static; padding-block: 6px 10px; gap: 9px; }
+  .toggle { padding: 6px 9px; }
+  .tabs button { padding: 8px 7px 9px; gap: 5px; font-size: 14px; }
+  .tabs .n { padding: 1px 6px; min-width: 20px; }
+}
+@media (max-width: 520px) {
+  header.top { padding-block: 18px 10px; gap: 8px; }
+  h1 { font-size: 2.05rem; }
+  .stamp { width: 54px; height: 54px; font-size: 18px; }
+  .card h2 { font-size: 17px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<style>body{margin:0}</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Crunchyroll Deutschland · Oktober 2026</div>
+    <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
+    <p class="lede">143 Animes, die sich auf Crunchyroll lohnen.</p>
+    <div class="counts" id="counts"></div>
+    <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+    <details class="why"><summary><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".95" fill="currentColor"/></svg>So entsteht die Wertung<svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="why-body"><p>Eine KI nimmt die Fan-Bewertungen von MyAnimeList und IMDb und passt sie um bis zu 1 Punkt an: mehr für gute Story, Figuren, Animation und Ende, weniger für Füllerfolgen und Längen.</p><p>Ab 9 herausragend · ab 8 sehr gut · ab 7 gut</p></div></details>
+  </header>
+
+  <div class="bar">
+    <div class="tabs" role="tablist" aria-label="Ansicht">
+      <button type="button" role="tab" data-view="all" id="tab-all">Alle <span class="n" id="n-all">100</span></button>
+      <button type="button" role="tab" data-view="genres" id="tab-genres">Genres</button>
+      <button type="button" role="tab" data-view="saved" id="tab-saved">Gemerkt <span class="n" id="n-saved">0</span></button>
+      <button type="button" role="tab" data-view="seen" id="tab-seen">Gesehen <span class="n" id="n-seen">0</span></button>
+    </div>
+    <div class="row searchrow">
+      <input class="search" id="q" type="search" placeholder="Titel suchen" aria-label="Titel suchen">
+      <button type="button" class="filter-btn" id="filterBtn" aria-expanded="false" aria-controls="panel"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12M4.5 8h7M7 12h2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Filter<span class="badge" id="fcount" hidden>0</span></button>
+    </div>
+    <div class="panel" id="panel" hidden>
+      <div class="prow"><span class="plabel">Art</span>
+        <div class="seg" role="group" aria-label="Art">
+          <button type="button" id="t-all" data-type="" aria-pressed="true">Alle</button>
+          <button type="button" id="t-s" data-type="S" aria-pressed="false">Serien</button>
+          <button type="button" id="t-f" data-type="F" aria-pressed="false">Filme</button>
+        </div>
+      </div>
+      <div class="prow"><span class="plabel">Ton und Gesehenes</span>
+        <button type="button" class="toggle" id="onlyDe" aria-pressed="false">Nur deutsche Synchro</button>
+        <button type="button" class="toggle" id="hideSeen" aria-pressed="false">Gesehene ausblenden</button>
+      </div>
+      <div class="prow" id="prow-genre"><span class="plabel">Genre</span>
+        <div class="chips" id="chips" role="group" aria-label="Genre"></div>
+      </div>
+    </div>
+    <div class="status"><span id="status" aria-live="polite"></span><button type="button" class="reset" id="reset" hidden>Filter zurücksetzen</button><button type="button" class="share-btn" id="share" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10V2.5M5 5.5l3-3 3 3M3 9v4.5h10V9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Merkliste teilen</button></div>
+    <div class="sharebox" id="sharebox" hidden><span>Teilen ging hier nicht direkt. Kopier den Text und schick ihn per WhatsApp:</span><textarea id="sharetext" readonly></textarea><div class="row"><button type="button" class="btn" id="shareclose">Schließen</button></div></div>
+  </div>
+
+  <main>
+    <div class="gbar" id="gbar" hidden><button type="button" class="gback" id="gback">← Alle Genres</button><h3 id="gtitle"></h3></div>
+    <div class="tiles" id="tiles" hidden></div>
+    <ol class="grid" id="list"></ol>
+    <p class="empty" id="empty" hidden>Kein Titel passt zu diesen Filtern. Setz einzelne Filter zurück oder leere die Suche.</p>
+  </main>
+  <button type="button" class="totop" id="totop" aria-label="Nach oben" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13.5V3M3.5 7.5L8 3l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+</div>
+
+<script>
+// [Titel, Art S/F, Genres, meine Wertung, IMDb, IMDb-Stimmen in Tsd., Ton de/teil/sub/unk, Länge, Beschreibung, Tipp, Suchbegriffe, Stimmungen, Crunchyroll-Suchwort]
+const DATA = [
+["Frieren – Nach dem Ende der Reise","S","Fantasy|Abenteuer|Drama",9.4,8.9,86,"de","2 Staffeln · 38 Folgen","Die Elfenmagierin Frieren hat mit ihren Gefährten den Dämonenkönig besiegt. Elfen leben über tausend Jahre, deshalb merkt sie erst nach dem Tod ihres Freundes Himmel, wie wenig sie die Menschen kannte. Also bricht sie zu einer neuen Reise auf. Ruhig, warm und mit herausragenden Kämpfen.","","sousou no frieren","chill|herz","Frieren"],
+["Steins;Gate","S","Sci-Fi|Thriller",9.2,8.8,97,"de","25 Folgen","Der exzentrische Bastler Okabe baut aus einer Mikrowelle versehentlich eine Maschine, die Nachrichten in die Vergangenheit schickt. Jede Änderung hat Folgen, und eine Geheimorganisation wird auf ihn aufmerksam.","Die ersten Folgen sind langsam. Ab etwa Folge 12 lässt es dich nicht mehr los.","steins gate zeitreise","dn|kurz","Steins;Gate"],
+["Attack on Titan","S","Action|Fantasy|Drama",9.2,9.1,547,"de","4 Staffeln · 89 Folgen","Die Menschheit lebt hinter riesigen Mauern, weil draußen menschenfressende Titanen umherziehen. Als die Mauer fällt, schwört Eren Rache. Die Wahrheit über diese Welt ist viel größer, als er ahnt.","Sehr brutal. Wird mit jeder Staffel besser, dranbleiben lohnt sich.","shingeki no kyojin aot","","Attack on Titan"],
+["Chainsaw Man – The Movie: Reze Arc","F","Action|Horror|Romance",9.0,8.3,70,"de","Film · 1 Std. 40 Min.","Denji, halb Mensch und halb Kettensägen-Teufel, verliebt sich in die geheimnisvolle Café-Kellnerin Reze. Bildgewaltig, rasant und am Ende schmerzhaft.","Setzt direkt nach Staffel 1 der Serie an.","chainsaw man film reze","","Chainsaw Man Reze"],
+["Gintama","S","Comedy|Action|Sci-Fi",9.0,8.7,22,"sub","12 Staffeln · über 360 Folgen","Aliens haben das Japan der Edo-Zeit erobert, Samurai sind arbeitslos. Der faule Gintoki nimmt mit seiner kleinen Truppe jeden Gelegenheitsjob an. Absurde Parodie, die immer wieder in epische, ernste Geschichten umschlägt.","Viele Witze spielen auf japanische Popkultur an. Die besten Arcs kommen erst später.","gintama","","Gintama"],
+["Vinland Saga","S","Historie|Action|Drama",9.0,8.9,153,"de","2 Staffeln · 48 Folgen","Nordeuropa um das Jahr 1000: Der junge Thorfinn kämpft in der Söldnertruppe des Mannes, der seinen Vater getötet hat, und wartet auf die Chance zur Rache. Staffel 2 wird zu einer ruhigen Geschichte über Schuld und Frieden.","","wikinger vinland","herz","Vinland Saga"],
+["Code Geass","S","Thriller|Sci-Fi|Drama",9.0,8.7,83,"de","2 Staffeln · 50 Folgen","Der verstoßene Prinz Lelouch erhält die Macht, jedem Menschen einen Befehl aufzuzwingen. Maskiert als Zero führt er einen Aufstand gegen das Imperium an, das seine Familie zerstört hat.","Für Death-Note-Fans die erste Wahl.","code geass lelouch","dn","Code Geass"],
+["A Silent Voice","F","Drama|Romance",9.0,8.2,149,"de","Film · 2 Std. 9 Min.","Shoya hat in der Grundschule ein gehörloses Mädchen gemobbt und wurde danach selbst ausgegrenzt. Jahre später sucht er sie auf, um es wiedergutzumachen. Leise und sehr bewegend.","","koe no katachi","kurz|herz","A Silent Voice"],
+["Kaguya-sama: Love Is War","S","Romance|Comedy",8.9,8.5,32,"de","4 Staffeln · 42 Folgen","Die zwei Genies des Schülerrats sind ineinander verliebt, aber zu stolz, es zuzugeben. Also planen sie Psychospiele, damit der andere zuerst gesteht.","Mind Games wie bei Death Note, nur mit Liebe statt Mord.","kaguya sama","dn","Kaguya-sama"],
+["Die Tagebücher der Apothekerin","S","Mystery|Historie|Drama",8.9,8.6,29,"de","3 Staffeln · 54 Folgen, läuft noch","Maomao, Tochter eines Apothekers, wird an den Kaiserhof verschleppt und arbeitet dort als Dienerin. Mit ihrem Wissen über Gifte löst sie Todesfälle und Intrigen im Palast.","","apothecary diaries kusuriya no hitorigoto","dn|chill","Apothekerin"],
+["Haikyu!!","S","Sport|Comedy",8.9,8.7,57,"de","4 Staffeln · 87 Folgen","Hinata ist klein, will aber Volleyballstar werden. Ausgerechnet mit seinem Rivalen Kageyama muss er sich im Team zusammenraufen. Spannender als die meisten Actionserien.","Auch ohne Sportinteresse sehenswert.","haikyuu volleyball","","Haikyu"],
+["Death Note","S","Thriller|Mystery|Krimi",8.9,8.9,504,"de","37 Folgen","Der Schüler Light Yagami findet ein Notizbuch: Wessen Namen man hineinschreibt, der stirbt. Light will damit die Welt von Verbrechern befreien, doch der geniale Detektiv L kommt ihm auf die Spur. Ein packendes Duell zweier Genies.","Die erste Hälfte ist am stärksten.","death note light yagami","","Death Note"],
+["March Comes in Like a Lion","S","Drama|Slice of Life",8.8,8.2,4.3,"sub","2 Staffeln · 44 Folgen","Der 17-jährige Rei ist Profi im Brettspiel Shogi, lebt aber allein und einsam. Eine warmherzige Familie mit drei Schwestern holt ihn langsam ins Leben zurück.","","3-gatsu no lion shogi","herz","March Comes in Like a Lion"],
+["Mob Psycho 100","S","Action|Comedy",8.8,8.5,73,"de","3 Staffeln · 37 Folgen","Mob ist ein schüchterner Junge mit gewaltigen Psychokräften, die er lieber unterdrückt. Er jobbt für einen Hochstapler, der sich als Geisterjäger ausgibt. Wilde Animation und überraschend viel Herz.","","mob psycho","","Mob Psycho 100"],
+["Re:Zero","S","Isekai|Fantasy|Thriller",8.8,8.3,99,"de","4 Staffeln · 85 Folgen","Subaru landet in einer Fantasywelt und stellt fest, dass er nach jedem Tod an einen früheren Punkt zurückgesetzt wird. Er muss immer wieder sterben, um die Menschen zu retten, die ihm wichtig sind. Hart und psychologisch.","","re zero rezero","dn","Re:Zero"],
+["One Piece","S","Abenteuer|Action|Comedy",8.8,9,370,"sub","über 1.100 Folgen","Ruffy will König der Piraten werden und sammelt eine bunte Crew um sich. Ein gigantisches Abenteuer mit großem Herz und starkem Weltenbau.","Der Einstieg ist zäh, ab der Alabasta-Saga wird es richtig gut.","one piece ruffy","","One Piece"],
+["Fruits Basket","S","Drama|Romance|Fantasy",8.8,8.5,14,"de","3 Staffeln · 63 Folgen","Die Waise Tohru zieht bei der Familie Soma ein. Deren Mitglieder verwandeln sich in Tiere des chinesischen Tierkreises, wenn man sie umarmt. Hinter dem Fluch steckt ein schweres Familiendrama.","Gemeint ist die Neuverfilmung von 2019.","fruits basket","herz","Fruits Basket"],
+["Attack on Titan: The Last Attack","F","Action|Fantasy",8.8,8.9,37,"de","Film · 2 Std. 25 Min.","Das große Finale von Attack on Titan als Kinofassung in einem Stück.","Erst nach der Serie schauen.","shingeki no kyojin film finale","","Attack on Titan The Last Attack"],
+["Demon Slayer: Infinity Castle","F","Action|Fantasy",8.7,8.3,88,"de","Film · 2 Std. 35 Min.","Der Auftakt zum Finale: Die Dämonenjäger werden in die endlose Festung der Oberdämonen gezogen. Die Kämpfe gehören zum Besten, was je animiert wurde.","Setzt die Serie voraus.","kimetsu no yaiba film","","Demon Slayer Infinity Castle"],
+["Odd Taxi","S","Krimi|Mystery",8.7,8.3,8.4,"sub","13 Folgen","Ein wortkarger Walross-Taxifahrer in Tokio gerät durch seine Fahrgäste in einen Vermisstenfall. Sieht harmlos aus, ist aber ein dicht verwobener Krimi, bei dem jedes Detail zählt.","","odd taxi","dn|kurz","Odd Taxi"],
+["Golden Kamuy","S","Abenteuer|Historie|Action",8.6,8.1,4,"de","5 Staffeln · 67 Folgen","Ein Kriegsveteran und ein junges Ainu-Mädchen jagen im eisigen Hokkaido um 1900 einen versteckten Goldschatz. Brutale Action, Jagd, Kochen und völlig absurder Humor in einem.","","golden kamuy","","Golden Kamuy"],
+["Mushishi","S","Mystery|Fantasy|Slice of Life",8.6,8.5,17,"sub","2 Staffeln · 46 Folgen","Der Wanderer Ginko untersucht seltsame Lebewesen namens Mushi, die Menschen krank machen oder verändern. Jede Folge ist eine eigene, ruhige Geschichte.","","mushi-shi","chill","Mushishi"],
+["Jujutsu Kaisen","S","Action|Fantasy",8.6,8.5,224,"de","4 Staffeln · 63 Folgen","Der Schüler Yuji schluckt den Finger eines uralten Fluchs und wird zu dessen Gefäß. Er schließt sich einer Schule für Fluchbanner an. Moderne Action mit spektakulären Kämpfen.","Nach Staffel 1 den Film Jujutsu Kaisen 0 schauen, er erzählt die Vorgeschichte.","jjk","","Jujutsu Kaisen"],
+["Dandadan","S","Action|Comedy|Sci-Fi",8.6,8.3,58,"de","2 Staffeln · 24 Folgen","Momo glaubt an Geister, Okarun an Aliens. Um sich gegenseitig das Gegenteil zu beweisen, treffen beide auf beides. Laut, schräg, romantisch und ständig über dem Limit.","","dan da dan","","Dandadan"],
+["Link Click","S","Thriller|Mystery|Drama",8.6,8.5,8.1,"sub","4 Staffeln · 42 Folgen","Zwei Freunde betreiben ein Fotostudio und können in Fotos springen, um die Vergangenheit zu erleben. Sie dürfen nichts verändern, tun es aber trotzdem.","","shi guang dai li ren","dn","Link Click"],
+["86 – Eighty Six","S","Sci-Fi|Drama|Action",8.6,8.3,17,"de","23 Folgen","Die Republik behauptet, ihr Krieg werde von Drohnen geführt. In Wahrheit kämpfen ausgegrenzte Jugendliche, die offiziell nicht als Menschen gelten. Emotionales Kriegsdrama.","","eighty six","kurz|herz","86 Eighty Six"],
+["The Promised Neverland","S","Thriller|Mystery|Horror",8.6,8.1,59,"de","2 Staffeln · 23 Folgen","Kinder in einem idyllischen Waisenhaus entdecken, wofür sie wirklich großgezogen werden, und planen die Flucht. Ein spannendes Katz-und-Maus-Spiel.","Nur Staffel 1 schauen, Staffel 2 ist deutlich schwächer.","yakusoku no neverland","dn|kurz","The Promised Neverland"],
+["Great Teacher Onizuka","S","Comedy|Drama",8.6,8.5,16,"sub","43 Folgen","Der Ex-Rocker Onizuka wird Lehrer der schlimmsten Klasse der Schule. Mit völlig unorthodoxen Methoden rettet er einen Schüler nach dem anderen. Lustig und rührend.","","gto","","Great Teacher Onizuka"],
+["A Place Further Than the Universe","S","Abenteuer|Drama|Comedy",8.6,8.1,3.6,"sub","13 Folgen","Vier Schülerinnen setzen alles daran, mit einer Expedition in die Antarktis zu reisen. Lustig, mitreißend und am Ende zum Heulen schön.","","sora yori mo tooi basho antarktis","kurz|herz","A Place Further Than the Universe"],
+["Psycho-Pass","S","Sci-Fi|Krimi|Thriller",8.5,8.1,23,"de","3 Staffeln · 41 Folgen","In der Zukunft misst ein System die kriminelle Neigung jedes Menschen. Die junge Inspektorin Akane jagt mit verurteilten Vollstreckern Verbrecher und beginnt am System zu zweifeln.","Staffel 1 ist die stärkste.","psycho pass","dn","Psycho-Pass"],
+["Jujutsu Kaisen 0","F","Action|Fantasy",8.5,7.8,68,"de","Film · 1 Std. 45 Min.","Vorgeschichte zur Serie: Yuta wird vom Fluch seiner verstorbenen Kindheitsfreundin heimgesucht und kommt an die Schule für Fluchbanner.","Am besten nach Staffel 1 schauen.","jjk 0 film","kurz","Jujutsu Kaisen 0"],
+["In This Corner of the World","F","Drama|Historie",8.4,7.8,12,"sub","Film · 2 Std. 10 Min.","Die verträumte Suzu heiratet in den 1940er-Jahren nach Kure bei Hiroshima. Der Alltag im Krieg wird immer schwerer. Zart gezeichnet und erschütternd.","","kono sekai no katasumi ni","kurz|herz","In This Corner of the World"],
+["Oshi no Ko – Mein Star","S","Drama|Mystery",8.4,8.3,18,"de","3 Staffeln · 35 Folgen","Ein Arzt wird als Kind seines Lieblings-Idols wiedergeboren. Als sie ermordet wird, sucht er im Showbusiness nach dem Täter. Ein düsterer Blick hinter die Kulissen der Unterhaltungsindustrie.","Folge 1 ist fast so lang wie ein Film und ein echter Paukenschlag.","oshi no ko","dn","Oshi no Ko"],
+["Spy x Family","S","Comedy|Action",8.4,8.2,66,"de","3 Staffeln · 50 Folgen","Ein Spion braucht für seine Mission eine Familie und heiratet zum Schein eine Auftragsmörderin. Die adoptierte Tochter kann Gedanken lesen und weiß als Einzige alles.","","spy family","chill","Spy x Family"],
+["One Punch Man","S","Action|Comedy",8.4,8.6,232,"de","3 Staffeln · 36 Folgen","Saitama besiegt jeden Gegner mit einem einzigen Schlag und langweilt sich deshalb zu Tode. Eine Parodie auf Superhelden mit einigen der besten Kämpfe überhaupt.","Staffel 1 ist die beste.","one punch man saitama","","One Punch Man"],
+["Steins;Gate 0","S","Sci-Fi|Thriller|Drama",8.4,8.4,16,"de","24 Folgen","Eine alternative Fortsetzung: Okabe ist gescheitert und lebt gebrochen weiter, bis ihn die Zeitreise wieder einholt.","Nur nach Steins;Gate schauen.","steins gate zero","dn|kurz","Steins;Gate 0"],
+["Grand Blue Dreaming","S","Comedy",8.4,7.9,7.4,"sub","3 Staffeln · 36 Folgen","Iori will ein entspanntes Studentenleben und landet in einem Tauchclub, der vor allem trinkt und sich auszieht. Eine der lustigsten Comedys überhaupt.","","grand blue","chill","Grand Blue"],
+["Mushoku Tensei","S","Isekai|Fantasy|Abenteuer",8.4,8.2,66,"de","3 Staffeln · 62 Folgen","Ein gescheiterter Mann wird als Rudeus in eine Fantasywelt wiedergeboren und nimmt sich vor, dieses Leben nicht zu verschwenden. Riesiger, detailreicher Weltenbau.","Der Hauptcharakter ist anfangs oft unangenehm. Das ist gewollt, schreckt aber manche ab.","jobless reincarnation","","Mushoku Tensei"],
+["JoJo's Bizarre Adventure","S","Action|Abenteuer",8.4,8.6,58,"de","6 Staffeln · über 200 Folgen","Generationen der Familie Joestar kämpfen gegen übernatürliche Feinde, später mit Geisterwesen namens Stands. Exzentrisch, kreativ und voller cleverer Kämpfe.","Teil 4 und 5 gelten als Höhepunkte.","jojo","","JoJo's Bizarre Adventure"],
+["Lord of the Mysteries","S","Mystery|Fantasy|Horror",8.4,8.6,17,"de","13 Folgen","Ein Mann erwacht im Körper von Klein Moretti in einer viktorianischen Steampunk-Welt. Mit Zaubertränken erlangt er Kräfte und gerät zwischen Geheimbünde und kosmischen Horror.","","guimi zhi zhu","dn","Lord of the Mysteries"],
+["Nichijou – Das ganz normale Leben","S","Comedy|Slice of Life",8.3,8.3,4.7,"sub","26 Folgen","Alltag von Schülerinnen, einem Roboter-Mädchen und einer sprechenden Katze. Banale Situationen eskalieren in völlig übertriebene Action.","Absurder Humor, der nicht jedem liegt.","nichijou my ordinary life","chill|kurz","Nichijou"],
+["To Your Eternity","S","Fantasy|Drama",8.3,8.2,13,"de","3 Staffeln · 62 Folgen","Ein unsterbliches Wesen wird auf die Erde geschickt. Es lernt, indem es die Gestalt der Menschen annimmt, die es trifft und wieder verliert. Tieftraurig und philosophisch.","","fumetsu no anata e","herz","To Your Eternity"],
+["Suzume","F","Fantasy|Abenteuer|Drama",8.3,7.6,67,"de","Film · 2 Std. 2 Min.","Die Schülerin Suzume reist durch Japan und schließt verlassene Türen, aus denen Katastrophen dringen. Ein Roadtrip mit einem sprechenden Stuhl als Begleiter.","","suzume no tojimari","kurz|herz","Suzume"],
+["Witch Hat Atelier","S","Fantasy|Abenteuer",8.3,8.3,9.2,"de","13 Folgen","Coco träumt vom Zaubern, doch Magie ist Hexen vorbehalten. Als sie entdeckt, dass Zauber gezeichnet werden, verwandelt sie versehentlich ihre Mutter zu Stein und wird Lehrling eines Hexers.","","tongari boushi no atelier","chill","Witch Hat Atelier"],
+["Das Band der Unterwelt","S","Action|Fantasy",8.2,7.7,4,"de","24 Folgen","Yuru lebt als Jäger in einem abgelegenen Bergdorf, seine Zwillingsschwester wird dort wie eine Gottheit verehrt und eingesperrt. Als Fremde das Dorf überfallen, erfährt er, was es mit den Dämonen-Paaren auf sich hat.","","daemons of the shadow realm yomi no tsugai","","Das Band der Unterwelt"],
+["The Elusive Samurai","S","Historie|Action",8.2,7.3,2.2,"sub","2 Staffeln · 24 Folgen","Japan im Jahr 1333: Der Clan des jungen Tokiyuki wird ausgelöscht. Statt zu kämpfen, nutzt er sein Talent zum Weglaufen, um zu überleben und Rache zu planen.","","nige jouzu no wakagimi","","The Elusive Samurai"],
+["Megalo Box","S","Sport|Sci-Fi|Drama",8.2,7.8,4.7,"sub","2 Staffeln · 26 Folgen","In der Zukunft boxen Kämpfer mit mechanischen Armverstärkern. Ein Untergrundboxer tritt ohne Ausrüstung an, um das große Turnier zu gewinnen.","","megalobox boxen","kurz","Megalo Box"],
+["Dorohedoro","S","Fantasy|Comedy|Horror",8.2,8.1,17,"de","2 Staffeln · 23 Folgen","Caiman hat einen Echsenkopf und kein Gedächtnis. Er jagt Magier, um herauszufinden, wer ihn verflucht hat. Blutig, dreckig und mit sehr schrägem Humor.","","dorohedoro","","Dorohedoro"],
+["Rascal Does Not Dream of Bunny Girl Senpai","S","Romance|Mystery|Drama",8.2,8.1,29,"de","2 Staffeln · 26 Folgen","Sakuta trifft eine Schauspielerin im Hasenkostüm, die niemand mehr wahrnimmt. In jedem Arc löst er ein übernatürliches Phänomen, hinter dem echte Teenager-Probleme stecken.","","seishun buta yarou bunny girl","","Bunny Girl Senpai"],
+["Dr. Stone","S","Sci-Fi|Abenteuer",8.2,8.1,46,"de","4 Staffeln · 94 Folgen","Die ganze Menschheit wird zu Stein. Tausende Jahre später erwacht das Wissenschaftsgenie Senku und baut die Zivilisation mit Chemie und Physik neu auf.","","dr stone senku","","Dr. Stone"],
+["Solo Leveling","S","Action|Fantasy",8.2,8.5,123,"de","2 Staffeln · 25 Folgen","Jinwoo ist der schwächste Jäger der Welt. Nach einem fast tödlichen Dungeon kann er als Einziger aufleveln wie in einem Videospiel. Pure, gut gemachte Power-Fantasie.","","solo leveling","","Solo Leveling"],
+["Konosuba","S","Comedy|Isekai",8.1,7.8,23,"de","3 Staffeln","Kazuma stirbt auf peinliche Weise und landet in einer Fantasywelt mit der nutzlosesten Heldentruppe, die man sich vorstellen kann. Sehr witzige Parodie auf Isekai-Geschichten.","Nach Staffel 2 den Film Legend of Crimson schauen, er gehört zur Geschichte.","kono subarashii sekai","chill","Konosuba"],
+["Aoashi","S","Sport|Drama",8.1,8.1,4.9,"de","2 Staffeln · 48 Folgen","Der talentierte, aber ungeschliffene Ashito wird in die Jugendakademie eines Profiklubs geholt. Ein Fußball-Anime, der echte Taktik erklärt.","","ao ashi fussball","","Aoashi"],
+["Horimiya","S","Romance|Slice of Life",8.1,8.0,28,"de","13 Folgen","Die beliebte Hori und der stille Miyamura entdecken die geheime Seite des jeweils anderen. Eine schnell erzählte Liebesgeschichte ohne künstliches Drama.","","horimiya","chill|kurz","Horimiya"],
+["My Teen Romantic Comedy SNAFU","S","Romance|Comedy|Drama",8.1,8,14,"sub","3 Staffeln · 38 Folgen","Der zynische Einzelgänger Hachiman muss einem Schulclub beitreten, der anderen Schülern hilft. Klug geschriebenes Drama über Freundschaft und Selbstbetrug.","Staffel 2 und 3 werden deutlich besser. Eine deutsche Synchro gibt es bei Aniverse auf Amazon, bei Crunchyroll ist sie nicht bestätigt.","oregairu","","My Teen Romantic Comedy SNAFU"],
+["Naruto Shippuden","S","Action|Abenteuer",8.1,8.7,233,"sub","500 Folgen","Naruto kehrt nach zwei Jahren Training zurück, um seinen Freund Sasuke zurückzuholen und sein Ninja-Dorf zu schützen.","Viele Füllerfolgen, die du überspringen kannst.","naruto","","Naruto Shippuden"],
+["Hell's Paradise","S","Action|Fantasy|Horror",8.1,8.1,34,"de","2 Staffeln · 25 Folgen","Der zum Tode verurteilte Ninja Gabimaru bekommt eine Chance auf Begnadigung: Er soll auf einer mysteriösen Insel das Elixier des ewigen Lebens finden. Dort warten Monster und andere Verurteilte.","Sehr blutig und brutal.","jigokuraku","","Hell's Paradise"],
+["Food Wars!","S","Comedy",8.0,8.0,15,"de","5 Staffeln · 86 Folgen","Soma will den Imbiss seines Vaters übernehmen und landet an einer Elite-Kochschule, an der Kochduelle über alles entscheiden.","Die Reaktionen auf das Essen sind sehr freizügig inszeniert.","shokugeki no soma","chill","Food Wars"],
+["Kill la Kill","S","Action|Comedy",8,7.8,20,"sub","25 Folgen","Ryuko sucht den Mörder ihres Vaters an einer Schule, an der Uniformen Superkräfte verleihen. Überdreht, laut und völlig übertrieben.","Viel bewusst überzogener Fanservice. Eine deutsche Synchro gibt es (peppermint), bei Crunchyroll ist sie aber nicht bestätigt.","kill la kill","kurz","Kill la Kill"],
+["Blue Lock","S","Sport|Thriller",8.0,8.1,35,"de","38 Folgen","Japan sperrt 300 Stürmer in ein Trainingslager. Nur einer soll als größter Egoist übrig bleiben und die Nationalmannschaft retten. Fußball als Survival-Spiel.","","bluelock fussball","","Blue Lock"],
+["Shangri-La Frontier","S","Action|Abenteuer|Comedy",8.0,7.6,8,"de","2 Staffeln · 50 Folgen","Ein Spieler, der eigentlich nur verbuggte Trash-Spiele mag, testet das beste Online-Rollenspiel der Welt. Gaming-Abenteuer mit viel Spaß.","","shangri la","chill","Shangri-La Frontier"],
+["World Trigger","S","Action|Sci-Fi",8.0,7.4,1.7,"sub","3 Staffeln · über 100 Folgen","Aus Portalen fallen Monster nach Japan, eine Organisation bildet junge Kämpfer aus. Taktische Teamkämpfe statt reiner Muskelkraft.","Startet langsam, in der zweiten Hälfte sehr stark.","world trigger","","World Trigger"],
+["Ascendance of a Bookworm","S","Isekai|Fantasy|Slice of Life",8.0,7.8,2.4,"de","4 Staffeln","Eine Bücherliebhaberin wird als kränkliches Mädchen in einer mittelalterlichen Welt ohne Bücher wiedergeboren. Also stellt sie sich welche her.","Langsam, aber sehr befriedigend.","honzuki no gekokujou","chill","Ascendance of a Bookworm"],
+["Gachiakuta","S","Action|Fantasy",8,8,16,"de","24 Folgen","Rudo wird für einen Mord, den er nicht begangen hat, in die Müllhalde unter der Stadt verbannt. Dort kämpft er mit Waffen aus weggeworfenen Gegenständen.","","gachiakuta","","Gachiakuta"],
+["My Dress-Up Darling","S","Romance|Comedy",8.0,7.9,30,"de","2 Staffeln · 24 Folgen","Der schüchterne Puppenmacher Gojo hilft der beliebten Marin, ihre Cosplay-Kostüme zu nähen. Eine süße Romcom.","Etwas Fanservice.","sono bisque doll","chill","My Dress-Up Darling"],
+["Detektiv Conan","S","Krimi|Mystery",8.0,8.5,19,"de","über 1.100 Folgen","Ein junger Meisterdetektiv wird vergiftet und schrumpft zum Grundschüler. Getarnt löst er Mordfall um Mordfall.","Du kannst überall einsteigen.","detective conan meitantei","","Detektiv Conan"],
+["Konosuba: Legend of Crimson","F","Comedy|Isekai",8.0,7.8,7.7,"de","Film · 1 Std. 30 Min.","Kinofilm, in dem die Truppe in Megumins Heimatdorf voller Magier reist.","Nach Staffel 2 der Serie schauen.","konosuba film","","Konosuba Legend of Crimson"],
+["Dragonball Super: Broly","F","Action",8,7.7,38,"de","Film · 1 Std. 41 Min.","Goku und Vegeta treffen auf den gewaltigen Saiyajin Broly. Einer der am besten animierten Kämpfe der ganzen Reihe.","Auch ohne Vorwissen verständlich, Dragon-Ball-Fans haben aber mehr davon.","dragon ball broly","kurz","Dragon Ball Super Broly"],
+["Josie, der Tiger und die Fische","F","Romance|Drama",8.0,7.7,13,"de","Film · 1 Std. 38 Min.","Ein Student verliebt sich in eine junge Frau im Rollstuhl, die von der Welt draußen träumt. Eine ehrliche, unkitschige Liebesgeschichte.","","josee tora sakana","kurz|herz","Josee"],
+["Kaiju No. 8","S","Action|Sci-Fi",7.9,8.2,34,"de","2 Staffeln · 23 Folgen","Kafka reinigt nach Monsterangriffen die Straßen und träumt von der Abwehrtruppe. Dann verwandelt er sich selbst in ein Monster.","","kaiju 8","","Kaiju No. 8"],
+["Classroom of the Elite","S","Thriller|Drama",7.9,7.7,28,"de","4 Staffeln · 54 Folgen","An einer Eliteschule werden Klassen nach Punkten bewertet. Der scheinbar durchschnittliche Ayanokoji zieht im Hintergrund die Fäden.","Staffel 2 und 3 werden besser.","youkoso jitsuryoku","dn","Classroom of the Elite"],
+["Saga of Tanya the Evil","S","Action|Isekai",7.9,7.6,7,"de","2 Staffeln · 25 Folgen","Ein skrupelloser Manager wird als Mädchen in einer magischen Version des Ersten Weltkriegs wiedergeboren und macht in der Armee eiskalt Karriere.","","youjo senki","","Saga of Tanya the Evil"],
+["Welcome to Demon-School, Iruma-kun","S","Comedy|Fantasy",7.9,7.6,4.1,"de","4 Staffeln · 90 Folgen","Iruma wird von seinen Eltern an einen Dämon verkauft, der ihn als Enkel adoptiert und auf eine Dämonenschule schickt. Er darf nicht auffliegen.","","mairimashita iruma","chill","Iruma-kun"],
+["Meine Wiedergeburt als Schleim in einer anderen Welt","S","Isekai|Fantasy",7.9,8.0,29,"de","4 Staffeln · 97 Folgen","Ein Angestellter wird als Schleim wiedergeboren und baut mit Monstern ein eigenes Reich auf. Gemütliche Aufbau-Fantasy.","","that time i got reincarnated as a slime tensura","chill","Schleim"],
+["Inuyasha","S","Fantasy|Abenteuer|Romance",7.9,7.9,20,"de","193 Folgen","Kagome fällt durch einen Brunnen ins Japan der Kriegerzeit und muss mit dem Halbdämon Inuyasha die Splitter eines magischen Juwels sammeln.","","inuyasha","","Inuyasha"],
+["My Hero Academia","S","Action",7.9,8.2,128,"de","8 Staffeln · 170 Folgen","Fast alle Menschen haben Superkräfte, nur Deku nicht. Bis der größte Held ihm seine Kraft vererbt. Klassische Heldengeschichte mit großen Momenten.","Startet etwas langsam, ab Staffel 2 wird es richtig gut.","boku no hero academia mha","","My Hero Academia"],
+["Black Clover","S","Action|Fantasy",7.9,8.2,57,"de","über 170 Folgen, läuft wieder","Asta ist der einzige Junge ohne Magie in einer Welt voller Magier und will trotzdem Zauberkaiser werden.","Anfangs anstrengend laut, später richtig gut.","black clover","","Black Clover"],
+["Fate/Grand Order – Babylonia","S","Action|Fantasy",7.9,7.2,1.6,"sub","21 Folgen","Zwei Helden reisen ins antike Mesopotamien, um die Geschichte der Menschheit zu retten. Bombastische Kämpfe an der Seite von Gilgamesch.","Ohne Vorwissen zur Fate-Reihe stellenweise verwirrend.","fgo fate grand order","kurz","Fate/Grand Order Babylonia"],
+["Lupin III.","S","Krimi|Abenteuer|Comedy",7.9,7.8,2.8,"de","6 Staffeln · über 300 Folgen","Der Meisterdieb Lupin und seine Komplizen jagen Schätze, immer verfolgt vom hartnäckigen Inspektor Zenigata. Lässiger Kult seit den 70ern.","Jede Staffel steht für sich, du kannst überall einsteigen.","lupin","chill","Lupin"],
+["A Sign of Affection","S","Romance",7.9,7.8,5.4,"de","12 Folgen","Die gehörlose Studentin Yuki verliebt sich in einen weltgewandten Kommilitonen, der viele Sprachen spricht. Eine sanfte, schön gezeichnete Liebesgeschichte.","","yubisaki to renren","chill","A Sign of Affection"],
+["Kyousougiga","S","Fantasy|Drama",7.9,null,null,"sub","13 Folgen","Die wilde Koto landet in einer Spiegelwelt von Kyoto, die ihre verschwundene Familie erschaffen hat. Bunt, verspielt und überraschend gefühlvoll.","","kyousougiga","kurz","Kyousougiga"],
+["Magi: The Labyrinth of Magic","S","Abenteuer|Fantasy",7.9,7.8,5.9,"sub","2 Staffeln · 50 Folgen","Der junge Aladdin und sein Freund Alibaba erobern magische Labyrinthe in einer Welt, die an 1001 Nacht erinnert.","Staffel 2 ist stärker.","magi","","Magi"],
+["FLCL","S","Sci-Fi|Comedy",7.9,8.0,22,"sub","6 Folgen, dazu Fortsetzungen","Ein gelangweilter Junge wird von einer Außerirdischen mit einer Bassgitarre umgefahren, danach wachsen Roboter aus seinem Kopf. Chaotischer Kult über das Erwachsenwerden.","Das Original mit 6 Folgen reicht völlig.","fooly cooly","kurz","FLCL"],
+["Fire Force","S","Action|Sci-Fi",7.8,7.6,22,"de","3 Staffeln · 73 Folgen","Menschen gehen plötzlich in Flammen auf und werden zu Monstern. Shinra tritt einer Spezialfeuerwehr bei, die sie bekämpft.","Die Animation ist top, die Story wird später stark.","enen no shouboutai","","Fire Force"],
+["Zombie 100 – Bucket List of the Dead","S","Comedy|Horror",7.8,7.3,14,"de","12 Folgen","Ein ausgebeuteter Büroangestellter erlebt die Zombie-Apokalypse als Befreiung, weil er nicht mehr zur Arbeit muss. Er schreibt eine Liste, was er vor dem Tod noch erleben will.","","zom 100","","Zom 100"],
+["Deca-Dence","S","Sci-Fi|Action",7.8,7.0,2,"de","12 Folgen","Die letzten Menschen leben in einer wandelnden Festung und kämpfen gegen riesige Monster. Folge 1 endet mit einer Wendung, die alles umdreht.","","decadence","kurz","Deca-Dence"],
+["Mashle: Magic and Muscles","S","Comedy|Action|Fantasy",7.8,7.5,17,"de","2 Staffeln · 24 Folgen","Mash kann nicht zaubern und löst in einer Welt der Magie trotzdem jedes Problem mit Muskeln. Herrlich trockene Parodie.","","mashle","","Mashle"],
+["Spy x Family Code: White","F","Comedy|Action",7.7,7.3,9.9,"de","Film · 1 Std. 50 Min.","Die Familie Forger fährt in den Winterurlaub und gerät in eine militärische Verschwörung.","Eigenständige Geschichte, auch ohne Serie verständlich.","spy family film","kurz","Spy x Family Code White"],
+["Black Butler","S","Mystery|Fantasy",7.7,8.1,2.9,"de","5 Staffeln · 71 Folgen","Der junge Graf Ciel hat im viktorianischen London einen Pakt mit einem Dämon geschlossen, der ihm als perfekter Butler dient. Düster und stilvoll.","Staffel 2 ist eine eigene Anime-Geschichte und kann übersprungen werden.","kuroshitsuji","","Black Butler"],
+["Campfire Cooking in Another World","S","Isekai|Comedy|Slice of Life",7.7,7.6,4.7,"de","2 Staffeln · 36 Folgen","Mukohda wird in eine Fantasywelt beschworen und kann nur Lebensmittel aus seinem alten Supermarkt bestellen. Damit zähmt er einen legendären Wolf.","","tondemo skill","chill","Campfire Cooking"],
+["Penguin Highway","F","Fantasy|Slice of Life",7.7,7.1,4.7,"de","Film · 1 Std. 58 Min.","Ein frühreifer Viertklässler untersucht, warum plötzlich Pinguine in seiner Stadt auftauchen. Verträumt und charmant.","","penguin highway","kurz|chill","Penguin Highway"],
+["Dragon Ball Daima","S","Action|Abenteuer|Comedy",7.7,7.7,20,"sub","20 Folgen","Durch eine Verschwörung werden Goku und seine Freunde wieder zu Kindern. Um das rückgängig zu machen, reisen sie in die Dämonenwelt.","","dragonball daima","kurz","Dragon Ball Daima"],
+["Tokyo Revengers","S","Action|Drama",7.6,7.7,35,"de","4 Staffeln · 52 Folgen, läuft noch","Takemichi springt zwölf Jahre in die Vergangenheit, um den Tod seiner Ex-Freundin zu verhindern. Dafür muss er eine Motorradgang von innen verändern.","","tokyo revengers","","Tokyo Revengers"],
+["Blue Exorcist","S","Action|Fantasy",7.6,7.4,17,"de","5 Staffeln · 74 Folgen","Rin erfährt, dass er der Sohn Satans ist, und will Exorzist werden, um gegen seinen Vater zu kämpfen.","Nach Folge 17 direkt mit der Kyoto Saga weitermachen. Der Rest von Staffel 1 ist eine eigene Anime-Geschichte.","ao no exorcist","","Blue Exorcist"],
+["Tower of God","S","Fantasy|Abenteuer",7.6,7.4,12,"de","2 Staffeln · 39 Folgen","Bam folgt seiner einzigen Freundin in einen geheimnisvollen Turm, dessen Spitze jeden Wunsch erfüllt. Jede Etage ist eine tödliche Prüfung.","","kami no tou","","Tower of God"],
+["One Piece Film: Red","F","Abenteuer|Action",7.6,6.7,27,"de","Film · 1 Std. 55 Min.","Ruffy und seine Crew besuchen das Konzert der Sängerin Uta, die mehr mit Shanks zu tun hat, als alle denken.","Sehr musiklastig.","one piece red film","","One Piece Film Red"],
+["Patema Inverted","F","Sci-Fi|Abenteuer",7.6,7.3,12,"de","Film · 1 Std. 40 Min.","Patema stammt aus einer Welt mit umgekehrter Schwerkraft und würde ohne Halt in den Himmel fallen. Ein kreatives Sci-Fi-Märchen.","","sakasama no patema","kurz","Patema Inverted"],
+["Akame ga Kill – Schwerter der Assassinen","S","Action|Fantasy",7.4,7.7,40,"sub","24 Folgen","Tatsumi schließt sich einer Gruppe von Attentätern an, die ein korruptes Kaiserreich stürzen will. Brutal, viele Figuren sterben.","Das Ende weicht vom Manga ab.","akame ga kill","kurz","Akame ga Kill"],
+["Mirai – Das Mädchen aus der Zukunft","F","Fantasy|Drama",7.4,7,18,"de","Film · 1 Std. 40 Min.","Der vierjährige Kun ist eifersüchtig auf seine kleine Schwester, bis er im Garten Familienmitgliedern aus anderen Zeiten begegnet.","","mirai no mirai","kurz|herz","Mirai"],
+["Sword Art Online","S","Action|Sci-Fi|Isekai",7.3,7.5,54,"de","4 Staffeln · 97 Folgen","Tausende Spieler sind in einem Virtual-Reality-Spiel gefangen. Wer im Spiel stirbt, stirbt auch in echt. Kirito kämpft sich nach oben.","Der erste Arc ist der beste.","sao","","Sword Art Online"]
+];
+// Zusätzliche Titel, die nur in den Genre-Listen auftauchen (gleiches Format, letztes Feld = Crunchyroll-Link)
+const EXTRA = [
+["Yuri!!! on Ice", "S", "Sport|Drama|Romance", 8.1, 8.2, 13, "de", "12 Folgen", "Der Eiskunstläufer Yuri Katsuki will nach einer schweren Niederlage aufhören. Doch ausgerechnet sein großes Vorbild, Weltmeister Victor, will plötzlich sein Trainer werden. Wunderschön animierte Kür-Szenen.", "", "yuri on ice eiskunstlauf", "", "Yuri on Ice", "GY2PEJ0MY"],
+["Yowamushi Pedal", "S", "Sport|Comedy|Drama", 7.9, 7.6, 1.2, "sub", "5 Staffeln · 137 Folgen", "Der schüchterne Anime-Fan Onoda fährt jede Woche mit seinem klapprigen Damenrad bis nach Akihabara. Als der Radsportclub sein Talent entdeckt, folgt ein mitreißendes Rennen auf das nächste.", "", "yowamushi pedal radsport", "", "Yowamushi Pedal", "watch/G609WNG06"],
+["Ping Pong the Animation", "S", "Sport|Drama", 8.7, 8.6, 6.4, "sub", "11 Folgen", "Die Jugendfreunde Smile und Peco spielen an der Oberschule Tischtennis: der eine verschlossen, der andere übermütig. Eine der besten Sportgeschichten überhaupt.", "Der skizzenhafte Zeichenstil ist gewollt. Nach zwei Folgen liebt man ihn.", "ping pong tischtennis", "", "Ping Pong the Animation", "watch/G31UXGK3J"],
+["Chihayafuru", "S", "Sport|Romance|Drama", 8.3, 8.1, 1.9, "sub", "3 Staffeln · 74 Folgen", "Chihaya entdeckt Karuta, ein japanisches Kartenspiel mit Gedichten, bei dem blitzschnelle Reflexe zählen. Mit zwei Kindheitsfreunden will sie die Beste in ganz Japan werden.", "Klingt nach Nischensport, ist aber so spannend wie Haikyu!!.", "chihayafuru karuta", "", "Chihayafuru", "watch/GYE5X01VR"],
+["Ace of the Diamond", "S", "Sport|Comedy", 8.0, 8.1, 1.8, "sub", "4 Staffeln · 203 Folgen", "Der hitzköpfige Werfer Eijun wechselt an eine Eliteschule für Baseball und muss sich dort gegen Dutzende talentierte Mitspieler durchsetzen.", "Sehr lang: über 200 Folgen.", "diamond no ace baseball", "", "Ace of the Diamond", "watch/GPWU8KD0V"],
+["Free!", "S", "Sport|Drama|Comedy", 7.4, 7.3, 4.4, "de", "3 Staffeln · 38 Folgen", "Haruka lebt fürs Schwimmen und gründet mit alten Freunden einen Schwimmclub an seiner Oberschule. Locker, freundschaftlich und mit viel Wasser.", "", "free schwimmen iwatobi", "", "Free!", "watch/GYQW4D97Y"],
+["SK8 the Infinity", "S", "Sport|Comedy|Action", 8.0, 8.0, 6.5, "sub", "13 Folgen", "Reki bringt dem Neuen Langa das Skateboarden bei. Bald fahren beide bei illegalen Nachtrennen auf einer verlassenen Mine mit. Bunt, schnell und gut gelaunt.", "", "sk8 skateboard", "", "SK8 the Infinity", "watch/GQJUMZ080"],
+["Captain Tsubasa", "S", "Sport|Drama", 7.8, 8.1, 3.1, "sub", "2 Staffeln · 91 Folgen", "Das Fußballwunder Tsubasa will Weltmeister werden. Die Neuauflage von 2018 des Klassikers, den viele als „Die tollen Fußballstars“ kennen.", "", "captain tsubasa fussball die tollen fussballstars", "", "Captain Tsubasa", "watch/G7PU34Q41"],
+["EyeShield 21", "S", "Sport|Comedy|Action", 7.6, 7.5, 1, "sub", "145 Folgen", "Der schüchterne Laufbursche Sena ist unglaublich schnell und wird deshalb heimlich zum Star eines American-Football-Teams. Klassiker mit viel Humor.", "", "eyeshield 21 american football", "", "EyeShield 21", "watch/G69PM149Y"],
+["Oblivion Battery", "S", "Sport|Comedy", 7.5, 7.5, 0.45, "sub", "13 Folgen", "Ein einst gefürchtetes Baseball-Duo landet an einer ganz normalen Schule. Der Fänger hat sein Gedächtnis verloren und benimmt sich seitdem wie ein Komiker.", "", "boukyaku battery baseball", "", "Oblivion Battery", "watch/GG1U2JW39"],
+["Moriarty the Patriot", "S", "Krimi|Historie|Thriller", 8.1, 8.0, 6.1, "sub", "2 Staffeln · 25 Folgen", "Im viktorianischen England plant der junge William James Moriarty Verbrechen gegen eine korrupte Oberschicht. Die Welt von Sherlock Holmes aus Sicht seines berühmtesten Gegners.", "Für Death-Note-Fans: ein genialer Verbrecher als Hauptfigur.", "yuukoku no moriarty sherlock", "", "Moriarty the Patriot", "watch/GMKUXWZVZ"],
+["Bungou Stray Dogs", "S", "Action|Krimi|Mystery", 7.8, 7.8, 14, "sub", "5 Staffeln · 61 Folgen", "Der verstoßene Waise Atsushi landet bei einer Detektei, deren Mitglieder übernatürliche Kräfte haben, alle benannt nach berühmten Schriftstellern. Kriminalfälle, Mafia und schräger Humor.", "", "bungo stray dogs", "", "Bungou Stray Dogs", "watch/G64P1GE8R"],
+["Durarara!!", "S", "Krimi|Mystery|Action", 8.0, 7.8, 8.9, "de", "2 Staffeln · 62 Folgen", "Im Tokioter Viertel Ikebukuro kreuzen sich die Wege von Straßengangs, einem kopflosen Motorradkurier und vielen schrägen Gestalten. Die Geschichte setzt sich wie ein Puzzle zusammen.", "", "durarara drrr", "", "Durarara", "watch/G50UZ794E"],
+["Lycoris Recoil", "S", "Action|Krimi|Comedy", 7.8, 7.6, 4.6, "de", "13 Folgen", "Tokio wirkt friedlich, weil Agentinnen namens Lycoris Verbrechen heimlich verhindern. Die strenge Takina wird in ein Café zur fröhlichen Chisato versetzt, der besten Lycoris von allen.", "", "lycoris recoil", "", "Lycoris Recoil", "watch/GPWU8X3KW"],
+["Buddy Daddies", "S", "Krimi|Comedy|Action", 7.9, 8.0, 4.3, "sub", "13 Folgen", "Zwei Auftragskiller müssen sich plötzlich um ein vierjähriges Mädchen kümmern. Herzlich und witzig, mit Action zwischendurch.", "", "buddy daddies", "", "Buddy Daddies", "watch/GQJUGVV3W"],
+["ID: INVADED", "S", "Mystery|Krimi|Sci-Fi", 7.8, 7.5, 3.9, "sub", "13 Folgen", "Mit einer Maschine tauchen Ermittler in die Gedankenwelten von Serienmördern ein. Dort muss ein Detektiv ohne Gedächtnis jedes Mal den Tod eines Mädchens aufklären.", "", "id invaded", "", "ID INVADED", "watch/G31UX0GM7"],
+["Michiko & Hatchin", "S", "Krimi|Abenteuer|Drama", 7.6, 7.5, 1.5, "de", "22 Folgen", "Die ausgebrochene Gefangene Michiko holt das Mädchen Hana aus einer schrecklichen Pflegefamilie. Gemeinsam ziehen sie durch ein südamerikanisch geprägtes Land und suchen Hanas Vater.", "", "michiko to hatchin", "", "Michiko & Hatchin", "watch/GG1U24423"],
+["Akiba Maid War", "S", "Krimi|Comedy|Action", 7.5, 7.3, 0.9, "sub", "12 Folgen", "Akihabara 1999: Maid-Cafés führen Bandenkriege wie die Yakuza, und die naive Nagomi gerät mitten hinein. Völlig absurd und überraschend brutal.", "", "akiba maid sensou", "", "Akiba Maid War", "watch/GQJUGJVXJ"],
+["Magic Kaito 1412", "S", "Krimi|Comedy|Abenteuer", 7.4, 7.3, 0.7, "de", "24 Folgen", "Der Schüler Kaito führt ein Doppelleben als Meisterdieb Kaito Kid, den Fans von Detektiv Conan kennen. Leicht, verspielt und voller cleverer Tricks.", "", "magic kaito kid 1412", "", "Magic Kaito 1412", "watch/G7PU45VZ2"],
+["Kingdom", "S", "Historie|Action|Drama", 8.6, 8.8, 7.2, "sub", "6 Staffeln · 156 Folgen", "Im alten China träumt der Waisenjunge Xin davon, der größte General aller Zeiten zu werden. Er hilft einem jungen König, das zerstrittene Land zu einen. Gewaltige Schlachten.", "Staffel 1 sieht wegen der Computergrafik schwach aus. Ab Staffel 2 wird es viel besser.", "kingdom china", "", "Kingdom", "watch/G50UZ9WX5"],
+["Rurouni Kenshin", "S", "Historie|Action|Drama", 7.9, 8.0, 3.4, "sub", "2 Staffeln · 47 Folgen", "Japan um 1878: Der frühere Attentäter Kenshin hat geschworen, nie wieder zu töten, und zieht mit einem Schwert mit umgedrehter Klinge umher.", "Gemeint ist die Neuverfilmung von 2023.", "rurouni kenshin samurai x", "", "Rurouni Kenshin", "watch/GEVUZXMZX"],
+["The Heike Story", "S", "Historie|Drama|Fantasy", 7.5, 7.5, 0.5, "sub", "11 Folgen", "Das Mädchen Biwa kann die Zukunft sehen und wird Zeugin, wie der mächtige Heike-Clan im Japan des 12. Jahrhunderts untergeht. Wunderschön und melancholisch.", "", "heike monogatari", "", "The Heike Story", "watch/G7PU4Z4G5"],
+["Raven of the Inner Palace", "S", "Historie|Mystery|Fantasy", 7.5, 7.4, 1.1, "sub", "13 Folgen", "In einem Kaiserpalast im Stil des alten China lebt die geheimnisvolle Raven-Konkubine, die Flüche löst und Geister vertreibt. Ruhiges Mystery voller Hofgeheimnisse.", "Für Fans der Tagebücher der Apothekerin.", "koukyuu no karasu", "", "Raven of the Inner Palace", "watch/G2XU0ENV2"],
+["Princess Principal", "S", "Action|Thriller|Historie", 7.7, 7.6, 1.1, "de", "12 Folgen", "In einem geteilten London um 1900 arbeiten fünf junge Spioninnen getarnt an einer Eliteschule. Stilvoll, spannend und mit viel Steampunk.", "Die Folgen springen bewusst in der Zeit. Die Nummer im Folgentitel zeigt die Reihenfolge.", "princess principal spione", "", "Princess Principal", "watch/G2XU04GP9"],
+["Yatagarasu", "S", "Historie|Fantasy|Mystery", 7.7, 7.7, 0.5, "sub", "20 Folgen", "In einer Welt von Krähen, die Menschengestalt annehmen, wird ein Junge vom Land zum Diener eines exzentrischen Thronfolgers. Hofintrigen mit überraschenden Wendungen.", "", "karasu wa aruji wo erabanai raven", "", "Yatagarasu", "watch/G0DUNK2DQ"],
+["Chainsaw Man", "S", "Action|Horror|Comedy", 8.5, 8.3, 113, "de", "12 Folgen", "Der bettelarme Denji verschmilzt mit seinem Hundeteufel Pochita und wird zum Kettensägenmann. Jetzt jagt er für eine Behörde Teufel. Brutal, schräg und herausragend animiert.", "Danach den Film Reze Arc schauen, er setzt direkt an.", "chainsaw man denji", "", "Chainsaw Man", "GVDHX8QNW"],
+["Shadows House", "S", "Mystery|Horror|Fantasy", 7.5, 7.3, 1.5, "sub", "2 Staffeln · 25 Folgen", "In einem Herrenhaus leben gesichtslose Schattenadlige, und jede hat eine lebende Puppe als Dienerin, die ihr Gesicht darstellt. Unheimlich, rätselhaft und sehr schön gezeichnet.", "", "shadows house", "", "Shadows House", "watch/G0DUN0J4N"],
+["Mein Schulgeist Hanako", "S", "Horror|Comedy|Fantasy", 7.6, 7.5, 4.2, "sub", "2 Staffeln · 36 Folgen", "Nene beschwört Hanako, den Geist einer Schultoilette, und muss ihm fortan helfen, die übrigen Geister der Schule in Schach zu halten. Bunt, gruselig und witzig.", "", "toilet-bound hanako-kun jibaku shounen", "", "Hanako", "watch/G50UZ5P95"],
+["The Case Study of Vanitas", "S", "Fantasy|Mystery|Horror", 7.7, 7.6, 4.3, "de", "24 Folgen", "Im Paris des 19. Jahrhunderts heilt der exzentrische Vanitas verfluchte Vampire, an seiner Seite der Vampir Noé. Stilvoll und düster.", "", "vanitas no karte", "", "Vanitas", "watch/GEVUZEMZW"],
+["Zombie Land Saga", "S", "Comedy|Horror", 7.3, 7.1, 1.9, "de", "2 Staffeln · 24 Folgen", "Sakura wacht als Zombie auf und soll mit anderen untoten Mädchen als Idol-Gruppe die Präfektur Saga retten. Albern, herzlich und viel besser, als es klingt.", "", "zombieland saga", "", "Zombie Land Saga", "watch/GJWU2JKMQ"],
+["Natsume's Book of Friends", "S", "Fantasy|Slice of Life|Drama", 8.5, 8.1, 3.3, "sub", "7 Staffeln · 93 Folgen", "Der Schüler Natsume kann Geister sehen und erbt von seiner Großmutter ein Buch mit ihren Namen. Einen nach dem anderen gibt er sie zurück. Ruhig, warmherzig und oft rührend.", "Fast jede Folge steht für sich, ideal für zwischendurch.", "natsume yuujinchou", "", "Natsume", "watch/GX9U3179X"],
+["Laid-Back Camp", "S", "Slice of Life|Comedy", 8.2, 8.1, 2.5, "sub", "4 Staffeln · 42 Folgen", "Rin zeltet am liebsten allein im Winter, bis die quirlige Nadeshiko auftaucht. Zelten, Kochen und schöne Landschaften: pure Entspannung.", "", "yuru camp", "", "Laid-Back Camp", "watch/G0DUN19QJ"],
+["Skip and Loafer", "S", "Slice of Life|Romance|Comedy", 8.2, null, null, "sub", "12 Folgen", "Mitsumi kommt vom Land an eine Elite-Oberschule in Tokio und will alles perfekt planen. Stattdessen findet sie chaotische, liebenswerte Freunde. Herzerwärmend und lustig.", "", "skip to loafer", "", "Skip and Loafer", "watch/GJWU2EK7Z"],
+["Barakamon", "S", "Slice of Life|Comedy", 8.3, 8.2, 5.3, "sub", "12 Folgen", "Nach einem Wutausbruch wird der junge Kalligraf Seishu auf eine kleine Insel geschickt, wo die Dorfkinder sein Leben auf den Kopf stellen. Lustig und warmherzig.", "", "barakamon kalligrafie", "", "Barakamon", "watch/G9DUE8K70"],
+["Bocchi the Rock!", "S", "Comedy|Slice of Life", 8.7, 8.3, 9.7, "sub", "12 Folgen", "Hitori spielt fantastisch Gitarre, ist aber so schüchtern, dass sie kaum mit Menschen reden kann. Dann landet sie in einer Schülerband. Eine der witzigsten Serien der letzten Jahre.", "", "bocchi the rock band", "", "Bocchi the Rock", "watch/GWDU73V87"],
+["Orange", "S", "Romance|Drama|Sci-Fi", 7.6, 7.7, 6.4, "sub", "13 Folgen", "Naho bekommt einen Brief von ihrem zehn Jahre älteren Ich. Sie soll Fehler verhindern, die sie später bereut, vor allem rund um ihren neuen Mitschüler Kakeru.", "Behandelt auch sehr ernste Themen.", "orange brief zukunft", "", "Orange", "watch/GRZJGGKZ6"],
+["My Love Story with Yamada-kun at Lv999", "S", "Romance|Comedy", 7.7, 7.6, 7.4, "sub", "13 Folgen", "Nach einer Trennung lernt die Studentin Akane in ihrem Online-Spiel den wortkargen Profispieler Yamada kennen. Süße, ruhige Liebeskomödie.", "", "yamada-kun lv999 koi wo suru", "", "Yamada-kun Lv999", "watch/GZ7UV22EV"],
+["The Ancient Magus' Bride", "S", "Fantasy|Romance|Drama", 7.8, 7.6, 5.3, "de", "2 Staffeln · 48 Folgen", "Die einsame Chise wird auf einer Auktion von einem Magier mit Tierschädel gekauft, der sie zu seiner Schülerin und Braut machen will. Düsteres, märchenhaftes England.", "", "mahoutsukai no yome", "", "Ancient Magus Bride", "watch/GPWUKVG29"],
+["Tomodachi Game", "S", "Thriller|Mystery|Drama", 7.7, 7.6, 7, "sub", "12 Folgen", "Fünf Freunde werden in ein Spiel gezwungen, weil einer von ihnen riesige Schulden hat. Doch wer hat sie verraten? Fies und spannend.", "", "tomodachi game", "", "Tomodachi Game", "watch/G8WUN4QQ8"],
+["The Rising of the Shield Hero", "S", "Isekai|Fantasy|Action", 7.5, 7.6, 24, "de", "4 Staffeln · 62 Folgen", "Naofumi wird als Held des Schildes in eine Fantasywelt gerufen, aber gleich verraten und fälschlich beschuldigt. Allein muss er sich wieder hocharbeiten.", "Staffel 1 ist mit Abstand die beste.", "tate no yuusha shield hero", "", "Shield Hero", "watch/GX9UQG80E"],
+["Log Horizon", "S", "Isekai|Fantasy|Abenteuer", 7.6, 7.4, 5.9, "de", "3 Staffeln · 62 Folgen", "Tausende Spieler sind plötzlich in ihrem Online-Rollenspiel gefangen. Der Stratege Shiroe hilft, dort eine funktionierende Gesellschaft aufzubauen. Mehr Taktik und Politik als Kämpfe.", "Staffel 1 und 2 sind die stärksten.", "log horizon", "", "Log Horizon", "watch/G7PU410KM"],
+["So I'm a Spider, So What?", "S", "Isekai|Fantasy|Comedy", 7.4, null, null, "de", "24 Folgen", "Eine Schülerin wird als kleine Spinne in einem Monster-Dungeon wiedergeboren und muss sich hochleveln. Ihre Selbstgespräche sind das Beste an der Serie.", "", "kumo desu ga nani ka spinne", "", "So I'm a Spider", "watch/G0DUN3DEJ"],
+["Restaurant to Another World", "S", "Isekai|Slice of Life|Fantasy", 7.6, 7.2, 1.1, "sub", "2 Staffeln · 24 Folgen", "Einmal pro Woche öffnet sich die Tür eines Tokioter Restaurants in eine Fantasywelt. Elfen, Drachen und Ritter kommen zum Essen. Gemütlich und macht hungrig.", "", "isekai shokudou", "", "Restaurant to Another World", "watch/G0DUN51QG"]
+];
+
+
+const GENRES = ["Action","Abenteuer","Comedy","Drama","Fantasy","Historie","Horror","Isekai","Krimi","Mystery","Romance","Sci-Fi","Slice of Life","Sport","Thriller"];
+const DUB = { de: "Deutsch", teil: "Deutsch?", sub: "Nur Untertitel", unk: "Ton: keine Angabe" };
+
+// Merken und Gesehen hängen am Titel, nicht an der Position in der Liste
+const slug = s => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const mk = (d, i, extra) => ({
+  id: slug(d[0]), title: d[0], type: d[1], genres: d[2].split("|"), mine: d[3], imdb: d[4], votes: d[5],
+  dub: d[6], len: d[7], desc: d[8], note: d[9], alt: d[10] || "",
+  cr: d[12] || d[0], crLink: d[13] || "", order: i, extra
+});
+const items = [...DATA.map((d, i) => mk(d, i, false)), ...EXTRA.map((d, i) => mk(d, 1000 + i, true))];
+const byMine = [...items].sort((a, b) => b.mine - a.mine || a.order - b.order);
+byMine.forEach((it, i) => it.rank = i + 1);
+// Platz innerhalb jedes Genres
+GENRES.forEach(g => byMine.filter(it => it.genres.includes(g)).forEach((it, i) => { (it.gr = it.gr || {})[g] = i + 1; }));
+const byImdb = [...items].sort((a, b) => (b.imdb ?? -1) - (a.imdb ?? -1) || (b.votes ?? 0) - (a.votes ?? 0));
+const byAz = [...items].sort((a, b) => a.title.localeCompare(b.title, "de"));
+
+// Gespeicherte Daten (nur in diesem Browser)
+const KEY = { saved: "cr-top100-saved", seen: "cr-top100-seen", filters: "cr-top100-filters" };
+function load(k, fallback) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; } }
+function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+// Ältere Einträge (a0, a1, …) auf Titel umstellen
+const migrate = arr => arr.map(x => /^a\d+$/.test(x) && DATA[+x.slice(1)] ? slug(DATA[+x.slice(1)][0]) : x);
+let saved = new Set(migrate(load(KEY.saved, [])));
+let seen = new Set(migrate(load(KEY.seen, [])));
+store(KEY.saved, [...saved]); store(KEY.seen, [...seen]);
+const DEFAULTS = { type: "", genre: "", sort: "mine", onlyDe: false, hideSeen: false, view: "all", g2: "" };
+const FILTER_KEYS = ["type", "genre", "onlyDe", "hideSeen"];
+const loaded = load(KEY.filters, {});
+if (loaded.onlySaved && !loaded.view) loaded.view = "saved";
+delete loaded.onlySaved;
+const state = Object.assign({}, DEFAULTS, loaded, { q: "" });
+state.sort = "mine";
+if (state.g2 && !GENRES.includes(state.g2)) state.g2 = "";
+function saveFilters() { const { q, ...rest } = state; store(KEY.filters, rest); }
+
+const $ = s => document.querySelector(s);
+const fmt = n => n.toFixed(1).replace(".", ",");
+const fmtVotes = v => v >= 10 ? Math.round(v) + " Tsd." : String(v).replace(".", ",") + " Tsd.";
+const tier = r => r >= 9 ? "top" : r >= 8 ? "mid" : "low";
+const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+// Direkte Serienseiten bei Crunchyroll (aus dem Crunchyroll-Verzeichnis, Oktober 2026)
+const CR_BASE = "https://www.crunchyroll.com/de/series/";
+const CR = {
+  "Frieren – Nach dem Ende der Reise": "GG5H5XQX4/frieren-beyond-journeys-end",
+  "Chainsaw Man – The Movie: Reze Arc": "GNVHKN92K/chainsaw-man--the-movie-reze-arc",
+  "Kaguya-sama: Love Is War": "GRJ0J828Y/kaguya-sama-love-is-war",
+  "Haikyu!!": "GY8VM8MWY/haikyu",
+  "March Comes in Like a Lion": "GRVNXWQZY/march-comes-in-like-a-lion",
+  "Re:Zero": "GRGG9798R/rezero--starting-life-in-another-world-",
+  "One Piece": "GRMG8ZQZR/one-piece",
+  "Fruits Basket": "G6ZJMGEXY/fruits-basket-2019",
+  "Odd Taxi": "G4PH0WPV2/oddtaxi",
+  "Oshi no Ko – Mein Star": "GT00366791/oshi-no-ko",
+  "Megalo Box": "GR4PVJ1WY/megalobox",
+  "Rascal Does Not Dream of Bunny Girl Senpai": "GYW4MG9G6/rascal-does-not-dream-series",
+  "Nichijou – Das ganz normale Leben": "GR24PVM76/nichijou---my-ordinary-life",
+  "Naruto Shippuden": "GYQ4MW246/naruto-shippuden",
+  "Hell's Paradise": "GJ0H7Q5ZJ/hells-paradise",
+  "Food Wars!": "G6GG91P26/food-wars-shokugeki-no-soma",
+  "Kill la Kill": "GY8VM43GY/kill-la-kill",
+  "Blue Lock": "G4PH0WEKE/blue-lock",
+  "Kaiju No. 8": "GG5H5XQ7D/kaiju-no-8",
+  "Saga of Tanya the Evil": "GR9P57W96/saga-of-tanya-the-evil",
+  "Black Clover": "GRE50KV36/black-clover",
+  "Fate/Grand Order – Babylonia": "GR24JZ886/fategrand-order-absolute-demonic-front-babylonia",
+  "Magi: The Labyrinth of Magic": "GY09XN14Y/magi",
+  "FLCL": "GRDK3DD4Y/flcl",
+  "Fire Force": "GYQWNXPZY/fire-force",
+  "Black Butler": "GYQ43P3E6/black-butler",
+  "Campfire Cooking in Another World": "GG5H5X3EE/campfire-cooking-in-another-world-with-my-absurd-skill",
+  "Blue Exorcist": "G649PJ0JY/blue-exorcist",
+  "One Piece Film: Red": "G5PHNMWX9/one-piece-movies",
+  "Steins;Gate": "GYWE7W5GY",
+  "Attack on Titan": "GR751KNZY",
+  "Vinland Saga": "GEXH3WKK0/vinland-saga",
+  "Code Geass": "GY2P9ED0Y",
+  "A Silent Voice": "GP5HJ84XV",
+  "Die Tagebücher der Apothekerin": "G3KHEVDJ7",
+  "Mob Psycho 100": "GY190DKQR",
+  "Psycho-Pass": "GR75253JY",
+  "Steins;Gate 0": "GYWE7W5GY",
+  "Attack on Titan: The Last Attack": "watch/GJWUQ7WGE",
+  "Gintama": "GYQ4MKDZ6",
+  "Demon Slayer: Infinity Castle": "G8DHV7809",
+  "Golden Kamuy": "GY8DWQN5Y",
+  "Jujutsu Kaisen": "GRDV0019R",
+  "Jujutsu Kaisen 0": "GMTE00194450",
+  "Dandadan": "GG5H5XQ0D",
+  "Link Click": "GP5HJ8E81",
+  "86 – Eighty Six": "GVDHX8DM5",
+  "The Promised Neverland": "GYVD2K1WY",
+  "A Place Further Than the Universe": "GYK541EPR",
+  "Great Teacher Onizuka": "GRQ4QG4GY",
+  "Spy x Family": "G4PH0WXVJ",
+  "Spy x Family Code: White": "GMTE00335490",
+  "Grand Blue Dreaming": "GNVHKN94W",
+  "Mushoku Tensei": "G24H1N3MP",
+  "JoJo's Bizarre Adventure": "GYP8DP1MY",
+  "Lord of the Mysteries": "GEXH3W2EZ",
+  "To Your Eternity": "GG5H5XMWV",
+  "Suzume": "GP5HJ8425",
+  "Witch Hat Atelier": "GT00258001",
+  "Das Band der Unterwelt": "GT00371630",
+  "The Elusive Samurai": "GQWH0M19X",
+  "Dorohedoro": "GT00371893",
+  "Dr. Stone": "GYEXQKJG6",
+  "Solo Leveling": "GDKHZEJ0K",
+  "Konosuba": "GYE5K3GQR",
+  "Aoashi": "G4PH0WX5J",
+  "Horimiya": "G9VHN9P43",
+  "Shangri-La Frontier": "G79H23Z8P",
+  "World Trigger": "GR757DMKY",
+  "Ascendance of a Bookworm": "G6793XKZY",
+  "Gachiakuta": "GP5HJ84P7",
+  "My Dress-Up Darling": "GQWH0M9N8",
+  "Detektiv Conan": "G6JQVM3ER",
+  "Konosuba: Legend of Crimson": "watch/G6KE0J8E6",
+  "Dragonball Super: Broly": "GMTE00019933",
+  "Josie, der Tiger und die Fische": "G3KHEVQ95",
+  "Classroom of the Elite": "GRVN8MNQY",
+  "Welcome to Demon-School, Iruma-kun": "G6NVG970Y",
+  "Meine Wiedergeburt als Schleim in einer anderen Welt": "GYZJ43JMR",
+  "My Hero Academia": "G6NQ5DWZ6",
+  "A Sign of Affection": "GEXH3W2V7",
+  "Kyousougiga": "GR9PX1316",
+  "Zombie 100 – Bucket List of the Dead": "GJ0H7QGQK",
+  "Deca-Dence": "GEXH3WK03",
+  "Mashle: Magic and Muscles": "GDKHZEP8W",
+  "Penguin Highway": "G79H235NJ",
+  "Dragon Ball Daima": "GG5H5XQ35",
+  "Tokyo Revengers": "G3KHEVMN1",
+  "Tower of God": "G6J0G49DR",
+  "Sword Art Online": "GR49G9VP6",
+  "Death Note": "watch/G0DUMXNX4",
+  "Mirai – Das Mädchen aus der Zukunft": "watch/GQJUGQWMW",
+  "Patema Inverted": "watch/GMKUXK7KJ",
+  "In This Corner of the World": "GNVHKN9PW/in-this-corner-of-the-world",
+  "One Punch Man": "watch/GE00364581FRFR",
+  "Mushishi": "watch/G6ZX4EMGR",
+  "Inuyasha": "watch/GJWU2E33D",
+  "Akame ga Kill – Schwerter der Assassinen": "watch/GYZX2J196",
+  "My Teen Romantic Comedy SNAFU": "watch/G6MG8VWV6",
+  "Lupin III.": "watch/GWDU8JWQ7"
+};
+const crLinkOf = it => CR[it.title] || it.crLink;
+const crUrl = it => { const c = crLinkOf(it); return c ? (c.startsWith("watch/") ? "https://www.crunchyroll.com/de/" + c : CR_BASE + c) : "https://www.crunchyroll.com/de/search?q=" + encodeURIComponent(it.cr); };
+
+// Kopfzahlen
+const topList = items;
+const nS = topList.filter(i => i.type === "S").length;
+const nDe = topList.filter(i => i.dub === "de").length;
+$("#counts").innerHTML =
+  `<span><b>${topList.length}</b>Titel</span><span><b>${nS}</b>Serien</span><span><b>${topList.length - nS}</b>Filme</span><span><b>${nDe}</b>mit deutscher Synchro</span>`;
+
+// Genre
+const chips = $("#chips");
+["", ...GENRES].forEach(g => {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "chip"; b.textContent = g || "Alle Genres";
+  b.dataset.genre = g; b.id = "g-" + (g || "alle").replace(/\W+/g, "-");
+  b.addEventListener("click", () => { state.genre = g; sync(); render(); });
+  chips.appendChild(b);
+});
+
+document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click", () => { state.type = b.dataset.type; sync(); render(); }));
+$("#q").addEventListener("input", e => { state.q = e.target.value.trim().toLowerCase(); render(); });
+["onlyDe", "hideSeen"].forEach(k => $("#" + k).addEventListener("click", () => { state[k] = !state[k]; sync(); render(); }));
+document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
+  state.view = b.dataset.view; if (state.view === "genres") state.g2 = "";
+  sync(); render();
+}));
+const toMain = () => { const m = document.querySelector("main"); if (m.getBoundingClientRect().top < 0) m.scrollIntoView({ block: "start" }); };
+$("#tiles").addEventListener("click", e => {
+  const t = e.target.closest(".tile"); if (!t) return;
+  state.g2 = t.dataset.g; saveFilters(); render(); toMain();
+});
+$("#gback").addEventListener("click", () => { state.g2 = ""; saveFilters(); render(); toMain(); });
+$("#filterBtn").addEventListener("click", () => {
+  const p = $("#panel"); p.hidden = !p.hidden;
+  $("#filterBtn").setAttribute("aria-expanded", String(!p.hidden));
+});
+$("#reset").addEventListener("click", () => { FILTER_KEYS.forEach(k => { state[k] = DEFAULTS[k]; }); state.q = ""; $("#q").value = ""; sync(); render(); });
+
+function sync() {
+  document.querySelectorAll(".seg button").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.type === state.type)));
+  chips.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(c.dataset.genre === state.genre)));
+  ["onlyDe", "hideSeen"].forEach(k => $("#" + k).setAttribute("aria-pressed", String(state[k])));
+  document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.view === state.view)));
+  $("#prow-genre").hidden = state.view === "genres";
+  const nf = FILTER_KEYS.filter(k => state[k] !== DEFAULTS[k]).length;
+  $("#fcount").textContent = nf; $("#fcount").hidden = !nf;
+  saveFilters();
+}
+
+const ICON = {
+  save: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1.5h10v13l-5-3.2-5 3.2z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>',
+  seen: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  out: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9 2.5h4.5V7M13.5 2.5L7 9M11.5 9.5v4h-9v-9h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+};
+
+function card(it) {
+  const isSaved = saved.has(it.id), isSeen = seen.has(it.id);
+  return `
+    <li class="card${isSeen ? " is-seen" : ""}">
+      <div class="meta"><span class="rank">${state.view === "genres" && state.g2 ? `Platz ${it.gr[state.g2]} in ${state.g2}` : `Platz ${it.rank}`}</span><span>${it.type === "F" ? "Film" : "Serie"}</span></div>
+      <div class="score">
+        <div class="stamp ${tier(it.mine)}" aria-label="Wertung ${fmt(it.mine)} von 10">${fmt(it.mine)}<small>/10</small></div>
+      </div>
+      <h2>${esc(it.title)}</h2>
+      <div class="tags">${it.genres.map(g => `<span class="tag">${g}</span>`).join("")}</div>
+      <div class="facts">
+        <span class="dub ${it.dub}">${DUB[it.dub]}</span>
+        <span>${esc(it.len)}</span>
+      </div>
+      <p class="desc">${esc(it.desc)}</p>
+      ${it.note ? `<p class="note"><b>Tipp:</b> ${esc(it.note)}</p>` : ""}
+      <div class="foot">
+        <a class="btn cr" href="${crUrl(it)}" target="_blank" rel="noopener">${ICON.out}${crLinkOf(it) ? "Auf Crunchyroll öffnen" : "Auf Crunchyroll suchen"}</a>
+        <button type="button" class="btn seen" id="v-${it.id}" data-id="${it.id}" data-act="seen" aria-pressed="${isSeen}">${ICON.seen}${isSeen ? "Gesehen" : "Schon gesehen"}</button>
+        <button type="button" class="btn save" id="s-${it.id}" data-id="${it.id}" data-act="save" aria-pressed="${isSaved}">${ICON.save}${isSaved ? "Gemerkt" : "Merken"}</button>
+      </div>
+    </li>`;
+}
+
+function filtered() {
+  const inGenre = state.view === "genres";
+  return byMine.filter(it =>
+    (!inGenre || it.genres.includes(state.g2)) &&
+    (!state.type || it.type === state.type) &&
+    (inGenre || !state.genre || it.genres.includes(state.genre)) &&
+    (!state.onlyDe || it.dub === "de") &&
+    (!state.hideSeen || state.view === "seen" || !seen.has(it.id)) &&
+    (state.view !== "saved" || saved.has(it.id)) &&
+    (state.view !== "seen" || seen.has(it.id)) &&
+    (!state.q || (it.title + " " + it.alt).toLowerCase().includes(state.q))
+  );
+}
+
+function status(n) {
+  $("#n-all").textContent = topList.length; $("#n-saved").textContent = saved.size; $("#n-seen").textContent = seen.size;
+  const active = state.q || FILTER_KEYS.some(k => state[k] !== DEFAULTS[k]);
+  $("#status").textContent = n < 0 ? `${GENRES.length} Genres` : active ? `${n} Treffer` : `${n} Titel`;
+  $("#reset").hidden = !active;
+  $("#share").hidden = !(state.view === "saved" && saved.size);
+}
+
+// Pro Genre ein eigener Tipp, kein Titel doppelt:
+// 1. Jeder Titel geht an sein Hauptgenre (erstes Genre), die besten zuerst.
+// 2. Ist dieser Tipp deutlich schwächer als ein noch freier Titel des Genres, nimmt das Genre den freien.
+const inG = g => byMine.filter(it => it.genres.includes(g));
+const FEATURED = (() => {
+  const out = {}, used = new Set();
+  byMine.forEach(it => { const g = it.genres[0]; if (!out[g]) { out[g] = it; used.add(it.id); } });
+  GENRES.forEach(g => {
+    const best = inG(g).find(x => !used.has(x.id));
+    if (best && (!out[g] || out[g].mine < best.mine - 0.5)) {
+      if (out[g]) used.delete(out[g].id);
+      out[g] = best; used.add(best.id);
+    }
+  });
+  return out;
+})();
+function renderTiles() {
+  $("#tiles").innerHTML = GENRES.map(g => {
+    const f = FEATURED[g];
+    return `<button type="button" class="tile" data-g="${g}"><b>${g}</b><span class="tn">${inG(g).length} Titel</span>${f ? `<span class="tt">Tipp: ${esc(f.title)}</span>` : ""}</button>`;
+  }).join("");
+}
+
+function render() {
+  const tilesView = state.view === "genres" && !state.g2;
+  $("#tiles").hidden = !tilesView;
+  $("#gbar").hidden = !(state.view === "genres" && state.g2);
+  if (tilesView) { renderTiles(); $("#list").innerHTML = ""; $("#empty").hidden = true; status(-1); return; }
+  if (state.view === "genres") $("#gtitle").textContent = state.g2;
+  const list = filtered();
+  $("#list").innerHTML = list.map(card).join("");
+  const e = $("#empty");
+  e.hidden = list.length > 0;
+  e.textContent = state.view === "saved" && !saved.size ? "Noch nichts gemerkt. Tippe bei einem Anime auf „Merken“, dann landet er hier."
+    : state.view === "seen" && !seen.size ? "Noch nichts als gesehen markiert. Tippe bei einem Anime auf „Schon gesehen“."
+    : "Kein Titel passt zu diesen Filtern. Setz einzelne Filter zurück oder leere die Suche.";
+  status(list.length);
+}
+
+$("#list").addEventListener("click", e => {
+  const b = e.target.closest("button[data-act]");
+  if (!b) return;
+  const id = b.dataset.id, act = b.dataset.act;
+  const set = act === "seen" ? seen : saved;
+  set.has(id) ? set.delete(id) : set.add(id);
+  store(act === "seen" ? KEY.seen : KEY.saved, [...set]);
+  if ((act === "seen" && (state.hideSeen || state.view === "seen")) || (act === "save" && state.view === "saved")) { render(); return; }
+  const on = set.has(id);
+  b.setAttribute("aria-pressed", String(on));
+  b.innerHTML = act === "seen" ? ICON.seen + (on ? "Gesehen" : "Schon gesehen") : ICON.save + (on ? "Gemerkt" : "Merken");
+  if (act === "seen") b.closest(".card").classList.toggle("is-seen", on);
+  status(document.querySelectorAll("#list .card").length);
+});
+
+// Kleine Hinweise unten
+let toastT;
+function toast(msg) {
+  const t = $("#toast");
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 3000);
+}
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// Zufallstipp: bevorzugt hoch bewertete Titel, die noch nicht gesehen sind
+let lastPick = null, pickT;
+$("#pick").addEventListener("click", () => {
+  if (state.view === "genres" && !state.g2) { state.view = "all"; sync(); render(); }
+  let pool = filtered().filter(it => !seen.has(it.id));
+  if (!pool.length && byMine.some(it => !seen.has(it.id))) {
+    Object.assign(state, DEFAULTS, { q: "" }); $("#q").value = ""; sync(); render();
+    pool = filtered().filter(it => !seen.has(it.id));
+  }
+  if (!pool.length) { toast("Du hast schon alle gesehen!"); return; }
+  if (pool.length > 1) pool = pool.filter(it => it.id !== lastPick);
+  const w = pool.map(it => Math.pow(Math.max(it.mine - 6.8, 0.2), 2));
+  let r = Math.random() * w.reduce((a, b) => a + b, 0), pick = pool[pool.length - 1];
+  for (let i = 0; i < pool.length; i++) { r -= w[i]; if (r <= 0) { pick = pool[i]; break; } }
+  lastPick = pick.id;
+  const btn = document.getElementById("v-" + pick.id);
+  if (!btn) return;
+  const el = btn.closest(".card");
+  document.querySelectorAll(".card.pick").forEach(c => c.classList.remove("pick"));
+  el.classList.add("pick");
+  el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+  toast("Wie wär's mit: " + pick.title + "?");
+  clearTimeout(pickT); pickT = setTimeout(() => el.classList.remove("pick"), 6000);
+});
+
+// Nach oben
+const totop = $("#totop");
+const onScroll = () => { totop.hidden = window.scrollY < 900; };
+addEventListener("scroll", onScroll, { passive: true });
+totop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" }));
+
+// Merkliste teilen
+$("#share").addEventListener("click", async () => {
+  const list = byMine.filter(it => saved.has(it.id));
+  if (!list.length) return;
+  const text = "Meine Anime-Merkliste (Die besten Animes auf Crunchyroll):\n" + list.map(it => "• " + it.title + " (" + fmt(it.mine) + ")").join("\n");
+  try {
+    if (navigator.share) { await navigator.share({ text }); return; }
+  } catch (e) { if (e && e.name === "AbortError") return; }
+  try {
+    await navigator.clipboard.writeText(text);
+    toast("Merkliste kopiert. Jetzt in WhatsApp einfügen.");
+    return;
+  } catch (e) {}
+  $("#sharetext").value = text;
+  $("#sharebox").hidden = false;
+  $("#sharetext").focus(); $("#sharetext").select();
+});
+$("#shareclose").addEventListener("click", () => { $("#sharebox").hidden = true; });
+
+sync();
+render();
+onScroll();
+</script>
+
+</body>
+</html>
