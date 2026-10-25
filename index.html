@@ -355,7 +355,8 @@ button, a, summary, input, label { touch-action: manipulation; }
 .vtitle { display: none; }
 .app .top.sub .eyebrow, .app .top.sub h1, .app .top.sub .counts, .app .top.sub .why { display: none; }
 .app .top.sub .vtitle { display: block; margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 2.05rem; line-height: 1.05; letter-spacing: -.01em; }
-.app .top.sub.nopick .pick-btn { display: none; }
+/* Zufallstipp nur bei Alle, in der App und in Safari */
+.top.nopick .pick-btn { display: none; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 
