@@ -737,7 +737,7 @@ const topList = items;
 const nS = topList.filter(i => i.type === "S").length;
 const nDe = topList.filter(i => i.dub === "de").length;
 $("#counts").innerHTML =
-  `<span><b>${topList.length}</b>Titel</span><span><b>${nS}</b>Serien</span><span><b>${topList.length - nS}</b>Filme</span><span><b>${nDe}</b>mit deutscher Synchro</span>`;
+  `<span><b>${nS}</b>Serien</span><span><b>${topList.length - nS}</b>Filme</span><span><b>${nDe}</b>auf Deutsch</span>`;
 
 document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click", () => { state.type = b.dataset.type; sync(); render(); }));
 $("#q").addEventListener("input", e => { state.q = e.target.value.trim().toLowerCase(); render(); });
