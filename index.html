@@ -363,7 +363,9 @@ button, a, summary, input, label { touch-action: manipulation; }
   .card h2 { font-size: 17px; }
 }
 /* Als App vom Homescreen: Kopf unter den Unschärfe-Streifen der Statusleiste schieben */
-.app header.top { padding-top: 48px; }
+.standalone header.top { padding-top: 48px; }
+/* Die Installations-Anleitung nur auf dem Reiter Alle */
+.top.sub .install { display: none !important; }
 /* App: Auf Genres, Gemerkt und Gesehen nur ein großer Reiter-Titel statt des ganzen Kopfes (wie bei iPhone-Apps) */
 .vtitle { display: none; }
 .app .top.sub .eyebrow, .app .top.sub h1, .app .top.sub .counts, .app .top.sub .why { display: none; }
@@ -438,7 +440,9 @@ button, a, summary, input, label { touch-action: manipulation; }
 </div>
 
 <script>
-if (navigator.standalone === true || matchMedia("(display-mode: standalone)").matches) document.documentElement.classList.add("app");
+// App-Ansicht (Glas-Leiste unten, Reiter-Überschriften): als Homescreen-App und genauso in Safari/Chrome auf dem Handy. Am PC bleibt die normale Ansicht.
+if (navigator.standalone === true || matchMedia("(display-mode: standalone)").matches) document.documentElement.classList.add("app", "standalone");
+else if (matchMedia("(hover: none) and (pointer: coarse) and (max-width: 820px)").matches) document.documentElement.classList.add("app");
 // [Titel, Art S/F, Genres, meine Wertung, IMDb, IMDb-Stimmen in Tsd., Ton de/teil/sub/unk, Länge, Beschreibung, Tipp, Suchbegriffe, Stimmungen, Crunchyroll-Suchwort]
 const DATA = [
 ["Frieren – Nach dem Ende der Reise","S","Fantasy|Abenteuer|Drama",9.4,8.9,86,"de","2 Staffeln · 38 Folgen","Die Elfenmagierin Frieren hat mit ihren Gefährten den Dämonenkönig besiegt. Elfen leben über tausend Jahre, deshalb merkt sie erst nach dem Tod ihres Freundes Himmel, wie wenig sie die Menschen kannte. Also bricht sie zu einer neuen Reise auf. Ruhig, warm und mit herausragenden Kämpfen.","","sousou no frieren","chill|herz","Frieren"],
