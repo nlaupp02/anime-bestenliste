@@ -115,7 +115,7 @@ select { background: var(--sheet); border: 1px solid var(--line); border-radius:
 .genre-select { display: none; }
 button:focus-visible, select:focus-visible, .search:focus-visible, a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .status { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; min-height: 30px; } /* immer gleich hoch, auch mit „Merkliste teilen“ */
-.reset { font: inherit; font-size: 13px; color: var(--hanko); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; }
+.reset { font: inherit; font-size: 13px; color: var(--ink); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; }
 
 /* Liste */
 /* unten Platz lassen, damit der Pfeil die Knöpfe der letzten Karte nicht verdeckt */
@@ -406,7 +406,7 @@ button, a, summary, input, label { touch-action: manipulation; }
           <button type="button" id="t-f" data-type="F" aria-pressed="false">Filme</button>
         </div>
       </div>
-      <div class="prow"><span class="plabel">Ton und Gesehenes</span>
+      <div class="prow"><span class="plabel" id="tonLabel">Ton und Gesehenes</span>
         <button type="button" class="toggle" id="onlyDe" aria-pressed="false">Nur deutsche Synchro</button>
         <button type="button" class="toggle" id="hideSeen" aria-pressed="false">Gesehene ausblenden</button>
       </div>
@@ -613,6 +613,8 @@ let seen = new Set(migrate(load(KEY.seen, [])));
 store(KEY.saved, [...saved]); store(KEY.seen, [...seen]);
 const DEFAULTS = { type: "", sort: "mine", onlyDe: false, hideSeen: false, view: "all", g2: "" };
 const FILTER_KEYS = ["type", "onlyDe", "hideSeen"];
+// Im Reiter Gesehen ergibt „Gesehene ausblenden“ keinen Sinn: dort ausgeblendet und nicht als aktiver Filter gezählt
+const activeKeys = () => FILTER_KEYS.filter(k => !(k === "hideSeen" && state.view === "seen"));
 const loaded = load(KEY.filters, {});
 if (loaded.onlySaved && !loaded.view) loaded.view = "saved";
 delete loaded.onlySaved;
@@ -749,6 +751,8 @@ const memKey = () => state.view === "genres" ? "genres:" + (state.g2 || "") : st
 const isAppMode = () => document.documentElement.classList.contains("app");
 document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
   const v = b.dataset.view;
+  // Beim Reiterwechsel klappt das Filter-Feld zu, die Filter selbst bleiben aktiv
+  if (v !== state.view) { $("#panel").hidden = true; $("#filterBtn").setAttribute("aria-expanded", "false"); }
   if (isAppMode()) {
     if (v === state.view) return;
     scrollMem[memKey()] = scrollY;
@@ -777,14 +781,16 @@ $("#filterBtn").addEventListener("click", () => {
   const p = $("#panel"); p.hidden = !p.hidden;
   $("#filterBtn").setAttribute("aria-expanded", String(!p.hidden));
 });
-$("#reset").addEventListener("click", () => { FILTER_KEYS.forEach(k => { state[k] = DEFAULTS[k]; }); state.q = ""; $("#q").value = ""; sync(); render(); });
+$("#reset").addEventListener("click", () => { activeKeys().forEach(k => { state[k] = DEFAULTS[k]; }); state.q = ""; $("#q").value = ""; sync(); render(); });
 
 function sync() {
   document.querySelectorAll(".seg button").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.type === state.type)));
   ["onlyDe", "hideSeen"].forEach(k => $("#" + k).setAttribute("aria-pressed", String(state[k])));
   document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.view === state.view)));
   if (typeof placeLens === "function") placeLens();
-  const nf = FILTER_KEYS.filter(k => state[k] !== DEFAULTS[k]).length;
+  $("#hideSeen").hidden = state.view === "seen";
+  $("#tonLabel").textContent = state.view === "seen" ? "Ton" : "Ton und Gesehenes";
+  const nf = activeKeys().filter(k => state[k] !== DEFAULTS[k]).length;
   $("#fcount").textContent = nf; $("#fcount").hidden = !nf;
   saveFilters();
 }
@@ -837,7 +843,7 @@ function filtered() {
 function status(n) {
   $("#n-all").textContent = topList.length; $("#n-saved").textContent = saved.size; $("#n-seen").textContent = seen.size;
   $("#n-saved").classList.toggle("zero", !saved.size); $("#n-seen").classList.toggle("zero", !seen.size);
-  const active = state.q || FILTER_KEYS.some(k => state[k] !== DEFAULTS[k]);
+  const active = state.q || activeKeys().some(k => state[k] !== DEFAULTS[k]);
   $("#status").textContent = n < 0 ? `${tileCount} ${tileCount === 1 ? "Genre" : "Genres"}` : active ? `${n} Treffer` : `${n} Titel`;
   $("#reset").hidden = !active;
   $("#share").hidden = !(state.view === "saved" && saved.size);
