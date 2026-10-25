@@ -125,6 +125,10 @@ main { padding-block: 18px calc(max(16px, env(safe-area-inset-bottom, 0px)) + 76
   display: grid; gap: 12px;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr));
 }
+/* Am PC (Maus) sind alle Karten gleich hoch: Die Knöpfe stehen immer an derselben Stelle, so lässt sich schnell hintereinander klicken */
+@media (hover: hover) and (pointer: fine) { .grid { grid-auto-rows: 1fr; } }
+/* Verschwindet eine Karte (z. B. „Gesehene ausblenden“), rückt die nächste an ihre Stelle, statt dass die Seite mitspringt */
+.grid { overflow-anchor: none; }
 .card {
   background: var(--sheet); border: 1px solid var(--line); border-radius: 10px;
   padding: 16px 16px 14px;
@@ -364,6 +368,8 @@ button, a, summary, input, label { touch-action: manipulation; }
 }
 /* Als App vom Homescreen: Kopf unter den Unschärfe-Streifen der Statusleiste schieben */
 .standalone header.top { padding-top: 48px; }
+/* Safari: Jeder Reiter bleibt etwas scrollbar, damit Safari seine Leiste unten nicht wieder aufklappt, wenn die Liste kurz ist */
+.app:not(.standalone) main { min-height: 100lvh; }
 /* Die Installations-Anleitung nur auf dem Reiter Alle */
 .top.sub .install { display: none !important; }
 /* App: Auf Genres, Gemerkt und Gesehen nur ein großer Reiter-Titel statt des ganzen Kopfes (wie bei iPhone-Apps) */
@@ -633,7 +639,10 @@ const activeKeys = () => FILTER_KEYS.filter(k => !(k === "hideSeen" && state.vie
 const loaded = load(KEY.filters, {});
 if (loaded.onlySaved && !loaded.view) loaded.view = "saved";
 delete loaded.onlySaved;
-const state = Object.assign({}, DEFAULTS, loaded, { q: "" });
+// Beim Öffnen oder Neuladen immer oben bei „Alle“ starten. Filter (Serien/Filme, Synchro, Gesehene) bleiben gespeichert.
+const state = Object.assign({}, DEFAULTS, loaded, { q: "", view: "all", g2: "" });
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+scrollTo(0, 0);
 state.sort = "mine";
 if (state.g2 && !GENRES.includes(state.g2)) state.g2 = "";
 function saveFilters() { const { q, ...rest } = state; store(KEY.filters, rest); }
@@ -773,9 +782,13 @@ document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click
     scrollMem[memKey()] = scrollY;
     state.view = v; sync(); render();
     // Die kurze Kachel-Übersicht startet immer oben, ein geöffnetes Genre (z. B. Action) merkt sich die Stelle
-    if (memKey() === "genres:") { scrollTo(0, 0); return; }
+    // In Safari nie ganz auf 0: Dort klappt Safari sonst seine Leiste unten wieder auf und die Glas-Leiste springt hoch
+    const top0 = document.documentElement.classList.contains("standalone") ? 0 : 1;
+    if (memKey() === "genres:") { scrollTo(0, top0); return; }
     const y = scrollMem[memKey()];
-    if (y != null) scrollTo(0, y); else toMain();
+    if (y != null) scrollTo(0, Math.max(top0, y));
+    else if (v === "all") toMain();
+    else scrollTo(0, top0); // neuer Reiter: oben mit Überschrift anfangen
     return;
   }
   state.view = v; if (v === "genres") state.g2 = "";
