@@ -114,7 +114,7 @@ select { background: var(--sheet); border: 1px solid var(--line); border-radius:
 .chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
 .genre-select { display: none; }
 button:focus-visible, select:focus-visible, .search:focus-visible, a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-.status { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; }
+.status { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; min-height: 30px; } /* immer gleich hoch, auch mit „Merkliste teilen“ */
 .reset { font: inherit; font-size: 13px; color: var(--hanko); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; }
 
 /* Liste */
@@ -305,6 +305,8 @@ button, a, summary, input, label { touch-action: manipulation; }
 }
 .share-btn svg { width: 13px; height: 13px; }
 .card { scroll-margin-top: 20px; }
+/* Karten außerhalb des Bildschirms zeichnet der Browser erst, wenn sie ins Bild kommen: schnellerer Start, flüssigerer Reiterwechsel */
+.card { content-visibility: auto; contain-intrinsic-size: auto 420px; }
 .card.pick { outline: 3px solid var(--hanko); outline-offset: 3px; }
 .totop {
   position: fixed; z-index: 20;
@@ -359,8 +361,8 @@ button, a, summary, input, label { touch-action: manipulation; }
 .vtitle { display: none; }
 .app .top.sub .eyebrow, .app .top.sub h1, .app .top.sub .counts, .app .top.sub .why { display: none; }
 .app .top.sub .vtitle { display: block; margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 2.05rem; line-height: 1.05; letter-spacing: -.01em; }
-/* Zufallstipp nur bei Alle, in der App und in Safari */
-.top.nopick .pick-btn { display: none; }
+/* Zufallstipp in der App nur bei Alle. In Safari bleibt er auf jedem Reiter, damit die Liste nicht verrutscht */
+.app .top.nopick .pick-btn { display: none; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 
@@ -881,19 +883,32 @@ function headFor() {
   top.classList.toggle("nopick", sub);
   $("#vtitle").textContent = { genres: "Genres", saved: "Gemerkt", seen: "Gesehen" }[state.view] || "";
 }
+// Die Karten werden nur einmal gebaut und danach nur ein- und ausgeblendet. So geht der Reiterwechsel schneller.
+let cardEls = null;
+function buildCards() {
+  $("#list").innerHTML = byMine.map(card).join("");
+  cardEls = new Map();
+  $("#list").querySelectorAll(".card").forEach((el, i) => { el._rank = el.querySelector(".rank"); cardEls.set(byMine[i].id, el); });
+}
 function render() {
   headFor();
+  if (!cardEls) buildCards();
   const tilesView = state.view === "genres" && !state.g2;
   $("#tiles").hidden = !tilesView;
   $("#gbar").hidden = !(state.view === "genres" && state.g2);
+  $("#list").hidden = tilesView;
   if (tilesView) {
-    renderTiles(); $("#list").innerHTML = "";
+    renderTiles();
     const e0 = $("#empty"); e0.hidden = tileCount > 0; e0.textContent = "Kein Titel passt zu diesen Filtern. Setz einzelne Filter zurück oder leere die Suche.";
     status(-1); return;
   }
   if (state.view === "genres") $("#gtitle").textContent = state.g2;
-  const list = filtered();
-  $("#list").innerHTML = list.map(card).join("");
+  const list = filtered(), show = new Set(list.map(it => it.id)), gName = state.view === "genres" ? state.g2 : "";
+  byMine.forEach(it => {
+    const el = cardEls.get(it.id), on = show.has(it.id);
+    if (el.hidden === on) el.hidden = !on;
+    if (on) { const r = gName ? `Platz ${it.gr[gName]} in ${gName}` : `Platz ${it.rank}`; if (el._rank.textContent !== r) el._rank.textContent = r; }
+  });
   const e = $("#empty");
   e.hidden = list.length > 0;
   e.textContent = state.view === "saved" && !saved.size ? "Noch nichts gemerkt. Tippe bei einem Anime auf „Merken“, dann landet er hier."
@@ -909,12 +924,13 @@ $("#list").addEventListener("click", e => {
   const set = act === "seen" ? seen : saved;
   set.has(id) ? set.delete(id) : set.add(id);
   store(act === "seen" ? KEY.seen : KEY.saved, [...set]);
-  if ((act === "seen" && (state.hideSeen || state.view === "seen")) || (act === "save" && state.view === "saved")) { render(); return; }
+  // Erst den Knopf selbst umstellen (die Karte bleibt erhalten), dann ggf. die Liste neu filtern
   const on = set.has(id);
   b.setAttribute("aria-pressed", String(on));
   b.innerHTML = act === "seen" ? ICON.seen + (on ? "Gesehen" : "Schon gesehen") : ICON.save + (on ? "Gemerkt" : "Merken");
   if (act === "seen") b.closest(".card").classList.toggle("is-seen", on);
-  status(document.querySelectorAll("#list .card").length);
+  if ((act === "seen" && (state.hideSeen || state.view === "seen")) || (act === "save" && state.view === "saved")) { render(); return; }
+  status(document.querySelectorAll("#list .card:not([hidden])").length);
   headFor();
 });
 
@@ -930,10 +946,9 @@ const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 // Zufallstipp: bevorzugt hoch bewertete Titel, die noch nicht gesehen sind
 let lastPick = null, pickT;
 $("#pick").addEventListener("click", () => {
-  if (state.view === "genres" && !state.g2) { state.view = "all"; sync(); render(); }
+  // Der Zufallstipp wählt immer aus allen Titeln: von einem anderen Reiter aus geht es dafür zu Alle
+  if (state.view !== "all") { state.view = "all"; state.g2 = ""; sync(); render(); }
   let pool = filtered().filter(it => !seen.has(it.id));
-  if (state.view === "saved" && !pool.length) { toast("Alles auf deiner Merkliste hast du schon gesehen."); return; }
-  if (state.view === "genres" && state.g2 && !pool.length) { toast("Alles aus " + state.g2 + " hast du schon gesehen."); return; }
   if (!pool.length && byMine.some(it => !seen.has(it.id))) {
     Object.assign(state, DEFAULTS, { q: "" }); $("#q").value = ""; sync(); render();
     pool = filtered().filter(it => !seen.has(it.id));
@@ -949,7 +964,9 @@ $("#pick").addEventListener("click", () => {
   const el = btn.closest(".card");
   document.querySelectorAll(".card.pick").forEach(c => c.classList.remove("pick"));
   el.classList.add("pick");
-  el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+  // Erst direkt hinspringen, dann nachjustieren: Karten dazwischen werden erst beim Hinsehen gezeichnet und können ihre Höhe noch ändern
+  el.scrollIntoView({ block: "center" });
+  requestAnimationFrame(() => requestAnimationFrame(() => el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" })));
   toast("Wie wär's mit: " + pick.title + "?");
   clearTimeout(pickT); pickT = setTimeout(() => el.classList.remove("pick"), 6000);
 });
@@ -957,7 +974,7 @@ $("#pick").addEventListener("click", () => {
 // Nach oben
 const totop = $("#totop");
 let topLastScroll = 0;
-const onScroll = () => { totop.hidden = window.scrollY < 900; topLastScroll = Date.now(); };
+const onScroll = () => { const h = window.scrollY < 900; if (totop.hidden !== h) totop.hidden = h; topLastScroll = Date.now(); };
 addEventListener("scroll", onScroll, { passive: true });
 const goTop = () => window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
 totop.addEventListener("click", goTop);
