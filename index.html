@@ -114,7 +114,8 @@ button:focus-visible, select:focus-visible, .search:focus-visible, a:focus-visib
 .reset { font: inherit; font-size: 13px; color: var(--hanko); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; }
 
 /* Liste */
-main { padding-block: 18px 48px; }
+/* unten Platz lassen, damit der Pfeil die Knöpfe der letzten Karte nicht verdeckt */
+main { padding-block: 18px calc(max(16px, env(safe-area-inset-bottom, 0px)) + 76px); }
 .grid {
   list-style: none; margin: 0; padding: 0;
   display: grid; gap: 12px;
@@ -263,7 +264,8 @@ button, a, summary, input, label { touch-action: manipulation; }
 .app .tabs .n { position: absolute; top: 3px; left: calc(50% + 6px); min-width: 17px; padding: 0 4px; font-size: 10px; line-height: 15px; background: var(--ink); color: var(--paper); }
 .tabs .n.zero, .app #n-all { display: none; }
 .app .tabs button[aria-selected="true"] .n { background: var(--ink); color: var(--paper); }
-.app main { padding-bottom: 96px; }
+/* App: Platz für Glas-Leiste und Pfeil darüber */
+.app main { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 150px); }
 .app .totop { bottom: calc(env(safe-area-inset-bottom, 0px) + 86px); }
 .app .toast { bottom: calc(env(safe-area-inset-bottom, 0px) + 150px); }
 .tabs button {
@@ -309,6 +311,7 @@ button, a, summary, input, label { touch-action: manipulation; }
   box-shadow: 0 6px 18px rgba(0,0,0,.45);
 }
 .totop svg { width: 20px; height: 20px; }
+.tile.none { opacity: .45; }
 .toast {
   position: fixed; z-index: 30; left: 50%; transform: translateX(-50%);
   bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + 58px);
@@ -721,17 +724,39 @@ $("#counts").innerHTML =
 document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click", () => { state.type = b.dataset.type; sync(); render(); }));
 $("#q").addEventListener("input", e => { state.q = e.target.value.trim().toLowerCase(); render(); });
 ["onlyDe", "hideSeen"].forEach(k => $("#" + k).addEventListener("click", () => { state[k] = !state[k]; sync(); render(); }));
+// In der App merkt sich jeder Reiter, wo man war (wie bei iPhone-Apps).
+// Nochmal auf den Reiter tippen, in dem man schon ist: zurück zum Anfang der Liste (bei Genres zur Übersicht).
+const scrollMem = {};
+const memKey = () => state.view === "genres" ? "genres:" + (state.g2 || "") : state.view;
+const isAppMode = () => document.documentElement.classList.contains("app");
 document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
-  state.view = b.dataset.view; if (state.view === "genres") state.g2 = "";
+  const v = b.dataset.view;
+  if (isAppMode()) {
+    if (v === state.view) {
+      if (v === "genres" && state.g2) { state.g2 = ""; saveFilters(); render(); }
+      delete scrollMem[memKey()];
+      toMain(); return;
+    }
+    scrollMem[memKey()] = scrollY;
+    state.view = v; sync(); render();
+    const y = scrollMem[memKey()];
+    if (y != null) scrollTo(0, y); else toMain();
+    return;
+  }
+  state.view = v; if (v === "genres") state.g2 = "";
   sync(); render();
-  if (document.documentElement.classList.contains("app")) toMain();
 }));
 const toMain = () => { const m = document.querySelector("main"); if (m.getBoundingClientRect().top < 0) m.scrollIntoView({ block: "start" }); };
 $("#tiles").addEventListener("click", e => {
   const t = e.target.closest(".tile"); if (!t) return;
+  scrollMem["genres:"] = scrollY;
   state.g2 = t.dataset.g; saveFilters(); render(); toMain();
 });
-$("#gback").addEventListener("click", () => { state.g2 = ""; saveFilters(); render(); toMain(); });
+$("#gback").addEventListener("click", () => {
+  state.g2 = ""; saveFilters(); render();
+  const y = scrollMem["genres:"];
+  if (y != null) scrollTo(0, y); else toMain();
+});
 $("#filterBtn").addEventListener("click", () => {
   const p = $("#panel"); p.hidden = !p.hidden;
   $("#filterBtn").setAttribute("aria-expanded", String(!p.hidden));
@@ -818,10 +843,17 @@ const FEATURED = (() => {
   });
   return out;
 })();
+// Kacheln zählen nur Titel, die zu den eingestellten Filtern und der Suche passen (wie die Liste beim Öffnen)
+const passes = it =>
+  (!state.type || it.type === state.type) &&
+  (!state.onlyDe || it.dub === "de") &&
+  (!state.hideSeen || !seen.has(it.id)) &&
+  (!state.q || (it.title + " " + it.alt).toLowerCase().includes(state.q));
 function renderTiles() {
   $("#tiles").innerHTML = GENRES.map(g => {
-    const f = FEATURED[g];
-    return `<button type="button" class="tile" data-g="${g}"><b>${g}</b><span class="tn">${inG(g).length} Titel</span>${f ? `<span class="tt">Tipp: ${esc(f.title)}</span>` : ""}</button>`;
+    const list = inG(g).filter(passes);
+    const f = FEATURED[g] && passes(FEATURED[g]) ? FEATURED[g] : list[0];
+    return `<button type="button" class="tile${list.length ? "" : " none"}" data-g="${g}"><b>${g}</b><span class="tn">${list.length} Titel</span>${f ? `<span class="tt">Tipp: ${esc(f.title)}</span>` : ""}</button>`;
   }).join("");
 }
 
@@ -1003,7 +1035,7 @@ const placeLens = (() => {
     if (!drag) return;
     const d = drag; drag = null; if (raf) { cancelAnimationFrame(raf); raf = 0; }
     bar.classList.remove("drag"); btns.forEach(b => b.classList.remove("hover"));
-    if (d.moved && !cancel && !multi) { if (e.cancelable) e.preventDefault(); if (d.i >= 0) btns[d.i].click(); }
+    if (d.moved && !cancel && !multi) { if (e.cancelable) e.preventDefault(); if (d.i >= 0 && btns[d.i].getAttribute("aria-selected") !== "true") btns[d.i].click(); }
     toActive();
   };
   bar.addEventListener("touchend", e => finish(e, false));
