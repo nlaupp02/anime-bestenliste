@@ -14,6 +14,12 @@
 <meta property="og:title" content="Die besten Animes auf Crunchyroll">
 <meta property="og:description" content="Die besten Animes auf Crunchyroll Deutschland, mit Wertung und deutscher Synchro.">
 <title>Die besten Animes auf Crunchyroll</title>
+<script>
+// App-Ansicht schon vor dem ersten Bild festlegen (als Homescreen-App und genauso in Safari/Chrome auf dem Handy, am PC nicht).
+// Sonst ist die Seite beim Öffnen kurz eine normale Webseite, und eine Berührung in diesem Moment lässt alles verschoben hängen.
+if (navigator.standalone === true || matchMedia("(display-mode: standalone)").matches) document.documentElement.classList.add("app", "standalone");
+else if (matchMedia("(hover: none) and (pointer: coarse) and (max-width: 820px)").matches) document.documentElement.classList.add("app");
+</script>
 <!-- Schriften direkt eingebettet: kein Nachladen, kein Umspringen der Schrift beim Öffnen -->
 <style>
 @font-face{font-family:"Dela Gothic One";font-style:normal;font-weight:400;font-display:block;src:url(data:font/woff2;base64,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) format("woff2")}
@@ -114,6 +120,7 @@ select { background: var(--sheet); border: 1px solid var(--line); border-radius:
 .chips { display: flex; flex-wrap: wrap; gap: 6px; flex: 1 1 auto; min-width: 0; }
 .chip { background: var(--chip); border: 1px solid transparent; border-radius: 999px; padding: 4px 11px; }
 .chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.chip .mc { opacity: .6; font-variant-numeric: tabular-nums; }
 .genre-select { display: none; }
 button:focus-visible, select:focus-visible, .search:focus-visible, a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .status { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; min-height: 30px; } /* immer gleich hoch, auch mit „Merkliste teilen“ */
@@ -444,6 +451,12 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
         <button type="button" class="toggle" id="onlyDe" aria-pressed="false">Nur deutsche Synchro</button>
         <button type="button" class="toggle" id="hideSeen" aria-pressed="false">Gesehene ausblenden</button>
       </div>
+      <div class="prow"><span class="plabel">Stimmung</span>
+        <button type="button" class="chip" data-mood="chill" aria-pressed="false">Zum Abschalten <span class="mc"></span></button>
+        <button type="button" class="chip" data-mood="herz" aria-pressed="false">Fürs Herz <span class="mc"></span></button>
+        <button type="button" class="chip" data-mood="dn" aria-pressed="false">Zum Mitdenken <span class="mc"></span></button>
+        <button type="button" class="chip" data-mood="kurz" aria-pressed="false">Kurz und knackig <span class="mc"></span></button>
+      </div>
     </div>
     <div class="status"><span id="status" aria-live="polite"></span><button type="button" class="reset" id="reset" hidden>Filter zurücksetzen</button><button type="button" class="share-btn" id="share" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10V2.5M5 5.5l3-3 3 3M3 9v4.5h10V9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Merkliste teilen</button></div>
     <div class="sharebox" id="sharebox" hidden><span>Teilen ging hier nicht direkt. Kopier den Text und schick ihn per WhatsApp:</span><textarea id="sharetext" readonly></textarea><div class="row"><button type="button" class="btn" id="shareclose">Schließen</button></div></div>
@@ -466,9 +479,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
 </div>
 
 <script>
-// App-Ansicht (Glas-Leiste unten, Reiter-Überschriften): als Homescreen-App und genauso in Safari/Chrome auf dem Handy. Am PC bleibt die normale Ansicht.
-if (navigator.standalone === true || matchMedia("(display-mode: standalone)").matches) document.documentElement.classList.add("app", "standalone");
-else if (matchMedia("(hover: none) and (pointer: coarse) and (max-width: 820px)").matches) document.documentElement.classList.add("app");
+// Die App-Ansicht (Glas-Leiste unten, Reiter-Überschriften) wird schon ganz oben im Kopf der Seite festgelegt.
 // In der App-Ansicht rollt nur der Bereich #sc. Glas-Leiste, Pfeil und Hinweise liegen außerhalb davon,
 // damit das iPhone eine Berührung der Leiste nicht als „Rollen anhalten“ abfängt.
 const SC = document.documentElement.classList.contains("app") ? document.getElementById("sc") : null;
@@ -479,13 +490,14 @@ const setY = y => { if (SC) SC.scrollTop = y; else window.scrollTo(0, y); };
 const maxY = () => SC ? SC.scrollHeight - SC.clientHeight : document.documentElement.scrollHeight - innerHeight;
 const viewH = () => innerHeight;
 const scrollStyle = () => (SC || document.documentElement).style;
-// Safari (nicht als App): Die Seite steht still, aber intern 200px weit „gerollt“. So liegt der Anfang des Scrollbereichs
-// oberhalb des sichtbaren Teils, und Safari zeigt oben unter der Uhr die Liste statt eines blauen Balkens.
+// Die Seite selbst steht immer still, nur die Liste rollt. In der App steht sie ganz oben.
+// In Safari steht sie intern 200px weit „gerollt“: So liegt der Anfang des Scrollbereichs oberhalb des sichtbaren Teils,
+// und Safari zeigt oben unter der Uhr die Liste statt eines blauen Balkens.
 const OFF = SC && !document.documentElement.classList.contains("standalone") ? 200 : 0;
 let typing = false;
-const keepDoc = () => { if (OFF && !typing && Math.abs(window.scrollY - OFF) > 1) window.scrollTo(0, OFF); };
-if (OFF) {
-  // Einrastpunkt bei 200px: Safari hält die Seite dann selbst an dieser Stelle, auch wenn es sie beim Laden zurücksetzt
+const keepDoc = () => { if (SC && !typing && Math.abs(window.scrollY - OFF) > 1) window.scrollTo(0, OFF); };
+if (SC) {
+  // Einrastpunkt: Das iPhone hält die Seite dann selbst an dieser Stelle, auch wenn es sie beim Öffnen verschiebt
   const snap = document.createElement("div");
   snap.setAttribute("aria-hidden", "true");
   snap.style.cssText = "position:absolute;left:0;top:" + OFF + "px;width:1px;height:1px;pointer-events:none;scroll-snap-align:start";
@@ -493,8 +505,8 @@ if (OFF) {
   document.documentElement.style.scrollSnapType = "y mandatory";
 }
 keepDoc();
-// In den ersten Sekunden nach dem Öffnen jedes Bild prüfen, damit ein Zurücksetzen durch Safari gar nicht erst sichtbar wird
-if (OFF) { const t0 = performance.now(); const hold = () => { keepDoc(); if (performance.now() - t0 < 3000) requestAnimationFrame(hold); }; requestAnimationFrame(hold); }
+// In den ersten Sekunden nach dem Öffnen jedes Bild prüfen, damit ein Verschieben gar nicht erst sichtbar wird
+if (SC) { const t0 = performance.now(); const hold = () => { keepDoc(); if (performance.now() - t0 < 3000) requestAnimationFrame(hold); }; requestAnimationFrame(hold); }
 // Einmal springen (Reiterwechsel, Genre öffnen): Rollt die Liste noch nach, erst anhalten.
 // Sonst rollt das iPhone in der neuen Ansicht einfach weiter.
 // Das Anhalten baut den Scrollbereich kurz neu auf (kleiner Ruckler), deshalb nur, wenn die Liste gerade wirklich rollt.
@@ -669,7 +681,7 @@ const slug = s => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replac
 const DE_TITLE = { "So I'm a Spider, So What?": "Ich bin eine Spinne, na und?" };
 const mk = (d, i, extra) => ({
   id: slug(d[0]), key: d[0], title: DE_TITLE[d[0]] || d[0], type: d[1], genres: d[2].split("|"), mine: d[3], imdb: d[4], votes: d[5],
-  dub: d[6], len: d[7], desc: d[8], note: d[9], alt: (d[10] || "") + (DE_TITLE[d[0]] ? " " + d[0] : ""),
+  dub: d[6], len: d[7], desc: d[8], note: d[9], alt: (d[10] || "") + (DE_TITLE[d[0]] ? " " + d[0] : ""), moods: (d[11] || "").split("|").filter(Boolean),
   cr: d[12] || d[0], crLink: d[13] || "", order: i, extra
 });
 const items = [...DATA.map((d, i) => mk(d, i, false)), ...EXTRA.map((d, i) => mk(d, 1000 + i, true))];
@@ -691,8 +703,10 @@ const known = new Set(items.map(it => it.id));
 let saved = new Set(migrate(load(KEY.saved, [])).filter(id => known.has(id)));
 let seen = new Set(migrate(load(KEY.seen, [])).filter(id => known.has(id)));
 store(KEY.saved, [...saved]); store(KEY.seen, [...seen]);
-const DEFAULTS = { type: "", sort: "mine", onlyDe: false, hideSeen: false, view: "all", g2: "" };
-const FILTER_KEYS = ["type", "onlyDe", "hideSeen"];
+const DEFAULTS = { type: "", sort: "mine", onlyDe: false, hideSeen: false, mood: "", view: "all", g2: "" };
+const FILTER_KEYS = ["type", "onlyDe", "hideSeen", "mood"];
+// Stimmungen aus den Daten: chill = Zum Abschalten, herz = Fürs Herz, dn = Zum Mitdenken, kurz = Kurz und knackig
+const MOODS = ["chill", "herz", "dn", "kurz"];
 // Im Reiter Gesehen ergibt „Gesehene ausblenden“ keinen Sinn: dort ausgeblendet und nicht als aktiver Filter gezählt
 const activeKeys = () => FILTER_KEYS.filter(k => !(k === "hideSeen" && state.view === "seen"));
 const loaded = load(KEY.filters, {});
@@ -704,6 +718,7 @@ if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 setY(0);
 state.sort = "mine";
 if (state.g2 && !GENRES.includes(state.g2)) state.g2 = "";
+if (!MOODS.includes(state.mood)) state.mood = "";
 function saveFilters() { const { q, ...rest } = state; store(KEY.filters, rest); }
 
 const $ = s => document.querySelector(s);
@@ -831,10 +846,10 @@ document.addEventListener("focusin", e => { if (e.target.matches("input, textare
 document.addEventListener("focusout", e => {
   if (!e.target.matches("input, textarea")) return;
   typing = false;
-  setTimeout(() => { if (OFF) keepDoc(); else if (SC && window.scrollY) window.scrollTo(0, 0); }, 100);
+  setTimeout(keepDoc, 100);
 });
-if (OFF) {
-  // Verschiebt Safari die Seite (z. B. beim Laden), sofort wieder an ihren Platz. Die Liste selbst bleibt dabei, wo sie ist.
+if (SC) {
+  // Verschiebt das iPhone die Seite (z. B. beim Öffnen), sofort wieder an ihren Platz. Die Liste selbst bleibt dabei, wo sie ist.
   // Die Seite kann man mit dem Finger nicht rollen (nur die Liste), deshalb wird hier nie gegen den Finger gearbeitet.
   addEventListener("scroll", keepDoc, { passive: true });
   document.addEventListener("touchstart", keepDoc, { passive: true });
@@ -843,6 +858,8 @@ if (OFF) {
   addEventListener("load", keepDoc);
 }
 ["onlyDe", "hideSeen"].forEach(k => $("#" + k).addEventListener("click", () => { state[k] = !state[k]; sync(); render(); }));
+// Stimmung: ein Tipp wählt sie, ein zweiter Tipp auf dieselbe hebt sie wieder auf
+document.querySelectorAll("[data-mood]").forEach(b => b.addEventListener("click", () => { state.mood = state.mood === b.dataset.mood ? "" : b.dataset.mood; sync(); render(); }));
 // In der App merkt sich jeder Reiter, wo man war (wie bei iPhone-Apps), bei Genres auch ein geöffnetes Genre.
 // Ein Tipp auf den Reiter, in dem man schon ist, macht nichts. Nach oben geht es mit dem Pfeil.
 const scrollMem = {};
@@ -896,6 +913,7 @@ $("#reset").addEventListener("click", () => { activeKeys().forEach(k => { state[
 function sync() {
   document.querySelectorAll(".seg button").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.type === state.type)));
   ["onlyDe", "hideSeen"].forEach(k => $("#" + k).setAttribute("aria-pressed", String(state[k])));
+  document.querySelectorAll("[data-mood]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mood === state.mood)));
   document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.view === state.view)));
   if (typeof placeLens === "function") placeLens();
   $("#hideSeen").hidden = state.view === "seen";
@@ -937,9 +955,10 @@ function card(it) {
     </li>`;
 }
 
-function filtered() {
+function filtered(mood = state.mood) {
   const inGenre = state.view === "genres";
   return byMine.filter(it =>
+    (!mood || it.moods.includes(mood)) &&
     (!inGenre || it.genres.includes(state.g2)) &&
     (!state.type || it.type === state.type) &&
     (!state.onlyDe || it.dub === "de") &&
@@ -950,7 +969,16 @@ function filtered() {
   );
 }
 
+// Zahl hinter jeder Stimmung: so viele Titel zeigt der aktuelle Reiter mit dieser Stimmung (bei den anderen Filtern)
+function moodCounts() {
+  const tiles = state.view === "genres" && !state.g2;
+  document.querySelectorAll("[data-mood]").forEach(b => {
+    const m = b.dataset.mood, n = tiles ? byMine.filter(it => passesWith(it, m)).length : filtered(m).length;
+    const c = b.querySelector(".mc"); if (c.textContent !== String(n)) c.textContent = n;
+  });
+}
 function status(n) {
+  moodCounts();
   $("#n-all").textContent = topList.length; $("#n-saved").textContent = saved.size; $("#n-seen").textContent = seen.size;
   $("#n-saved").classList.toggle("zero", !saved.size); $("#n-seen").classList.toggle("zero", !seen.size);
   const active = state.q || activeKeys().some(k => state[k] !== DEFAULTS[k]);
@@ -976,7 +1004,9 @@ const FEATURED = (() => {
   return out;
 })();
 // Kacheln zählen nur Titel, die zu den eingestellten Filtern und der Suche passen (wie die Liste beim Öffnen)
-const passes = it =>
+const passes = it => passesWith(it, state.mood);
+const passesWith = (it, mood) =>
+  (!mood || it.moods.includes(mood)) &&
   (!state.type || it.type === state.type) &&
   (!state.onlyDe || it.dub === "de") &&
   (!state.hideSeen || !seen.has(it.id)) &&
