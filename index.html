@@ -249,7 +249,7 @@ button, a, summary, input, label { touch-action: manipulation; }
   background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04)), rgba(24,27,45,.66);
   -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid rgba(255,255,255,.16);
-  box-shadow: 0 12px 32px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.22);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.22); /* kein Schatten nach außen, nur die helle Glaskante oben */
 }
 .app .tabs button {
   position: relative; flex-direction: column; justify-content: center; gap: 2px; margin: 0; border: 0;
@@ -369,8 +369,17 @@ button, a, summary, input, label { touch-action: manipulation; }
 }
 /* Als App vom Homescreen: Kopf unter den Unschärfe-Streifen der Statusleiste schieben */
 .standalone header.top { padding-top: 36px; }
-/* Safari: Jeder Reiter bleibt etwas scrollbar, damit Safari seine Leiste unten nicht wieder aufklappt, wenn die Liste kurz ist */
-.app:not(.standalone) main { min-height: 100lvh; }
+/* App und Handy-Safari: Die Liste rollt in einem eigenen Bereich, die Glas-Leiste liegt außerhalb davon.
+   So reagiert die Leiste sofort, auch während die Liste noch nachrollt (wie bei iPhone-Apps). Die Seite selbst rollt nie,
+   deshalb springt auch die Safari-Leiste unten nicht mehr. */
+html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+.app #sc { position: fixed; inset: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }
+/* Safari (nicht als App): Safari zeigt die Seite auch unter der Statusleiste oben und unter seiner Leiste unten.
+   Ein fester (fixed) Bereich am Rand wird dort von Safari mit einer einfarbigen Fläche überdeckt (die Balken).
+   Deshalb ist der Scrollbereich in Safari nicht fest, sondern normal platziert und reicht unter beide Leisten.
+   Der Innenabstand gleicht das aus, die Seite selbst rollt trotzdem nicht. */
+.app:not(.standalone) #sc { position: absolute; top: -200px; bottom: -200px; }
+.app:not(.standalone) #sc > .wrap { padding-top: 200px; padding-bottom: 200px; }
 /* Die Installations-Anleitung nur auf dem Reiter Alle */
 .top.sub .install { display: none !important; }
 /* App: Auf Genres, Gemerkt und Gesehen nur ein großer Reiter-Titel statt des ganzen Kopfes (wie bei iPhone-Apps) */
@@ -385,6 +394,7 @@ button, a, summary, input, label { touch-action: manipulation; }
 <style>body{margin:0}</style>
 </head>
 <body>
+<div id="sc">
 <div class="wrap">
   <header class="top">
     <h2 class="vtitle" id="vtitle"></h2>
@@ -445,11 +455,29 @@ button, a, summary, input, label { touch-action: manipulation; }
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
 </div>
+</div>
 
 <script>
 // App-Ansicht (Glas-Leiste unten, Reiter-Überschriften): als Homescreen-App und genauso in Safari/Chrome auf dem Handy. Am PC bleibt die normale Ansicht.
 if (navigator.standalone === true || matchMedia("(display-mode: standalone)").matches) document.documentElement.classList.add("app", "standalone");
 else if (matchMedia("(hover: none) and (pointer: coarse) and (max-width: 820px)").matches) document.documentElement.classList.add("app");
+// In der App-Ansicht rollt nur der Bereich #sc. Glas-Leiste, Pfeil und Hinweise liegen außerhalb davon,
+// damit das iPhone eine Berührung der Leiste nicht als „Rollen anhalten“ abfängt.
+const SC = document.documentElement.classList.contains("app") ? document.getElementById("sc") : null;
+if (SC) document.body.append(document.querySelector(".tabs"), document.getElementById("totop"), document.getElementById("toast"));
+const scrollEl = SC || window;
+const getY = () => SC ? SC.scrollTop : window.scrollY;
+const setY = y => { if (SC) SC.scrollTop = y; else window.scrollTo(0, y); };
+const maxY = () => SC ? SC.scrollHeight - SC.clientHeight : document.documentElement.scrollHeight - innerHeight;
+const viewH = () => innerHeight;
+const scrollStyle = () => (SC || document.documentElement).style;
+// Einmal springen (Reiterwechsel, Genre öffnen): Rollt die Liste noch nach, erst anhalten.
+// Sonst rollt das iPhone in der neuen Ansicht einfach weiter.
+const jumpTo = y => {
+  if (!SC) { window.scrollTo(0, y); return; }
+  SC.style.overflow = "hidden"; void SC.offsetHeight; SC.scrollTop = y;
+  requestAnimationFrame(() => { SC.style.overflow = ""; SC.scrollTop = y; });
+};
 // [Titel, Art S/F, Genres, meine Wertung, IMDb, IMDb-Stimmen in Tsd., Ton de/teil/sub/unk, Länge, Beschreibung, Tipp, Suchbegriffe, Stimmungen, Crunchyroll-Suchwort]
 const DATA = [
 ["Frieren – Nach dem Ende der Reise","S","Fantasy|Abenteuer|Drama",9.4,8.9,86,"de","2 Staffeln · 38 Folgen","Die Elfenmagierin Frieren hat mit ihren Gefährten den Dämonenkönig besiegt. Elfen leben über tausend Jahre, deshalb merkt sie erst nach dem Tod ihres Freundes Himmel, wie wenig sie die Menschen kannte. Also bricht sie zu einer neuen Reise auf. Ruhig, warm und mit herausragenden Kämpfen.","","sousou no frieren","chill|herz","Frieren"],
@@ -645,7 +673,7 @@ delete loaded.onlySaved;
 // Beim Öffnen oder Neuladen immer oben bei „Alle“ starten. Filter (Serien/Filme, Synchro, Gesehene) bleiben gespeichert.
 const state = Object.assign({}, DEFAULTS, loaded, { q: "", view: "all", g2: "" });
 if ("scrollRestoration" in history) history.scrollRestoration = "manual";
-scrollTo(0, 0);
+setY(0);
 state.sort = "mine";
 if (state.g2 && !GENRES.includes(state.g2)) state.g2 = "";
 function saveFilters() { const { q, ...rest } = state; store(KEY.filters, rest); }
@@ -770,13 +798,13 @@ $("#counts").innerHTML =
 
 document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click", () => { state.type = b.dataset.type; sync(); render(); }));
 $("#q").addEventListener("input", e => { state.q = e.target.value.trim().toLowerCase(); render(); });
+// iPhone: Nach dem Schließen der Tastatur kann die (sonst feste) Seite verschoben bleiben. Dann zurückschieben.
+if (SC) $("#q").addEventListener("blur", () => { setTimeout(() => { if (window.scrollY) window.scrollTo(0, 0); }, 100); });
 ["onlyDe", "hideSeen"].forEach(k => $("#" + k).addEventListener("click", () => { state[k] = !state[k]; sync(); render(); }));
 // In der App merkt sich jeder Reiter, wo man war (wie bei iPhone-Apps).
 // Doppeltipp auf den Reiter, in dem man schon ist: sanft nach oben (in einem Genre zurück zur Übersicht). Ein einzelner Tipp macht nichts.
 const scrollMem = {};
 let lastTabTap = { v: "", t: 0 };
-// In Safari nie ganz auf 0: Dort klappt Safari sonst seine Leiste unten wieder auf und die Glas-Leiste springt hoch
-const top0 = () => document.documentElement.classList.contains("app") && !document.documentElement.classList.contains("standalone") ? 1 : 0;
 const memKey = () => state.view === "genres" ? "genres:" + (state.g2 || "") : state.view;
 const isAppMode = () => document.documentElement.classList.contains("app");
 document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
@@ -788,31 +816,31 @@ document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click
       const now = Date.now(), dbl = lastTabTap.v === v && now - lastTabTap.t < 400;
       lastTabTap = dbl ? { v: "", t: 0 } : { v, t: now };
       if (!dbl) return;
-      if (v === "genres" && state.g2) { state.g2 = ""; saveFilters(); render(); scrollTo(0, top0()); return; }
+      if (v === "genres" && state.g2) { state.g2 = ""; saveFilters(); render(); jumpTo(0); return; }
       animTop(); return;
     }
-    scrollMem[memKey()] = scrollY;
+    scrollMem[memKey()] = getY();
     state.view = v; sync(); render();
     // Die kurze Kachel-Übersicht startet immer oben, ein geöffnetes Genre (z. B. Action) merkt sich die Stelle
-    if (memKey() === "genres:") { scrollTo(0, top0()); return; }
+    if (memKey() === "genres:") { jumpTo(0); return; }
     const y = scrollMem[memKey()];
-    if (y != null) scrollTo(0, Math.max(top0(), y));
+    if (y != null) jumpTo(y);
     else if (v === "all") toMain();
-    else scrollTo(0, top0()); // neuer Reiter: oben mit Überschrift anfangen
+    else jumpTo(0); // neuer Reiter: oben mit Überschrift anfangen
     return;
   }
   state.view = v; if (v === "genres") state.g2 = "";
   sync(); render();
 }));
-const toMain = () => { const m = document.querySelector("main"); if (m.getBoundingClientRect().top < 0) m.scrollIntoView({ block: "start" }); };
+const toMain = () => { const t = document.querySelector("main").getBoundingClientRect().top; if (t < 0) jumpTo(getY() + t); };
 $("#tiles").addEventListener("click", e => {
   const t = e.target.closest(".tile"); if (!t) return;
   // Ein Genre startet immer oben
-  state.g2 = t.dataset.g; saveFilters(); render(); scrollTo(0, top0());
+  state.g2 = t.dataset.g; saveFilters(); render(); jumpTo(0);
 });
 $("#gback").addEventListener("click", () => {
   // Zurück zur Übersicht: wieder ganz oben
-  state.g2 = ""; saveFilters(); render(); scrollTo(0, top0());
+  state.g2 = ""; saveFilters(); render(); jumpTo(0);
 });
 $("#filterBtn").addEventListener("click", () => {
   const p = $("#panel"); p.hidden = !p.hidden;
@@ -1022,14 +1050,14 @@ const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 let pickAnim = 0;
 function glideTo(el) {
   cancelAnimationFrame(pickAnim);
-  const targetY = () => Math.max(0, Math.min(document.documentElement.scrollHeight - innerHeight, scrollY + el.getBoundingClientRect().top - Math.max(16, (innerHeight - el.offsetHeight) / 2)));
-  if (reduce) { scrollTo(0, targetY()); return; }
-  const y0 = scrollY, t0 = performance.now(), dur = Math.min(1100, 450 + Math.abs(targetY() - y0) / 30);
+  const targetY = () => Math.max(0, Math.min(maxY(), getY() + el.getBoundingClientRect().top - Math.max(16, (viewH() - el.offsetHeight) / 2)));
+  if (reduce) { setY(targetY()); return; }
+  const y0 = getY(), t0 = performance.now(), dur = Math.min(1100, 450 + Math.abs(targetY() - y0) / 30);
   const step = now => {
     const k = Math.min(1, (now - t0) / dur), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
-    scrollTo(0, Math.round(y0 + (targetY() - y0) * e));
+    setY(Math.round(y0 + (targetY() - y0) * e));
     if (k < 1) pickAnim = requestAnimationFrame(step);
-    else pickAnim = requestAnimationFrame(() => { pickAnim = 0; if (Math.abs(targetY() - scrollY) > 3) scrollTo(0, targetY()); });
+    else pickAnim = requestAnimationFrame(() => { pickAnim = 0; if (Math.abs(targetY() - getY()) > 3) setY(targetY()); });
   };
   pickAnim = requestAnimationFrame(step);
 }
@@ -1066,23 +1094,23 @@ let topLastScroll = 0;
 // Pfeil erscheint, sobald der Zufallsknopf aus dem Bild ist
 // Kein Pfeil in der Genre-Übersicht und bei leeren Listen (Gemerkt/Gesehen ohne Titel)
 let arrowOff = false;
-const onScroll = () => { const h = arrowOff || window.scrollY < 300; if (totop.hidden !== h) totop.hidden = h; topLastScroll = Date.now(); };
-addEventListener("scroll", onScroll, { passive: true });
-const goTop = () => window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+const onScroll = () => { const h = arrowOff || getY() < 300; if (totop.hidden !== h) totop.hidden = h; topLastScroll = Date.now(); };
+scrollEl.addEventListener("scroll", onScroll, { passive: true });
+const goTop = () => scrollEl.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
 totop.addEventListener("click", goTop);
 // iPhone: Ein Tipp, während die Seite noch nachrollt, stoppt sonst nur das Rollen (kein Klick).
 // Deshalb direkt auf den Finger reagieren: Nachrollen abbremsen und selbst Bild für Bild nach oben fahren.
 let ttop = null, topAnim = 0;
 const animTop = () => {
   cancelAnimationFrame(topAnim);
-  const root = document.documentElement;
-  root.style.overflow = "hidden"; void root.offsetHeight; // stoppt das Nachrollen
+  const st = scrollStyle();
+  st.overflow = "hidden"; void (SC || document.documentElement).offsetHeight; // stoppt das Nachrollen
   topAnim = requestAnimationFrame(() => {
-    root.style.overflow = "";
-    const y0 = window.scrollY, t0 = performance.now(), dur = reduce ? 0 : Math.min(650, 250 + y0 / 60);
+    st.overflow = "";
+    const y0 = getY(), t0 = performance.now(), dur = reduce ? 0 : Math.min(650, 250 + y0 / 60);
     const step = now => {
       const k = dur ? Math.min(1, (now - t0) / dur) : 1;
-      window.scrollTo(0, Math.round(y0 * Math.pow(1 - k, 3)));
+      setY(Math.round(y0 * Math.pow(1 - k, 3)));
       if (k < 1) topAnim = requestAnimationFrame(step); else topAnim = 0;
     };
     topAnim = requestAnimationFrame(step);
@@ -1090,7 +1118,7 @@ const animTop = () => {
 };
 // Fasst man woanders hin, stoppt die Fahrt nach oben
 document.addEventListener("touchstart", e => {
-  if (topAnim && !e.target.closest("#totop")) { cancelAnimationFrame(topAnim); topAnim = 0; document.documentElement.style.overflow = ""; }
+  if (topAnim && !e.target.closest("#totop")) { cancelAnimationFrame(topAnim); topAnim = 0; scrollStyle().overflow = ""; }
   if (pickAnim && !e.target.closest("#pick")) { cancelAnimationFrame(pickAnim); pickAnim = 0; }
 }, { passive: true });
 totop.addEventListener("touchstart", e => {
@@ -1143,9 +1171,11 @@ const placeLens = (() => {
     bar.classList.remove("drag"); btns.forEach(b => b.classList.remove("hover"));
     toActive();
   };
-  document.addEventListener("touchstart", e => { if (e.touches.length > 1) { multi = true; abort(); } }, { passive: true });
-  // Rollt die Seite noch nach, kommt das Loslassen des Fingers beim iPhone manchmal nicht an: dann Zug abbrechen statt hängen zu bleiben
-  addEventListener("scroll", () => { if (drag) abort(); }, { passive: true });
+  document.addEventListener("touchstart", e => {
+    if (e.touches.length > 1) { multi = true; abort(); return; }
+    // Kam das Loslassen des Fingers nicht an, hängt der alte Zug noch: beim nächsten Antippen aufräumen
+    if (drag && ![...e.touches].some(q => q.identifier === drag.id)) abort();
+  }, { passive: true });
   document.addEventListener("touchend", e => { if (!e.touches.length) setTimeout(() => { multi = false; }, 0); }, { passive: true });
   document.addEventListener("touchcancel", e => { if (!e.touches.length) multi = false; }, { passive: true });
   bar.addEventListener("touchstart", e => {
@@ -1191,10 +1221,10 @@ const placeLens = (() => {
 
 // Wischen ist kein Tippen: Genre-Kacheln und Karten-Knöpfe reagieren nur, wenn der Finger still war und die Seite nicht gescrollt hat
 let touchInfo = null, lastScroll = 0;
-addEventListener("scroll", () => { lastScroll = Date.now(); }, { passive: true });
+scrollEl.addEventListener("scroll", () => { lastScroll = Date.now(); }, { passive: true });
 document.addEventListener("touchstart", e => {
   const t = e.touches[0];
-  touchInfo = { x: t.clientX, y: t.clientY, sy: scrollY, moved: false, scrolling: Date.now() - lastScroll < 120 };
+  touchInfo = { x: t.clientX, y: t.clientY, sy: getY(), moved: false, scrolling: Date.now() - lastScroll < 120 };
 }, { passive: true });
 document.addEventListener("touchmove", e => {
   if (!touchInfo) return;
@@ -1203,7 +1233,7 @@ document.addEventListener("touchmove", e => {
 }, { passive: true });
 document.addEventListener("click", e => {
   if (!touchInfo || !e.target.closest(".tile, #list .btn")) return;
-  const bad = touchInfo.moved || touchInfo.scrolling || Math.abs(scrollY - touchInfo.sy) > 4;
+  const bad = touchInfo.moved || touchInfo.scrolling || Math.abs(getY() - touchInfo.sy) > 4;
   touchInfo = null;
   if (bad) { e.preventDefault(); e.stopImmediatePropagation(); }
 }, true);
