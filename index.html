@@ -782,12 +782,13 @@ const isAppMode = () => document.documentElement.classList.contains("app");
 document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
   const v = b.dataset.view;
   // Beim Reiterwechsel klappt das Filter-Feld zu, die Filter selbst bleiben aktiv
-  if (v !== state.view) { $("#panel").hidden = true; $("#filterBtn").setAttribute("aria-expanded", "false"); }
+  if (v !== state.view) { stopGlide(); $("#panel").hidden = true; $("#filterBtn").setAttribute("aria-expanded", "false"); }
   if (isAppMode()) {
     if (v === state.view) {
       const now = Date.now(), dbl = lastTabTap.v === v && now - lastTabTap.t < 400;
       lastTabTap = dbl ? { v: "", t: 0 } : { v, t: now };
-      if (!dbl) return;
+      if (!dbl) return; // ein einzelner Tipp: Seite rollt einfach weiter
+      stopGlide();
       if (v === "genres" && state.g2) { state.g2 = ""; saveFilters(); render(); scrollTo(0, top0()); return; }
       animTop(); return;
     }
@@ -1021,7 +1022,7 @@ const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 // Sichtbar zur Karte gleiten. Das Ziel wird in jedem Bild neu gemessen, weil Karten unterwegs erst gezeichnet werden und ihre Höhe ändern
 let pickAnim = 0;
 function glideTo(el) {
-  cancelAnimationFrame(pickAnim);
+  cancelAnimationFrame(pickAnim); stopGlide();
   const targetY = () => Math.max(0, Math.min(document.documentElement.scrollHeight - innerHeight, scrollY + el.getBoundingClientRect().top - Math.max(16, (innerHeight - el.offsetHeight) / 2)));
   if (reduce) { scrollTo(0, targetY()); return; }
   const y0 = scrollY, t0 = performance.now(), dur = Math.min(1100, 450 + Math.abs(targetY() - y0) / 30);
@@ -1074,7 +1075,7 @@ totop.addEventListener("click", goTop);
 // Deshalb direkt auf den Finger reagieren: Nachrollen abbremsen und selbst Bild für Bild nach oben fahren.
 let ttop = null, topAnim = 0;
 const animTop = () => {
-  cancelAnimationFrame(topAnim);
+  cancelAnimationFrame(topAnim); stopGlide();
   const root = document.documentElement;
   root.style.overflow = "hidden"; void root.offsetHeight; // stoppt das Nachrollen
   topAnim = requestAnimationFrame(() => {
@@ -1088,8 +1089,41 @@ const animTop = () => {
     topAnim = requestAnimationFrame(step);
   });
 };
-// Fasst man woanders hin, stoppt die Fahrt nach oben
+// Glas-Leiste wie bei iPhone-Apps: Fasst man sie an, während die Seite noch nachrollt, hält das iPhone die Seite an.
+// Deshalb rollt die Seite hier mit derselben Geschwindigkeit weiter und bremst so sanft ab wie das iPhone selbst.
+const scrollHist = [];
+addEventListener("scroll", () => {
+  const t = performance.now(); scrollHist.push({ t, y: scrollY });
+  while (scrollHist.length > 2 && t - scrollHist[0].t > 100) scrollHist.shift();
+}, { passive: true });
+const isScrolling = () => scrollHist.length > 0 && performance.now() - scrollHist[scrollHist.length - 1].t < 100;
+let glideAnim = 0, glideEnd = 0;
+const glideBusy = () => glideAnim !== 0 || performance.now() - glideEnd < 250;
+const stopGlide = () => { if (glideAnim) { cancelAnimationFrame(glideAnim); glideAnim = 0; glideEnd = performance.now(); document.documentElement.style.overflow = ""; } };
+const startGlide = () => {
+  if (glideAnim || topAnim || pickAnim || reduce || !isScrolling() || scrollHist.length < 2) return;
+  const a = scrollHist[0], b = scrollHist[scrollHist.length - 1];
+  if (b.t - a.t < 12) return;
+  const v0 = (b.y - a.y) / (b.t - a.t); // Pixel pro Millisekunde
+  if (Math.abs(v0) < 0.25) return;
+  const root = document.documentElement;
+  root.style.overflow = "hidden"; void root.offsetHeight; // stoppt das Nachrollen des iPhones, damit es nicht gegen uns rollt
+  glideAnim = requestAnimationFrame(() => {
+    root.style.overflow = "";
+    const D = 0.998, LN = Math.log(D), y0 = scrollY, t0 = performance.now();
+    const minY = top0(), maxY = Math.max(minY, root.scrollHeight - innerHeight);
+    const step = now => {
+      const f = Math.pow(D, now - t0), y = Math.round(Math.min(maxY, Math.max(minY, y0 + v0 * (f - 1) / LN)));
+      scrollTo(0, y);
+      if (Math.abs(v0) * f < 0.02 || y <= minY || y >= maxY) { glideAnim = 0; glideEnd = performance.now(); return; }
+      glideAnim = requestAnimationFrame(step);
+    };
+    glideAnim = requestAnimationFrame(step);
+  });
+};
+// Fasst man woanders hin, stoppt die Fahrt nach oben (und das Weiterrollen)
 document.addEventListener("touchstart", e => {
+  if (glideAnim && !e.target.closest(".tabs")) stopGlide();
   if (topAnim && !e.target.closest("#totop")) { cancelAnimationFrame(topAnim); topAnim = 0; document.documentElement.style.overflow = ""; }
   if (pickAnim && !e.target.closest("#pick")) { cancelAnimationFrame(pickAnim); pickAnim = 0; }
 }, { passive: true });
@@ -1143,16 +1177,23 @@ const placeLens = (() => {
     bar.classList.remove("drag"); btns.forEach(b => b.classList.remove("hover"));
     toActive();
   };
-  document.addEventListener("touchstart", e => { if (e.touches.length > 1) { multi = true; abort(); } }, { passive: true });
-  // Rollt die Seite noch nach, kommt das Loslassen des Fingers beim iPhone manchmal nicht an: dann Zug abbrechen statt hängen zu bleiben
-  addEventListener("scroll", () => { if (drag) abort(); }, { passive: true });
+  document.addEventListener("touchstart", e => {
+    if (e.touches.length > 1) { multi = true; abort(); return; }
+    // Kam das Loslassen des letzten Fingers nicht an, hängt der alte Zug noch: beim nächsten Antippen aufräumen
+    if (drag && ![...e.touches].some(q => q.identifier === drag.id)) abort();
+  }, { passive: true });
+  // Notbremse, falls das Loslassen nicht ankommt: Rollt die Seite später von selbst, Zug abbrechen.
+  // Das eigene Weiterrollen und die ersten Momente nach dem Antippen zählen nicht.
+  addEventListener("scroll", () => { if (drag && !glideBusy() && performance.now() - drag.t0 > 400) abort(); }, { passive: true });
   document.addEventListener("touchend", e => { if (!e.touches.length) setTimeout(() => { multi = false; }, 0); }, { passive: true });
   document.addEventListener("touchcancel", e => { if (!e.touches.length) multi = false; }, { passive: true });
   bar.addEventListener("touchstart", e => {
     if (!isApp() || e.touches.length > 1) { abort(); return; }
     const t = e.changedTouches[0], r = bar.getBoundingClientRect();
     const pos = btns.map(b => ({ l: b.offsetLeft, w: b.offsetWidth }));
-    drag = { id: t.identifier, x0: t.clientX, y0: t.clientY, left: r.left + bar.clientLeft, pos, moved: false, i: -1 };
+    const scrolling = isScrolling() || glideAnim !== 0;
+    drag = { id: t.identifier, x0: t.clientX, y0: t.clientY, left: r.left + bar.clientLeft, pos, moved: false, i: -1, t0: performance.now(), scrolling, btn: e.target.closest("button") };
+    if (scrolling) startGlide();
   }, { passive: true });
   const frame = () => {
     raf = 0; if (!drag) return;
@@ -1182,6 +1223,8 @@ const placeLens = (() => {
     const d = drag; drag = null; if (raf) { cancelAnimationFrame(raf); raf = 0; }
     bar.classList.remove("drag"); btns.forEach(b => b.classList.remove("hover"));
     if (d.moved && !cancel && !multi) { if (e.cancelable) e.preventDefault(); if (d.i >= 0 && btns[d.i].getAttribute("aria-selected") !== "true") btns[d.i].click(); }
+    // Tipp, während die Seite rollt: Das iPhone schluckt dann den Klick. Deshalb den Reiter direkt beim Loslassen wechseln.
+    else if (!d.moved && !cancel && !multi && d.scrolling && d.btn) { if (e.cancelable) e.preventDefault(); d.btn.click(); }
     toActive();
   };
   bar.addEventListener("touchend", e => finish(e, false));
