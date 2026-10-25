@@ -205,6 +205,11 @@ main { padding-block: 18px 48px; }
 
 [hidden] { display: none !important; }
 html, body { touch-action: pan-x pan-y; }
+/* In der App nur senkrecht scrollen: keine seitliche Verschiebung, kein Zoom */
+html.app, html.app body { touch-action: pan-y; }
+/* Text nicht markierbar wie in einer App, nur Eingabefelder */
+body { -webkit-user-select: none; user-select: none; }
+input, textarea { -webkit-user-select: text; user-select: text; }
 button, a, summary, input, label { touch-action: manipulation; }
 .pick-btn {
   width: 100%; max-width: 460px; justify-self: start;
@@ -304,6 +309,7 @@ button, a, summary, input, label { touch-action: manipulation; }
   box-shadow: 0 6px 18px rgba(0,0,0,.45);
 }
 .totop svg { width: 20px; height: 20px; }
+.ver { margin: 28px 0 4px; text-align: center; font-size: 11px; color: var(--muted); opacity: .7; }
 .toast {
   position: fixed; z-index: 30; left: 50%; transform: translateX(-50%);
   bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + 58px);
@@ -400,6 +406,7 @@ button, a, summary, input, label { touch-action: manipulation; }
     <div class="tiles" id="tiles" hidden></div>
     <ol class="grid" id="list"></ol>
     <p class="empty" id="empty" hidden>Kein Titel passt zu diesen Filtern. Setz einzelne Filter zurück oder leere die Suche.</p>
+    <p class="ver">Version 77</p>
   </main>
   <button type="button" class="totop" id="totop" aria-label="Nach oben" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13.5V3M3.5 7.5L8 3l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
@@ -887,24 +894,43 @@ $("#pick").addEventListener("click", () => {
 
 // Nach oben
 const totop = $("#totop");
-const onScroll = () => { totop.hidden = window.scrollY < 900; };
+let topLastScroll = 0;
+const onScroll = () => { totop.hidden = window.scrollY < 900; topLastScroll = Date.now(); };
 addEventListener("scroll", onScroll, { passive: true });
 const goTop = () => window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
 totop.addEventListener("click", goTop);
 // iPhone: Ein Tipp, während die Seite noch nachrollt, stoppt sonst nur das Rollen (kein Klick).
-// Deshalb direkt auf das Loslassen des Fingers reagieren.
-let ttop = null;
-totop.addEventListener("touchstart", e => { const t = e.touches[0]; ttop = { x: t.clientX, y: t.clientY }; }, { passive: true });
+// Deshalb direkt auf den Finger reagieren: Nachrollen abbremsen und selbst Bild für Bild nach oben fahren.
+let ttop = null, topAnim = 0;
+const animTop = () => {
+  cancelAnimationFrame(topAnim);
+  const root = document.documentElement;
+  root.style.overflow = "hidden"; void root.offsetHeight; // stoppt das Nachrollen
+  topAnim = requestAnimationFrame(() => {
+    root.style.overflow = "";
+    const y0 = window.scrollY, t0 = performance.now(), dur = reduce ? 0 : Math.min(650, 250 + y0 / 60);
+    const step = now => {
+      const k = dur ? Math.min(1, (now - t0) / dur) : 1;
+      window.scrollTo(0, Math.round(y0 * Math.pow(1 - k, 3)));
+      if (k < 1) topAnim = requestAnimationFrame(step); else topAnim = 0;
+    };
+    topAnim = requestAnimationFrame(step);
+  });
+};
+// Fasst man woanders hin, stoppt die Fahrt nach oben
+document.addEventListener("touchstart", e => { if (topAnim && !e.target.closest("#totop")) { cancelAnimationFrame(topAnim); topAnim = 0; document.documentElement.style.overflow = ""; } }, { passive: true });
+totop.addEventListener("touchstart", e => {
+  const t = e.touches[0]; ttop = { x: t.clientX, y: t.clientY, fired: false };
+  // Rollt die Seite gerade noch, sofort losfahren (nicht erst beim Loslassen)
+  if (Date.now() - topLastScroll < 150) { ttop.fired = true; animTop(); }
+}, { passive: true });
 totop.addEventListener("touchcancel", () => { ttop = null; });
 totop.addEventListener("touchend", e => {
   if (!ttop) return;
-  const t = e.changedTouches[0], moved = Math.hypot(t.clientX - ttop.x, t.clientY - ttop.y) > 12;
+  const t = e.changedTouches[0], moved = Math.hypot(t.clientX - ttop.x, t.clientY - ttop.y) > 12, fired = ttop.fired;
   ttop = null;
-  if (moved) return;
-  e.preventDefault();
-  const y0 = window.scrollY;
-  goTop();
-  setTimeout(() => { if (window.scrollY > 0 && window.scrollY >= y0 - 2) goTop(); }, 160);
+  if (e.cancelable) e.preventDefault();
+  if (!moved && !fired) animTop();
 }, { passive: false });
 
 // Merkliste teilen
@@ -990,6 +1016,8 @@ document.addEventListener("click", e => {
 ["gesturestart", "gesturechange", "gestureend"].forEach(t => document.addEventListener(t, e => e.preventDefault(), { passive: false }));
 // Zwei-Finger-Gesten ganz abfangen, sonst verschiebt iOS kurz den Bildausschnitt und feste Elemente springen
 document.addEventListener("touchmove", e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+// Schon beim Aufsetzen des zweiten Fingers sperren, bevor das iPhone eine Zoom-Geste daraus macht
+document.addEventListener("touchstart", e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 
 // Anleitung: als App auf den Homescreen (nur im Handy-Browser, nicht in Claude)
 (() => {
