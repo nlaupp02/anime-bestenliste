@@ -385,6 +385,9 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
    (siehe OFF im Skript). Der Innenabstand gleicht das aus, man sieht davon nichts. */
 .app:not(.standalone) #sc { bottom: -400px; }
 .app:not(.standalone) #sc > .wrap { padding-top: 200px; padding-bottom: 200px; }
+/* App: Auch unter dem Home-Balken unten zeigt das iPhone die Seite. Der Scrollbereich reicht deshalb dort hinunter. */
+.standalone #sc { bottom: -200px; }
+.standalone #sc > .wrap { padding-bottom: 200px; }
 /* Die Installations-Anleitung nur auf dem Reiter Alle */
 .top.sub .install { display: none !important; }
 /* App: Auf Genres, Gemerkt und Gesehen nur ein großer Reiter-Titel statt des ganzen Kopfes (wie bei iPhone-Apps) */
@@ -479,8 +482,8 @@ const scrollStyle = () => (SC || document.documentElement).style;
 // Safari (nicht als App): Die Seite steht still, aber intern 200px weit „gerollt“. So liegt der Anfang des Scrollbereichs
 // oberhalb des sichtbaren Teils, und Safari zeigt oben unter der Uhr die Liste statt eines blauen Balkens.
 const OFF = SC && !document.documentElement.classList.contains("standalone") ? 200 : 0;
-let typing = false, clockTap = false;
-const keepDoc = () => { if (OFF && !typing && Math.abs(window.scrollY - OFF) > 1) window.scrollTo(0, OFF); };
+let typing = false, touching = false;
+const keepDoc = () => { if (OFF && !typing && !touching && Math.abs(window.scrollY - OFF) > 1) window.scrollTo(0, OFF); };
 keepDoc();
 // Einmal springen (Reiterwechsel, Genre öffnen): Rollt die Liste noch nach, erst anhalten.
 // Sonst rollt das iPhone in der neuen Ansicht einfach weiter.
@@ -821,20 +824,21 @@ document.addEventListener("focusout", e => {
   setTimeout(() => { if (OFF) keepDoc(); else if (SC && window.scrollY) window.scrollTo(0, 0); }, 100);
 });
 if (OFF) {
-  addEventListener("scroll", () => {
-    if (typing) return;
-    // Tipp auf die Uhr: Safari will die Seite nach oben rollen. Stattdessen die Liste nach oben fahren.
-    if (window.scrollY < OFF - 50 && !clockTap && getY() > 0) { clockTap = true; animTop(); setTimeout(() => { clockTap = false; }, 700); }
-    keepDoc();
-  }, { passive: true });
+  // Verschiebt Safari die Seite (z. B. beim Laden), still wieder an ihren Platz. Die Liste selbst bleibt dabei, wo sie ist,
+  // und solange ein Finger auf dem Bildschirm liegt, wird nichts verschoben.
+  addEventListener("scroll", keepDoc, { passive: true });
+  document.addEventListener("touchstart", () => { touching = true; }, { passive: true });
+  const fingerUp = e => { if (!e.touches.length) { touching = false; setTimeout(keepDoc, 50); } };
+  document.addEventListener("touchend", fingerUp, { passive: true });
+  document.addEventListener("touchcancel", fingerUp, { passive: true });
   addEventListener("resize", keepDoc);
   addEventListener("pageshow", keepDoc);
+  addEventListener("load", keepDoc);
 }
 ["onlyDe", "hideSeen"].forEach(k => $("#" + k).addEventListener("click", () => { state[k] = !state[k]; sync(); render(); }));
-// In der App merkt sich jeder Reiter, wo man war (wie bei iPhone-Apps).
-// Doppeltipp auf den Reiter, in dem man schon ist: sanft nach oben (in einem Genre zurück zur Übersicht). Ein einzelner Tipp macht nichts.
+// In der App merkt sich jeder Reiter, wo man war (wie bei iPhone-Apps). Genres startet beim Zurückkommen immer neu in der Übersicht.
+// Ein Tipp auf den Reiter, in dem man schon ist, macht nichts. Nach oben geht es mit dem Pfeil.
 const scrollMem = {};
-let lastTabTap = { v: "", t: 0 };
 let tabToken = 0, tabPending = false;
 const memKey = () => state.view === "genres" ? "genres:" + (state.g2 || "") : state.view;
 const isAppMode = () => document.documentElement.classList.contains("app");
@@ -843,25 +847,19 @@ document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click
   // Beim Reiterwechsel klappt das Filter-Feld zu, die Filter selbst bleiben aktiv
   if (v !== state.view) { $("#panel").hidden = true; $("#filterBtn").setAttribute("aria-expanded", "false"); }
   if (isAppMode()) {
-    if (v === state.view) {
-      const now = Date.now(), dbl = lastTabTap.v === v && now - lastTabTap.t < 400;
-      lastTabTap = dbl ? { v: "", t: 0 } : { v, t: now };
-      if (!dbl) return;
-      if (v === "genres" && state.g2) { state.g2 = ""; saveFilters(); render(); jumpTo(0); return; }
-      animTop(); return;
-    }
+    if (v === state.view) return;
     // Wechselt man schnell hintereinander, zeigt der Inhalt noch den alten Reiter: dessen Stelle nicht unter dem neuen Namen merken
     if (!tabPending) scrollMem[memKey()] = getY();
     // Leiste und Blase sofort umstellen, den Inhalt erst im nächsten Bild. So bewegt sich die Blase sofort,
     // auch wenn die lange Liste (z. B. bei Alle) kurz Rechenzeit braucht.
-    state.view = v; sync();
+    state.view = v; if (v === "genres") state.g2 = ""; sync();
     const token = ++tabToken; tabPending = true;
     requestAnimationFrame(() => setTimeout(() => {
       if (token !== tabToken) return;
       tabPending = false;
       render();
-      // Die kurze Kachel-Übersicht startet immer oben, ein geöffnetes Genre (z. B. Action) merkt sich die Stelle
-      if (memKey() === "genres:") { jumpTo(0); return; }
+      // Genres startet immer oben in der Kachel-Übersicht
+      if (state.view === "genres") { jumpTo(0); return; }
       const y = scrollMem[memKey()];
       if (y != null) jumpTo(y);
       else if (state.view === "all") toMain();
