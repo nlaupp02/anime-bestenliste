@@ -225,6 +225,30 @@ button, a, summary, input, label { touch-action: manipulation; }
 @keyframes nudge { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-14deg); } 40% { transform: rotate(12deg); } 60% { transform: rotate(-8deg); } 80% { transform: rotate(4deg); } }
 .tabs { display: flex; gap: 2px; box-shadow: inset 0 -1px 0 var(--line); overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
 .tabs::-webkit-scrollbar { display: none; }
+.tabs .ti { display: none; }
+/* Als App vom Homescreen: Reiter als schwebende Glas-Leiste unten, wie bei iPhone-Apps */
+.app .tabs {
+  position: fixed; z-index: 25; left: 50%; transform: translateX(-50%);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 8px); width: min(calc(100vw - 24px), 440px);
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px; padding: 5px;
+  border-radius: 32px; overflow: visible;
+  background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04)), rgba(24,27,45,.66);
+  -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255,255,255,.16);
+  box-shadow: 0 12px 32px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.22);
+}
+.app .tabs button {
+  position: relative; flex-direction: column; justify-content: center; gap: 2px; margin: 0; border: 0;
+  padding: 7px 2px 6px; border-radius: 26px; font-size: 11px; font-weight: 600; color: var(--muted);
+}
+.app .tabs .ti { display: block; width: 23px; height: 23px; }
+.app .tabs button[aria-selected="true"] { color: var(--ink); background: rgba(255,255,255,.13); box-shadow: inset 0 1px 0 rgba(255,255,255,.12); }
+.app .tabs .n { position: absolute; top: 3px; left: calc(50% + 6px); min-width: 17px; padding: 0 4px; font-size: 10px; line-height: 15px; background: var(--ink); color: var(--paper); }
+.app .tabs .n:empty, .app #n-all { display: none; }
+.app .tabs button[aria-selected="true"] .n { background: var(--ink); color: var(--paper); }
+.app main { padding-bottom: 96px; }
+.app .totop { bottom: calc(env(safe-area-inset-bottom, 0px) + 86px); }
+.app .toast { bottom: calc(env(safe-area-inset-bottom, 0px) + 150px); }
 .tabs button {
   font: inherit; font-size: 14.5px; font-weight: 700; color: var(--muted); background: none; border: 0;
   border-bottom: 2.5px solid transparent; margin-bottom: 0; padding: 8px 10px 9px; cursor: pointer;
@@ -333,10 +357,10 @@ button, a, summary, input, label { touch-action: manipulation; }
 
   <div class="bar">
     <div class="tabs" role="tablist" aria-label="Ansicht">
-      <button type="button" role="tab" data-view="all" id="tab-all">Alle <span class="n" id="n-all">140</span></button>
-      <button type="button" role="tab" data-view="genres" id="tab-genres">Genres</button>
-      <button type="button" role="tab" data-view="saved" id="tab-saved">Gemerkt <span class="n" id="n-saved">0</span></button>
-      <button type="button" role="tab" data-view="seen" id="tab-seen">Gesehen <span class="n" id="n-seen">0</span></button>
+      <button type="button" role="tab" data-view="all" id="tab-all"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="4.5" cy="6" r="1.4" fill="currentColor"/><circle cx="4.5" cy="12" r="1.4" fill="currentColor"/><circle cx="4.5" cy="18" r="1.4" fill="currentColor"/></svg><span class="tl">Alle</span> <span class="n" id="n-all">140</span></button>
+      <button type="button" role="tab" data-view="genres" id="tab-genres"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></svg><span class="tl">Genres</span></button>
+      <button type="button" role="tab" data-view="saved" id="tab-saved"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span class="tl">Gemerkt</span> <span class="n" id="n-saved">0</span></button>
+      <button type="button" role="tab" data-view="seen" id="tab-seen"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 12.2l2.7 2.7L16.2 9.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="tl">Gesehen</span> <span class="n" id="n-seen">0</span></button>
     </div>
     <div class="row searchrow">
       <input class="search" id="q" type="search" placeholder="Titel suchen" aria-label="Titel suchen">
@@ -683,6 +707,7 @@ $("#q").addEventListener("input", e => { state.q = e.target.value.trim().toLower
 document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
   state.view = b.dataset.view; if (state.view === "genres") state.g2 = "";
   sync(); render();
+  if (document.documentElement.classList.contains("app")) toMain();
 }));
 const toMain = () => { const m = document.querySelector("main"); if (m.getBoundingClientRect().top < 0) m.scrollIntoView({ block: "start" }); };
 $("#tiles").addEventListener("click", e => {
