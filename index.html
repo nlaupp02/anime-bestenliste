@@ -629,8 +629,10 @@ function load(k, fallback) { try { const v = localStorage.getItem(k); return v ?
 function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 // Ältere Einträge (a0, a1, …) auf Titel umstellen
 const migrate = arr => arr.map(x => /^a\d+$/.test(x) && DATA[+x.slice(1)] ? slug(DATA[+x.slice(1)][0]) : x);
-let saved = new Set(migrate(load(KEY.saved, [])));
-let seen = new Set(migrate(load(KEY.seen, [])));
+// Markierungen von Titeln, die nicht mehr in der Liste sind, werden entfernt (sonst zählt z. B. Gesehen „3“ bei leerer Liste)
+const known = new Set(items.map(it => it.id));
+let saved = new Set(migrate(load(KEY.saved, [])).filter(id => known.has(id)));
+let seen = new Set(migrate(load(KEY.seen, [])).filter(id => known.has(id)));
 store(KEY.saved, [...saved]); store(KEY.seen, [...seen]);
 const DEFAULTS = { type: "", sort: "mine", onlyDe: false, hideSeen: false, view: "all", g2: "" };
 const FILTER_KEYS = ["type", "onlyDe", "hideSeen"];
