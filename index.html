@@ -305,8 +305,6 @@ button, a, summary, input, label { touch-action: manipulation; }
 }
 .share-btn svg { width: 13px; height: 13px; }
 .card { scroll-margin-top: 20px; }
-/* Karten außerhalb des Bildschirms zeichnet der Browser erst, wenn sie ins Bild kommen: schnellerer Start, flüssigerer Reiterwechsel */
-.card { content-visibility: auto; contain-intrinsic-size: auto 420px; }
 .card.pick { outline: 3px solid var(--hanko); outline-offset: 3px; }
 .totop {
   position: fixed; z-index: 20;
@@ -994,7 +992,8 @@ $("#pick").addEventListener("click", () => {
 // Nach oben
 const totop = $("#totop");
 let topLastScroll = 0;
-const onScroll = () => { const h = window.scrollY < 900; if (totop.hidden !== h) totop.hidden = h; topLastScroll = Date.now(); };
+// Pfeil erscheint, sobald der Zufallsknopf aus dem Bild ist
+const onScroll = () => { const h = window.scrollY < 300; if (totop.hidden !== h) totop.hidden = h; topLastScroll = Date.now(); };
 addEventListener("scroll", onScroll, { passive: true });
 const goTop = () => window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
 totop.addEventListener("click", goTop);
