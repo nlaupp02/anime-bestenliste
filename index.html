@@ -889,7 +889,23 @@ $("#pick").addEventListener("click", () => {
 const totop = $("#totop");
 const onScroll = () => { totop.hidden = window.scrollY < 900; };
 addEventListener("scroll", onScroll, { passive: true });
-totop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" }));
+const goTop = () => window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+totop.addEventListener("click", goTop);
+// iPhone: Ein Tipp, während die Seite noch nachrollt, stoppt sonst nur das Rollen (kein Klick).
+// Deshalb direkt auf das Loslassen des Fingers reagieren.
+let ttop = null;
+totop.addEventListener("touchstart", e => { const t = e.touches[0]; ttop = { x: t.clientX, y: t.clientY }; }, { passive: true });
+totop.addEventListener("touchcancel", () => { ttop = null; });
+totop.addEventListener("touchend", e => {
+  if (!ttop) return;
+  const t = e.changedTouches[0], moved = Math.hypot(t.clientX - ttop.x, t.clientY - ttop.y) > 12;
+  ttop = null;
+  if (moved) return;
+  e.preventDefault();
+  const y0 = window.scrollY;
+  goTop();
+  setTimeout(() => { if (window.scrollY > 0 && window.scrollY >= y0 - 2) goTop(); }, 160);
+}, { passive: false });
 
 // Merkliste teilen
 $("#share").addEventListener("click", async () => {
