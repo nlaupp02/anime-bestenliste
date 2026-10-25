@@ -375,8 +375,10 @@ button, a, summary, input, label { touch-action: manipulation; }
 html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: none; }
 .app #sc { position: fixed; inset: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }
 /* Safari (nicht als App): Safari zeigt die Seite auch unter der Statusleiste oben und unter seiner Leiste unten.
-   Der Scrollbereich reicht deshalb darüber hinaus, sonst stehen dort leere Balken. Der Innenabstand gleicht das aus. */
-.app:not(.standalone) #sc { top: -200px; bottom: -200px; }
+   Ein fester (fixed) Bereich am Rand wird dort von Safari mit einer einfarbigen Fläche überdeckt (die Balken).
+   Deshalb ist der Scrollbereich in Safari nicht fest, sondern normal platziert und reicht unter beide Leisten.
+   Der Innenabstand gleicht das aus, die Seite selbst rollt trotzdem nicht. */
+.app:not(.standalone) #sc { position: absolute; top: -200px; bottom: -200px; }
 .app:not(.standalone) #sc > .wrap { padding-top: 200px; padding-bottom: 200px; }
 /* Die Installations-Anleitung nur auf dem Reiter Alle */
 .top.sub .install { display: none !important; }
