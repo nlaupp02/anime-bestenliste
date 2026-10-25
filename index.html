@@ -276,6 +276,7 @@ button, a, summary, input, label { touch-action: manipulation; }
 .app main { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 150px); }
 .app .totop { bottom: calc(env(safe-area-inset-bottom, 0px) + 86px); }
 .app .toast { bottom: calc(env(safe-area-inset-bottom, 0px) + 150px); }
+.toast-act { font: inherit; font-weight: 700; color: var(--hanko); background: none; border: 0; padding: 4px 0 4px 10px; cursor: pointer; text-decoration: underline; }
 .tabs button {
   font: inherit; font-size: 14.5px; font-weight: 700; color: var(--muted); background: none; border: 0;
   border-bottom: 2.5px solid transparent; margin-bottom: 0; padding: 8px 10px 9px; cursor: pointer;
@@ -367,7 +368,7 @@ button, a, summary, input, label { touch-action: manipulation; }
   .card h2 { font-size: 17px; }
 }
 /* Als App vom Homescreen: Kopf unter den Unschärfe-Streifen der Statusleiste schieben */
-.standalone header.top { padding-top: 48px; }
+.standalone header.top { padding-top: 36px; }
 /* Safari: Jeder Reiter bleibt etwas scrollbar, damit Safari seine Leiste unten nicht wieder aufklappt, wenn die Liste kurz ist */
 .app:not(.standalone) main { min-height: 100lvh; }
 /* Die Installations-Anleitung nur auf dem Reiter Alle */
@@ -771,8 +772,10 @@ document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click"
 $("#q").addEventListener("input", e => { state.q = e.target.value.trim().toLowerCase(); render(); });
 ["onlyDe", "hideSeen"].forEach(k => $("#" + k).addEventListener("click", () => { state[k] = !state[k]; sync(); render(); }));
 // In der App merkt sich jeder Reiter, wo man war (wie bei iPhone-Apps).
-// Nochmal auf den Reiter tippen, in dem man schon ist, macht nichts (nach oben geht es mit dem Pfeil).
+// Nochmal auf den Reiter tippen, in dem man schon ist: sanft nach oben (in einem Genre zurück zur Übersicht).
 const scrollMem = {};
+// In Safari nie ganz auf 0: Dort klappt Safari sonst seine Leiste unten wieder auf und die Glas-Leiste springt hoch
+const top0 = () => document.documentElement.classList.contains("app") && !document.documentElement.classList.contains("standalone") ? 1 : 0;
 const memKey = () => state.view === "genres" ? "genres:" + (state.g2 || "") : state.view;
 const isAppMode = () => document.documentElement.classList.contains("app");
 document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
@@ -780,17 +783,18 @@ document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click
   // Beim Reiterwechsel klappt das Filter-Feld zu, die Filter selbst bleiben aktiv
   if (v !== state.view) { $("#panel").hidden = true; $("#filterBtn").setAttribute("aria-expanded", "false"); }
   if (isAppMode()) {
-    if (v === state.view) return;
+    if (v === state.view) {
+      if (v === "genres" && state.g2) { state.g2 = ""; saveFilters(); render(); scrollTo(0, top0()); return; }
+      animTop(); return;
+    }
     scrollMem[memKey()] = scrollY;
     state.view = v; sync(); render();
     // Die kurze Kachel-Übersicht startet immer oben, ein geöffnetes Genre (z. B. Action) merkt sich die Stelle
-    // In Safari nie ganz auf 0: Dort klappt Safari sonst seine Leiste unten wieder auf und die Glas-Leiste springt hoch
-    const top0 = document.documentElement.classList.contains("standalone") ? 0 : 1;
-    if (memKey() === "genres:") { scrollTo(0, top0); return; }
+    if (memKey() === "genres:") { scrollTo(0, top0()); return; }
     const y = scrollMem[memKey()];
-    if (y != null) scrollTo(0, Math.max(top0, y));
+    if (y != null) scrollTo(0, Math.max(top0(), y));
     else if (v === "all") toMain();
-    else scrollTo(0, top0); // neuer Reiter: oben mit Überschrift anfangen
+    else scrollTo(0, top0()); // neuer Reiter: oben mit Überschrift anfangen
     return;
   }
   state.view = v; if (v === "genres") state.g2 = "";
@@ -799,13 +803,12 @@ document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click
 const toMain = () => { const m = document.querySelector("main"); if (m.getBoundingClientRect().top < 0) m.scrollIntoView({ block: "start" }); };
 $("#tiles").addEventListener("click", e => {
   const t = e.target.closest(".tile"); if (!t) return;
-  scrollMem["genres:"] = scrollY;
-  state.g2 = t.dataset.g; saveFilters(); render(); toMain();
+  // Ein Genre startet immer oben
+  state.g2 = t.dataset.g; saveFilters(); render(); scrollTo(0, top0());
 });
 $("#gback").addEventListener("click", () => {
-  state.g2 = ""; saveFilters(); render();
-  const y = scrollMem["genres:"];
-  if (y != null) scrollTo(0, y); else toMain();
+  // Zurück zur Übersicht: wieder ganz oben
+  state.g2 = ""; saveFilters(); render(); scrollTo(0, top0());
 });
 $("#filterBtn").addEventListener("click", () => {
   const p = $("#panel"); p.hidden = !p.hidden;
@@ -934,13 +937,13 @@ const minutesOf = it => {
   return (EP_FIX[it.key] ?? (m ? +m[1].replace(/\./g, "") : 24)) * 24;
 };
 function renderProg() {
-  // Erst ab dem ersten gesehenen Titel, vorher steht dort nur der kurze Hinweis
-  const box = $("#prog"), on = state.view === "seen" && seen.size > 0;
+  const box = $("#prog"), on = state.view === "seen";
   box.hidden = !on; if (!on) return;
   const list = items.filter(it => seen.has(it.id)), n = list.length, total = items.length, pct = Math.round(n / total * 100);
   $("#progArc").style.strokeDashoffset = String(219.9 * (1 - n / total));
   $("#progPct").textContent = pct + "%";
   $("#progTitle").textContent = `${n} von ${total} gesehen`;
+  if (!n) { $("#progText").textContent = "Tippe bei einem Anime auf „Schon gesehen“. Hier siehst du dann, wie viel du schon geschaut hast."; return; }
   const h = Math.round(list.reduce((a, it) => a + minutesOf(it), 0) / 60), nf = list.filter(it => it.type === "F").length, ns = n - nf;
   const parts = [ns && `${ns} ${ns === 1 ? "Serie" : "Serien"}`, nf && `${nf} ${nf === 1 ? "Film" : "Filme"}`].filter(Boolean).join(", ");
   $("#progText").innerHTML = `<b>≈ ${h.toLocaleString("de-DE")} ${h === 1 ? "Stunde" : "Stunden"}</b> Anime geschaut<br>${parts}`;
@@ -948,6 +951,8 @@ function renderProg() {
 function render() {
   headFor();
   renderProg();
+  arrowOff = (state.view === "genres" && !state.g2) || ((state.view === "saved" || state.view === "seen") && !filtered().length);
+  requestAnimationFrame(onScroll);
   if (!cardEls) buildCards();
   const tilesView = state.view === "genres" && !state.g2;
   $("#tiles").hidden = !tilesView;
@@ -966,36 +971,51 @@ function render() {
     if (on) { const r = gName ? `Platz ${it.gr[gName]} in ${gName}` : `Platz ${it.rank}`; if (el._rank.textContent !== r) el._rank.textContent = r; }
   });
   const e = $("#empty");
-  e.hidden = list.length > 0;
+  e.hidden = list.length > 0 || (state.view === "seen" && !seen.size); // bei 0 Gesehenen erklärt die Fortschritts-Karte alles
   e.textContent = state.view === "saved" && !saved.size ? "Noch nichts gemerkt. Tippe bei einem Anime auf „Merken“, dann landet er hier."
     : state.view === "seen" && !seen.size ? "Noch nichts als gesehen markiert. Tippe bei einem Anime auf „Schon gesehen“."
     : "Kein Titel passt zu diesen Filtern. Setz einzelne Filter zurück oder leere die Suche.";
   status(list.length);
 }
 
-$("#list").addEventListener("click", e => {
-  const b = e.target.closest("button[data-act]");
-  if (!b) return;
-  const id = b.dataset.id, act = b.dataset.act;
+function setMark(id, act, on) {
   const set = act === "seen" ? seen : saved;
-  set.has(id) ? set.delete(id) : set.add(id);
+  on ? set.add(id) : set.delete(id);
   store(act === "seen" ? KEY.seen : KEY.saved, [...set]);
   // Erst den Knopf selbst umstellen (die Karte bleibt erhalten), dann ggf. die Liste neu filtern
-  const on = set.has(id);
+  const b = document.getElementById((act === "seen" ? "v-" : "s-") + id);
+  if (!b) return;
   b.setAttribute("aria-pressed", String(on));
   b.innerHTML = act === "seen" ? ICON.seen + (on ? "Gesehen" : "Schon gesehen") : ICON.save + (on ? "Gemerkt" : "Merken");
   if (act === "seen") b.closest(".card").classList.toggle("is-seen", on);
   if ((act === "seen" && (state.hideSeen || state.view === "seen")) || (act === "save" && state.view === "saved")) { render(); return; }
   status(document.querySelectorAll("#list .card:not([hidden])").length);
   headFor();
+}
+$("#list").addEventListener("click", e => {
+  const b = e.target.closest("button[data-act]");
+  if (!b) return;
+  const id = b.dataset.id, act = b.dataset.act, on = !(act === "seen" ? seen : saved).has(id);
+  setMark(id, act, on);
+  // Versehentlich entfernt? Ein Tipp auf „Rückgängig“ holt es zurück
+  if (!on) {
+    const t = (items.find(it => it.id === id) || {}).title || "Titel";
+    toast(`„${t}“ ${act === "seen" ? "nicht mehr als gesehen markiert" : "von der Merkliste entfernt"}`, { label: "Rückgängig", run: () => setMark(id, act, true) });
+  }
 });
 
 // Kleine Hinweise unten
 let toastT;
-function toast(msg) {
+function toast(msg, action) {
   const t = $("#toast");
-  t.textContent = msg; t.hidden = false;
-  clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 3000);
+  t.textContent = msg;
+  if (action) {
+    const btn = document.createElement("button"); btn.type = "button"; btn.className = "toast-act"; btn.textContent = action.label;
+    btn.addEventListener("click", () => { clearTimeout(toastT); t.hidden = true; action.run(); });
+    t.append(" ", btn);
+  }
+  t.hidden = false;
+  clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, action ? 5000 : 3000);
 }
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -1045,7 +1065,9 @@ $("#pick").addEventListener("click", () => {
 const totop = $("#totop");
 let topLastScroll = 0;
 // Pfeil erscheint, sobald der Zufallsknopf aus dem Bild ist
-const onScroll = () => { const h = window.scrollY < 300; if (totop.hidden !== h) totop.hidden = h; topLastScroll = Date.now(); };
+// Kein Pfeil in der Genre-Übersicht und bei leeren Listen (Gemerkt/Gesehen ohne Titel)
+let arrowOff = false;
+const onScroll = () => { const h = arrowOff || window.scrollY < 300; if (totop.hidden !== h) totop.hidden = h; topLastScroll = Date.now(); };
 addEventListener("scroll", onScroll, { passive: true });
 const goTop = () => window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
 totop.addEventListener("click", goTop);
@@ -1123,6 +1145,8 @@ const placeLens = (() => {
     toActive();
   };
   document.addEventListener("touchstart", e => { if (e.touches.length > 1) { multi = true; abort(); } }, { passive: true });
+  // Rollt die Seite noch nach, kommt das Loslassen des Fingers beim iPhone manchmal nicht an: dann Zug abbrechen statt hängen zu bleiben
+  addEventListener("scroll", () => { if (drag) abort(); }, { passive: true });
   document.addEventListener("touchend", e => { if (!e.touches.length) setTimeout(() => { multi = false; }, 0); }, { passive: true });
   document.addEventListener("touchcancel", e => { if (!e.touches.length) multi = false; }, { passive: true });
   bar.addEventListener("touchstart", e => {
