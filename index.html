@@ -309,7 +309,6 @@ button, a, summary, input, label { touch-action: manipulation; }
   box-shadow: 0 6px 18px rgba(0,0,0,.45);
 }
 .totop svg { width: 20px; height: 20px; }
-.ver { margin: 28px 0 4px; text-align: center; font-size: 11px; color: var(--muted); opacity: .7; }
 .toast {
   position: fixed; z-index: 30; left: 50%; transform: translateX(-50%);
   bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + 58px);
@@ -406,7 +405,6 @@ button, a, summary, input, label { touch-action: manipulation; }
     <div class="tiles" id="tiles" hidden></div>
     <ol class="grid" id="list"></ol>
     <p class="empty" id="empty" hidden>Kein Titel passt zu diesen Filtern. Setz einzelne Filter zurück oder leere die Suche.</p>
-    <p class="ver">Version 77</p>
   </main>
   <button type="button" class="totop" id="totop" aria-label="Nach oben" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13.5V3M3.5 7.5L8 3l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
@@ -960,12 +958,23 @@ const placeLens = (() => {
   const isApp = () => document.documentElement.classList.contains("app");
   // In Ruhe sitzt der Kreis per Prozent-Rechnung auf dem aktiven Reiter, damit er nicht springt, wenn das iPhone den Ausschnitt kurz verschiebt
   const toActive = () => { const i = Math.max(0, btns.findIndex(b => b.getAttribute("aria-selected") === "true")); lens.style.transform = ""; lens.style.setProperty("--i", i); };
-  let drag = null, raf = 0, nextX = 0;
+  // Nur der eine Finger, der auf der Leiste aufsetzt, darf die Blase schieben.
+  // Sobald ein zweiter Finger dazukommt, wird das Schieben abgebrochen und nichts gewechselt.
+  let drag = null, raf = 0, nextX = 0, multi = false;
+  const abort = () => {
+    if (!drag) return;
+    drag = null; if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    bar.classList.remove("drag"); btns.forEach(b => b.classList.remove("hover"));
+    toActive();
+  };
+  document.addEventListener("touchstart", e => { if (e.touches.length > 1) { multi = true; abort(); } }, { passive: true });
+  document.addEventListener("touchend", e => { if (!e.touches.length) setTimeout(() => { multi = false; }, 0); }, { passive: true });
+  document.addEventListener("touchcancel", e => { if (!e.touches.length) multi = false; }, { passive: true });
   bar.addEventListener("touchstart", e => {
-    if (!isApp()) return;
-    const t = e.touches[0], r = bar.getBoundingClientRect();
+    if (!isApp() || e.touches.length > 1) { abort(); return; }
+    const t = e.changedTouches[0], r = bar.getBoundingClientRect();
     const pos = btns.map(b => ({ l: b.offsetLeft, w: b.offsetWidth }));
-    drag = { x0: t.clientX, left: r.left + bar.clientLeft, pos, moved: false, i: -1 };
+    drag = { id: t.identifier, x0: t.clientX, y0: t.clientY, left: r.left + bar.clientLeft, pos, moved: false, i: -1 };
   }, { passive: true });
   const frame = () => {
     raf = 0; if (!drag) return;
@@ -975,17 +984,26 @@ const placeLens = (() => {
     if (i !== drag.i) { if (drag.i >= 0) btns[drag.i].classList.remove("hover"); btns[i].classList.add("hover"); drag.i = i; }
   };
   bar.addEventListener("touchmove", e => {
+    if (!isApp()) return;
+    if (e.cancelable) e.preventDefault();
     if (!drag) return;
-    e.preventDefault();
-    const t = e.touches[0];
-    if (!drag.moved) { if (Math.abs(t.clientX - drag.x0) <= 6) return; drag.moved = true; bar.classList.add("drag"); }
+    if (e.touches.length > 1) { multi = true; abort(); return; }
+    const t = [...e.touches].find(q => q.identifier === drag.id);
+    if (!t) return;
+    if (!drag.moved) {
+      const dx = Math.abs(t.clientX - drag.x0), dy = Math.abs(t.clientY - drag.y0);
+      if (dy > 10 && dy > dx) { abort(); return; } // eher hoch/runter gewischt: kein Reiterwechsel
+      if (dx <= 6) return;
+      drag.moved = true; bar.classList.add("drag");
+    }
     nextX = t.clientX; if (!raf) raf = requestAnimationFrame(frame);
   }, { passive: false });
   const finish = (e, cancel) => {
+    if (multi && e.cancelable) e.preventDefault(); // nach Zwei-Finger-Geste kein Tippen auslösen
     if (!drag) return;
     const d = drag; drag = null; if (raf) { cancelAnimationFrame(raf); raf = 0; }
     bar.classList.remove("drag"); btns.forEach(b => b.classList.remove("hover"));
-    if (d.moved && !cancel) { if (e.cancelable) e.preventDefault(); if (d.i >= 0) btns[d.i].click(); }
+    if (d.moved && !cancel && !multi) { if (e.cancelable) e.preventDefault(); if (d.i >= 0) btns[d.i].click(); }
     toActive();
   };
   bar.addEventListener("touchend", e => finish(e, false));
