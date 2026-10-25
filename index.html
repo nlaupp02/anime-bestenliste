@@ -733,12 +733,14 @@ document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click
   const v = b.dataset.view;
   if (isAppMode()) {
     if (v === state.view) {
-      if (v === "genres" && state.g2) { state.g2 = ""; saveFilters(); render(); }
+      if (v === "genres") { if (state.g2) { state.g2 = ""; saveFilters(); render(); } scrollTo(0, 0); return; }
       delete scrollMem[memKey()];
       toMain(); return;
     }
     scrollMem[memKey()] = scrollY;
     state.view = v; sync(); render();
+    // Die kurze Kachel-Übersicht startet immer oben, ein geöffnetes Genre (z. B. Action) merkt sich die Stelle
+    if (memKey() === "genres:") { scrollTo(0, 0); return; }
     const y = scrollMem[memKey()];
     if (y != null) scrollTo(0, y); else toMain();
     return;
