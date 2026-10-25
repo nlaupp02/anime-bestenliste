@@ -354,7 +354,7 @@ button, a, summary, input, label { touch-action: manipulation; }
 /* App: Auf Genres, Gemerkt und Gesehen nur ein großer Reiter-Titel statt des ganzen Kopfes (wie bei iPhone-Apps) */
 .vtitle { display: none; }
 .app .top.sub .eyebrow, .app .top.sub h1, .app .top.sub .counts, .app .top.sub .why { display: none; }
-.app .top.sub .vtitle { display: block; margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 2.3rem; line-height: 1.05; letter-spacing: -.01em; }
+.app .top.sub .vtitle { display: block; margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 2.05rem; line-height: 1.05; letter-spacing: -.01em; }
 .app .top.sub.nopick .pick-btn { display: none; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
@@ -869,13 +869,12 @@ function renderTiles() {
   }).join("");
 }
 
+// App: Auf Genres, Gemerkt und Gesehen nur der große Reiter-Titel. Den Zufallstipp gibt es nur bei Alle.
 function headFor() {
-  const top = document.querySelector("header.top"), sub = state.view !== "all", inSaved = state.view === "saved";
+  const top = document.querySelector("header.top"), sub = state.view !== "all";
   top.classList.toggle("sub", sub);
-  top.classList.toggle("nopick", sub && !(inSaved && saved.size));
+  top.classList.toggle("nopick", sub);
   $("#vtitle").textContent = { genres: "Genres", saved: "Gemerkt", seen: "Gesehen" }[state.view] || "";
-  $("#pick .pick-txt b").textContent = inSaved ? "Was schaue ich als Nächstes?" : "Was soll ich schauen?";
-  $("#pick .pick-txt small").textContent = inSaved ? "Zufällig aus deiner Merkliste" : "Hier tippen für einen zufälligen Tipp";
 }
 function render() {
   headFor();
@@ -911,6 +910,7 @@ $("#list").addEventListener("click", e => {
   b.innerHTML = act === "seen" ? ICON.seen + (on ? "Gesehen" : "Schon gesehen") : ICON.save + (on ? "Gemerkt" : "Merken");
   if (act === "seen") b.closest(".card").classList.toggle("is-seen", on);
   status(document.querySelectorAll("#list .card").length);
+  headFor();
 });
 
 // Kleine Hinweise unten
@@ -928,6 +928,7 @@ $("#pick").addEventListener("click", () => {
   if (state.view === "genres" && !state.g2) { state.view = "all"; sync(); render(); }
   let pool = filtered().filter(it => !seen.has(it.id));
   if (state.view === "saved" && !pool.length) { toast("Alles auf deiner Merkliste hast du schon gesehen."); return; }
+  if (state.view === "genres" && state.g2 && !pool.length) { toast("Alles aus " + state.g2 + " hast du schon gesehen."); return; }
   if (!pool.length && byMine.some(it => !seen.has(it.id))) {
     Object.assign(state, DEFAULTS, { q: "" }); $("#q").value = ""; sync(); render();
     pool = filtered().filter(it => !seen.has(it.id));
