@@ -482,9 +482,19 @@ const scrollStyle = () => (SC || document.documentElement).style;
 // Safari (nicht als App): Die Seite steht still, aber intern 200px weit „gerollt“. So liegt der Anfang des Scrollbereichs
 // oberhalb des sichtbaren Teils, und Safari zeigt oben unter der Uhr die Liste statt eines blauen Balkens.
 const OFF = SC && !document.documentElement.classList.contains("standalone") ? 200 : 0;
-let typing = false, touching = false;
-const keepDoc = () => { if (OFF && !typing && !touching && Math.abs(window.scrollY - OFF) > 1) window.scrollTo(0, OFF); };
+let typing = false;
+const keepDoc = () => { if (OFF && !typing && Math.abs(window.scrollY - OFF) > 1) window.scrollTo(0, OFF); };
+if (OFF) {
+  // Einrastpunkt bei 200px: Safari hält die Seite dann selbst an dieser Stelle, auch wenn es sie beim Laden zurücksetzt
+  const snap = document.createElement("div");
+  snap.setAttribute("aria-hidden", "true");
+  snap.style.cssText = "position:absolute;left:0;top:" + OFF + "px;width:1px;height:1px;pointer-events:none;scroll-snap-align:start";
+  document.body.append(snap);
+  document.documentElement.style.scrollSnapType = "y mandatory";
+}
 keepDoc();
+// In den ersten Sekunden nach dem Öffnen jedes Bild prüfen, damit ein Zurücksetzen durch Safari gar nicht erst sichtbar wird
+if (OFF) { const t0 = performance.now(); const hold = () => { keepDoc(); if (performance.now() - t0 < 3000) requestAnimationFrame(hold); }; requestAnimationFrame(hold); }
 // Einmal springen (Reiterwechsel, Genre öffnen): Rollt die Liste noch nach, erst anhalten.
 // Sonst rollt das iPhone in der neuen Ansicht einfach weiter.
 // Das Anhalten baut den Scrollbereich kurz neu auf (kleiner Ruckler), deshalb nur, wenn die Liste gerade wirklich rollt.
@@ -824,13 +834,10 @@ document.addEventListener("focusout", e => {
   setTimeout(() => { if (OFF) keepDoc(); else if (SC && window.scrollY) window.scrollTo(0, 0); }, 100);
 });
 if (OFF) {
-  // Verschiebt Safari die Seite (z. B. beim Laden), still wieder an ihren Platz. Die Liste selbst bleibt dabei, wo sie ist,
-  // und solange ein Finger auf dem Bildschirm liegt, wird nichts verschoben.
+  // Verschiebt Safari die Seite (z. B. beim Laden), sofort wieder an ihren Platz. Die Liste selbst bleibt dabei, wo sie ist.
+  // Die Seite kann man mit dem Finger nicht rollen (nur die Liste), deshalb wird hier nie gegen den Finger gearbeitet.
   addEventListener("scroll", keepDoc, { passive: true });
-  document.addEventListener("touchstart", () => { touching = true; }, { passive: true });
-  const fingerUp = e => { if (!e.touches.length) { touching = false; setTimeout(keepDoc, 50); } };
-  document.addEventListener("touchend", fingerUp, { passive: true });
-  document.addEventListener("touchcancel", fingerUp, { passive: true });
+  document.addEventListener("touchstart", keepDoc, { passive: true });
   addEventListener("resize", keepDoc);
   addEventListener("pageshow", keepDoc);
   addEventListener("load", keepDoc);
