@@ -243,22 +243,17 @@ button, a, summary, input, label { touch-action: manipulation; }
 }
 .app .tabs .ti { display: block; width: 23px; height: 23px; }
 .app .tabs button[aria-selected="true"] { color: var(--ink); }
-.app .tabs { touch-action: none; }
-.app .tabs button { z-index: 1; }
+.app .tabs { touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+.app .tabs button { z-index: 1; -webkit-tap-highlight-color: transparent; }
 .app .tabs button.hover { color: var(--ink); }
 .tabs .lens { display: none; }
 .app .tabs .lens {
-  display: block; position: absolute; z-index: 0; top: 5px; bottom: 5px; left: 0; width: var(--lw, 25%);
-  border-radius: 26px; pointer-events: none;
+  display: block; position: absolute; z-index: 0; top: 5px; bottom: 5px; left: 0; width: 25%;
+  border-radius: 26px; pointer-events: none; will-change: transform;
   background: rgba(255,255,255,.13); box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
-  transform: translateX(var(--lx, 5px)) scale(1);
-  transition: transform .4s cubic-bezier(.3, 1.35, .5, 1), background .2s ease;
+  transition: transform .4s cubic-bezier(.3, 1.35, .5, 1), background-color .15s ease;
 }
-.app .tabs.drag .lens {
-  transform: translateX(var(--lx, 5px)) scale(1.12);
-  transition: transform .08s linear, background .2s ease;
-  background: rgba(255,255,255,.2); box-shadow: 0 8px 22px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.35);
-}
+.app .tabs.drag .lens { transition: background-color .15s ease; background: rgba(255,255,255,.2); }
 .app .tabs .n { position: absolute; top: 3px; left: calc(50% + 6px); min-width: 17px; padding: 0 4px; font-size: 10px; line-height: 15px; background: var(--ink); color: var(--paper); }
 .tabs .n.zero, .app #n-all { display: none; }
 .app .tabs button[aria-selected="true"] .n { background: var(--ink); color: var(--paper); }
@@ -914,35 +909,44 @@ $("#share").addEventListener("click", async () => {
 });
 $("#shareclose").addEventListener("click", () => { $("#sharebox").hidden = true; });
 
-// Glas-Leiste in der App: Finger über die Reiter ziehen, beim Loslassen wird der Reiter darunter gewählt
+// Glas-Leiste in der App: Finger über die Reiter ziehen, beim Loslassen wird der Reiter darunter gewählt.
+// Beim Ziehen wird nur der Kreis verschoben (eigene Ebene), damit es auch mit der Unschärfe flüssig bleibt.
 const placeLens = (() => {
   const bar = document.querySelector(".tabs"), btns = [...bar.querySelectorAll("button")];
   const lens = document.createElement("span"); lens.className = "lens"; lens.setAttribute("aria-hidden", "true"); bar.prepend(lens);
   const isApp = () => document.documentElement.classList.contains("app");
-  const place = (x, w) => { bar.style.setProperty("--lx", x + "px"); bar.style.setProperty("--lw", w + "px"); };
-  const toActive = () => { const a = btns.find(b => b.getAttribute("aria-selected") === "true") || btns[0]; place(a.offsetLeft, a.offsetWidth); };
-  const idxAt = x => { let i = 0; btns.forEach((b, k) => { if (x >= b.getBoundingClientRect().left) i = k; }); return i; };
-  let drag = null;
-  bar.addEventListener("touchstart", e => { if (!isApp()) return; const t = e.touches[0]; drag = { x0: t.clientX, moved: false, i: idxAt(t.clientX) }; }, { passive: true });
+  const place = (x, w, s) => { lens.style.width = w + "px"; lens.style.transform = `translate3d(${x}px,0,0) scale(${s})`; };
+  const toActive = () => { const a = btns.find(b => b.getAttribute("aria-selected") === "true") || btns[0]; place(a.offsetLeft, a.offsetWidth, 1); };
+  let drag = null, raf = 0, nextX = 0;
+  bar.addEventListener("touchstart", e => {
+    if (!isApp()) return;
+    const t = e.touches[0], r = bar.getBoundingClientRect();
+    const pos = btns.map(b => ({ l: b.offsetLeft, w: b.offsetWidth }));
+    drag = { x0: t.clientX, left: r.left + bar.clientLeft, pos, moved: false, i: -1 };
+  }, { passive: true });
+  const frame = () => {
+    raf = 0; if (!drag) return;
+    const { pos } = drag, w = pos[0].w, x = Math.max(pos[0].l, Math.min(nextX - drag.left - w / 2, pos[pos.length - 1].l));
+    place(x, w, 1.12);
+    const c = x + w / 2; let i = 0; pos.forEach((q, k) => { if (c >= q.l) i = k; });
+    if (i !== drag.i) { if (drag.i >= 0) btns[drag.i].classList.remove("hover"); btns[i].classList.add("hover"); drag.i = i; }
+  };
   bar.addEventListener("touchmove", e => {
     if (!drag) return;
     e.preventDefault();
     const t = e.touches[0];
-    if (!drag.moved && Math.abs(t.clientX - drag.x0) > 6) { drag.moved = true; bar.classList.add("drag"); }
-    if (!drag.moved) return;
-    const r = bar.getBoundingClientRect(), w = btns[0].offsetWidth;
-    const x = Math.max(btns[0].offsetLeft, Math.min(t.clientX - r.left - w / 2, btns[btns.length - 1].offsetLeft));
-    place(x, w);
-    drag.i = idxAt(t.clientX);
-    btns.forEach((b, k) => b.classList.toggle("hover", k === drag.i));
+    if (!drag.moved) { if (Math.abs(t.clientX - drag.x0) <= 6) return; drag.moved = true; bar.classList.add("drag"); }
+    nextX = t.clientX; if (!raf) raf = requestAnimationFrame(frame);
   }, { passive: false });
-  bar.addEventListener("touchend", e => {
+  const finish = (e, cancel) => {
     if (!drag) return;
-    const d = drag; drag = null; bar.classList.remove("drag"); btns.forEach(b => b.classList.remove("hover"));
-    if (d.moved) { e.preventDefault(); btns[d.i].click(); }
+    const d = drag; drag = null; if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    bar.classList.remove("drag"); btns.forEach(b => b.classList.remove("hover"));
+    if (d.moved && !cancel) { if (e.cancelable) e.preventDefault(); if (d.i >= 0) btns[d.i].click(); }
     toActive();
-  });
-  bar.addEventListener("touchcancel", () => { drag = null; bar.classList.remove("drag"); btns.forEach(b => b.classList.remove("hover")); toActive(); });
+  };
+  bar.addEventListener("touchend", e => finish(e, false));
+  bar.addEventListener("touchcancel", e => finish(e, true));
   addEventListener("resize", toActive);
   return toActive;
 })();
