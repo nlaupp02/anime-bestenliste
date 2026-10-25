@@ -836,7 +836,7 @@ if (OFF) {
   addEventListener("load", keepDoc);
 }
 ["onlyDe", "hideSeen"].forEach(k => $("#" + k).addEventListener("click", () => { state[k] = !state[k]; sync(); render(); }));
-// In der App merkt sich jeder Reiter, wo man war (wie bei iPhone-Apps). Genres startet beim Zurückkommen immer neu in der Übersicht.
+// In der App merkt sich jeder Reiter, wo man war (wie bei iPhone-Apps), bei Genres auch ein geöffnetes Genre.
 // Ein Tipp auf den Reiter, in dem man schon ist, macht nichts. Nach oben geht es mit dem Pfeil.
 const scrollMem = {};
 let tabToken = 0, tabPending = false;
@@ -852,14 +852,14 @@ document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click
     if (!tabPending) scrollMem[memKey()] = getY();
     // Leiste und Blase sofort umstellen, den Inhalt erst im nächsten Bild. So bewegt sich die Blase sofort,
     // auch wenn die lange Liste (z. B. bei Alle) kurz Rechenzeit braucht.
-    state.view = v; if (v === "genres") state.g2 = ""; sync();
+    state.view = v; sync();
     const token = ++tabToken; tabPending = true;
     requestAnimationFrame(() => setTimeout(() => {
       if (token !== tabToken) return;
       tabPending = false;
       render();
-      // Genres startet immer oben in der Kachel-Übersicht
-      if (state.view === "genres") { jumpTo(0); return; }
+      // Die kurze Kachel-Übersicht startet immer oben, ein geöffnetes Genre (z. B. Action) merkt sich die Stelle
+      if (memKey() === "genres:") { jumpTo(0); return; }
       const y = scrollMem[memKey()];
       if (y != null) jumpTo(y);
       else if (state.view === "all") toMain();
