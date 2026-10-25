@@ -949,6 +949,22 @@ function toast(msg) {
 }
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+// Sichtbar zur Karte gleiten. Das Ziel wird in jedem Bild neu gemessen, weil Karten unterwegs erst gezeichnet werden und ihre Höhe ändern
+let pickAnim = 0;
+function glideTo(el) {
+  cancelAnimationFrame(pickAnim);
+  const targetY = () => Math.max(0, Math.min(document.documentElement.scrollHeight - innerHeight, scrollY + el.getBoundingClientRect().top - Math.max(16, (innerHeight - el.offsetHeight) / 2)));
+  if (reduce) { scrollTo(0, targetY()); return; }
+  const y0 = scrollY, t0 = performance.now(), dur = Math.min(1100, 450 + Math.abs(targetY() - y0) / 30);
+  const step = now => {
+    const k = Math.min(1, (now - t0) / dur), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+    scrollTo(0, Math.round(y0 + (targetY() - y0) * e));
+    if (k < 1) pickAnim = requestAnimationFrame(step);
+    else pickAnim = requestAnimationFrame(() => { pickAnim = 0; if (Math.abs(targetY() - scrollY) > 3) scrollTo(0, targetY()); });
+  };
+  pickAnim = requestAnimationFrame(step);
+}
+
 // Zufallstipp: bevorzugt hoch bewertete Titel, die noch nicht gesehen sind
 let lastPick = null, pickT;
 $("#pick").addEventListener("click", () => {
@@ -970,9 +986,7 @@ $("#pick").addEventListener("click", () => {
   const el = btn.closest(".card");
   document.querySelectorAll(".card.pick").forEach(c => c.classList.remove("pick"));
   el.classList.add("pick");
-  // Erst direkt hinspringen, dann nachjustieren: Karten dazwischen werden erst beim Hinsehen gezeichnet und können ihre Höhe noch ändern
-  el.scrollIntoView({ block: "center" });
-  requestAnimationFrame(() => requestAnimationFrame(() => el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" })));
+  glideTo(el);
   toast("Wie wär's mit: " + pick.title + "?");
   clearTimeout(pickT); pickT = setTimeout(() => el.classList.remove("pick"), 6000);
 });
@@ -1003,7 +1017,10 @@ const animTop = () => {
   });
 };
 // Fasst man woanders hin, stoppt die Fahrt nach oben
-document.addEventListener("touchstart", e => { if (topAnim && !e.target.closest("#totop")) { cancelAnimationFrame(topAnim); topAnim = 0; document.documentElement.style.overflow = ""; } }, { passive: true });
+document.addEventListener("touchstart", e => {
+  if (topAnim && !e.target.closest("#totop")) { cancelAnimationFrame(topAnim); topAnim = 0; document.documentElement.style.overflow = ""; }
+  if (pickAnim && !e.target.closest("#pick")) { cancelAnimationFrame(pickAnim); pickAnim = 0; }
+}, { passive: true });
 totop.addEventListener("touchstart", e => {
   const t = e.touches[0]; ttop = { x: t.clientX, y: t.clientY, fired: false };
   // Rollt die Seite gerade noch, sofort losfahren (nicht erst beim Loslassen)
