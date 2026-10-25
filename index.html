@@ -997,11 +997,6 @@ $("#list").addEventListener("click", e => {
   if (!b) return;
   const id = b.dataset.id, act = b.dataset.act, on = !(act === "seen" ? seen : saved).has(id);
   setMark(id, act, on);
-  // Versehentlich entfernt? Ein Tipp auf „Rückgängig“ holt es zurück
-  if (!on) {
-    const t = (items.find(it => it.id === id) || {}).title || "Titel";
-    toast(`„${t}“ ${act === "seen" ? "nicht mehr als gesehen markiert" : "von der Merkliste entfernt"}`, { label: "Rückgängig", run: () => setMark(id, act, true) });
-  }
 });
 
 // Kleine Hinweise unten
