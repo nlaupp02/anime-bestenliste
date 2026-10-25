@@ -377,12 +377,13 @@ button, a, summary, input, label { touch-action: manipulation; }
    So reagiert die Leiste sofort, auch während die Liste noch nachrollt (wie bei iPhone-Apps). Die Seite selbst rollt nie,
    deshalb springt auch die Safari-Leiste unten nicht mehr. */
 html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: none; }
-.app #sc { position: fixed; inset: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }
-/* Safari (nicht als App): Safari zeigt die Seite auch unter der Statusleiste oben und unter seiner Leiste unten.
-   Ein fester (fixed) Bereich am Rand wird dort von Safari mit einer einfarbigen Fläche überdeckt (die Balken).
-   Deshalb ist der Scrollbereich in Safari nicht fest, sondern normal platziert und reicht unter beide Leisten.
-   Der Innenabstand gleicht das aus, die Seite selbst rollt trotzdem nicht. */
-.app:not(.standalone) #sc { position: absolute; top: -200px; bottom: -200px; }
+.app #sc { position: absolute; inset: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }
+/* Der Scrollbereich ist bewusst nicht „fest“ (fixed): Feste Bereiche am Bildschirmrand überdeckt das iPhone dort
+   mit einer einfarbigen Fläche (die blauen Balken).
+   Safari (nicht als App) zeigt die Seite auch unter der Uhr oben und unter seiner Leiste unten. Dafür reicht der
+   Scrollbereich 200px über und unter den sichtbaren Teil hinaus, und die Seite steht intern 200px weit „gerollt“
+   (siehe OFF im Skript). Der Innenabstand gleicht das aus, man sieht davon nichts. */
+.app:not(.standalone) #sc { bottom: -400px; }
 .app:not(.standalone) #sc > .wrap { padding-top: 200px; padding-bottom: 200px; }
 /* Die Installations-Anleitung nur auf dem Reiter Alle */
 .top.sub .install { display: none !important; }
@@ -475,6 +476,12 @@ const setY = y => { if (SC) SC.scrollTop = y; else window.scrollTo(0, y); };
 const maxY = () => SC ? SC.scrollHeight - SC.clientHeight : document.documentElement.scrollHeight - innerHeight;
 const viewH = () => innerHeight;
 const scrollStyle = () => (SC || document.documentElement).style;
+// Safari (nicht als App): Die Seite steht still, aber intern 200px weit „gerollt“. So liegt der Anfang des Scrollbereichs
+// oberhalb des sichtbaren Teils, und Safari zeigt oben unter der Uhr die Liste statt eines blauen Balkens.
+const OFF = SC && !document.documentElement.classList.contains("standalone") ? 200 : 0;
+let typing = false, clockTap = false;
+const keepDoc = () => { if (OFF && !typing && Math.abs(window.scrollY - OFF) > 1) window.scrollTo(0, OFF); };
+keepDoc();
 // Einmal springen (Reiterwechsel, Genre öffnen): Rollt die Liste noch nach, erst anhalten.
 // Sonst rollt das iPhone in der neuen Ansicht einfach weiter.
 // Das Anhalten baut den Scrollbereich kurz neu auf (kleiner Ruckler), deshalb nur, wenn die Liste gerade wirklich rollt.
@@ -806,8 +813,23 @@ $("#counts").innerHTML =
 
 document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click", () => { state.type = b.dataset.type; sync(); render(); }));
 $("#q").addEventListener("input", e => { state.q = e.target.value.trim().toLowerCase(); render(); });
-// iPhone: Nach dem Schließen der Tastatur kann die (sonst feste) Seite verschoben bleiben. Dann zurückschieben.
-if (SC) $("#q").addEventListener("blur", () => { setTimeout(() => { if (window.scrollY) window.scrollTo(0, 0); }, 100); });
+// iPhone: Für die Tastatur verschiebt das iPhone die (sonst stillstehende) Seite. Danach wieder an ihren Platz.
+document.addEventListener("focusin", e => { if (e.target.matches("input, textarea")) typing = true; });
+document.addEventListener("focusout", e => {
+  if (!e.target.matches("input, textarea")) return;
+  typing = false;
+  setTimeout(() => { if (OFF) keepDoc(); else if (SC && window.scrollY) window.scrollTo(0, 0); }, 100);
+});
+if (OFF) {
+  addEventListener("scroll", () => {
+    if (typing) return;
+    // Tipp auf die Uhr: Safari will die Seite nach oben rollen. Stattdessen die Liste nach oben fahren.
+    if (window.scrollY < OFF - 50 && !clockTap && getY() > 0) { clockTap = true; animTop(); setTimeout(() => { clockTap = false; }, 700); }
+    keepDoc();
+  }, { passive: true });
+  addEventListener("resize", keepDoc);
+  addEventListener("pageshow", keepDoc);
+}
 ["onlyDe", "hideSeen"].forEach(k => $("#" + k).addEventListener("click", () => { state[k] = !state[k]; sync(); render(); }));
 // In der App merkt sich jeder Reiter, wo man war (wie bei iPhone-Apps).
 // Doppeltipp auf den Reiter, in dem man schon ist: sanft nach oben (in einem Genre zurück zur Übersicht). Ein einzelner Tipp macht nichts.
