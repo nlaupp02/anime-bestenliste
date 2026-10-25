@@ -315,6 +315,15 @@ button, a, summary, input, label { touch-action: manipulation; }
   box-shadow: 0 6px 18px rgba(0,0,0,.45);
 }
 .totop svg { width: 20px; height: 20px; }
+/* Fortschritt im Reiter Gesehen */
+.prog { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 14px; align-items: center; max-width: 520px; background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 14px; }
+.prog .ring { position: relative; width: 84px; height: 84px; }
+.prog .ring svg { width: 84px; height: 84px; display: block; }
+.prog .ring circle:last-child { transition: stroke-dashoffset .6s ease; }
+.prog .ring b { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--f-display); font-weight: 400; font-size: 19px; }
+.prog h4 { margin: 0; font-size: 17px; line-height: 1.3; }
+.prog p { margin: 3px 0 0; color: var(--muted); font-size: 13.5px; line-height: 1.45; }
+.prog p b { color: var(--ink); }
 .toast {
   position: fixed; z-index: 30; left: 50%; transform: translateX(-50%);
   bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + 58px);
@@ -414,6 +423,10 @@ button, a, summary, input, label { touch-action: manipulation; }
   </div>
 
   <main>
+    <section class="prog" id="prog" hidden aria-live="polite">
+      <div class="ring"><svg viewBox="0 0 84 84" aria-hidden="true"><circle cx="42" cy="42" r="35" fill="none" stroke="var(--line)" stroke-width="9"/><circle id="progArc" cx="42" cy="42" r="35" fill="none" stroke="var(--ok)" stroke-width="9" stroke-linecap="round" stroke-dasharray="219.9" stroke-dashoffset="219.9" transform="rotate(-90 42 42)"/></svg><b id="progPct">0%</b></div>
+      <div><h4 id="progTitle"></h4><p id="progText"></p></div>
+    </section>
     <div class="gbar" id="gbar" hidden><button type="button" class="gback" id="gback">← Alle Genres</button><h3 id="gtitle"></h3></div>
     <div class="tiles" id="tiles" hidden></div>
     <ol class="grid" id="list"></ol>
@@ -894,8 +907,28 @@ function buildCards() {
   cardEls = new Map();
   $("#list").querySelectorAll(".card").forEach((el, i) => { el._rank = el.querySelector(".rank"); cardEls.set(byMine[i].id, el); });
 }
+// Fortschritt: Folgen × ca. 24 Minuten, Filme mit echter Laufzeit. Bei laufenden Serien ohne Folgenzahl geschätzt.
+const EP_FIX = { "Die Tagebücher der Apothekerin": 48, "Aoashi": 24, "Konosuba": 31, "Ascendance of a Bookworm": 48 };
+const minutesOf = it => {
+  if (it.type === "F") { const m = it.len.match(/(\d+)\s*Std\.(?:\s*(\d+)\s*Min\.)?/); return m ? +m[1] * 60 + +(m[2] || 0) : 100; }
+  const m = it.len.match(/([\d.]+)\s*Folgen/);
+  return (EP_FIX[it.key] ?? (m ? +m[1].replace(/\./g, "") : 24)) * 24;
+};
+function renderProg() {
+  // Erst ab dem ersten gesehenen Titel, vorher steht dort nur der kurze Hinweis
+  const box = $("#prog"), on = state.view === "seen" && seen.size > 0;
+  box.hidden = !on; if (!on) return;
+  const list = items.filter(it => seen.has(it.id)), n = list.length, total = items.length, pct = Math.round(n / total * 100);
+  $("#progArc").style.strokeDashoffset = String(219.9 * (1 - n / total));
+  $("#progPct").textContent = pct + "%";
+  $("#progTitle").textContent = `${n} von ${total} gesehen`;
+  const h = Math.round(list.reduce((a, it) => a + minutesOf(it), 0) / 60), nf = list.filter(it => it.type === "F").length, ns = n - nf;
+  const parts = [ns && `${ns} ${ns === 1 ? "Serie" : "Serien"}`, nf && `${nf} ${nf === 1 ? "Film" : "Filme"}`].filter(Boolean).join(", ");
+  $("#progText").innerHTML = `<b>≈ ${h.toLocaleString("de-DE")} ${h === 1 ? "Stunde" : "Stunden"}</b> Anime geschaut<br>${parts}`;
+}
 function render() {
   headFor();
+  renderProg();
   if (!cardEls) buildCards();
   const tilesView = state.view === "genres" && !state.g2;
   $("#tiles").hidden = !tilesView;
