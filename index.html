@@ -569,7 +569,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V89</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V90</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1330,7 +1330,14 @@ Object.keys(covers).forEach(k => { if (!String(covers[k]).startsWith("https://")
 // Wo die Suche nicht trifft: direkt über die MyAnimeList-Nummer
 const ID_MAL = { "Attack on Titan: The Last Attack": 59571, "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You": 54714,
   "Cherry Magic! Thirty Years of Virginity Can Make You a Wizard?!": 55973, "Alya Sometimes Hides Her Feelings in Russian": 54744 };
-const coverOf = it => { const u = covers[it.key]; return u && u.startsWith("https://") ? u : ""; };
+// Feste Bildadressen (MyAnimeList) für Titel, die AniList nicht findet
+const COVER_URL = {
+  "Attack on Titan: The Last Attack": "https://cdn.myanimelist.net/images/anime/1379/145452.jpg",
+  "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You": "https://cdn.myanimelist.net/images/anime/1812/136764.jpg",
+  "Cherry Magic! Thirty Years of Virginity Can Make You a Wizard?!": "https://cdn.myanimelist.net/images/anime/1762/139690.jpg",
+  "Alya Sometimes Hides Her Feelings in Russian": "https://cdn.myanimelist.net/images/anime/1596/152806.jpg"
+};
+const coverOf = it => { const u = COVER_URL[it.key] || covers[it.key]; return u && u.startsWith("https://") ? u : ""; };
 const COVER_Q = {
   "Frieren – Nach dem Ende der Reise": "Sousou no Frieren", "Die Tagebücher der Apothekerin": "Kusuriya no Hitorigoto", "Oshi no Ko – Mein Star": "Oshi no Ko",
   "Nichijou – Das ganz normale Leben": "Nichijou", "Das Band der Unterwelt": "Yomi no Tsugai", "Detektiv Conan": "Detective Conan",
