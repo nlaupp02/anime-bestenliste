@@ -426,7 +426,7 @@ html:not(.prisc) .card.pick { outline-color: #F47521; } /* Orange wie „Crunchy
 .prog p b { color: var(--ink); }
 /* Rang: Kanji im Ring, der Ring füllt sich bis zum nächsten Rang. Farbe steigt mit: grau, grün, gold, rot */
 .prog, .ladder li { --rc: #A3A8C2; }
-.prog.rt1, .ladder li.rt1 { --rc: #5FD3A6; } .prog.rt2, .ladder li.rt2 { --rc: #F2C14E; } .prog.rt3, .ladder li.rt3 { --rc: #F05A50; } .prog.rt4, .ladder li.rt4 { --rc: #C0283A; } /* feste Farben, auch im Priscilla-Modus */
+.prog.rt1, .ladder li.rt1 { --rc: #5FD3A6; } .prog.rt2, .ladder li.rt2 { --rc: #F2C14E; } .prog.rt3, .ladder li.rt3 { --rc: #F05A50; } .prog.rt4, .ladder li.rt4 { --rc: #FF3B3B; } /* feste Farben, auch im Priscilla-Modus */
 .prog .rk { display: grid; justify-items: center; gap: 4px; }
 .prog .ring .kj { position: absolute; inset: 0; display: grid; place-items: center; font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
   font-weight: 700; font-size: 20px; line-height: 1.05; writing-mode: vertical-rl; color: var(--rc); }
@@ -470,7 +470,7 @@ html.prisc .prog.rt4, html.prisc .ladder li.rt4 { --rc: #FF3D7F; }
 .ru-next { font-size: 13.5px; color: var(--muted); }
 .ru-card .ov-btn { justify-self: stretch; margin-top: 10px; }
 .rankup .ru-card { --rc: #A3A8C2; }
-.rankup.rt1 .ru-card { --rc: #5FD3A6; } .rankup.rt2 .ru-card { --rc: #F2C14E; } .rankup.rt3 .ru-card { --rc: #F05A50; } .rankup.rt4 .ru-card { --rc: #C0283A; }
+.rankup.rt1 .ru-card { --rc: #5FD3A6; } .rankup.rt2 .ru-card { --rc: #F2C14E; } .rankup.rt3 .ru-card { --rc: #F05A50; } .rankup.rt4 .ru-card { --rc: #FF3B3B; }
 html.prisc .rankup.rt0 .ru-card { --rc: #F9CFE1; } html.prisc .rankup.rt1 .ru-card { --rc: #FF8FC4; } html.prisc .rankup.rt2 .ru-card { --rc: #E8559F; }
 html.prisc .rankup.rt3 .ru-card { --rc: #C2187A; } html.prisc .rankup.rt4 .ru-card { --rc: #FF3D7F; }
 /* „Entfernen“ (nicht mehr gesehen): weiches Rot statt kräftig rot gefüllt */
@@ -621,7 +621,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V108</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V109</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
