@@ -225,6 +225,13 @@ main { padding-block: 18px calc(max(16px, env(safe-area-inset-bottom, 0px)) + 76
 .btn .bt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .card.is-seen { background: var(--paper); }
 .card.is-seen h2, .card.is-seen .desc { color: var(--muted); }
+/* Kopf kompakter: Titel etwas kleiner, „So entsteht die Wertung“ als ⓘ neben der Anzahl */
+.app h1 { font-size: 2rem; }
+.app header.top .why { display: none; }
+.whybtn { display: none; }
+.app .whybtn { display: inline-grid; place-items: center; width: 26px; height: 26px; margin: -4px 0 -4px -6px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--muted); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.whybtn svg { width: 16px; height: 16px; }
+.why-card .why-body { margin: 0; border: 0; padding: 0; font-size: 14px; color: var(--muted); }
 
 /* Wertungen */
 .score { grid-column: 2; grid-row: 1 / span 3; display: grid; justify-items: center; gap: 6px; align-self: start; }
@@ -569,7 +576,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V90</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V91</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -609,7 +616,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
         <button type="button" class="chip rchip" data-mood="schmerz" aria-pressed="false">Herzschmerz <span class="mc"></span></button>
       </div>
     </div>
-    <div class="status"><span id="status" aria-live="polite"></span><button type="button" class="reset" id="reset" hidden>Filter zurücksetzen</button><button type="button" class="share-btn" id="share" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10V2.5M5 5.5l3-3 3 3M3 9v4.5h10V9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Merkliste teilen</button></div>
+    <div class="status"><span id="status" aria-live="polite"></span><button type="button" class="whybtn" id="whyBtn" aria-label="So entsteht die Wertung"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".95" fill="currentColor"/></svg></button><button type="button" class="reset" id="reset" hidden>Filter zurücksetzen</button><button type="button" class="share-btn" id="share" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10V2.5M5 5.5l3-3 3 3M3 9v4.5h10V9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Merkliste teilen</button></div>
     <div class="prisbar" id="prisBar" hidden><span>💘 Priscilla-Modus · nur Romanzen</span><button type="button" id="prisOff">Beenden</button></div>
     <div class="sharebox" id="sharebox" hidden><span>Teilen ging hier nicht direkt. Kopier den Text und schick ihn per WhatsApp:</span><textarea id="sharetext" readonly></textarea><div class="row"><button type="button" class="btn" id="shareclose">Schließen</button></div></div>
   </div>
@@ -650,6 +657,14 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
   <div class="ov-card rank-card" role="dialog" aria-modal="true" aria-labelledby="rankTitle">
     <div><b id="rankTitle"></b><p class="sub" id="rankSub">Steigt mit jedem Anime, den du als gesehen markierst.</p></div>
     <ol class="ladder" id="ladder"></ol>
+    <button type="button" class="ov-btn main" data-close>OK</button>
+  </div>
+</div>
+<div class="ov" id="whySheet" hidden>
+  <div class="ov-bg" data-close></div>
+  <div class="ov-card why-card" role="dialog" aria-modal="true" aria-labelledby="whyTitle">
+    <b id="whyTitle">So entsteht die Wertung</b>
+    <div class="why-body" id="whyBody"></div>
     <button type="button" class="ov-btn main" data-close>OK</button>
   </div>
 </div>
@@ -1521,6 +1536,13 @@ $("#list").addEventListener("click", e => {
   if (act === "save" && seen.has(id)) return; // Gesehenes kann man nicht merken
   setMark(id, act, on);
 });
+// „So entsteht die Wertung“ als Fenster (App: ⓘ neben der Anzahl)
+const whySheet = $("#whySheet");
+$("#whyBody").innerHTML = document.querySelector(".why .why-body").innerHTML;
+$("#whyBtn").addEventListener("click", () => { whySheet.hidden = false; whySheet.querySelector(".ov-btn.main").focus({ preventScroll: true }); });
+whySheet.addEventListener("click", e => { if (e.target.closest("[data-close]")) whySheet.hidden = true; });
+whySheet.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !whySheet.hidden) whySheet.hidden = true; });
 // Fenster mit allen Rängen (Info-Knopf neben „gesehen“)
 const rankSheet = $("#rankSheet");
 $("#rankInfo").addEventListener("click", () => {
