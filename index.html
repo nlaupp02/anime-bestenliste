@@ -235,6 +235,9 @@ html.covers .cbody > .score { grid-column: 3; grid-row: 1 / span 2; }
 html.covers .facts { grid-column: 2 / -1; }
 html.covers .cv { display: block; grid-column: 1; grid-row: 1 / span 4; align-self: start; width: 92px; height: 130px; margin-top: 2px; border-radius: 8px; overflow: hidden; background: var(--chip); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06); }
 .cv img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .3s ease; }
+/* Langes Drücken auf das Cover soll kein Bild-Menü öffnen: Berührungen gehen am Bild vorbei an die Karte */
+.cv, .cv img { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+.cv img { pointer-events: none; -webkit-user-drag: none; }
 .cv img.ok { opacity: 1; }
 .stamp {
   width: 62px; height: 62px; border-radius: 50%;
@@ -1216,7 +1219,7 @@ function card(it) {
   return `
     <li class="card${isSeen ? " is-seen" : ""}">
       <div class="cbody">
-      <div class="cv" aria-hidden="true"><img alt="" loading="lazy" decoding="async"${coverOf(it) ? ` src="${coverOf(it)}"` : ""} onload="this.classList.add('ok')" onerror="this.remove()"></div>
+      <div class="cv" aria-hidden="true"><img alt="" draggable="false" loading="lazy" decoding="async"${coverOf(it) ? ` src="${coverOf(it)}"` : ""} onload="this.classList.add('ok')" onerror="this.remove()"></div>
       <div class="meta"><span class="rank">${state.view === "genres" && state.g2 ? `Platz ${it.gr[state.g2]} in ${state.g2}` : `Platz ${it.rank}`}</span><span>${it.type === "F" ? "Film" : "Serie"}</span>${isRom(it) && it.mine >= 8.3 ? '<span class="pg">💘 Priscilla-geprüft</span>' : ""}</div>
       <div class="score">
         <div class="stamp ${tier(it.mine)}" aria-label="Wertung ${fmt(it.mine)} von 10">${fmt(it.mine)}<small>/10</small></div>
