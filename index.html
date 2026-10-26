@@ -348,12 +348,31 @@ button, a, summary, input, label { touch-action: manipulation; }
 .sharebox { grid-column: 1 / -1; display: grid; gap: 8px; background: var(--sheet); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 13px; color: var(--muted); }
 .sharebox textarea { font: inherit; font-size: 13px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 8px; min-height: 120px; resize: vertical; width: 100%; }
 .sharebox .row { justify-content: flex-end; }
-.install { width: 100%; max-width: 460px; justify-self: start; display: grid; gap: 10px; background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
-.inst-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; }
-.inst-ico { width: 40px; height: 40px; font-size: 13px; border-width: 2px; }
-.inst-ico small { font-size: 7px; margin-top: 1px; }
-.inst-txt b { display: block; font-size: 15.5px; line-height: 1.25; }
-.inst-txt small { display: block; font-size: 12.5px; line-height: 1.3; color: var(--muted); margin-top: 1px; }
+/* Hinweis „Als App speichern“ ganz oben (nur im Handy-Browser) */
+.ibanner { width: 100%; max-width: 520px; justify-self: start; display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 10px; align-items: center; background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; padding: 9px 8px 9px 10px; }
+.ib-ico { width: 40px; height: 40px; font-size: 13px; border-width: 2px; }
+.ib-ico small { font-size: 7px; margin-top: 1px; }
+.ib-txt b { display: block; font-size: 15px; line-height: 1.25; }
+.ib-txt small { display: block; font-size: 12.5px; line-height: 1.3; color: var(--muted); margin-top: 1px; }
+.ib-go { font: inherit; font-size: 14px; font-weight: 700; color: var(--on-gold); background: var(--gold); border: 0; border-radius: 999px; padding: 7px 14px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.ib-go:active { filter: brightness(.9); }
+.ib-x { width: 30px; height: 30px; border-radius: 50%; border: 0; background: transparent; color: var(--muted); display: grid; place-items: center; cursor: pointer; padding: 0; -webkit-tap-highlight-color: transparent; }
+.ib-x svg { width: 14px; height: 14px; }
+/* Fenster für Anleitung und Nachfrage */
+.ov { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 16px; animation: ovIn .18s ease-out; }
+.ov[hidden] { display: none; }
+.ov-bg { position: absolute; inset: 0; background: rgba(4, 5, 12, .66); touch-action: none; }
+.ov-card { position: relative; width: 100%; max-width: 380px; max-height: calc(100% - 40px); overflow-y: auto; overscroll-behavior: contain; display: grid; gap: 14px; background: var(--sheet); border: 1px solid var(--line); border-radius: 18px; padding: 16px; box-shadow: 0 18px 50px rgba(0, 0, 0, .45); animation: cardIn .2s ease-out; }
+.ov-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+.ov-head b, .ask b { font-size: 17px; line-height: 1.3; }
+.ask { max-width: 320px; text-align: center; gap: 8px; padding-top: 20px; }
+.ask p { margin: 0 0 8px; font-size: 14px; line-height: 1.45; color: var(--muted); }
+.ov-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ov-btn { font: inherit; font-size: 15px; font-weight: 700; color: var(--ink); background: var(--chip); border: 1px solid var(--line); border-radius: 12px; padding: 11px 10px; cursor: pointer; line-height: 1.2; -webkit-tap-highlight-color: transparent; }
+.ov-btn.main { color: var(--on-gold); background: var(--gold); border-color: var(--gold); }
+.ov-btn:active { filter: brightness(.9); }
+@keyframes ovIn { from { opacity: 0; } }
+@keyframes cardIn { from { opacity: 0; transform: translateY(10px) scale(.97); } }
 .inst-x { width: 32px; height: 32px; border-radius: 50%; border: 0; background: var(--chip); color: var(--muted); display: grid; place-items: center; cursor: pointer; }
 .inst-x svg { width: 14px; height: 14px; }
 .inst-steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 8px; font-size: 14px; line-height: 1.45; }
@@ -395,8 +414,8 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
 /* App: Auch unter dem Home-Balken unten zeigt das iPhone die Seite. Der Scrollbereich reicht deshalb dort hinunter. */
 .standalone #sc { bottom: -200px; }
 .standalone #sc > .wrap { padding-bottom: 200px; }
-/* Die Installations-Anleitung nur auf dem Reiter Alle */
-.top.sub .install { display: none !important; }
+/* Der Hinweis „Als App speichern“ nur auf dem Reiter Alle */
+.top.sub .ibanner { display: none !important; }
 /* App: Auf Genres, Gemerkt und Gesehen nur ein großer Reiter-Titel statt des ganzen Kopfes (wie bei iPhone-Apps) */
 .vtitle { display: none; }
 .app .top.sub .eyebrow, .app .top.sub h1, .app .top.sub .counts, .app .top.sub .why { display: none; }
@@ -412,20 +431,18 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
 <div id="sc">
 <div class="wrap">
   <header class="top">
+    <div class="ibanner" id="ibanner" hidden>
+      <span class="stamp top ib-ico" aria-hidden="true">9,0<small>/10</small></span>
+      <div class="ib-txt"><b>Die besten Animes</b><small>Als App speichern für das beste Erlebnis.</small></div>
+      <button type="button" class="ib-go" id="ibSave">Speichern</button>
+      <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+    </div>
     <h2 class="vtitle" id="vtitle"></h2>
     <div class="eyebrow">Stand: Oktober 2026</div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
     <details class="why"><summary><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".95" fill="currentColor"/></svg>So entsteht die Wertung<svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="why-body"><p>Eine KI nimmt die Fan-Bewertungen von MyAnimeList und IMDb und passt sie um bis zu 1 Punkt an: mehr für gute Story, Figuren, Animation und Ende, weniger für Füllerfolgen und Längen.</p><p>Ab 9 herausragend · ab 8 sehr gut · ab 7 gut</p></div></details>
-    <div class="install" id="install" hidden>
-      <div class="inst-head">
-        <span class="stamp top inst-ico" aria-hidden="true">9,0<small>/10</small></span>
-        <div class="inst-txt"><b id="instTitle">Als App aufs iPhone</b><small>Dann öffnet sich die Liste wie eine echte App.</small></div>
-        <button type="button" class="inst-x" id="instClose" aria-label="Anleitung schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-      </div>
-      <ol class="inst-steps" id="instSteps"></ol>
-    </div>
   </header>
 
   <div class="bar">
@@ -477,6 +494,22 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
 
 </div>
 </div>
+<div class="ov" id="instSheet" hidden>
+  <div class="ov-bg" data-close></div>
+  <div class="ov-card" role="dialog" aria-modal="true" aria-labelledby="instTitle">
+    <div class="ov-head"><b id="instTitle">Zum Home-Bildschirm hinzufügen</b><button type="button" class="inst-x" data-close aria-label="Anleitung schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
+    <ol class="inst-steps" id="instSteps"></ol>
+    <button type="button" class="ov-btn main" data-close>OK</button>
+  </div>
+</div>
+<div class="ov" id="instAsk" hidden>
+  <div class="ov-bg" data-close></div>
+  <div class="ov-card ask" role="alertdialog" aria-modal="true" aria-labelledby="askTitle" aria-describedby="askText">
+    <b id="askTitle">Hinweis ausblenden?</b>
+    <p id="askText">Du kannst die Liste auch später noch als App speichern: über Teilen und „Zum Home-Bildschirm“.</p>
+    <div class="ov-row"><button type="button" class="ov-btn" data-close>Lassen</button><button type="button" class="ov-btn main" id="askHide">Für immer ausblenden</button></div>
+  </div>
+</div>
 
 <script>
 // Die App-Ansicht (Glas-Leiste unten, Reiter-Überschriften) wird schon ganz oben im Kopf der Seite festgelegt.
@@ -521,7 +554,6 @@ const jumpTo = y => {
 // [Titel, Art S/F, Genres, meine Wertung, IMDb, IMDb-Stimmen in Tsd., Ton de/teil/sub/unk, Länge, Beschreibung, Tipp, Suchbegriffe, Stimmungen, Crunchyroll-Suchwort]
 const DATA = [
 ["Frieren – Nach dem Ende der Reise","S","Fantasy|Abenteuer|Drama",9.4,8.9,86,"de","2 Staffeln · 38 Folgen","Die Elfenmagierin Frieren hat mit ihren Gefährten den Dämonenkönig besiegt. Elfen leben über tausend Jahre, deshalb merkt sie erst nach dem Tod ihres Freundes Himmel, wie wenig sie die Menschen kannte. Also bricht sie zu einer neuen Reise auf. Ruhig, warm und mit herausragenden Kämpfen.","","sousou no frieren","chill|herz","Frieren"],
-["Steins;Gate","S","Sci-Fi|Thriller",9.2,8.8,97,"de","25 Folgen","Der exzentrische Bastler Okabe baut aus einer Mikrowelle versehentlich eine Maschine, die Nachrichten in die Vergangenheit schickt. Jede Änderung hat Folgen, und eine Geheimorganisation wird auf ihn aufmerksam.","Die ersten Folgen sind langsam. Ab etwa Folge 12 lässt es dich nicht mehr los.","steins gate zeitreise","dn|kurz","Steins;Gate"],
 ["Attack on Titan","S","Action|Fantasy|Drama",9.2,9.1,547,"de","4 Staffeln · 89 Folgen","Die Menschheit lebt hinter riesigen Mauern, weil draußen menschenfressende Titanen umherziehen. Als die Mauer fällt, schwört Eren Rache. Die Wahrheit über diese Welt ist viel größer, als er ahnt.","Sehr brutal. Wird mit jeder Staffel besser, dranbleiben lohnt sich.","shingeki no kyojin aot","","Attack on Titan"],
 ["Chainsaw Man – The Movie: Reze Arc","F","Action|Horror|Romance",9.0,8.3,70,"de","Film · 1 Std. 40 Min.","Denji, halb Mensch und halb Kettensägen-Teufel, verliebt sich in die geheimnisvolle Café-Kellnerin Reze. Bildgewaltig, rasant und am Ende schmerzhaft.","Setzt direkt nach Staffel 1 der Serie an.","chainsaw man film reze","","Chainsaw Man Reze"],
 ["Gintama","S","Comedy|Action|Sci-Fi",9.0,8.7,22,"sub","12 Staffeln · über 360 Folgen","Aliens haben das Japan der Edo-Zeit erobert, Samurai sind arbeitslos. Der faule Gintoki nimmt mit seiner kleinen Truppe jeden Gelegenheitsjob an. Absurde Parodie, die immer wieder in epische, ernste Geschichten umschlägt.","Fang ruhig mit Folge 3 an, Folge 1 und 2 sind eine Sonderfolge. Viele Witze spielen auf japanische Popkultur an, die besten Arcs kommen später.","gintama","","Gintama"],
@@ -555,7 +587,6 @@ const DATA = [
 ["Oshi no Ko – Mein Star","S","Drama|Mystery",8.4,8.3,18,"de","3 Staffeln · 35 Folgen","Ein Arzt wird als Kind seines Lieblings-Idols wiedergeboren. Als sie ermordet wird, sucht er im Showbusiness nach dem Täter. Ein düsterer Blick hinter die Kulissen der Unterhaltungsindustrie.","Folge 1 ist fast so lang wie ein Film und ein echter Paukenschlag.","oshi no ko","dn","Oshi no Ko"],
 ["Spy x Family","S","Comedy|Action",8.4,8.2,66,"de","3 Staffeln · 50 Folgen","Ein Spion braucht für seine Mission eine Familie und heiratet zum Schein eine Auftragsmörderin. Die adoptierte Tochter kann Gedanken lesen und weiß als Einzige alles.","","spy family","chill","Spy x Family"],
 ["One Punch Man","S","Action|Comedy",8.4,8.6,232,"de","3 Staffeln · 36 Folgen","Saitama besiegt jeden Gegner mit einem einzigen Schlag und langweilt sich deshalb zu Tode. Eine Parodie auf Superhelden mit einigen der besten Kämpfe überhaupt.","Staffel 1 ist die beste.","one punch man saitama","","One Punch Man"],
-["Steins;Gate 0","S","Sci-Fi|Thriller|Drama",8.4,8.4,16,"de","24 Folgen","Eine alternative Fortsetzung: Okabe ist gescheitert und lebt gebrochen weiter, bis ihn die Zeitreise wieder einholt.","Nur nach Steins;Gate schauen.","steins gate zero","dn|kurz","Steins;Gate 0"],
 ["Grand Blue Dreaming","S","Comedy",8.4,7.9,7.4,"sub","3 Staffeln · 36 Folgen","Iori will ein entspanntes Studentenleben und landet in einem Tauchclub, der vor allem trinkt und sich auszieht. Eine der lustigsten Comedys überhaupt.","","grand blue","chill","Grand Blue"],
 ["Mushoku Tensei","S","Isekai|Fantasy|Abenteuer",8.4,8.2,66,"de","3 Staffeln · 62 Folgen","Ein gescheiterter Mann wird als Rudeus in eine Fantasywelt wiedergeboren und nimmt sich vor, dieses Leben nicht zu verschwenden. Riesiger, detailreicher Weltenbau.","Der Hauptcharakter ist anfangs oft unangenehm. Das ist gewollt, schreckt aber manche ab.","jobless reincarnation","","Mushoku Tensei"],
 ["JoJo's Bizarre Adventure","S","Action|Abenteuer",8.4,8.6,58,"de","6 Staffeln · über 200 Folgen","Generationen der Familie Joestar kämpfen gegen übernatürliche Feinde, später mit Geisterwesen namens Stands. Exzentrisch, kreativ und voller cleverer Kämpfe.","Teil 1 wirkt etwas altmodisch, ab Teil 2 geht es richtig los. Teil 4 und 5 gelten als Höhepunkte.","jojo","","JoJo's Bizarre Adventure"],
@@ -693,7 +724,7 @@ const byImdb = [...items].sort((a, b) => (b.imdb ?? -1) - (a.imdb ?? -1) || (b.v
 const byAz = [...items].sort((a, b) => a.title.localeCompare(b.title, "de"));
 
 // Gespeicherte Daten (nur in diesem Browser)
-const KEY = { saved: "cr-top100-saved", seen: "cr-top100-seen", filters: "cr-top100-filters" };
+const KEY = { saved: "cr-top100-saved", seen: "cr-top100-seen", filters: "cr-top100-filters", install: "cr-top100-install-closed" };
 function load(k, fallback) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; } }
 function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 // Ältere Einträge (a0, a1, …) auf Titel umstellen
@@ -757,7 +788,6 @@ const CR = {
   "Campfire Cooking in Another World": "GG5H5X3EE/campfire-cooking-in-another-world-with-my-absurd-skill",
   "Blue Exorcist": "G649PJ0JY/blue-exorcist",
   "One Piece Film: Red": "G5PHNMWX9/one-piece-movies",
-  "Steins;Gate": "GYWE7W5GY",
   "Attack on Titan": "GR751KNZY",
   "Vinland Saga": "GEXH3WKK0/vinland-saga",
   "Code Geass": "GY2P9ED0Y",
@@ -765,7 +795,6 @@ const CR = {
   "Die Tagebücher der Apothekerin": "G3KHEVDJ7",
   "Mob Psycho 100": "GY190DKQR",
   "Psycho-Pass": "GR75253JY",
-  "Steins;Gate 0": "GYWE7W5GY",
   "Attack on Titan: The Last Attack": "watch/GJWUQ7WGE",
   "Gintama": "GYQ4MKDZ6",
   "Demon Slayer: Kimetsu no Yaiba": "GY5P48XEY/demon-slayer-kimetsu-no-yaiba",
@@ -1325,7 +1354,7 @@ document.addEventListener("touchmove", e => { if (e.touches.length > 1) e.preven
 // Schon beim Aufsetzen des zweiten Fingers sperren, bevor das iPhone eine Zoom-Geste daraus macht
 document.addEventListener("touchstart", e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 
-// Anleitung: als App auf den Homescreen (nur im Handy-Browser, nicht in Claude)
+// Hinweis „Als App speichern“ ganz oben (nur im Handy-Browser, nicht in Claude und nicht in der App)
 (() => {
   try { if (window.self !== window.top) return; } catch (e) { return; }
   const ua = navigator.userAgent;
@@ -1334,13 +1363,13 @@ document.addEventListener("touchstart", e => { if (e.touches.length > 1) e.preve
   const android = /Android/.test(ua);
   const app = navigator.standalone === true || matchMedia("(display-mode: standalone)").matches;
   if ((!ios && !android) || app) return;
+  if (load(KEY.install, false)) return; // „Für immer ausblenden“ gewählt
   const SHARE = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.8v8.6M5.2 4.6L8 1.8l2.8 2.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.6 7H4.4A1.4 1.4 0 0 0 3 8.4v5.2A1.4 1.4 0 0 0 4.4 15h7.2a1.4 1.4 0 0 0 1.4-1.4V8.4A1.4 1.4 0 0 0 11.6 7h-1.2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
   const PLUS = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 5.2v5.6M5.2 8h5.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
   const k = t => '<span class="key">' + t + '</span>';
   let steps;
   if (ios) {
     const safari = !/CriOS|FxiOS|EdgiOS|OPiOS/.test(ua);
-    $("#instTitle").textContent = ipad ? "Als App aufs iPad" : "Als App aufs iPhone";
     const MENU = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 4h11M2.5 8h11M2.5 12h7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
     const MORE = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     steps = [
@@ -1352,7 +1381,7 @@ document.addEventListener("touchstart", e => { if (e.touches.length > 1) e.preve
       "Oben rechts auf " + k("Hinzufügen") + " tippen",
     ];
   } else {
-    $("#instTitle").textContent = "Als App aufs Handy";
+    $("#instTitle").textContent = "Zum Startbildschirm hinzufügen";
     steps = [
       "Oben rechts auf " + k("⋮") + " tippen",
       k("Zum Startbildschirm hinzufügen") + " wählen",
@@ -1360,9 +1389,23 @@ document.addEventListener("touchstart", e => { if (e.touches.length > 1) e.preve
     ];
   }
   $("#instSteps").innerHTML = steps.map(s => "<li><span>" + s + "</span></li>").join("");
-  const box = $("#install");
-  box.hidden = false;
-  $("#instClose").addEventListener("click", () => { box.hidden = true; });
+  if (android) $("#askText").textContent = "Du kannst die Liste auch später noch als App speichern: über ⋮ und „Zum Startbildschirm hinzufügen“.";
+  const banner = $("#ibanner"), sheet = $("#instSheet"), ask = $("#instAsk");
+  banner.hidden = false;
+  const open = el => { el.hidden = false; const b = el.querySelector(".ov-btn.main"); if (b) b.focus({ preventScroll: true }); };
+  const close = el => { el.hidden = true; };
+  [sheet, ask].forEach(el => el.addEventListener("click", e => { if (e.target.closest("[data-close]")) close(el); }));
+  // Wischen auf dem abgedunkelten Hintergrund soll die Liste dahinter nicht bewegen
+  [sheet, ask].forEach(el => el.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false }));
+  document.addEventListener("keydown", e => { if (e.key === "Escape") { close(sheet); close(ask); } });
+  $("#ibSave").addEventListener("click", () => open(sheet));
+  $("#ibClose").addEventListener("click", () => open(ask));
+  $("#askHide").addEventListener("click", () => {
+    store(KEY.install, true);
+    close(ask);
+    banner.hidden = true;
+    banner.remove();
+  });
 })();
 
 sync();
