@@ -2,7 +2,6 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<!-- Build V78b, 26.10.2026: neu hochgeladen, damit GitHub-Zähler und Versionsnummer übereinstimmen -->
 <!-- Dunkler Hintergrund ganz am Anfang, noch vor Symbolen und Schriften: So ist die Seite beim Öffnen sofort dunkel statt weiß -->
 <meta name="color-scheme" content="dark">
 <style>html{background:#0F1120}</style>
@@ -407,6 +406,8 @@ html.prisc { --hanko: #FF6FA8; --hanko-soft: #3A1A2A; --gold: #FF9CC8; --on-gold
 .petal { position: absolute; top: -44px; line-height: 1; will-change: transform; }
 .meta .pg { display: none; color: #FF8FBF; }
 html.prisc .meta .pg { display: inline; }
+/* Im Priscilla-Modus eigene Stimmungen für Romanzen statt der normalen */
+html:not(.prisc) .chip.rchip, html.prisc .chip.nchip { display: none; }
 html.prisc .stamp.low { border-color: #E58BB8; color: #F6B9D7; }
 /* Alle Ränge */
 .rank-card .sub { margin: 2px 0 0; color: var(--muted); font-size: 13px; line-height: 1.4; }
@@ -541,7 +542,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V78</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V79</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -572,10 +573,13 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
         <button type="button" class="toggle" id="hideSeen" aria-pressed="false">Gesehene ausblenden</button>
       </div>
       <div class="prow"><span class="plabel">Stimmung</span>
-        <button type="button" class="chip" data-mood="chill" aria-pressed="false">Zum Abschalten <span class="mc"></span></button>
-        <button type="button" class="chip" data-mood="herz" aria-pressed="false">Fürs Herz <span class="mc"></span></button>
-        <button type="button" class="chip" data-mood="dn" aria-pressed="false">Zum Mitdenken <span class="mc"></span></button>
-        <button type="button" class="chip" data-mood="kurz" aria-pressed="false">Kurz und knackig <span class="mc"></span></button>
+        <button type="button" class="chip nchip" data-mood="chill" aria-pressed="false">Zum Abschalten <span class="mc"></span></button>
+        <button type="button" class="chip nchip" data-mood="herz" aria-pressed="false">Fürs Herz <span class="mc"></span></button>
+        <button type="button" class="chip nchip" data-mood="dn" aria-pressed="false">Zum Mitdenken <span class="mc"></span></button>
+        <button type="button" class="chip nchip" data-mood="kurz" aria-pressed="false">Kurz und knackig <span class="mc"></span></button>
+        <button type="button" class="chip rchip" data-mood="suess" aria-pressed="false">Zuckersüß <span class="mc"></span></button>
+        <button type="button" class="chip rchip" data-mood="lachen" aria-pressed="false">Zum Lachen <span class="mc"></span></button>
+        <button type="button" class="chip rchip" data-mood="schmerz" aria-pressed="false">Herzschmerz <span class="mc"></span></button>
       </div>
     </div>
     <div class="status"><span id="status" aria-live="polite"></span><button type="button" class="reset" id="reset" hidden>Filter zurücksetzen</button><button type="button" class="share-btn" id="share" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10V2.5M5 5.5l3-3 3 3M3 9v4.5h10V9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Merkliste teilen</button></div>
@@ -876,6 +880,21 @@ const mk = (d, i, extra) => ({
   cr: d[12] || d[0], crLink: d[13] || "", order: i, extra
 });
 const items = [...DATA.map((d, i) => mk(d, i, false)), ...EXTRA.map((d, i) => mk(d, 1000 + i, true))];
+// Stimmungen der Romanzen für den Priscilla-Modus: Zuckersüß, Zum Lachen, Herzschmerz
+const ROM_MOOD = {
+  "Chainsaw Man – The Movie: Reze Arc": "schmerz", "A Silent Voice": "schmerz", "Kaguya-sama: Love Is War": "lachen", "Fruits Basket": "schmerz",
+  "Rascal Does Not Dream of Bunny Girl Senpai": "schmerz", "Horimiya": "suess", "My Teen Romantic Comedy SNAFU": "schmerz", "My Dress-Up Darling": "suess|lachen",
+  "Josie, der Tiger und die Fische": "schmerz", "Inuyasha": "lachen", "A Sign of Affection": "suess", "Yuri!!! on Ice": "suess", "Chihayafuru": "schmerz",
+  "Skip and Loafer": "suess", "My Love Story with Yamada-kun at Lv999": "suess|lachen", "The Ancient Magus' Bride": "schmerz",
+  "You and I Are Polar Opposites": "suess|lachen", "Love Unseen Beneath the Clear Night Sky": "suess|schmerz", "Heaven Official's Blessing": "schmerz",
+  "Akatsuki no Yona – Prinzessin der Morgendämmerung": "schmerz", "Firefly Wedding": "schmerz", "Night is Short, Walk on Girl": "lachen",
+  "The Cold Sato-san is Only Sweet to Me": "suess|lachen", "Smoking Behind the Supermarket with You": "suess", "Go For It, Nakamura-kun!!": "suess|lachen",
+  "The Quintessential Quintuplets": "lachen", "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You": "lachen",
+  "The Angel Next Door Spoils Me Rotten": "suess", "Cherry Magic! Thirty Years of Virginity Can Make You a Wizard?!": "suess|lachen",
+  "More than a Married Couple, but Not Lovers": "lachen", "Sekaiichi Hatsukoi: The World's Greatest First Love": "suess|lachen",
+  "Alya Sometimes Hides Her Feelings in Russian": "lachen", "Tune In to the Midnight Heart": "suess|lachen"
+};
+items.forEach(it => { if (ROM_MOOD[it.key]) it.moods = it.moods.concat(ROM_MOOD[it.key].split("|")); });
 const byMine = [...items].sort((a, b) => b.mine - a.mine || a.order - b.order);
 byMine.forEach((it, i) => it.rank = i + 1);
 // Platz innerhalb jedes Genres
@@ -899,7 +918,8 @@ store(KEY.saved, [...saved]); store(KEY.seen, [...seen]);
 const DEFAULTS = { type: "", sort: "mine", onlyDe: false, hideSeen: false, mood: "", view: "all", g2: "" };
 const FILTER_KEYS = ["type", "onlyDe", "hideSeen", "mood"];
 // Stimmungen aus den Daten: chill = Zum Abschalten, herz = Fürs Herz, dn = Zum Mitdenken, kurz = Kurz und knackig
-const MOODS = ["chill", "herz", "dn", "kurz"];
+const MOODS = ["chill", "herz", "dn", "kurz", "suess", "lachen", "schmerz"];
+const RMOODS = ["suess", "lachen", "schmerz"]; // nur im Priscilla-Modus
 // Im Reiter Gesehen ergibt „Gesehene ausblenden“ keinen Sinn: dort ausgeblendet und nicht als aktiver Filter gezählt
 const activeKeys = () => FILTER_KEYS.filter(k => !(k === "hideSeen" && state.view === "seen"));
 const loaded = load(KEY.filters, {});
@@ -918,6 +938,7 @@ const KEY_PRISC = "cr-top100-priscilla";
 let prisc = load(KEY_PRISC, false) === true;
 const isRom = it => it.genres.includes("Romance");
 document.documentElement.classList.toggle("prisc", prisc);
+if (state.mood && RMOODS.includes(state.mood) !== prisc) state.mood = "";
 
 const $ = s => document.querySelector(s);
 const fmt = n => n.toFixed(1).replace(".", ",");
@@ -1038,6 +1059,8 @@ $("#q").addEventListener("input", e => {
 });
 function setPrisc(on, fx) {
   prisc = on; store(KEY_PRISC, on);
+  // Romanzen-Stimmungen gibt es nur im Modus, die normalen nur außerhalb
+  if (state.mood && RMOODS.includes(state.mood) !== on) { state.mood = ""; sync(); }
   document.documentElement.classList.toggle("prisc", on);
   $("#prisBar").hidden = !on;
   if (!fx) return;
