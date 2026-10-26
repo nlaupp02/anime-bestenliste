@@ -382,7 +382,7 @@ button, a, summary, input, label { touch-action: manipulation; }
 .prog p b { color: var(--ink); }
 /* Rang: Kanji im Ring, der Ring füllt sich bis zum nächsten Rang. Farbe steigt mit: grau, grün, gold, rot */
 .prog, .ladder li { --rc: #A3A8C2; }
-.prog.rt1, .ladder li.rt1 { --rc: var(--ok); } .prog.rt2, .ladder li.rt2 { --rc: var(--gold); } .prog.rt3, .ladder li.rt3 { --rc: var(--hanko); }
+.prog.rt1, .ladder li.rt1 { --rc: #5FD3A6; } .prog.rt2, .ladder li.rt2 { --rc: #F2C14E; } .prog.rt3, .ladder li.rt3 { --rc: #F05A50; } /* feste Farben, auch im Priscilla-Modus */
 .prog .rk { display: grid; justify-items: center; gap: 4px; }
 .prog .ring .kj { position: absolute; inset: 0; display: grid; place-items: center; font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
   font-weight: 700; font-size: 20px; line-height: 1.05; writing-mode: vertical-rl; color: var(--rc); }
@@ -406,6 +406,7 @@ html.prisc { --hanko: #FF6FA8; --hanko-soft: #3A1A2A; --gold: #FF9CC8; --on-gold
 .petal { position: absolute; top: -44px; line-height: 1; will-change: transform; }
 .meta .pg { display: none; color: #FF8FBF; }
 html.prisc .meta .pg { display: inline; }
+html.prisc .stamp.low { border-color: #E58BB8; color: #F6B9D7; }
 /* Alle Ränge */
 .rank-card .sub { margin: 2px 0 0; color: var(--muted); font-size: 13px; line-height: 1.4; }
 .ladder { list-style: none; margin: 0; padding: 0; }
@@ -539,7 +540,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V77</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V78</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -618,6 +619,14 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
     <div><b id="rankTitle"></b><p class="sub">Steigt mit jedem Anime, den du als gesehen markierst.</p></div>
     <ol class="ladder" id="ladder"></ol>
     <button type="button" class="ov-btn main" data-close>OK</button>
+  </div>
+</div>
+<div class="ov" id="prisAsk" hidden>
+  <div class="ov-bg" data-close></div>
+  <div class="ov-card ask" role="alertdialog" aria-modal="true" aria-labelledby="prisAskTitle" aria-describedby="prisAskText">
+    <b id="prisAskTitle">💔 Priscilla-Modus beenden?</b>
+    <p id="prisAskText">Dann verschwinden die Herzen, und du siehst wieder alle Animes.</p>
+    <div class="ov-row"><button type="button" class="ov-btn" data-close>Bleiben</button><button type="button" class="ov-btn danger" id="prisAskOk">Beenden</button></div>
   </div>
 </div>
 <div class="ov" id="instAsk" hidden>
@@ -1023,7 +1032,7 @@ $("#counts").innerHTML =
 document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click", () => { state.type = b.dataset.type; sync(); render(); }));
 $("#q").addEventListener("input", e => {
   const v = e.target.value.trim().toLowerCase();
-  if (v === "priscilla") { e.target.value = ""; state.q = ""; e.target.blur(); setPrisc(!prisc, true); render(); return; }
+  if (v === "priscilla") { e.target.value = ""; state.q = ""; e.target.blur(); if (prisc) { render(); askPrisc(); } else { setPrisc(true, true); render(); } return; }
   state.q = v; render();
 });
 function setPrisc(on, fx) {
@@ -1056,7 +1065,14 @@ function petals() {
   document.body.append(box);
   setTimeout(() => box.remove(), 4700);
 }
-$("#prisOff").addEventListener("click", () => { setPrisc(false, true); render(); });
+// Beenden nur mit Nachfrage (Knopf in der Leiste oder „Priscilla“ noch einmal eintippen)
+const prisAsk = $("#prisAsk");
+function askPrisc() { prisAsk.hidden = false; $("#prisAskOk").focus({ preventScroll: true }); }
+prisAsk.addEventListener("click", e => { if (e.target.closest("[data-close]")) prisAsk.hidden = true; });
+prisAsk.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !prisAsk.hidden) prisAsk.hidden = true; });
+$("#prisAskOk").addEventListener("click", () => { prisAsk.hidden = true; setPrisc(false, true); render(); });
+$("#prisOff").addEventListener("click", askPrisc);
 $("#prisBar").hidden = !prisc;
 // iPhone: Für die Tastatur verschiebt das iPhone die (sonst stillstehende) Seite. Danach wieder an ihren Platz.
 document.addEventListener("focusin", e => { if (e.target.matches("input, textarea")) typing = true; });
