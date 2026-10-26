@@ -2,6 +2,9 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
+<!-- Dunkler Hintergrund ganz am Anfang, noch vor Symbolen und Schriften: So ist die Seite beim Öffnen sofort dunkel statt weiß -->
+<meta name="color-scheme" content="dark">
+<style>html{background:#0F1120}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="description" content="Die besten Animes auf Crunchyroll Deutschland, mit Wertung und deutscher Synchro.">
 <meta name="theme-color" content="#0F1120">
@@ -434,9 +437,12 @@ html:not(.inst) .ibanner { display: none; }
 .app body::before { display: none; }
 .standalone header.top { padding-top: calc(env(safe-area-inset-top, 0px) + 36px); }
 .app:not(.standalone) header.top { padding-top: 8px; }
-/* App-Start: kurz verdeckt, bis alles stillsteht (siehe Kopf der Seite), dann sanft eingeblendet */
-.app body { transition: opacity .18s ease-out; }
+/* App-Start: kurz verdeckt, bis alles stillsteht (siehe Kopf der Seite), dann sanft eingeblendet.
+   Solange die Seite verdeckt ist, gibt es keine Bewegungen (z. B. die Blase der Leiste): Alles steht schon an seinem Platz,
+   wenn die Seite erscheint. */
+.app body { transition: opacity .32s cubic-bezier(.25, .6, .3, 1); }
 html.boot body { opacity: 0; }
+html.boot *, html.boot *::before, html.boot *::after { transition: none !important; }
 /* App und Handy-Safari: Die Liste rollt in einem eigenen Bereich, die Glas-Leiste liegt außerhalb davon.
    So reagiert die Leiste sofort, auch während die Liste noch nachrollt (wie bei iPhone-Apps). Die Seite selbst rollt nie,
    deshalb springt auch die Safari-Leiste unten nicht mehr. */
