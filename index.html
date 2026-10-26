@@ -284,6 +284,11 @@ html.covers .cv { display: block; grid-column: 1; grid-row: 1 / span 4; align-se
 .tile b { font-size: 15.5px; }
 .tile .tn { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
 .tile .tt { grid-column: 1 / -1; font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Cover vom Tipp-Anime scheint rechts blass durch (nur wenn Cover geladen sind) */
+.tile { position: relative; overflow: hidden; isolation: isolate; }
+.tile .gcv { position: absolute; top: 0; right: 0; bottom: 0; width: 46%; z-index: -1; background-size: cover; background-position: center 25%; opacity: .55;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 75%); mask-image: linear-gradient(90deg, transparent, #000 75%); pointer-events: none; }
+.tile:has(.gcv) b, .tile:has(.gcv) .tn, .tile:has(.gcv) .tt { text-shadow: 0 1px 6px rgba(0, 0, 0, .6); }
 .gbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
 .gback { font: inherit; font-size: 14px; font-weight: 700; color: var(--ink); background: var(--chip); border: 0; border-radius: 999px; padding: 7px 13px; cursor: pointer; }
 .gbar h3 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 22px; }
@@ -621,7 +626,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V109</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V110</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1377,13 +1382,16 @@ const passesWith = (it, mood) =>
   (!prisc || isRom(it));
 // Genres ohne passenden Titel werden ausgeblendet, die Zahl oben zählt nur die sichtbaren
 let tileCount = GENRES.length;
+// Kurztitel für die Kacheln: „Frieren – Nach dem Ende der Reise“ → „Frieren“ (zu kurze Reste wie „86“ bleiben lang)
+const shortT = t => { const x = t.split(" – ")[0].split(": ")[0]; return x.length < 4 ? t : x; };
 function renderTiles() {
   // Im Priscilla-Modus ist alles Romance: diese Kachel sagt dann nichts und fällt weg
   const shown = GENRES.map(g => [g, inG(g).filter(passes)]).filter(([g, list]) => list.length && !(prisc && g === "Romance"));
   tileCount = shown.length;
   $("#tiles").innerHTML = shown.map(([g, list]) => {
     const f = FEATURED[g] && passes(FEATURED[g]) ? FEATURED[g] : list[0];
-    return `<button type="button" class="tile" data-g="${g}"><b>${g}</b><span class="tn">${list.length} Titel</span>${f ? `<span class="tt">Tipp: ${esc(f.title)}</span>` : ""}</button>`;
+    const u = f ? coverOf(f) : "";
+    return `<button type="button" class="tile" data-g="${g}"><b>${g}</b><span class="tn">${list.length} Titel</span>${f ? `<span class="tt">Tipp: ${esc(shortT(f.title))}</span>` : ""}${u ? `<i class="gcv" style="background-image:url('${esc(u)}')" aria-hidden="true"></i>` : ""}</button>`;
   }).join("");
 }
 
@@ -1447,6 +1455,7 @@ function warmCovers() {
 function applyCovers() {
   const any = items.some(coverOf);
   document.documentElement.classList.toggle("covers", any);
+  if (any && $("#tiles").childElementCount) renderTiles();
   if (!any || !cardEls) return;
   items.forEach(it => {
     const u = coverOf(it), el = cardEls.get(it.id), img = el && el.querySelector(".cv img");
