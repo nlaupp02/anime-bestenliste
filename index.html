@@ -440,10 +440,14 @@ html.prisc { --hanko: #FF6FA8; --hanko-soft: #3A1A2A; --gold: #FF9CC8; --on-gold
 .petal { position: absolute; top: -44px; line-height: 1; will-change: transform; }
 .meta .pg { display: none; color: #FF8FBF; }
 html.prisc .meta .pg { display: inline; }
-html.prisc .prog.rt0, html.prisc .ladder li.rt0 { --rc: #F8D7E6; }
-html.prisc .prog.rt1, html.prisc .ladder li.rt1 { --rc: #FFA8CF; }
-html.prisc .prog.rt2, html.prisc .ladder li.rt2 { --rc: #FF6FAE; }
-html.prisc .prog.rt3, html.prisc .ladder li.rt3 { --rc: #E0245E; }
+html.prisc .prog.rt0, html.prisc .ladder li.rt0 { --rc: #F9CFE1; }
+html.prisc .prog.rt1, html.prisc .ladder li.rt1 { --rc: #FF8FC4; }
+html.prisc .prog.rt2, html.prisc .ladder li.rt2 { --rc: #E8559F; }
+html.prisc .prog.rt3, html.prisc .ladder li.rt3 { --rc: #C2187A; }
+html.prisc .prog.rt4, html.prisc .ladder li.rt4 { --rc: #FF3D7F; }
+html.prisc .ladder li.lock { opacity: .55; }
+/* Kein blauer Rahmen um die Knöpfe in den Fenstern */
+.ov-btn:focus { outline: none; }
 /* Im Priscilla-Modus eigene Stimmungen für Romanzen statt der normalen */
 html:not(.prisc) .chip.rchip, html.prisc .chip.nchip { display: none; }
 html.prisc .stamp.low { border-color: #E58BB8; color: #F6B9D7; }
@@ -580,7 +584,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V98</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V99</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1496,9 +1500,9 @@ const RANKS = [[0, "初心者", "Shoshinsha", "Anfänger", 0], [1, "後輩", "K�
   [10, "先輩", "Senpai", "Serienjunkie", 1], [20, "侍", "Samurai", "Krieger", 2], [35, "先生", "Sensei", "Meister", 2], [50, "将軍", "Shōgun", "Großmeister", 3],
   [75, "仙人", "Sennin", "Legende", 3], [100, "鬼", "Oni", "Dämon", 3], [130, "魔王", "Maō", "Dämonenkönig", 3]];
 // Im Priscilla-Modus gibt es eigene Liebes-Ränge, die nur gesehene Romanzen zählen
-const LOVE = [[0, "片思い", "Kataomoi", "Verknallt", 0], [1, "鼓動", "Kodō", "Herzklopfen", 0], [3, "告白", "Kokuhaku", "Geständnis", 1],
-  [6, "デート", "Dēto", "Verabredet", 1], [10, "両想い", "Ryōomoi", "Pärchen", 2], [15, "恋人", "Koibito", "Traumpaar", 2],
-  [20, "婚約", "Kon'yaku", "Verlobt", 3], [25, "運命", "Unmei no Hito", "Seelenverwandt", 3], [30, "恋", "Koi no Joō", "Herzkönigin", 3]];
+const LOVE = [[0, "独", "Hitori", "Single", 0], [1, "惚", "Horeru", "Verknallt", 0], [3, "鼓", "Kodō", "Herzklopfen", 1],
+  [6, "約", "Yakusoku", "Verabredet", 1], [10, "絆", "Kizuna", "Vergeben", 2], [15, "婚", "Kon'yaku", "Verlobt", 2],
+  [20, "結", "Kekkon", "Verheiratet", 3], [25, "魂", "Tamashii", "Seelenverwandt", 3], [30, "姫", "Hime", "Herzkönigin", 4]];
 const ranks = () => prisc ? LOVE : RANKS;
 const rankIdx = n => ranks().reduce((a, r, i) => n >= r[0] ? i : a, 0);
 const seenCount = () => items.filter(it => seen.has(it.id) && (!prisc || isRom(it))).length;
