@@ -122,6 +122,15 @@ h1 .red { color: var(--hanko); }
 .why-body b.r { color: var(--hanko); }
 .why-body .scale { display: flex; flex-wrap: wrap; gap: 4px 16px; }
 .why-body .scale span { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+/* Am PC: kleine Stempel wie auf den Karten. Auf dem Handy (ⓘ-Fenster) bleibt die Textzeile. */
+.why summary:focus:not(:focus-visible) { outline: none; }
+.why-body .scale2 { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.why-body .scale2 span { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+.why-body .mini { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--hanko); font-family: var(--f-display); font-style: normal; font-size: 11px; color: var(--hanko); }
+.why-body .mini.top { background: var(--gold); border-color: var(--gold); color: var(--on-gold); }
+.why-body .mini.mid { background: var(--hanko-soft); }
+.why-body .mini.low { border-color: var(--muted); color: var(--muted); }
+.app .why-body .scale2, html:not(.app) .why-body .scale-txt { display: none; }
 .dot { width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--hanko); display: inline-block; flex: none; }
 .dot.top { background: var(--gold); border-color: var(--gold); }
 .dot.mid { background: var(--hanko-soft); }
@@ -599,11 +608,11 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V105</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V106</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-    <details class="why"><summary><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".95" fill="currentColor"/></svg>So entsteht die Wertung<svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="why-body"><p>Eine KI nimmt die Fan-Bewertungen von MyAnimeList und IMDb und passt sie um bis zu 1 Punkt an: mehr für gute Story, Figuren, Animation und Ende, weniger für Füllerfolgen und Längen.</p><p>Ab 9 herausragend · ab 8 sehr gut · ab 7 gut</p></div></details>
+    <details class="why"><summary><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".95" fill="currentColor"/></svg>So entsteht die Wertung<svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="why-body"><p>Fan-Bewertungen von <b>MyAnimeList</b> und <b>IMDb</b>, von einer KI um bis zu 1 Punkt angepasst: <b>+</b> für Story, Figuren, Animation und Ende, <b>−</b> für Füller und Längen.</p><p class="scale-txt">Ab 9 herausragend · ab 8 sehr gut · ab 7 gut</p><div class="scale2"><span><i class="mini top">9</i>herausragend</span><span><i class="mini mid">8</i>sehr gut</span><span><i class="mini low">7</i>gut</span></div></div></details>
   </header>
 
   <div class="bar">
