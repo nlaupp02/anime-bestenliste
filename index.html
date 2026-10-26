@@ -231,6 +231,7 @@ main { padding-block: 18px calc(max(16px, env(safe-area-inset-bottom, 0px)) + 76
 .whybtn { display: none; }
 .app .whybtn { display: inline-grid; place-items: center; width: 26px; height: 26px; margin: -4px 0 -4px -6px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--muted); cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .whybtn svg { width: 16px; height: 16px; }
+.whybtn[hidden] { display: none !important; }
 .why-card .why-body { margin: 0; border: 0; padding: 0; font-size: 14px; color: var(--muted); }
 
 /* Wertungen */
@@ -579,7 +580,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V96</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V97</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -918,7 +919,10 @@ const DUB = { de: "Deutsch", teil: "Deutsch?", sub: "Nur Untertitel", unk: "Ton:
 // Merken und Gesehen hängen am Titel, nicht an der Position in der Liste
 const slug = s => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 // Deutscher Titel wie auf Crunchyroll Deutschland. Die ID bleibt beim alten Namen, damit Merken/Gesehen erhalten bleiben.
-const DE_TITLE = { "So I'm a Spider, So What?": "Ich bin eine Spinne, na und?" };
+// Angezeigter Titel, wenn er vom Originaltitel abweicht (deutsch oder gekürzt). Die Suche findet weiter den vollen Namen.
+const DE_TITLE = { "So I'm a Spider, So What?": "Ich bin eine Spinne, na und?",
+  "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You": "The 100 Girlfriends",
+  "Cherry Magic! Thirty Years of Virginity Can Make You a Wizard?!": "Cherry Magic!" };
 const mk = (d, i, extra) => ({
   id: slug(d[0]), key: d[0], title: DE_TITLE[d[0]] || d[0], type: d[1], genres: d[2].split("|"), mine: d[3], imdb: d[4], votes: d[5],
   dub: d[6], len: d[7], desc: d[8], note: d[9], alt: (d[10] || "") + (DE_TITLE[d[0]] ? " " + d[0] : ""), sq: d[10] || "", moods: (d[11] || "").split("|").filter(Boolean),
@@ -1243,7 +1247,7 @@ function card(it) {
     <li class="card${isSeen ? " is-seen" : ""}">
       <div class="cbody">
       <div class="cv" aria-hidden="true"><img alt="" draggable="false" loading="lazy" decoding="async"${coverOf(it) ? ` src="${coverOf(it)}"` : ""} onload="this.classList.add('ok')" onerror="this.remove()"></div>
-      <div class="meta"><span class="rank">${state.view === "genres" && state.g2 ? `Platz ${it.gr[state.g2]} in ${state.g2}` : `Platz ${it.rank}`}</span><span>${it.type === "F" ? "Film" : "Serie"}</span>${isRom(it) && it.mine >= 8.3 ? '<span class="pg">💘 Priscilla-geprüft</span>' : ""}</div>
+      <div class="meta"><span class="rank">${state.view === "genres" && state.g2 ? `Platz ${(prisc ? it.grR : it.gr)[state.g2]}` : `Platz ${it.rank}`}</span><span>${it.type === "F" ? "Film" : "Serie"}</span>${isRom(it) && it.mine >= 8.3 ? '<span class="pg">💘 Priscilla-geprüft</span>' : ""}</div>
       <div class="score">
         <div class="stamp ${tier(it.mine)}" aria-label="Wertung ${fmt(it.mine)} von 10">${fmt(it.mine)}<small>/10</small></div>
       </div>
@@ -1298,6 +1302,8 @@ function status(n) {
   $("#status").textContent = n < 0 ? `${tileCount} ${tileCount === 1 ? "Genre" : "Genres"}` : prisc ? `${n} ${n === 1 ? "Romanze" : "Romanzen"}` : active ? `${n} Treffer` : `${n} Titel`;
   $("#reset").hidden = !active;
   $("#share").hidden = !(state.view === "saved" && nSaved);
+  // Im Reiter Gesehen gibt es schon das ⓘ für die Ränge, dort fällt das Wertungs-ⓘ weg
+  $("#whyBtn").hidden = state.view === "seen";
 }
 
 // Pro Genre ein eigener Tipp, kein Titel doppelt:
@@ -1534,7 +1540,7 @@ function render() {
   byMine.forEach(it => {
     const el = cardEls.get(it.id), on = show.has(it.id);
     if (el.hidden === on) el.hidden = !on;
-    if (on) { const r = gName ? `Platz ${(prisc ? it.grR : it.gr)[gName]} in ${gName}` : prisc ? `Platz ${it.grR.Romance}` : `Platz ${it.rank}`; if (el._rank.textContent !== r) el._rank.textContent = r; }
+    if (on) { const r = gName ? `Platz ${(prisc ? it.grR : it.gr)[gName]}` : prisc ? `Platz ${it.grR.Romance}` : `Platz ${it.rank}`; if (el._rank.textContent !== r) el._rank.textContent = r; }
   });
   const e = $("#empty");
   e.hidden = list.length > 0 || (state.view === "seen" && !seen.size); // bei 0 Gesehenen erklärt die Fortschritts-Karte alles
