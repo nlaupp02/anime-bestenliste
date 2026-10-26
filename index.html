@@ -75,6 +75,8 @@
 }
 
 * { box-sizing: border-box; }
+/* Auch hinter der Seite dunkel: Beim Einblenden nach dem Öffnen scheint sonst im Artifact der helle Claude-Hintergrund durch */
+html { background: var(--paper); }
 body {
   background: var(--paper);
   color: var(--ink);
@@ -495,7 +497,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V72</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V74</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1264,23 +1266,76 @@ const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // Sichtbar zur Karte gleiten. Das Ziel wird in jedem Bild neu gemessen, weil Karten unterwegs erst gezeichnet werden und ihre Höhe ändern
 let pickAnim = 0;
-function glideTo(el) {
+function glideTo(el, done) {
   cancelAnimationFrame(pickAnim);
   const targetY = () => Math.max(0, Math.min(maxY(), getY() + el.getBoundingClientRect().top - Math.max(16, (viewH() - el.offsetHeight) / 2)));
-  if (reduce) { setY(targetY()); return; }
+  if (reduce) { setY(targetY()); if (done) done(); return; }
   const y0 = getY(), t0 = performance.now(), dur = Math.min(1100, 450 + Math.abs(targetY() - y0) / 30);
   const step = now => {
     const k = Math.min(1, (now - t0) / dur), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
     setY(Math.round(y0 + (targetY() - y0) * e));
     if (k < 1) pickAnim = requestAnimationFrame(step);
-    else pickAnim = requestAnimationFrame(() => { pickAnim = 0; if (Math.abs(targetY() - getY()) > 3) setY(targetY()); });
+    else pickAnim = requestAnimationFrame(() => { pickAnim = 0; if (Math.abs(targetY() - getY()) > 3) setY(targetY()); if (done) done(); });
   };
   pickAnim = requestAnimationFrame(step);
+}
+
+// Zufallstipp-Animation: Der Würfel rollt (Augen wechseln), danach wird auf der gewählten Karte die Wertung
+// wie ein Hanko-Stempel aufgedrückt. Mit „Bewegung reduzieren“ geht es ohne Animation direkt zur Karte.
+const DICE = { 1: [[12, 12]], 2: [[8.2, 8.2], [15.8, 15.8]], 3: [[8.2, 8.2], [12, 12], [15.8, 15.8]],
+  4: [[8.2, 8.2], [15.8, 8.2], [8.2, 15.8], [15.8, 15.8]], 5: [[8.2, 8.2], [15.8, 8.2], [12, 12], [8.2, 15.8], [15.8, 15.8]],
+  6: [[8.2, 7.6], [8.2, 12], [8.2, 16.4], [15.8, 7.6], [15.8, 12], [15.8, 16.4]] };
+const diceSvg = document.querySelector(".pick-ico svg");
+// Die Augen liegen in einer eigenen Gruppe, damit sie beim Rollen gemeinsam weich aus- und einblenden
+const pips = document.createElementNS("http://www.w3.org/2000/svg", "g");
+diceSvg.querySelectorAll("circle").forEach(c => pips.append(c));
+diceSvg.append(pips);
+let diceFace = 5, rolling = false;
+const setFace = n => {
+  pips.replaceChildren(...DICE[n].map(([x, y]) => {
+    const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    c.setAttribute("cx", x); c.setAttribute("cy", y); c.setAttribute("r", "1.6"); c.setAttribute("fill", "currentColor");
+    return c;
+  }));
+};
+function rollDice(done) {
+  if (reduce || !diceSvg.animate) { done(); return; }
+  rolling = true;
+  diceSvg.style.animation = "none";
+  const roll = diceSvg.animate([
+    { transform: "translateY(0) rotate(0deg) scale(1)", offset: 0 },
+    { transform: "translateY(-7px) rotate(260deg) scale(1.18)", offset: .3 },
+    { transform: "translateY(0) rotate(560deg) scale(1)", offset: .62 },
+    { transform: "translateY(-3px) rotate(700deg) scale(1.06)", offset: .78 },
+    { transform: "translateY(0) rotate(714deg) scale(1)", offset: .9 },
+    { transform: "translateY(0) rotate(720deg) scale(1)", offset: 1 }
+  ], { duration: 750, easing: "cubic-bezier(.2,.7,.3,1)" });
+  // Während der schnellen Drehung verschwimmen die Augen (kein hartes Umspringen), die neue Zahl kommt erst,
+  // wenn sie fast unsichtbar sind, und blendet dann weich ein
+  pips.animate([{ opacity: 1 }, { opacity: .15, offset: .2 }, { opacity: .15, offset: .58 }, { opacity: 1, offset: .86 }, { opacity: 1 }],
+    { duration: 750, easing: "ease-in-out" });
+  const sw = setTimeout(() => {
+    let n; do { n = 1 + Math.floor(Math.random() * 6); } while (n === diceFace);
+    diceFace = n; setFace(n);
+  }, 400);
+  roll.onfinish = roll.oncancel = () => { clearTimeout(sw); rolling = false; done(); };
+}
+function pressStamp(el) {
+  if (reduce || !el.animate) return;
+  const st = el.querySelector(".stamp");
+  if (st) st.animate([
+    { transform: "scale(1.9) rotate(-28deg)", opacity: 0, offset: 0 },
+    { transform: "scale(.86) rotate(-6deg)", opacity: 1, offset: .55 },
+    { transform: "scale(1.06) rotate(-9deg)", opacity: 1, offset: .75 },
+    { transform: "scale(1) rotate(-8deg)", opacity: 1, offset: 1 }
+  ], { duration: 520, easing: "cubic-bezier(.3,.7,.2,1)" });
+  el.animate([{ transform: "scale(1)" }, { transform: "scale(1.015)", offset: .5 }, { transform: "scale(1)" }], { duration: 520, easing: "ease-out" });
 }
 
 // Zufallstipp: bevorzugt hoch bewertete Titel, die noch nicht gesehen sind
 let lastPick = null, pickT;
 $("#pick").addEventListener("click", () => {
+  if (rolling) return; // während der Würfel rollt, zählt ein zweiter Tipp nicht
   // Der Zufallstipp wählt immer aus allen Titeln: von einem anderen Reiter aus geht es dafür zu Alle
   if (state.view !== "all") { state.view = "all"; state.g2 = ""; sync(); render(); }
   let pool = filtered().filter(it => !seen.has(it.id));
@@ -1297,11 +1352,13 @@ $("#pick").addEventListener("click", () => {
   const btn = document.getElementById("v-" + pick.id);
   if (!btn) return;
   const el = btn.closest(".card");
-  document.querySelectorAll(".card.pick").forEach(c => c.classList.remove("pick"));
-  el.classList.add("pick");
-  glideTo(el);
-  toast("Wie wär's mit: " + pick.title + "?");
-  clearTimeout(pickT); pickT = setTimeout(() => el.classList.remove("pick"), 6000);
+  rollDice(() => {
+    document.querySelectorAll(".card.pick").forEach(c => c.classList.remove("pick"));
+    el.classList.add("pick");
+    glideTo(el, () => pressStamp(el));
+    toast("Wie wär's mit: " + pick.title + "?");
+    clearTimeout(pickT); pickT = setTimeout(() => el.classList.remove("pick"), 6000);
+  });
 });
 
 // Nach oben
