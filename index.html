@@ -460,6 +460,19 @@ html.prisc .prog.rt4, html.prisc .ladder li.rt4 { --rc: #FF3D7F; }
 .ladder li.lock { opacity: .55; }
 /* Kein blauer Rahmen um die Knöpfe in den Fenstern */
 .ov-btn:focus { outline: none; }
+/* Rang-Aufstieg: Stempel wird aufgedrückt, Funken fliegen, Name erscheint */
+.ov.rankup { z-index: 70; background: rgba(4, 5, 12, .55); animation: none; }
+.ru-card { position: relative; display: grid; justify-items: center; gap: 6px; text-align: center; padding: 26px 34px 22px; border-radius: 22px; background: var(--sheet); border: 1px solid var(--line); box-shadow: 0 20px 60px rgba(0, 0, 0, .5); }
+.ru-lbl { font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.ru-st { display: grid; place-items: center; width: 96px; height: 96px; margin: 6px 0 4px; border-radius: 20px; border: 3px solid var(--rc); color: var(--rc);
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif; font-weight: 700; font-size: 52px; line-height: 1; }
+.ru-name { font-family: var(--f-display); font-size: 28px; line-height: 1.1; color: var(--rc); }
+.ru-next { font-size: 13.5px; color: var(--muted); }
+.ru-card .ov-btn { justify-self: stretch; margin-top: 10px; }
+.rankup .ru-card { --rc: #A3A8C2; }
+.rankup.rt1 .ru-card { --rc: #5FD3A6; } .rankup.rt2 .ru-card { --rc: #F2C14E; } .rankup.rt3 .ru-card { --rc: #F05A50; }
+html.prisc .rankup.rt0 .ru-card { --rc: #F9CFE1; } html.prisc .rankup.rt1 .ru-card { --rc: #FF8FC4; } html.prisc .rankup.rt2 .ru-card { --rc: #E8559F; }
+html.prisc .rankup.rt3 .ru-card { --rc: #C2187A; } html.prisc .rankup.rt4 .ru-card { --rc: #FF3D7F; }
 /* „Entfernen“ (nicht mehr gesehen): weiches Rot statt kräftig rot gefüllt */
 html:not(.prisc) #seenAskOk { background: var(--hanko-soft); border-color: rgba(240, 90, 80, .45); color: #FF8A80; }
 /* Abstände (App und Safari): keine Trennlinie über der Liste, schmale Priscilla-Leiste, etwas mehr Luft zwischen den Karten */
@@ -608,7 +621,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V106</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V107</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -675,6 +688,9 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
     <ol class="inst-steps" id="instSteps"></ol>
     <button type="button" class="ov-btn main" data-close>OK</button>
   </div>
+</div>
+<div class="ov rankup" id="rankUp" hidden role="status" aria-live="polite">
+  <div class="ru-card"><span class="ru-lbl" id="ruLbl">Neuer Rang</span><span class="ru-st" id="ruSt" aria-hidden="true"></span><b class="ru-name" id="ruName"></b><span class="ru-next" id="ruNext"></span><button type="button" class="ov-btn main" id="ruOk">OK</button></div>
 </div>
 <div class="ov" id="seenAsk" hidden>
   <div class="ov-bg" data-close></div>
@@ -1581,8 +1597,27 @@ function render() {
   status(list.length);
 }
 
+// Rang-Aufstieg feiern: nur wenn durch „gesehen“ ein neuer Rang erreicht wird
+function rankUp(ri) {
+  const R = ranks(), r = R[ri], nx = R[ri + 1], box = $("#rankUp");
+  box.className = "ov rankup rt" + r[4];
+  $("#ruLbl").textContent = prisc ? "Neuer Liebes-Rang" : "Neuer Rang";
+  $("#ruSt").textContent = r[1]; $("#ruName").textContent = r[3];
+  $("#ruNext").textContent = nx ? `Nächster Rang: ${nx[3]} ab ${nx[0]}` : "Höchster Rang erreicht";
+  box.hidden = false;
+  const card = box.querySelector(".ru-card");
+  if (!reduce && box.animate) {
+    box.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 180, easing: "ease-out" });
+    card.animate([{ transform: "scale(.96)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 220, easing: "ease-out" });
+    $("#ruSt").animate([{ transform: "scale(.85)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 300, delay: 120, easing: "ease-out", fill: "backwards" });
+  }
+  // Schließt erst, wenn man tippt (OK oder daneben)
+  const close = () => { box.hidden = true; };
+  box.onclick = e => { if (e.target === box || e.target.id === "ruOk") close(); };
+}
 function setMark(id, act, on) {
   const set = act === "seen" ? seen : saved;
+  const riBefore = act === "seen" && on ? rankIdx(seenCount()) : -1;
   on ? set.add(id) : set.delete(id);
   // Gesehen heißt: nicht mehr auf der Merkliste
   const unsave = act === "seen" && on && saved.delete(id);
@@ -1597,6 +1632,7 @@ function setMark(id, act, on) {
       if (s) { s.hidden = on; s.setAttribute("aria-pressed", "false"); s.innerHTML = ICON.save + '<span class="bt">Merken</span>'; }
     }
   }
+  if (riBefore >= 0) { const ri = rankIdx(seenCount()); if (ri > riBefore) setTimeout(() => rankUp(ri), 350); }
   // Speichern, Zähler und ggf. Liste neu filtern erst im nächsten Bild, damit der Knopf nicht hängt
   requestAnimationFrame(() => setTimeout(() => {
     store(act === "seen" ? KEY.seen : KEY.saved, [...set]);
