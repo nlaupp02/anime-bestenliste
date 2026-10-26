@@ -395,6 +395,17 @@ button, a, summary, input, label { touch-action: manipulation; }
 .rinfo { flex: none; width: 30px; height: 30px; margin: -6px 0; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); display: grid; place-items: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .rinfo svg { width: 18px; height: 18px; }
 .rinfo:active { color: var(--ink); }
+/* Priscilla-Modus: rosa Akzente, Leiste mit „Beenden“, fallende Herzen und Kirschblüten */
+html.prisc { --hanko: #FF6FA8; --hanko-soft: #3A1A2A; --gold: #FF9CC8; --on-gold: #2A0A18; }
+.prisbar { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 8px 8px 8px 12px; border-radius: 12px; background: #3A1A2A; border: 1px solid #FF6FA8; color: #FFD3E6; font-size: 13.5px; font-weight: 700; }
+.prisbar[hidden] { display: none; }
+.prisbar span { flex: 1; min-width: 0; }
+.prisbar button { font: inherit; font-size: 13px; font-weight: 700; color: #2A0A18; background: #FF9CC8; border: 0; border-radius: 999px; padding: 6px 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.petals { position: fixed; inset: 0; z-index: 60; overflow: hidden; pointer-events: none; }
+.app .petals { position: absolute; top: 0; left: 0; right: 0; bottom: auto; height: calc(100% + 400px); }
+.petal { position: absolute; top: -44px; line-height: 1; will-change: transform; }
+.meta .pg { display: none; color: #FF8FBF; }
+html.prisc .meta .pg { display: inline; }
 /* Alle Ränge */
 .rank-card .sub { margin: 2px 0 0; color: var(--muted); font-size: 13px; line-height: 1.4; }
 .ladder { list-style: none; margin: 0; padding: 0; }
@@ -528,7 +539,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V76</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V77</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -566,6 +577,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       </div>
     </div>
     <div class="status"><span id="status" aria-live="polite"></span><button type="button" class="reset" id="reset" hidden>Filter zurücksetzen</button><button type="button" class="share-btn" id="share" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10V2.5M5 5.5l3-3 3 3M3 9v4.5h10V9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Merkliste teilen</button></div>
+    <div class="prisbar" id="prisBar" hidden><span>💘 Priscilla-Modus · nur Romanzen</span><button type="button" id="prisOff">Beenden</button></div>
     <div class="sharebox" id="sharebox" hidden><span>Teilen ging hier nicht direkt. Kopier den Text und schick ihn per WhatsApp:</span><textarea id="sharetext" readonly></textarea><div class="row"><button type="button" class="btn" id="shareclose">Schließen</button></div></div>
   </div>
 
@@ -827,7 +839,17 @@ const EXTRA = [
 ["Das Verschwinden der Haruhi Suzumiya", "F", "Sci-Fi|Mystery|Drama", 8.2, 8.0, 9.1, "de", "Film · 2 Std. 42 Min.", "Kurz vor Weihnachten wacht Kyon in einer Welt auf, in der Haruhi nie existiert hat und niemand ihn kennt. Er sucht verzweifelt nach einem Weg zurück. Gilt als bester Teil der Reihe.", "Setzt die Serie „Die Melancholie der Haruhi Suzumiya“ voraus.", "suzumiya haruhi no shoushitsu disappearance", "dn|kurz", "Das Verschwinden der Haruhi Suzumiya", "GDKHZEJVG"],
 ["Night is Short, Walk on Girl", "F", "Comedy|Romance", 7.8, 7.5, 7.6, "de", "Film · 1 Std. 33 Min.", "Ein Student ist in eine junge Frau verliebt und versucht eine ganze Nacht lang, ihr in Kyoto „zufällig“ über den Weg zu laufen. Sie stolpert dabei von einem verrückten Abenteuer ins nächste. Bunt, schräg und voller Energie.", "Sehr eigener Zeichenstil, vom Regisseur von Ping Pong the Animation.", "yoru wa mijikashi aruke yo otome", "chill|kurz", "Night is Short Walk on Girl", "GP5HJ8QJP"],
 ["The Cold Sato-san is Only Sweet to Me", "S", "Romance|Comedy", 7.8, 8.7, 0.11, "sub", "12 Folgen, läuft gerade", "Sato gilt als die unnahbarste Schülerin der Klasse. Als Oshio sie zufällig in einem Café trifft, merkt er, dass sie eigentlich schüchtern und tollpatschig ist. Fotos und Süßigkeiten bringen die beiden langsam zusammen.", "Ganz neu, die Wertung beruht noch auf sehr wenigen Stimmen.", "sato san only sweet", "chill|herz|kurz", "The Cold Sato-san is Only Sweet to Me", "GT00384014"],
-["PSYREN", "S", "Sci-Fi|Mystery|Thriller", 7.6, 7.4, 0.12, "de", "13 Folgen, läuft gerade", "Der Schüler Ageha findet eine rote Telefonkarte, kurz darauf verschwindet seine Kindheitsfreundin. Auf der Suche nach ihr gerät er in ein tödliches Spiel in einer verwüsteten Zukunft. Nach einem bekannten Manga.", "Ganz neu, die Wertung beruht noch auf wenigen Stimmen.", "psyren", "dn|kurz", "PSYREN", "GT00371866"]
+["PSYREN", "S", "Sci-Fi|Mystery|Thriller", 7.6, 7.4, 0.12, "de", "13 Folgen, läuft gerade", "Der Schüler Ageha findet eine rote Telefonkarte, kurz darauf verschwindet seine Kindheitsfreundin. Auf der Suche nach ihr gerät er in ein tödliches Spiel in einer verwüsteten Zukunft. Nach einem bekannten Manga.", "Ganz neu, die Wertung beruht noch auf wenigen Stimmen.", "psyren", "dn|kurz", "PSYREN", "GT00371866"],
+["Smoking Behind the Supermarket with You", "S", "Romance|Slice of Life", 8.1, null, null, "sub", "12 Folgen", "Der müde Büroangestellte Sasaki findet seine einzige Erholung bei der fröhlichen Kassiererin im Supermarkt um die Ecke. Hinter dem Laden trifft er beim Rauchen eine ganz andere Frau, und zwischen den beiden entsteht eine stille, warme Verbindung. Eine Romanze für Erwachsene.", "Ruhig und erwachsen, ganz ohne Schulkulisse.", "super no ura de yani suu futari", "chill|herz|kurz", "Smoking Behind the Supermarket with You", "GT00378116"],
+["Go For It, Nakamura-kun!!", "S", "Romance|Comedy", 8.0, null, null, "sub", "13 Folgen", "Der schüchterne Nakamura ist heimlich in seinen lässigen Klassenkameraden Hirose verliebt, bekommt aber kaum ein Wort heraus. Jeder Versuch, ihm näherzukommen, geht herrlich schief. Eine süße, sehr lustige Boys-Love-Komödie.", "", "ganbare nakamura kun", "chill|kurz", "Go For It, Nakamura-kun", "GT00337506"],
+["The Quintessential Quintuplets", "S", "Romance|Comedy", 7.8, null, null, "de", "2 Staffeln + Specials · 28 Folgen", "Der arme Musterschüler Futaro wird Nachhilfelehrer für Fünflinge, die alle gleich aussehen, aber völlig verschieden sind, und keine Lust auf Lernen haben. Von Anfang an ist klar: Eine der fünf wird später seine Braut. Aber welche?", "Nach Staffel 2 den Film schauen, dort endet die Geschichte.", "5 toubun no hanayome gotoubun", "chill", "The Quintessential Quintuplets", "GY4PD7Z06"],
+["The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You", "S", "Romance|Comedy", 7.8, null, null, "de", "5 Staffeln · 60 Folgen", "Rentaro wurde 100-mal abgewiesen. Dann erfährt er, dass ihm das Schicksal 100 Seelenverwandte bestimmt hat, und wenn er eine davon nicht liebt, stirbt sie. Völlig absurd, übertrieben und einer der lustigsten Anime überhaupt.", "Ein Witz pro Sekunde. Ab 16, mit vielen anzüglichen Witzen.", "100 kanojo hyakkano", "chill", "The 100 Girlfriends", "GNVHKN933"],
+["The Angel Next Door Spoils Me Rotten", "S", "Romance", 7.6, null, null, "sub", "2 Staffeln · 24 Folgen", "Mahiru gilt als Engel der Schule. Als sie bemerkt, dass ihr unordentlicher Nachbar Amane sich nur von Fertigessen ernährt, kocht sie für ihn, und aus der Nachbarschaft wird langsam mehr. Zuckersüß und gemütlich.", "Staffel 1 ist die stärkere.", "otonari no tenshi sama", "chill|herz", "The Angel Next Door Spoils Me Rotten", "G9VHN91DJ"],
+["Cherry Magic! Thirty Years of Virginity Can Make You a Wizard?!", "S", "Romance|Comedy", 7.6, null, null, "sub", "12 Folgen", "An seinem 30. Geburtstag kann der Büroangestellte Adachi plötzlich die Gedanken anderer lesen, sobald er sie berührt. So erfährt er, dass ausgerechnet sein beliebter Kollege Kurosawa in ihn verliebt ist. Herzlich und witzig.", "", "30 sai made doutei dato mahoutsukai cherry magic", "chill|herz|kurz", "Cherry Magic", "GP5HJ8435"],
+["More than a Married Couple, but Not Lovers", "S", "Romance|Comedy", 7.5, null, null, "de", "12 Folgen", "In einem Schulprojekt müssen Jiro und die beliebte Akari als Probe-Ehepaar zusammenwohnen, obwohl beide eigentlich in jemand anderen verliebt sind. Mit der Zeit wird der Streit zum Alltag und der Alltag zu Gefühlen.", "", "fuufu ijou koibito miman", "chill|kurz", "More than a Married Couple, but Not Lovers", "GJ0H7Q5N3"],
+["Sekaiichi Hatsukoi: The World's Greatest First Love", "S", "Romance|Comedy|Drama", 7.6, null, null, "sub", "2 Staffeln · 24 Folgen", "Ritsu wechselt in einen Manga-Verlag und bekommt ausgerechnet seine erste Liebe aus der Schulzeit als Chef. Der will ihn nicht mehr loslassen. Ein Boys-Love-Klassiker über Liebe und stressige Abgabetermine.", "", "sekaiichi hatsukoi", "chill", "Sekaiichi Hatsukoi", "GR19X8916"],
+["Alya Sometimes Hides Her Feelings in Russian", "S", "Romance|Comedy", 7.5, null, null, "de", "12 Folgen", "Die kühle Alya flüstert ihrem Sitznachbarn Masachika ständig verliebte Sätze auf Russisch zu, weil sie denkt, dass er sie nicht versteht. Dabei versteht er jedes Wort. Eine verspielte Rom-Com.", "Staffel 2 ist angekündigt.", "roshidere tokidoki bosotto russia go", "chill|kurz", "Alya Sometimes Hides Her Feelings in Russian", "G1XHJV0XM"],
+["Tune In to the Midnight Heart", "S", "Romance|Comedy", 7.3, null, null, "sub", "12 Folgen", "Arisu ist besessen von der Stimme einer unbekannten Radiomoderatorin. Im Schulradio-Club trifft er vier Mädchen, und eine von ihnen könnte sie sein. Leichte, süße Rom-Com.", "", "mayonaka heart tune", "chill|kurz", "Tune In to the Midnight Heart", "GT00365772"]
 ];
 
 
@@ -881,6 +903,11 @@ state.sort = "mine";
 if (state.g2 && !GENRES.includes(state.g2)) state.g2 = "";
 if (!MOODS.includes(state.mood)) state.mood = "";
 function saveFilters() { const { q, ...rest } = state; store(KEY.filters, rest); }
+// Priscilla-Modus (Easter Egg): wer „Priscilla“ ins Suchfeld tippt, sieht nur noch Romanzen, bis er ihn beendet
+const KEY_PRISC = "cr-top100-priscilla";
+let prisc = load(KEY_PRISC, false) === true;
+const isRom = it => it.genres.includes("Romance");
+document.documentElement.classList.toggle("prisc", prisc);
 
 const $ = s => document.querySelector(s);
 const fmt = n => n.toFixed(1).replace(".", ",");
@@ -994,7 +1021,43 @@ $("#counts").innerHTML =
   `<span><b>${nS}</b>Serien</span><span><b>${topList.length - nS}</b>Filme</span><span><b>${nDe}</b>auf Deutsch</span>`;
 
 document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click", () => { state.type = b.dataset.type; sync(); render(); }));
-$("#q").addEventListener("input", e => { state.q = e.target.value.trim().toLowerCase(); render(); });
+$("#q").addEventListener("input", e => {
+  const v = e.target.value.trim().toLowerCase();
+  if (v === "priscilla") { e.target.value = ""; state.q = ""; e.target.blur(); setPrisc(!prisc, true); render(); return; }
+  state.q = v; render();
+});
+function setPrisc(on, fx) {
+  prisc = on; store(KEY_PRISC, on);
+  document.documentElement.classList.toggle("prisc", on);
+  $("#prisBar").hidden = !on;
+  if (!fx) return;
+  if (on) { petals(); toast("💘 Priscilla-Modus aktiviert: nur noch Romanzen"); }
+  else toast("Priscilla-Modus beendet");
+}
+// Herzen und Kirschblüten fallen einmal über den Bildschirm (nur transform/opacity, bei „Bewegung reduzieren“ nicht)
+function petals() {
+  if (reduce || !document.body.animate) return;
+  const d = document.documentElement, box = document.createElement("div");
+  box.className = "petals"; box.setAttribute("aria-hidden", "true");
+  const H = innerHeight + (d.classList.contains("app") && !d.classList.contains("standalone") ? 260 : 60);
+  const icons = ["🌸", "💗", "🌸", "💕", "🌸", "💖"];
+  for (let i = 0; i < 28; i++) {
+    const p = document.createElement("span"); p.className = "petal"; p.textContent = icons[i % icons.length];
+    p.style.left = (Math.random() * 96) + "%"; p.style.fontSize = (16 + Math.random() * 14) + "px";
+    box.append(p);
+    const sw = Math.random() * 70 - 35, rot = Math.random() * 300 - 150;
+    p.animate([
+      { transform: "translate(0, 0) rotate(0deg)", opacity: 0 },
+      { opacity: 1, offset: .08 },
+      { transform: `translate(${sw}px, ${H * .5}px) rotate(${rot / 2}deg)`, offset: .5 },
+      { transform: `translate(${-sw / 2}px, ${H}px) rotate(${rot}deg)`, opacity: .85 }
+    ], { duration: 2300 + Math.random() * 1300, delay: Math.random() * 900, easing: "linear", fill: "backwards" });
+  }
+  document.body.append(box);
+  setTimeout(() => box.remove(), 4700);
+}
+$("#prisOff").addEventListener("click", () => { setPrisc(false, true); render(); });
+$("#prisBar").hidden = !prisc;
 // iPhone: Für die Tastatur verschiebt das iPhone die (sonst stillstehende) Seite. Danach wieder an ihren Platz.
 document.addEventListener("focusin", e => { if (e.target.matches("input, textarea")) typing = true; });
 document.addEventListener("focusout", e => {
@@ -1088,7 +1151,7 @@ function card(it) {
   return `
     <li class="card${isSeen ? " is-seen" : ""}">
       <div class="cbody">
-      <div class="meta"><span class="rank">${state.view === "genres" && state.g2 ? `Platz ${it.gr[state.g2]} in ${state.g2}` : `Platz ${it.rank}`}</span><span>${it.type === "F" ? "Film" : "Serie"}</span></div>
+      <div class="meta"><span class="rank">${state.view === "genres" && state.g2 ? `Platz ${it.gr[state.g2]} in ${state.g2}` : `Platz ${it.rank}`}</span><span>${it.type === "F" ? "Film" : "Serie"}</span>${isRom(it) && it.mine >= 8.3 ? '<span class="pg">💘 Priscilla-geprüft</span>' : ""}</div>
       <div class="score">
         <div class="stamp ${tier(it.mine)}" aria-label="Wertung ${fmt(it.mine)} von 10">${fmt(it.mine)}<small>/10</small></div>
       </div>
@@ -1119,7 +1182,8 @@ function filtered(mood = state.mood) {
     (!state.hideSeen || state.view === "seen" || !seen.has(it.id)) &&
     (state.view !== "saved" || saved.has(it.id)) &&
     (state.view !== "seen" || seen.has(it.id)) &&
-    (!state.q || (it.title + " " + it.alt).toLowerCase().includes(state.q))
+    (!state.q || (it.title + " " + it.alt).toLowerCase().includes(state.q)) &&
+    (!prisc || isRom(it))
   );
 }
 
@@ -1136,7 +1200,7 @@ function status(n) {
   $("#n-all").textContent = topList.length; $("#n-saved").textContent = saved.size; $("#n-seen").textContent = seen.size;
   $("#n-saved").classList.toggle("zero", !saved.size); $("#n-seen").classList.toggle("zero", !seen.size);
   const active = state.q || activeKeys().some(k => state[k] !== DEFAULTS[k]);
-  $("#status").textContent = n < 0 ? `${tileCount} ${tileCount === 1 ? "Genre" : "Genres"}` : active ? `${n} Treffer` : `${n} Titel`;
+  $("#status").textContent = n < 0 ? `${tileCount} ${tileCount === 1 ? "Genre" : "Genres"}` : prisc ? `${n} ${n === 1 ? "Romanze" : "Romanzen"}` : active ? `${n} Treffer` : `${n} Titel`;
   $("#reset").hidden = !active;
   $("#share").hidden = !(state.view === "saved" && saved.size);
 }
@@ -1164,7 +1228,8 @@ const passesWith = (it, mood) =>
   (!state.type || it.type === state.type) &&
   (!state.onlyDe || it.dub === "de") &&
   (!state.hideSeen || !seen.has(it.id)) &&
-  (!state.q || (it.title + " " + it.alt).toLowerCase().includes(state.q));
+  (!state.q || (it.title + " " + it.alt).toLowerCase().includes(state.q)) &&
+  (!prisc || isRom(it));
 // Genres ohne passenden Titel werden ausgeblendet, die Zahl oben zählt nur die sichtbaren
 let tileCount = GENRES.length;
 function renderTiles() {
@@ -1422,7 +1487,7 @@ $("#pick").addEventListener("click", () => {
     document.querySelectorAll(".card.pick").forEach(c => c.classList.remove("pick"));
     el.classList.add("pick");
     glideTo(el, () => pressStamp(el));
-    toast("Wie wär's mit: " + pick.title + "?");
+    toast(prisc ? "💘 Priscilla empfiehlt: " + pick.title : "Wie wär's mit: " + pick.title + "?");
     clearTimeout(pickT); pickT = setTimeout(() => el.classList.remove("pick"), 6000);
   });
 });
