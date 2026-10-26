@@ -387,7 +387,7 @@ button, a, summary, input, label { touch-action: manipulation; }
 .prog .ring .kj { position: absolute; inset: 0; display: grid; place-items: center; font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
   font-weight: 700; font-size: 20px; line-height: 1.05; writing-mode: vertical-rl; color: var(--rc); }
 .prog .ring .kj.k1 { font-size: 30px; } .prog .ring .kj.k3 { font-size: 15px; }
-.prog .ringcap { font-size: 12.5px; font-weight: 700; line-height: 1.2; color: var(--rc); white-space: nowrap; }
+.prog .ringcap { font-size: 12.5px; font-weight: 700; line-height: 1.2; color: var(--rc); text-align: center; max-width: 96px; }
 .prog #progArc { stroke: var(--rc); }
 .prog.max .ring svg { filter: drop-shadow(0 0 6px rgba(240, 90, 80, .55)); }
 .prog .ph { display: flex; align-items: center; gap: 6px; }
@@ -546,7 +546,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V82</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V83</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -739,7 +739,7 @@ const DATA = [
 ["Solo Leveling","S","Action|Fantasy",8.2,8.5,123,"de","2 Staffeln · 25 Folgen","Jinwoo ist der schwächste Jäger der Welt. Nach einem fast tödlichen Dungeon kann er als Einziger aufleveln wie in einem Videospiel. Pure, gut gemachte Power-Fantasie.","","solo leveling","","Solo Leveling"],
 ["Konosuba","S","Comedy|Isekai",8.1,7.8,23,"de","3 Staffeln","Kazuma stirbt auf peinliche Weise und landet in einer Fantasywelt mit der nutzlosesten Heldentruppe, die man sich vorstellen kann. Sehr witzige Parodie auf Isekai-Geschichten.","Nach Staffel 2 den Film Legend of Crimson schauen, er gehört zur Geschichte.","kono subarashii sekai","chill","Konosuba"],
 ["Aoashi","S","Sport|Drama",8.1,8.1,4.9,"de","2 Staffeln, Staffel 2 läuft gerade","Der talentierte, aber ungeschliffene Ashito wird in die Jugendakademie eines Profiklubs geholt. Ein Fußball-Anime, der echte Taktik erklärt.","","ao ashi fussball","","Aoashi"],
-["Horimiya","S","Romance|Slice of Life",8.1,8.0,28,"de","13 Folgen","Die beliebte Hori und der stille Miyamura entdecken die geheime Seite des jeweils anderen. Eine schnell erzählte Liebesgeschichte ohne künstliches Drama.","","horimiya","chill|herz|kurz","Horimiya"],
+["Horimiya","S","Romance|Slice of Life",8.1,8.0,28,"de","2 Staffeln · 26 Folgen","Die beliebte Hori und der stille Miyamura entdecken die geheime Seite des jeweils anderen. Eine schnell erzählte Liebesgeschichte ohne künstliches Drama.","Staffel 2 (The Missing Pieces) erzählt Szenen aus dem Manga nach, die in Staffel 1 fehlten.","horimiya","chill|herz|kurz","Horimiya"],
 ["My Teen Romantic Comedy SNAFU","S","Romance|Comedy|Drama",8.1,8,14,"sub","3 Staffeln · 38 Folgen","Der zynische Einzelgänger Hachiman muss einem Schulclub beitreten, der anderen Schülern hilft. Klug geschriebenes Drama über Freundschaft und Selbstbetrug.","Staffel 2 und 3 werden deutlich besser.","oregairu","","My Teen Romantic Comedy SNAFU"],
 ["Naruto Shippuden","S","Action|Abenteuer",8.1,8.7,233,"sub","500 Folgen","Naruto kehrt nach zwei Jahren Training zurück, um seinen Freund Sasuke zurückzuholen und sein Ninja-Dorf zu schützen.","Fortsetzung von Naruto, das zuerst schauen. Rund 200 der 500 Folgen sind Füller, die du überspringen kannst.","naruto","","Naruto Shippuden"],
 ["Hell's Paradise","S","Action|Fantasy|Horror",8.1,8.1,34,"de","2 Staffeln · 25 Folgen","Der zum Tode verurteilte Ninja Gabimaru bekommt eine Chance auf Begnadigung: Er soll auf einer mysteriösen Insel das Elixier des ewigen Lebens finden. Dort warten Monster und andere Verurteilte.","Sehr blutig und brutal.","jigokuraku","","Hell's Paradise"],
@@ -1327,9 +1327,9 @@ function renderProg() {
   $("#progArc").style.strokeDashoffset = String(219.9 * (nx ? 1 - (n - r[0]) / (nx[0] - r[0]) : 0));
   box.className = "prog rt" + r[4] + (nx ? "" : " max");
   kj.textContent = r[1]; kj.className = "kj k" + r[1].length;
-  $("#progRank").textContent = r[2];
+  $("#progRank").textContent = r[3];
   $("#progTitle").textContent = prisc ? `${n} von ${total} Romanzen` : `${n} von ${total} gesehen`;
-  const next = nx ? `<span class="nx">Noch <b>${nx[0] - n}</b> bis ${nx[2]}</span>` : `<span class="nx">Höchster Rang: ${r[3]}</span>`;
+  const next = nx ? `<span class="nx">Noch <b>${nx[0] - n}</b> bis ${nx[3]}</span>` : `<span class="nx">Höchster Rang erreicht</span>`;
   if (!n) { $("#progText").innerHTML = (prisc ? "Markiere Romanzen als gesehen, dann steigt dein Liebes-Rang." : "Tippe bei einem Anime auf „Schon gesehen“. Hier siehst du dann, wie viel du schon geschaut hast.") + next; return; }
   const h = Math.round(list.reduce((a, it) => a + minutesOf(it), 0) / 60), nf = list.filter(it => it.type === "F").length, ns = n - nf;
   const parts = [ns && `${ns} ${ns === 1 ? "Serie" : "Serien"}`, nf && `${nf} ${nf === 1 ? "Film" : "Filme"}`].filter(Boolean).join(", ");
@@ -1404,11 +1404,11 @@ $("#list").addEventListener("click", e => {
 const rankSheet = $("#rankSheet");
 $("#rankInfo").addEventListener("click", () => {
   const n = seenCount(), ri = rankIdx(n), R = ranks(), L = R.length;
-  $("#rankTitle").textContent = (prisc ? "Dein Liebes-Rang: " : "Dein Rang: ") + R[ri][2];
+  $("#rankTitle").textContent = (prisc ? "Dein Liebes-Rang: " : "Dein Rang: ") + R[ri][3];
   $("#rankSub").textContent = prisc ? "Steigt mit jeder Romanze, die du als gesehen markierst." : "Steigt mit jedem Anime, den du als gesehen markierst.";
   $("#ladder").innerHTML = R.map(([from, kj, name, de, t], i) =>
     `<li class="rt${t}${i === ri ? " cur" : i > ri ? " lock" : ""}"><span class="big k${kj.length}${i >= L - 2 ? " fill" : ""}${i === L - 1 ? " glow" : ""}" aria-hidden="true">${kj}</span>` +
-    `<span><b>${name}</b> <small>· ${de}</small></span><span class="ab">ab ${from}${i === ri ? " · du" : ""}</span></li>`).join("");
+    `<span><b>${de}</b> <small>· ${name}</small></span><span class="ab">ab ${from}${i === ri ? " · du" : ""}</span></li>`).join("");
   rankSheet.hidden = false;
   rankSheet.querySelector(".ov-btn.main").focus({ preventScroll: true });
 });
