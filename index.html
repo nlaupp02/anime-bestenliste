@@ -546,7 +546,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V83</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V84</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -903,6 +903,8 @@ const byMine = [...items].sort((a, b) => b.mine - a.mine || a.order - b.order);
 byMine.forEach((it, i) => it.rank = i + 1);
 // Platz innerhalb jedes Genres
 GENRES.forEach(g => byMine.filter(it => it.genres.includes(g)).forEach((it, i) => { (it.gr = it.gr || {})[g] = i + 1; }));
+// Plätze nur unter den Romanzen (für den Priscilla-Modus, auch innerhalb eines Genres)
+GENRES.forEach(g => byMine.filter(it => it.genres.includes("Romance") && it.genres.includes(g)).forEach((it, i) => { (it.grR = it.grR || {})[g] = i + 1; }));
 const byImdb = [...items].sort((a, b) => (b.imdb ?? -1) - (a.imdb ?? -1) || (b.votes ?? 0) - (a.votes ?? 0));
 const byAz = [...items].sort((a, b) => a.title.localeCompare(b.title, "de"));
 
@@ -1355,7 +1357,7 @@ function render() {
   byMine.forEach(it => {
     const el = cardEls.get(it.id), on = show.has(it.id);
     if (el.hidden === on) el.hidden = !on;
-    if (on) { const r = gName ? `Platz ${it.gr[gName]} in ${gName}` : `Platz ${it.rank}`; if (el._rank.textContent !== r) el._rank.textContent = r; }
+    if (on) { const r = gName ? `Platz ${(prisc ? it.grR : it.gr)[gName]} in ${gName}` : prisc ? `Platz ${it.grR.Romance}` : `Platz ${it.rank}`; if (el._rank.textContent !== r) el._rank.textContent = r; }
   });
   const e = $("#empty");
   e.hidden = list.length > 0 || (state.view === "seen" && !seen.size); // bei 0 Gesehenen erklärt die Fortschritts-Karte alles
