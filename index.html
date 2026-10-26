@@ -120,7 +120,6 @@ select { background: var(--sheet); border: 1px solid var(--line); border-radius:
 .chips { display: flex; flex-wrap: wrap; gap: 6px; flex: 1 1 auto; min-width: 0; }
 .chip { background: var(--chip); border: 1px solid transparent; border-radius: 999px; padding: 4px 11px; }
 .chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
-.chip .mc { opacity: .6; font-variant-numeric: tabular-nums; }
 .genre-select { display: none; }
 button:focus-visible, select:focus-visible, .search:focus-visible, a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .status { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; min-height: 30px; } /* immer gleich hoch, auch mit „Merkliste teilen“ */
@@ -468,12 +467,6 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
         <button type="button" class="toggle" id="onlyDe" aria-pressed="false">Nur deutsche Synchro</button>
         <button type="button" class="toggle" id="hideSeen" aria-pressed="false">Gesehene ausblenden</button>
       </div>
-      <div class="prow"><span class="plabel">Stimmung</span>
-        <button type="button" class="chip" data-mood="chill" aria-pressed="false">Zum Abschalten <span class="mc"></span></button>
-        <button type="button" class="chip" data-mood="herz" aria-pressed="false">Fürs Herz <span class="mc"></span></button>
-        <button type="button" class="chip" data-mood="dn" aria-pressed="false">Zum Mitdenken <span class="mc"></span></button>
-        <button type="button" class="chip" data-mood="kurz" aria-pressed="false">Kurz und knackig <span class="mc"></span></button>
-      </div>
     </div>
     <div class="status"><span id="status" aria-live="polite"></span><button type="button" class="reset" id="reset" hidden>Filter zurücksetzen</button><button type="button" class="share-btn" id="share" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10V2.5M5 5.5l3-3 3 3M3 9v4.5h10V9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Merkliste teilen</button></div>
     <div class="sharebox" id="sharebox" hidden><span>Teilen ging hier nicht direkt. Kopier den Text und schick ihn per WhatsApp:</span><textarea id="sharetext" readonly></textarea><div class="row"><button type="button" class="btn" id="shareclose">Schließen</button></div></div>
@@ -712,7 +705,7 @@ const slug = s => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replac
 const DE_TITLE = { "So I'm a Spider, So What?": "Ich bin eine Spinne, na und?" };
 const mk = (d, i, extra) => ({
   id: slug(d[0]), key: d[0], title: DE_TITLE[d[0]] || d[0], type: d[1], genres: d[2].split("|"), mine: d[3], imdb: d[4], votes: d[5],
-  dub: d[6], len: d[7], desc: d[8], note: d[9], alt: (d[10] || "") + (DE_TITLE[d[0]] ? " " + d[0] : ""), moods: (d[11] || "").split("|").filter(Boolean),
+  dub: d[6], len: d[7], desc: d[8], note: d[9], alt: (d[10] || "") + (DE_TITLE[d[0]] ? " " + d[0] : ""),
   cr: d[12] || d[0], crLink: d[13] || "", order: i, extra
 });
 const items = [...DATA.map((d, i) => mk(d, i, false)), ...EXTRA.map((d, i) => mk(d, 1000 + i, true))];
@@ -734,10 +727,8 @@ const known = new Set(items.map(it => it.id));
 let saved = new Set(migrate(load(KEY.saved, [])).filter(id => known.has(id)));
 let seen = new Set(migrate(load(KEY.seen, [])).filter(id => known.has(id)));
 store(KEY.saved, [...saved]); store(KEY.seen, [...seen]);
-const DEFAULTS = { type: "", sort: "mine", onlyDe: false, hideSeen: false, mood: "", view: "all", g2: "" };
-const FILTER_KEYS = ["type", "onlyDe", "hideSeen", "mood"];
-// Stimmungen aus den Daten: chill = Zum Abschalten, herz = Fürs Herz, dn = Zum Mitdenken, kurz = Kurz und knackig
-const MOODS = ["chill", "herz", "dn", "kurz"];
+const DEFAULTS = { type: "", sort: "mine", onlyDe: false, hideSeen: false, view: "all", g2: "" };
+const FILTER_KEYS = ["type", "onlyDe", "hideSeen"];
 // Im Reiter Gesehen ergibt „Gesehene ausblenden“ keinen Sinn: dort ausgeblendet und nicht als aktiver Filter gezählt
 const activeKeys = () => FILTER_KEYS.filter(k => !(k === "hideSeen" && state.view === "seen"));
 const loaded = load(KEY.filters, {});
@@ -749,7 +740,6 @@ if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 setY(0);
 state.sort = "mine";
 if (state.g2 && !GENRES.includes(state.g2)) state.g2 = "";
-if (!MOODS.includes(state.mood)) state.mood = "";
 function saveFilters() { const { q, ...rest } = state; store(KEY.filters, rest); }
 
 const $ = s => document.querySelector(s);
@@ -887,8 +877,6 @@ if (SC) {
   addEventListener("load", keepDoc);
 }
 ["onlyDe", "hideSeen"].forEach(k => $("#" + k).addEventListener("click", () => { state[k] = !state[k]; sync(); render(); }));
-// Stimmung: ein Tipp wählt sie, ein zweiter Tipp auf dieselbe hebt sie wieder auf
-document.querySelectorAll("[data-mood]").forEach(b => b.addEventListener("click", () => { state.mood = state.mood === b.dataset.mood ? "" : b.dataset.mood; sync(); render(); }));
 // In der App merkt sich jeder Reiter, wo man war (wie bei iPhone-Apps), bei Genres auch ein geöffnetes Genre.
 // Ein Tipp auf den Reiter, in dem man schon ist, macht nichts. Nach oben geht es mit dem Pfeil.
 const scrollMem = {};
@@ -942,7 +930,6 @@ $("#reset").addEventListener("click", () => { activeKeys().forEach(k => { state[
 function sync() {
   document.querySelectorAll(".seg button").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.type === state.type)));
   ["onlyDe", "hideSeen"].forEach(k => $("#" + k).setAttribute("aria-pressed", String(state[k])));
-  document.querySelectorAll("[data-mood]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mood === state.mood)));
   document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.view === state.view)));
   if (typeof placeLens === "function") placeLens();
   $("#hideSeen").hidden = state.view === "seen";
@@ -984,10 +971,9 @@ function card(it) {
     </li>`;
 }
 
-function filtered(mood = state.mood) {
+function filtered() {
   const inGenre = state.view === "genres";
   return byMine.filter(it =>
-    (!mood || it.moods.includes(mood)) &&
     (!inGenre || it.genres.includes(state.g2)) &&
     (!state.type || it.type === state.type) &&
     (!state.onlyDe || it.dub === "de") &&
@@ -998,16 +984,7 @@ function filtered(mood = state.mood) {
   );
 }
 
-// Zahl hinter jeder Stimmung: so viele Titel zeigt der aktuelle Reiter mit dieser Stimmung (bei den anderen Filtern)
-function moodCounts() {
-  const tiles = state.view === "genres" && !state.g2;
-  document.querySelectorAll("[data-mood]").forEach(b => {
-    const m = b.dataset.mood, n = tiles ? byMine.filter(it => passesWith(it, m)).length : filtered(m).length;
-    const c = b.querySelector(".mc"); if (c.textContent !== String(n)) c.textContent = n;
-  });
-}
 function status(n) {
-  moodCounts();
   $("#n-all").textContent = topList.length; $("#n-saved").textContent = saved.size; $("#n-seen").textContent = seen.size;
   $("#n-saved").classList.toggle("zero", !saved.size); $("#n-seen").classList.toggle("zero", !seen.size);
   const active = state.q || activeKeys().some(k => state[k] !== DEFAULTS[k]);
@@ -1033,9 +1010,7 @@ const FEATURED = (() => {
   return out;
 })();
 // Kacheln zählen nur Titel, die zu den eingestellten Filtern und der Suche passen (wie die Liste beim Öffnen)
-const passes = it => passesWith(it, state.mood);
-const passesWith = (it, mood) =>
-  (!mood || it.moods.includes(mood)) &&
+const passes = it =>
   (!state.type || it.type === state.type) &&
   (!state.onlyDe || it.dub === "de") &&
   (!state.hideSeen || !seen.has(it.id)) &&
