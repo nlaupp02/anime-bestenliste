@@ -579,7 +579,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V95</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V96</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1095,8 +1095,11 @@ const crUrl = it => { const c = crLinkOf(it); return c ? c.startsWith("http") ? 
 const topList = items;
 const nS = topList.filter(i => i.type === "S").length;
 const nDe = topList.filter(i => i.dub === "de").length;
-$("#counts").innerHTML =
-  `<span><b>${nS}</b>Serien</span><span><b>${topList.length - nS}</b>Filme</span><span><b>${nDe}</b>auf Deutsch</span>`;
+function renderCounts() {
+  const l = prisc ? topList.filter(isRom) : topList, s = l.filter(i => i.type === "S").length, de = l.filter(i => i.dub === "de").length;
+  $("#counts").innerHTML = `<span><b>${s}</b>Serien</span><span><b>${l.length - s}</b>Filme</span><span><b>${de}</b>auf Deutsch</span>`;
+}
+renderCounts();
 
 document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click", () => { state.type = b.dataset.type; sync(); render(); }));
 $("#q").addEventListener("input", e => {
@@ -1110,6 +1113,7 @@ function setPrisc(on, fx) {
   if (state.mood && RMOODS.includes(state.mood) !== on) { state.mood = ""; sync(); }
   document.documentElement.classList.toggle("prisc", on);
   $("#prisBar").hidden = !on;
+  renderCounts();
   if (!fx) return;
   if (on) { petals(); toast("💘 Priscilla-Modus aktiviert: nur noch Romanzen"); }
   else toast("Priscilla-Modus beendet");
@@ -1285,12 +1289,15 @@ function moodCounts() {
 }
 function status(n) {
   moodCounts();
-  $("#n-all").textContent = topList.length; $("#n-saved").textContent = saved.size; $("#n-seen").textContent = seen.size;
-  $("#n-saved").classList.toggle("zero", !saved.size); $("#n-seen").classList.toggle("zero", !seen.size);
+  // Im Priscilla-Modus zählen die Reiter nur Romanzen, sonst passt die Zahl nicht zur Liste
+  const cnt = set => prisc ? items.filter(it => set.has(it.id) && isRom(it)).length : set.size;
+  const nSaved = cnt(saved), nSeen = cnt(seen);
+  $("#n-all").textContent = prisc ? items.filter(isRom).length : topList.length; $("#n-saved").textContent = nSaved; $("#n-seen").textContent = nSeen;
+  $("#n-saved").classList.toggle("zero", !nSaved); $("#n-seen").classList.toggle("zero", !nSeen);
   const active = state.q || activeKeys().some(k => state[k] !== DEFAULTS[k]);
   $("#status").textContent = n < 0 ? `${tileCount} ${tileCount === 1 ? "Genre" : "Genres"}` : prisc ? `${n} ${n === 1 ? "Romanze" : "Romanzen"}` : active ? `${n} Treffer` : `${n} Titel`;
   $("#reset").hidden = !active;
-  $("#share").hidden = !(state.view === "saved" && saved.size);
+  $("#share").hidden = !(state.view === "saved" && nSaved);
 }
 
 // Pro Genre ein eigener Tipp, kein Titel doppelt:
@@ -1531,8 +1538,11 @@ function render() {
   });
   const e = $("#empty");
   e.hidden = list.length > 0 || (state.view === "seen" && !seen.size); // bei 0 Gesehenen erklärt die Fortschritts-Karte alles
-  e.textContent = state.view === "saved" && !saved.size ? "Noch nichts gemerkt. Tippe bei einem Anime auf „Merken“, dann landet er hier."
+  const romOf = set => items.some(it => set.has(it.id) && isRom(it));
+  e.textContent = state.view === "saved" && !saved.size ? "Noch nichts gemerkt. Tippe bei einem Anime auf das Lesezeichen, dann landet er hier."
     : state.view === "seen" && !seen.size ? "Noch nichts als gesehen markiert. Tippe bei einem Anime auf den Haken ✓."
+    : prisc && state.view === "saved" && !romOf(saved) ? "Noch keine Romanze gemerkt. Tippe bei einer Romanze auf das Lesezeichen."
+    : prisc && state.view === "seen" && !romOf(seen) ? "Noch keine Romanze als gesehen markiert. Tippe bei einer Romanze auf den Haken ✓."
     : "Kein Titel passt zu diesen Filtern. Setz einzelne Filter zurück oder leere die Suche.";
   status(list.length);
 }
@@ -1771,7 +1781,7 @@ totop.addEventListener("touchend", e => {
 
 // Merkliste teilen
 $("#share").addEventListener("click", async () => {
-  const list = byMine.filter(it => saved.has(it.id));
+  const list = byMine.filter(it => saved.has(it.id) && (!prisc || isRom(it)));
   if (!list.length) return;
   const text = "Meine Anime-Merkliste (Die besten Animes auf Crunchyroll):\n" + list.map(it => "• " + it.title + " (" + fmt(it.mine) + ")").join("\n");
   try {
