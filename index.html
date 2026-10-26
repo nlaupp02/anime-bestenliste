@@ -17,8 +17,40 @@
 <script>
 // App-Ansicht schon vor dem ersten Bild festlegen (als Homescreen-App und genauso in Safari/Chrome auf dem Handy, am PC nicht).
 // Sonst ist die Seite beim Öffnen kurz eine normale Webseite, und eine Berührung in diesem Moment lässt alles verschoben hängen.
-if (navigator.standalone === true || matchMedia("(display-mode: standalone)").matches) document.documentElement.classList.add("app", "standalone");
-else if (matchMedia("(hover: none) and (pointer: coarse) and (max-width: 820px)").matches) document.documentElement.classList.add("app");
+(() => {
+  const d = document.documentElement, app = navigator.standalone === true || matchMedia("(display-mode: standalone)").matches;
+  const phone = !app && matchMedia("(hover: none) and (pointer: coarse) and (max-width: 820px)").matches;
+  if (app) d.classList.add("app", "standalone", "boot");
+  else if (phone) d.classList.add("app", "boot");
+  // Hinweis „Als App speichern“ schon hier festlegen: Dann steht er von Anfang an da und schiebt die Seite nicht nachträglich nach unten.
+  // Nur im Handy-Browser, nicht in Claude, nicht in der App und nicht mehr nach „Für immer ausblenden“.
+  try {
+    const ua = navigator.userAgent, mobile = /iPhone|iPod|iPad|Android/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    if (!app && mobile && window.self === window.top && !localStorage.getItem("cr-top100-install-closed")) d.classList.add("inst");
+  } catch (e) {}
+  if (!app && !phone) return;
+  // Öffnen und Neuladen: Das iPhone zeigt die Seite oft schon, bevor das Skript unten fertig ist. In Safari steht sie dann
+  // noch 200px zu tief (siehe OFF im Skript) und die Zahlen fehlen, in der App kommt die Höhe der Statusleiste erst etwas später.
+  // Deshalb bleibt die Seite kurz verdeckt (nur der dunkle Hintergrund), bis sich nichts mehr bewegt, und wird dann eingeblendet.
+  const t0 = Date.now(); let last = "", same = 0;
+  const show = () => d.classList.remove("boot");
+  const check = () => {
+    if (!d.classList.contains("boot")) return;
+    const t = Date.now() - t0, h = document.querySelector("header.top"), h1 = document.querySelector("h1"), sc = document.getElementById("sc");
+    if (t > 1200) return show();
+    if (h && h1 && document.readyState === "complete") {
+      const pad = parseFloat(getComputedStyle(h).paddingTop) || 0;
+      const sig = [innerWidth, innerHeight, scrollY, sc ? sc.scrollTop : 0, pad, Math.round(h1.getBoundingClientRect().top)].join();
+      same = sig === last ? same + 1 : 0; last = sig;
+      // erst zeigen, wenn 4 Bilder lang alles stillstand; in der App außerdem erst, wenn die Statusleiste bekannt ist
+      // (Abstand oben größer als die 36px ohne Statusleiste)
+      if (same >= 4 && (!app || pad > 36.5 || t > 500) && (!document.fonts || document.fonts.status === "loaded")) return show();
+    }
+    requestAnimationFrame(check);
+  };
+  requestAnimationFrame(check);
+  setTimeout(show, 1500); // Sicherung
+})();
 </script>
 <!-- Schriften direkt eingebettet: kein Nachladen, kein Umspringen der Schrift beim Öffnen -->
 <style>
@@ -349,6 +381,7 @@ button, a, summary, input, label { touch-action: manipulation; }
 .sharebox .row { justify-content: flex-end; }
 /* Hinweis „Als App speichern“ ganz oben (nur im Handy-Browser) */
 .ibanner { width: 100%; max-width: 520px; justify-self: start; display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 10px; align-items: center; background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; padding: 9px 8px 9px 10px; }
+html:not(.inst) .ibanner { display: none; }
 .ib-ico { width: 40px; height: 40px; font-size: 13px; border-width: 2px; }
 .ib-ico small { font-size: 7px; margin-top: 1px; }
 .ib-txt b { display: block; font-size: 15px; line-height: 1.25; }
@@ -398,6 +431,9 @@ button, a, summary, input, label { touch-action: manipulation; }
    Als App vom Homescreen ist die Statusleiste durchsichtig. Der Kopf beginnt an derselben Stelle wie bisher unter der Uhr. */
 .app body::before { display: none; }
 .standalone header.top { padding-top: calc(env(safe-area-inset-top, 0px) + 36px); }
+/* App-Start: kurz verdeckt, bis alles stillsteht (siehe Kopf der Seite), dann sanft eingeblendet */
+.app body { transition: opacity .18s ease-out; }
+html.boot body { opacity: 0; }
 /* App und Handy-Safari: Die Liste rollt in einem eigenen Bereich, die Glas-Leiste liegt außerhalb davon.
    So reagiert die Leiste sofort, auch während die Liste noch nachrollt (wie bei iPhone-Apps). Die Seite selbst rollt nie,
    deshalb springt auch die Safari-Leiste unten nicht mehr. */
@@ -430,7 +466,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
 <div id="sc">
 <div class="wrap">
   <header class="top">
-    <div class="ibanner" id="ibanner" hidden>
+    <div class="ibanner" id="ibanner">
       <span class="stamp top ib-ico" aria-hidden="true">9,0<small>/10</small></span>
       <div class="ib-txt"><b>Die besten Animes</b><small>Als App speichern für das beste Erlebnis.</small></div>
       <button type="button" class="ib-go" id="ibSave">Speichern</button>
@@ -1331,14 +1367,11 @@ document.addEventListener("touchstart", e => { if (e.touches.length > 1) e.preve
 
 // Hinweis „Als App speichern“ ganz oben (nur im Handy-Browser, nicht in Claude und nicht in der App)
 (() => {
-  try { if (window.self !== window.top) return; } catch (e) { return; }
+  if (!document.documentElement.classList.contains("inst")) return; // im Kopf der Seite entschieden
   const ua = navigator.userAgent;
   const ipad = /iPad/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   const ios = ipad || /iPhone|iPod/.test(ua);
   const android = /Android/.test(ua);
-  const app = navigator.standalone === true || matchMedia("(display-mode: standalone)").matches;
-  if ((!ios && !android) || app) return;
-  if (load(KEY.install, false)) return; // „Für immer ausblenden“ gewählt
   const SHARE = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.8v8.6M5.2 4.6L8 1.8l2.8 2.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.6 7H4.4A1.4 1.4 0 0 0 3 8.4v5.2A1.4 1.4 0 0 0 4.4 15h7.2a1.4 1.4 0 0 0 1.4-1.4V8.4A1.4 1.4 0 0 0 11.6 7h-1.2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
   const PLUS = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 5.2v5.6M5.2 8h5.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
   const k = t => '<span class="key">' + t + '</span>';
@@ -1366,7 +1399,6 @@ document.addEventListener("touchstart", e => { if (e.touches.length > 1) e.preve
   $("#instSteps").innerHTML = steps.map(s => "<li><span>" + s + "</span></li>").join("");
   if (android) $("#askText").textContent = "Du kannst die Liste auch später noch als App speichern: über ⋮ und „Zum Startbildschirm hinzufügen“.";
   const banner = $("#ibanner"), sheet = $("#instSheet"), ask = $("#instAsk");
-  banner.hidden = false;
   const open = el => { el.hidden = false; const b = el.querySelector(".ov-btn.main"); if (b) b.focus({ preventScroll: true }); };
   const close = el => { el.hidden = true; };
   [sheet, ask].forEach(el => el.addEventListener("click", e => { if (e.target.closest("[data-close]")) close(el); }));
@@ -1378,7 +1410,7 @@ document.addEventListener("touchstart", e => { if (e.touches.length > 1) e.preve
   $("#askHide").addEventListener("click", () => {
     store(KEY.install, true);
     close(ask);
-    banner.hidden = true;
+    document.documentElement.classList.remove("inst");
     banner.remove();
   });
 })();
