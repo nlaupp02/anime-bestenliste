@@ -408,6 +408,12 @@ html:not(.inst) .ibanner { display: none; }
 .ov-btn:active { filter: brightness(.9); }
 @keyframes ovIn { from { opacity: 0; } }
 @keyframes cardIn { from { opacity: 0; transform: translateY(10px) scale(.97); } }
+/* Handy: Die Fenster sind nicht „fest“ (fixed). Feste Flächen am Bildschirmrand färbt das iPhone oben und unten als Balken ein.
+   Sie liegen deshalb wie der Scrollbereich (#sc) auf der Seite und reichen über Uhr und Safari-Leiste hinaus.
+   Der Innenabstand hält das Fenster selbst in der Mitte des sichtbaren Bereichs. */
+.app .ov { position: absolute; top: 0; left: 0; right: 0; }
+.app:not(.standalone) .ov { bottom: -400px; padding: 216px 16px; }
+.standalone .ov { bottom: -200px; padding: 16px 16px 216px; }
 .inst-x { width: 32px; height: 32px; border-radius: 50%; border: 0; background: var(--chip); color: var(--muted); display: grid; place-items: center; cursor: pointer; }
 .inst-x svg { width: 14px; height: 14px; }
 .inst-steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 8px; font-size: 14px; line-height: 1.45; }
