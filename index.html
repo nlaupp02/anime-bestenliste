@@ -1415,8 +1415,42 @@ document.addEventListener("touchstart", e => { if (e.touches.length > 1) e.preve
   });
 })();
 
+// Solange die App (bzw. der Safari-Tab) offen ist, bleibt alles, wie es war: Reiter, Stelle in der Liste, offenes Genre und Suche.
+// Das iPhone lädt Web-Apps im Hintergrund oft einfach neu (z. B. nach einem Wechsel zu Crunchyroll), dann geht es genau dort weiter.
+// Erst wenn man die App schließt, startet sie wieder oben bei Alle. Der Sitzungsspeicher (sessionStorage) hält genau so lange.
+const SESSION = "cr-top100-session";
+const saveSession = () => {
+  if (!SC) return;
+  try { sessionStorage.setItem(SESSION, JSON.stringify({ view: state.view, g2: state.g2, q: $("#q").value, y: tabPending ? null : getY(), mem: scrollMem })); } catch (e) {}
+};
+const resume = (() => {
+  if (!SC) return null;
+  try { const r = JSON.parse(sessionStorage.getItem(SESSION) || "null"); return r && ["all", "genres", "saved", "seen"].includes(r.view) ? r : null; } catch (e) { return null; }
+})();
+if (resume) {
+  state.view = resume.view;
+  state.g2 = GENRES.includes(resume.g2) ? resume.g2 : "";
+  if (typeof resume.q === "string" && resume.q) { $("#q").value = resume.q; state.q = resume.q.trim().toLowerCase(); }
+  if (resume.mem && typeof resume.mem === "object") Object.keys(resume.mem).forEach(k => { if (typeof resume.mem[k] === "number") scrollMem[k] = resume.mem[k]; });
+}
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") saveSession(); });
+addEventListener("pagehide", saveSession);
+// Zusätzlich kurz nach jedem Rollen und Tippen merken, falls das iPhone die Seite ohne Vorwarnung beendet
+let saveT = 0;
+const saveSoon = () => { clearTimeout(saveT); saveT = setTimeout(saveSession, 400); };
+if (SC) { SC.addEventListener("scroll", saveSoon, { passive: true }); document.addEventListener("click", saveSoon); $("#q").addEventListener("input", saveSoon); }
+
 sync();
 render();
+if (resume) {
+  // Stelle setzen, solange die Seite beim Öffnen noch verdeckt ist (siehe Kopf der Seite). So springt nichts sichtbar.
+  const y = typeof resume.y === "number" ? resume.y : memKey() === "genres:" ? 0 : scrollMem[memKey()];
+  if (y != null) {
+    setY(y); const set = getY();
+    // Falls die Schriften noch nicht ganz geladen waren, danach noch einmal genau an dieselbe Stelle
+    if (document.fonts && document.fonts.status !== "loaded") document.fonts.ready.then(() => { if (getY() === set) setY(y); });
+  }
+}
 onScroll();
 </script>
 
