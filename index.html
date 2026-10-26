@@ -208,6 +208,8 @@ main { padding-block: 18px calc(max(16px, env(safe-area-inset-bottom, 0px)) + 76
 .btn[aria-pressed="true"].save { color: var(--ink); border-color: var(--ink); }
 .btn[aria-pressed="true"].save svg path { fill: currentColor; }
 .btn[aria-pressed="true"].seen { color: var(--ok); border-color: var(--ok); background: var(--ok-soft); }
+/* Gesehene Titel kann man nicht mehr merken: der Merken-Knopf ist dann ausgeblendet */
+.btn[hidden] { display: none; }
 .card.is-seen { background: var(--paper); }
 .card.is-seen h2, .card.is-seen .desc { color: var(--muted); }
 
@@ -409,6 +411,7 @@ html:not(.inst) .ibanner { display: none; }
 .ov-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .ov-btn { font: inherit; font-size: 15px; font-weight: 700; color: var(--ink); background: var(--chip); border: 1px solid var(--line); border-radius: 12px; padding: 11px 10px; cursor: pointer; line-height: 1.2; -webkit-tap-highlight-color: transparent; }
 .ov-btn.main { color: var(--on-gold); background: var(--gold); border-color: var(--gold); }
+.ov-btn.danger { color: var(--on-hanko); background: var(--hanko); border-color: var(--hanko); }
 .ov-btn:active { filter: brightness(.9); }
 @keyframes ovIn { from { opacity: 0; } }
 @keyframes cardIn { from { opacity: 0; transform: translateY(10px) scale(.97); } }
@@ -492,7 +495,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V71</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V72</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -554,6 +557,14 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
     <div class="ov-head"><b id="instTitle">Zum Home-Bildschirm hinzufügen</b><button type="button" class="inst-x" data-close aria-label="Anleitung schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
     <ol class="inst-steps" id="instSteps"></ol>
     <button type="button" class="ov-btn main" data-close>OK</button>
+  </div>
+</div>
+<div class="ov" id="seenAsk" hidden>
+  <div class="ov-bg" data-close></div>
+  <div class="ov-card ask" role="alertdialog" aria-modal="true" aria-labelledby="seenAskTitle" aria-describedby="seenAskText">
+    <b id="seenAskTitle">Nicht mehr als gesehen markieren?</b>
+    <p id="seenAskText"></p>
+    <div class="ov-row"><button type="button" class="ov-btn" data-close>Abbrechen</button><button type="button" class="ov-btn danger" id="seenAskOk">Entfernen</button></div>
   </div>
 </div>
 <div class="ov" id="instAsk" hidden>
@@ -809,6 +820,8 @@ const migrate = arr => arr.map(x => /^a\d+$/.test(x) && DATA[+x.slice(1)] ? slug
 const known = new Set(items.map(it => it.id));
 let saved = new Set(migrate(load(KEY.saved, [])).filter(id => known.has(id)));
 let seen = new Set(migrate(load(KEY.seen, [])).filter(id => known.has(id)));
+// Gesehenes gehört nicht mehr auf die Merkliste (einmal aufräumen, falls beides markiert war)
+seen.forEach(id => saved.delete(id));
 store(KEY.saved, [...saved]); store(KEY.seen, [...seen]);
 const DEFAULTS = { type: "", sort: "mine", onlyDe: false, hideSeen: false, mood: "", view: "all", g2: "" };
 const FILTER_KEYS = ["type", "onlyDe", "hideSeen", "mood"];
@@ -1050,7 +1063,7 @@ function card(it) {
       <div class="foot">
         <a class="btn cr" href="${crUrl(it)}" target="_blank" rel="noopener">${ICON.out}${crLinkOf(it) ? "Auf Crunchyroll öffnen" : "Auf Crunchyroll suchen"}</a>
         <button type="button" class="btn seen" id="v-${it.id}" data-id="${it.id}" data-act="seen" aria-pressed="${isSeen}">${ICON.seen}${isSeen ? "Gesehen" : "Schon gesehen"}</button>
-        <button type="button" class="btn save" id="s-${it.id}" data-id="${it.id}" data-act="save" aria-pressed="${isSaved}">${ICON.save}${isSaved ? "Gemerkt" : "Merken"}</button>
+        <button type="button" class="btn save" id="s-${it.id}" data-id="${it.id}" data-act="save" aria-pressed="${isSaved}"${isSeen ? " hidden" : ""}>${ICON.save}${isSaved ? "Gemerkt" : "Merken"}</button>
       </div>
     </li>`;
 }
@@ -1188,18 +1201,25 @@ function render() {
 function setMark(id, act, on) {
   const set = act === "seen" ? seen : saved;
   on ? set.add(id) : set.delete(id);
+  // Gesehen heißt: nicht mehr auf der Merkliste
+  const unsave = act === "seen" && on && saved.delete(id);
   // Erst den Knopf selbst umstellen (die Karte bleibt erhalten), das sieht man sofort.
   const b = document.getElementById((act === "seen" ? "v-" : "s-") + id);
   if (b) {
     b.setAttribute("aria-pressed", String(on));
     b.innerHTML = act === "seen" ? ICON.seen + (on ? "Gesehen" : "Schon gesehen") : ICON.save + (on ? "Gemerkt" : "Merken");
-    if (act === "seen") b.closest(".card").classList.toggle("is-seen", on);
+    if (act === "seen") {
+      b.closest(".card").classList.toggle("is-seen", on);
+      const s = document.getElementById("s-" + id);
+      if (s) { s.hidden = on; s.setAttribute("aria-pressed", "false"); s.innerHTML = ICON.save + "Merken"; }
+    }
   }
   // Speichern, Zähler und ggf. Liste neu filtern erst im nächsten Bild, damit der Knopf nicht hängt
   requestAnimationFrame(() => setTimeout(() => {
     store(act === "seen" ? KEY.seen : KEY.saved, [...set]);
+    if (unsave) store(KEY.saved, [...saved]);
     if (!b) return;
-    if ((act === "seen" && (state.hideSeen || state.view === "seen")) || (act === "save" && state.view === "saved")) { render(); return; }
+    if ((act === "seen" && (state.hideSeen || state.view === "seen" || (unsave && state.view === "saved"))) || (act === "save" && state.view === "saved")) { render(); return; }
     status(document.querySelectorAll("#list .card:not([hidden])").length);
     headFor();
   }, 0));
@@ -1208,8 +1228,24 @@ $("#list").addEventListener("click", e => {
   const b = e.target.closest("button[data-act]");
   if (!b) return;
   const id = b.dataset.id, act = b.dataset.act, on = !(act === "seen" ? seen : saved).has(id);
+  // Gesehen wieder entfernen nur nach Nachfrage, weil es den Fortschritt verändert
+  if (act === "seen" && !on) { askUnseen(id); return; }
+  if (act === "save" && seen.has(id)) return; // Gesehenes kann man nicht merken
   setMark(id, act, on);
 });
+const seenAsk = $("#seenAsk");
+let seenAskId = null;
+function askUnseen(id) {
+  const it = items.find(x => x.id === id);
+  $("#seenAskText").textContent = "„" + (it ? it.title : "Dieser Titel") + "“ zählt dann nicht mehr zu deinem Fortschritt.";
+  seenAskId = id; seenAsk.hidden = false;
+  $("#seenAskOk").focus({ preventScroll: true });
+}
+const closeSeenAsk = () => { seenAsk.hidden = true; seenAskId = null; };
+seenAsk.addEventListener("click", e => { if (e.target.closest("[data-close]")) closeSeenAsk(); });
+seenAsk.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !seenAsk.hidden) closeSeenAsk(); });
+$("#seenAskOk").addEventListener("click", () => { const id = seenAskId; closeSeenAsk(); if (id) setMark(id, "seen", false); });
 
 // Kleine Hinweise unten
 let toastT;
