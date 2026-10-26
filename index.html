@@ -43,8 +43,8 @@
       const sig = [innerWidth, innerHeight, scrollY, sc ? sc.scrollTop : 0, pad, Math.round(h1.getBoundingClientRect().top)].join();
       same = sig === last ? same + 1 : 0; last = sig;
       // erst zeigen, wenn 4 Bilder lang alles stillstand; in der App außerdem erst, wenn die Statusleiste bekannt ist
-      // (Abstand oben größer als die 10px ohne Statusleiste)
-      if (same >= 4 && (!app || pad > 10.5 || t > 500) && (!document.fonts || document.fonts.status === "loaded")) return show();
+      // (Abstand oben größer als die 36px ohne Statusleiste)
+      if (same >= 4 && (!app || pad > 36.5 || t > 500) && (!document.fonts || document.fonts.status === "loaded")) return show();
     }
     requestAnimationFrame(check);
   };
@@ -428,10 +428,11 @@ html:not(.inst) .ibanner { display: none; }
   .card h2 { font-size: 17px; }
 }
 /* Handy: kein eigener Streifen oben, die Liste läuft unter der Uhr durch (wie bei iPhone-Apps).
-   Als App vom Homescreen ist die Statusleiste durchsichtig. Der Kopf beginnt knapp unter der Uhr,
-   in Safari mit etwa demselben Abstand (dort hält Safari den Bereich der Uhr selbst frei). */
+   Als App vom Homescreen ist die Statusleiste durchsichtig. Das iPhone legt dort selbst eine Unschärfe unter die Uhr,
+   die etwa 30px weiter nach unten reicht. Der Kopf beginnt deshalb 36px unter der Statusleiste, knapp unterhalb davon.
+   In Safari hält Safari den Bereich der Uhr selbst frei, dort reicht ein kleiner Abstand. */
 .app body::before { display: none; }
-.standalone header.top { padding-top: calc(env(safe-area-inset-top, 0px) + 10px); }
+.standalone header.top { padding-top: calc(env(safe-area-inset-top, 0px) + 36px); }
 .app:not(.standalone) header.top { padding-top: 8px; }
 /* App-Start: kurz verdeckt, bis alles stillsteht (siehe Kopf der Seite), dann sanft eingeblendet */
 .app body { transition: opacity .18s ease-out; }
