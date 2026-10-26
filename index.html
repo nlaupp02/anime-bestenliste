@@ -212,11 +212,30 @@ main { padding-block: 18px calc(max(16px, env(safe-area-inset-bottom, 0px)) + 76
 .btn[aria-pressed="true"].seen { color: var(--ok); border-color: var(--ok); background: var(--ok-soft); }
 /* Gesehene Titel kann man nicht mehr merken: der Merken-Knopf ist dann ausgeblendet */
 .btn[hidden] { display: none; }
+/* Kompakte Karte: Beschreibung auf 3 Zeilen, „Mehr lesen“ klappt auf; Gesehen und Merken als Symbol-Knöpfe in einer Zeile */
+.desc.clamp { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+.more { grid-column: 1 / -1; justify-self: start; display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; font: inherit; font-size: 13.5px; font-weight: 700; color: var(--gold); background: none; border: 0; padding: 2px 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.more svg { width: 12px; height: 12px; transition: transform .2s ease; }
+.more[aria-expanded="true"] svg { transform: rotate(180deg); }
+.more:active { opacity: .7; }
+.foot { flex-wrap: nowrap; align-items: stretch; }
+.foot .btn.seen, .foot .btn.save { width: 42px; padding: 0; justify-content: center; flex: none; }
+.foot .btn.seen svg, .foot .btn.save svg { width: 16px; height: 16px; }
+.btn .bt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .card.is-seen { background: var(--paper); }
 .card.is-seen h2, .card.is-seen .desc { color: var(--muted); }
 
 /* Wertungen */
 .score { grid-column: 2; grid-row: 1 / span 3; display: grid; justify-items: center; gap: 6px; align-self: start; }
+.cv { display: none; }
+html.covers .cbody { grid-template-columns: 76px minmax(0, 1fr) auto; }
+html.covers .cbody > .meta, html.covers .card h2 { grid-column: 2; }
+html.covers .tags { grid-column: 2 / -1; }
+html.covers .cbody > .score { grid-column: 3; grid-row: 1 / span 2; }
+html.covers .facts { grid-column: 2 / -1; }
+html.covers .cv { display: block; grid-column: 1; grid-row: 1 / span 4; align-self: start; width: 76px; height: 108px; margin-top: 2px; border-radius: 8px; overflow: hidden; background: var(--chip); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06); }
+.cv img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .3s ease; }
+.cv img.ok { opacity: 1; }
 .stamp {
   width: 62px; height: 62px; border-radius: 50%;
   display: grid; place-items: center; text-align: center; align-content: center;
@@ -546,7 +565,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V84</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V85</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -880,7 +899,7 @@ const slug = s => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replac
 const DE_TITLE = { "So I'm a Spider, So What?": "Ich bin eine Spinne, na und?" };
 const mk = (d, i, extra) => ({
   id: slug(d[0]), key: d[0], title: DE_TITLE[d[0]] || d[0], type: d[1], genres: d[2].split("|"), mine: d[3], imdb: d[4], votes: d[5],
-  dub: d[6], len: d[7], desc: d[8], note: d[9], alt: (d[10] || "") + (DE_TITLE[d[0]] ? " " + d[0] : ""), moods: (d[11] || "").split("|").filter(Boolean),
+  dub: d[6], len: d[7], desc: d[8], note: d[9], alt: (d[10] || "") + (DE_TITLE[d[0]] ? " " + d[0] : ""), sq: d[10] || "", moods: (d[11] || "").split("|").filter(Boolean),
   cr: d[12] || d[0], crLink: d[13] || "", order: i, extra
 });
 const items = [...DATA.map((d, i) => mk(d, i, false)), ...EXTRA.map((d, i) => mk(d, 1000 + i, true))];
@@ -1197,6 +1216,7 @@ function card(it) {
   return `
     <li class="card${isSeen ? " is-seen" : ""}">
       <div class="cbody">
+      <div class="cv" aria-hidden="true"><img alt="" loading="lazy" decoding="async"${coverOf(it) ? ` src="${coverOf(it)}"` : ""} onload="this.classList.add('ok')" onerror="this.remove()"></div>
       <div class="meta"><span class="rank">${state.view === "genres" && state.g2 ? `Platz ${it.gr[state.g2]} in ${state.g2}` : `Platz ${it.rank}`}</span><span>${it.type === "F" ? "Film" : "Serie"}</span>${isRom(it) && it.mine >= 8.3 ? '<span class="pg">💘 Priscilla-geprüft</span>' : ""}</div>
       <div class="score">
         <div class="stamp ${tier(it.mine)}" aria-label="Wertung ${fmt(it.mine)} von 10">${fmt(it.mine)}<small>/10</small></div>
@@ -1207,13 +1227,13 @@ function card(it) {
         <span class="dub ${it.dub}">${DUB[it.dub]}</span>
         <span>${esc(it.len)}</span>
       </div>
-      <p class="desc">${esc(it.desc)}</p>
+      ${it.desc.length > 120 ? `<p class="desc clamp">${esc(it.desc)}</p><button type="button" class="more" aria-expanded="false"><span>Mehr lesen</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6l4.5 4.5L12.5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : `<p class="desc">${esc(it.desc)}</p>`}
       ${it.note ? `<p class="note"><b>Tipp:</b> ${esc(it.note)}</p>` : ""}
       </div>
       <div class="foot">
         <a class="btn cr" href="${crUrl(it)}" target="_blank" rel="noopener">${ICON.out}${crLinkOf(it) ? "Auf Crunchyroll öffnen" : "Auf Crunchyroll suchen"}</a>
-        <button type="button" class="btn seen" id="v-${it.id}" data-id="${it.id}" data-act="seen" aria-pressed="${isSeen}">${ICON.seen}${isSeen ? "Gesehen" : "Schon gesehen"}</button>
-        <button type="button" class="btn save" id="s-${it.id}" data-id="${it.id}" data-act="save" aria-pressed="${isSaved}"${isSeen ? " hidden" : ""}>${ICON.save}${isSaved ? "Gemerkt" : "Merken"}</button>
+        <button type="button" class="btn seen" id="v-${it.id}" data-id="${it.id}" data-act="seen" aria-pressed="${isSeen}">${ICON.seen}<span class="bt">${isSeen ? "Gesehen" : "Schon gesehen"}</span></button>
+        <button type="button" class="btn save" id="s-${it.id}" data-id="${it.id}" data-act="save" aria-pressed="${isSaved}"${isSeen ? " hidden" : ""}>${ICON.save}<span class="bt">${isSaved ? "Gemerkt" : "Merken"}</span></button>
       </div>
     </li>`;
 }
@@ -1297,8 +1317,69 @@ function headFor() {
 }
 // Die Karten werden nur einmal gebaut und danach nur ein- und ausgeblendet. So geht der Reiterwechsel schneller.
 let cardEls = null;
+// Cover von AniList (freie Anime-Datenbank). Gesucht wird einmal nach dem Titel, gespeichert wird nur die Bildadresse.
+// Die Bilder selbst lädt das iPhone erst, wenn die Karte ins Bild kommt. Geht AniList nicht (z. B. ohne Netz), bleibt alles wie vorher.
+const KEY_COV = "cr-top100-covers-v1";
+let covers = load(KEY_COV, {});
+const coverOf = it => { const u = covers[it.key]; return u && u.startsWith("https://") ? u : ""; };
+const COVER_Q = {
+  "Frieren – Nach dem Ende der Reise": "Sousou no Frieren", "Die Tagebücher der Apothekerin": "Kusuriya no Hitorigoto", "Oshi no Ko – Mein Star": "Oshi no Ko",
+  "Nichijou – Das ganz normale Leben": "Nichijou", "Das Band der Unterwelt": "Yomi no Tsugai", "Detektiv Conan": "Detective Conan",
+  "Josie, der Tiger und die Fische": "Josee to Tora to Sakana-tachi", "Meine Wiedergeburt als Schleim in einer anderen Welt": "Tensei shitara Slime Datta Ken",
+  "Mirai – Das Mädchen aus der Zukunft": "Mirai no Mirai", "Mein Schulgeist Hanako": "Jibaku Shounen Hanako-kun", "Takopi und die Sache mit dem Glück": "Takopii no Genzai",
+  "Der Begründer des Diabolismus": "Mo Dao Zu Shi", "Berserk: Das Goldene Zeitalter – Memorial Edition": "Berserk: Ougon Jidai-hen - Memorial Edition",
+  "Akatsuki no Yona – Prinzessin der Morgendämmerung": "Akatsuki no Yona", "Die Melancholie der Haruhi Suzumiya": "Suzumiya Haruhi no Yuuutsu",
+  "Das Verschwinden der Haruhi Suzumiya": "Suzumiya Haruhi no Shoushitsu", "86 – Eighty Six": "86 EIGHTY-SIX", "Dragonball Super: Broly": "Dragon Ball Super: Broly",
+  "Fate/Grand Order – Babylonia": "Fate/Grand Order Babylonia", "Zombie 100 – Bucket List of the Dead": "Zom 100", "Lupin III.": "Lupin III",
+  "Chainsaw Man – The Movie: Reze Arc": "Chainsaw Man Reze", "Attack on Titan: The Last Attack": "Shingeki no Kyojin The Last Attack",
+  "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You": "Kimi no Koto ga Daidaidaidaidaisuki na 100-nin no Kanojo",
+  "Cherry Magic! Thirty Years of Virginity Can Make You a Wizard?!": "30-sai made Doutei dato Mahoutsukai ni Nareru Rashii",
+  "Alya Sometimes Hides Her Feelings in Russian": "Tokidoki Bosotto Russia-go de Dereru Tonari no Alya-san", "Smoking Behind the Supermarket with You": "Super no Ura de Yani Suu Futari",
+  "Love Unseen Beneath the Clear Night Sky": "Toumei na Yoru ni Kakeru Kimi to", "Tune In to the Midnight Heart": "Mayonaka Heart Tune", "Firefly Wedding": "Hotaru no Yomeiri",
+  "The Angel Next Door Spoils Me Rotten": "Otonari no Tenshi-sama", "More than a Married Couple, but Not Lovers": "Fuufu Ijou, Koibito Miman",
+  "Sekaiichi Hatsukoi: The World's Greatest First Love": "Sekaiichi Hatsukoi", "Go For It, Nakamura-kun!!": "Ganbare! Nakamura-kun!!", "Journal with Witch": "Ikoku Nikki",
+  "Jaadugar: A Witch in Mongolia": "Tenmaku no Jaadugar", "Yatagarasu": "Karasu wa Aruji wo Erabanai"
+};
+function applyCovers() {
+  const any = items.some(coverOf);
+  document.documentElement.classList.toggle("covers", any);
+  if (!any || !cardEls) return;
+  items.forEach(it => {
+    const u = coverOf(it), el = cardEls.get(it.id), img = el && el.querySelector(".cv img");
+    if (u && img && !img.getAttribute("src")) img.src = u;
+  });
+}
+async function loadCovers() {
+  // 1. Runde: Titel (oder fester Suchname), 2. Runde für nicht Gefundene: japanischer Suchbegriff aus der Liste
+  for (const round of [1, 2]) {
+    const need = items.filter(it => round === 1 ? !(it.key in covers) : covers[it.key] === "" && it.sq);
+    for (let i = 0; i < need.length; i += 15) {
+      const part = need.slice(i, i + 15);
+      const query = "query{" + part.map((it, j) => {
+        const q = round === 1 ? (COVER_Q[it.key] || it.key) : it.sq;
+        return `m${j}:Page(perPage:1){media(search:${JSON.stringify(q)},type:ANIME,${it.type === "F" ? "format:MOVIE" : "format_not:MOVIE"},sort:[SEARCH_MATCH,POPULARITY_DESC]){coverImage{large}}}`;
+      }).join(" ") + "}";
+      try {
+        const r = await fetch("https://graphql.anilist.co", { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ query }) });
+        if (!r.ok) return;
+        const js = await r.json();
+        if (!js || !js.data) return;
+        part.forEach((it, j) => {
+          const m = js.data["m" + j] && js.data["m" + j].media && js.data["m" + j].media[0], u = m && m.coverImage && m.coverImage.large;
+          covers[it.key] = u ? u : round === 1 ? "" : "-";
+        });
+        store(KEY_COV, covers); applyCovers();
+      } catch (e) { return; }
+    }
+  }
+}
 function buildCards() {
   $("#list").innerHTML = byMine.map(card).join("");
+  $("#list").addEventListener("click", e => {
+    const m = e.target.closest(".more"); if (!m) return;
+    const d = m.previousElementSibling, open = d.classList.toggle("clamp") === false;
+    m.firstChild.textContent = open ? "Weniger" : "Mehr lesen"; m.setAttribute("aria-expanded", String(open));
+  });
   cardEls = new Map();
   $("#list").querySelectorAll(".card").forEach((el, i) => { el._rank = el.querySelector(".rank"); cardEls.set(byMine[i].id, el); });
 }
@@ -1332,7 +1413,7 @@ function renderProg() {
   $("#progRank").textContent = r[3];
   $("#progTitle").textContent = prisc ? `${n} von ${total} Romanzen` : `${n} von ${total} gesehen`;
   const next = nx ? `<span class="nx">Noch <b>${nx[0] - n}</b> bis ${nx[3]}</span>` : `<span class="nx">Höchster Rang erreicht</span>`;
-  if (!n) { $("#progText").innerHTML = (prisc ? "Markiere Romanzen als gesehen, dann steigt dein Liebes-Rang." : "Tippe bei einem Anime auf „Schon gesehen“. Hier siehst du dann, wie viel du schon geschaut hast.") + next; return; }
+  if (!n) { $("#progText").innerHTML = (prisc ? "Markiere Romanzen als gesehen, dann steigt dein Liebes-Rang." : "Tippe bei einem Anime auf den Haken ✓. Hier siehst du dann, wie viel du schon geschaut hast.") + next; return; }
   const h = Math.round(list.reduce((a, it) => a + minutesOf(it), 0) / 60), nf = list.filter(it => it.type === "F").length, ns = n - nf;
   const parts = [ns && `${ns} ${ns === 1 ? "Serie" : "Serien"}`, nf && `${nf} ${nf === 1 ? "Film" : "Filme"}`].filter(Boolean).join(", ");
   $("#progText").innerHTML = `<b>≈ ${h.toLocaleString("de-DE")} ${h === 1 ? "Stunde" : "Stunden"}</b> Anime geschaut<br>${parts}${next}`;
@@ -1342,7 +1423,7 @@ function render() {
   renderProg();
   arrowOff = (state.view === "genres" && !state.g2) || ((state.view === "saved" || state.view === "seen") && !filtered().length);
   requestAnimationFrame(onScroll);
-  if (!cardEls) buildCards();
+  if (!cardEls) { buildCards(); applyCovers(); setTimeout(loadCovers, 1200); }
   const tilesView = state.view === "genres" && !state.g2;
   $("#tiles").hidden = !tilesView;
   $("#gbar").hidden = !(state.view === "genres" && state.g2);
@@ -1362,7 +1443,7 @@ function render() {
   const e = $("#empty");
   e.hidden = list.length > 0 || (state.view === "seen" && !seen.size); // bei 0 Gesehenen erklärt die Fortschritts-Karte alles
   e.textContent = state.view === "saved" && !saved.size ? "Noch nichts gemerkt. Tippe bei einem Anime auf „Merken“, dann landet er hier."
-    : state.view === "seen" && !seen.size ? "Noch nichts als gesehen markiert. Tippe bei einem Anime auf „Schon gesehen“."
+    : state.view === "seen" && !seen.size ? "Noch nichts als gesehen markiert. Tippe bei einem Anime auf den Haken ✓."
     : "Kein Titel passt zu diesen Filtern. Setz einzelne Filter zurück oder leere die Suche.";
   status(list.length);
 }
@@ -1376,11 +1457,11 @@ function setMark(id, act, on) {
   const b = document.getElementById((act === "seen" ? "v-" : "s-") + id);
   if (b) {
     b.setAttribute("aria-pressed", String(on));
-    b.innerHTML = act === "seen" ? ICON.seen + (on ? "Gesehen" : "Schon gesehen") : ICON.save + (on ? "Gemerkt" : "Merken");
+    b.innerHTML = act === "seen" ? ICON.seen + `<span class="bt">${on ? "Gesehen" : "Schon gesehen"}</span>` : ICON.save + `<span class="bt">${on ? "Gemerkt" : "Merken"}</span>`;
     if (act === "seen") {
       b.closest(".card").classList.toggle("is-seen", on);
       const s = document.getElementById("s-" + id);
-      if (s) { s.hidden = on; s.setAttribute("aria-pressed", "false"); s.innerHTML = ICON.save + "Merken"; }
+      if (s) { s.hidden = on; s.setAttribute("aria-pressed", "false"); s.innerHTML = ICON.save + '<span class="bt">Merken</span>'; }
     }
   }
   // Speichern, Zähler und ggf. Liste neu filtern erst im nächsten Bild, damit der Knopf nicht hängt
