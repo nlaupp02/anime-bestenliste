@@ -380,6 +380,37 @@ button, a, summary, input, label { touch-action: manipulation; }
 .prog h4 { margin: 0; font-size: 17px; line-height: 1.3; }
 .prog p { margin: 3px 0 0; color: var(--muted); font-size: 13.5px; line-height: 1.45; }
 .prog p b { color: var(--ink); }
+/* Rang: Kanji im Ring, der Ring füllt sich bis zum nächsten Rang. Farbe steigt mit: grau, grün, gold, rot */
+.prog, .ladder li { --rc: #A3A8C2; }
+.prog.rt1, .ladder li.rt1 { --rc: var(--ok); } .prog.rt2, .ladder li.rt2 { --rc: var(--gold); } .prog.rt3, .ladder li.rt3 { --rc: var(--hanko); }
+.prog .rk { display: grid; justify-items: center; gap: 4px; }
+.prog .ring .kj { position: absolute; inset: 0; display: grid; place-items: center; font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
+  font-weight: 700; font-size: 20px; line-height: 1.05; writing-mode: vertical-rl; color: var(--rc); }
+.prog .ring .kj.k1 { font-size: 30px; } .prog .ring .kj.k3 { font-size: 15px; }
+.prog .ringcap { font-size: 12.5px; font-weight: 700; line-height: 1.2; color: var(--rc); white-space: nowrap; }
+.prog #progArc { stroke: var(--rc); }
+.prog.max .ring svg { filter: drop-shadow(0 0 6px rgba(240, 90, 80, .55)); }
+.prog .ph { display: flex; align-items: center; gap: 6px; }
+.prog .nx { display: block; }
+.rinfo { flex: none; width: 30px; height: 30px; margin: -6px 0; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); display: grid; place-items: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.rinfo svg { width: 18px; height: 18px; }
+.rinfo:active { color: var(--ink); }
+/* Alle Ränge */
+.rank-card .sub { margin: 2px 0 0; color: var(--muted); font-size: 13px; line-height: 1.4; }
+.ladder { list-style: none; margin: 0; padding: 0; }
+.ladder li { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--line); }
+.ladder li:last-child { border-bottom: 0; }
+.ladder .big { display: grid; place-items: center; width: 29px; height: 29px; border: 1.6px solid var(--rc); border-radius: 7px; transform: rotate(-6deg); color: var(--rc);
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif; font-weight: 700; font-size: 8.5px; line-height: 1.05; writing-mode: vertical-rl; }
+.ladder .big.k1 { font-size: 16px; } .ladder .big.k2 { font-size: 11px; }
+.ladder .big.fill { background: var(--rc); color: var(--on-hanko); }
+.ladder .big.glow { box-shadow: 0 0 0 2px var(--sheet), 0 0 0 3.5px var(--rc), 0 0 12px rgba(240, 90, 80, .55); }
+.ladder b { font-size: 15px; line-height: 1.3; }
+.ladder small { color: var(--muted); font-size: 13px; line-height: 1.3; }
+.ladder .ab { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ladder li.cur { margin-inline: -8px; padding-inline: 8px; background: var(--chip); border-radius: 10px; border-bottom-color: transparent; }
+.ladder li.cur .ab { color: var(--ink); font-weight: 700; }
+.ladder li.lock { opacity: .4; }
 .toast {
   position: fixed; z-index: 30; left: 50%; transform: translateX(-50%);
   bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + 58px);
@@ -497,7 +528,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V74</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V75</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -540,8 +571,8 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
 
   <main>
     <section class="prog" id="prog" hidden aria-live="polite">
-      <div class="ring"><svg viewBox="0 0 84 84" aria-hidden="true"><circle cx="42" cy="42" r="35" fill="none" stroke="var(--line)" stroke-width="9"/><circle id="progArc" cx="42" cy="42" r="35" fill="none" stroke="var(--ok)" stroke-width="9" stroke-linecap="round" stroke-dasharray="219.9" stroke-dashoffset="219.9" transform="rotate(-90 42 42)"/></svg><b id="progPct">0%</b></div>
-      <div><h4 id="progTitle"></h4><p id="progText"></p></div>
+      <div class="rk"><div class="ring"><svg viewBox="0 0 84 84" aria-hidden="true"><circle cx="42" cy="42" r="35" fill="none" stroke="var(--line)" stroke-width="9"/><circle id="progArc" cx="42" cy="42" r="35" fill="none" stroke="var(--ok)" stroke-width="9" stroke-linecap="round" stroke-dasharray="219.9" stroke-dashoffset="219.9" transform="rotate(-90 42 42)"/></svg><span class="kj" id="progKj" aria-hidden="true"></span></div><div class="ringcap" id="progRank"></div></div>
+      <div><div class="ph"><h4 id="progTitle"></h4><button type="button" class="rinfo" id="rankInfo" aria-label="Alle Ränge anzeigen"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".95" fill="currentColor"/></svg></button></div><p id="progText"></p></div>
     </section>
     <div class="gbar" id="gbar" hidden><button type="button" class="gback" id="gback">← Alle Genres</button><h3 id="gtitle"></h3></div>
     <div class="tiles" id="tiles" hidden></div>
@@ -567,6 +598,14 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
     <b id="seenAskTitle">Nicht mehr als gesehen markieren?</b>
     <p id="seenAskText"></p>
     <div class="ov-row"><button type="button" class="ov-btn" data-close>Abbrechen</button><button type="button" class="ov-btn danger" id="seenAskOk">Entfernen</button></div>
+  </div>
+</div>
+<div class="ov" id="rankSheet" hidden>
+  <div class="ov-bg" data-close></div>
+  <div class="ov-card rank-card" role="dialog" aria-modal="true" aria-labelledby="rankTitle">
+    <div><b id="rankTitle"></b><p class="sub">Steigt mit jedem Anime, den du als gesehen markierst.</p></div>
+    <ol class="ladder" id="ladder"></ol>
+    <button type="button" class="ov-btn main" data-close>OK</button>
   </div>
 </div>
 <div class="ov" id="instAsk" hidden>
@@ -1158,17 +1197,28 @@ const minutesOf = it => {
   const m = it.len.match(/([\d.]+)\s*Folgen/);
   return (EP_FIX[it.key] ?? (m ? +m[1].replace(/\./g, "") : 24)) * 24;
 };
+// Ränge: ab wie vielen gesehenen Titeln, Kanji, Name, Bedeutung, Farbstufe
+const RANKS = [[0, "初心者", "Shoshinsha", "Anfänger", 0], [1, "後輩", "Kōhai", "Neuling", 0], [5, "オタク", "Otaku", "Anime-Fan", 1],
+  [10, "先輩", "Senpai", "Vorbild", 1], [20, "侍", "Samurai", "Krieger", 2], [35, "先生", "Sensei", "Meister", 2], [50, "将軍", "Shōgun", "Feldherr", 3],
+  [75, "仙人", "Sennin", "Weiser Eremit", 3], [100, "鬼", "Oni", "Dämon", 3], [130, "魔王", "Maō", "Dämonenkönig", 3]];
+const rankIdx = n => RANKS.reduce((a, r, i) => n >= r[0] ? i : a, 0);
+const seenCount = () => items.filter(it => seen.has(it.id)).length;
 function renderProg() {
   const box = $("#prog"), on = state.view === "seen";
   box.hidden = !on; if (!on) return;
   const list = items.filter(it => seen.has(it.id)), n = list.length, total = items.length, pct = Math.round(n / total * 100);
-  $("#progArc").style.strokeDashoffset = String(219.9 * (1 - n / total));
-  $("#progPct").textContent = pct + "%";
+  // Der Ring zeigt den Weg zum nächsten Rang, ganz oben ist er voll
+  const ri = rankIdx(n), r = RANKS[ri], nx = RANKS[ri + 1], kj = $("#progKj");
+  $("#progArc").style.strokeDashoffset = String(219.9 * (nx ? 1 - (n - r[0]) / (nx[0] - r[0]) : 0));
+  box.className = "prog rt" + r[4] + (nx ? "" : " max");
+  kj.textContent = r[1]; kj.className = "kj k" + r[1].length;
+  $("#progRank").textContent = r[2];
   $("#progTitle").textContent = `${n} von ${total} gesehen`;
-  if (!n) { $("#progText").textContent = "Tippe bei einem Anime auf „Schon gesehen“. Hier siehst du dann, wie viel du schon geschaut hast."; return; }
+  const next = nx ? `<span class="nx">Noch <b>${nx[0] - n}</b> bis ${nx[2]}</span>` : `<span class="nx">Höchster Rang: ${r[3]}</span>`;
+  if (!n) { $("#progText").innerHTML = "Tippe bei einem Anime auf „Schon gesehen“. Hier siehst du dann, wie viel du schon geschaut hast." + next; return; }
   const h = Math.round(list.reduce((a, it) => a + minutesOf(it), 0) / 60), nf = list.filter(it => it.type === "F").length, ns = n - nf;
   const parts = [ns && `${ns} ${ns === 1 ? "Serie" : "Serien"}`, nf && `${nf} ${nf === 1 ? "Film" : "Filme"}`].filter(Boolean).join(", ");
-  $("#progText").innerHTML = `<b>≈ ${h.toLocaleString("de-DE")} ${h === 1 ? "Stunde" : "Stunden"}</b> Anime geschaut<br>${parts}`;
+  $("#progText").innerHTML = `<b>≈ ${h.toLocaleString("de-DE")} ${h === 1 ? "Stunde" : "Stunden"}</b> Anime geschaut<br>${parts}${next}`;
 }
 function render() {
   headFor();
@@ -1235,6 +1285,22 @@ $("#list").addEventListener("click", e => {
   if (act === "save" && seen.has(id)) return; // Gesehenes kann man nicht merken
   setMark(id, act, on);
 });
+// Fenster mit allen Rängen (Info-Knopf neben „gesehen“)
+const rankSheet = $("#rankSheet");
+$("#rankInfo").addEventListener("click", () => {
+  const n = seenCount(), ri = rankIdx(n);
+  $("#rankTitle").textContent = "Dein Rang: " + RANKS[ri][2];
+  $("#ladder").innerHTML = RANKS.map(([from, kj, name, de, t], i) =>
+    `<li class="rt${t}${i === ri ? " cur" : i > ri ? " lock" : ""}"><span class="big k${kj.length}${i >= 8 ? " fill" : ""}${i === 9 ? " glow" : ""}" aria-hidden="true">${kj}</span>` +
+    `<span><b>${name}</b> <small>· ${de}</small></span><span class="ab">ab ${from}${i === ri ? " · du" : ""}</span></li>`).join("");
+  rankSheet.hidden = false;
+  rankSheet.querySelector(".ov-btn.main").focus({ preventScroll: true });
+});
+const closeRanks = () => { rankSheet.hidden = true; };
+rankSheet.addEventListener("click", e => { if (e.target.closest("[data-close]")) closeRanks(); });
+rankSheet.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !rankSheet.hidden) closeRanks(); });
+
 const seenAsk = $("#seenAsk");
 let seenAskId = null;
 function askUnseen(id) {
