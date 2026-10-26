@@ -242,7 +242,7 @@ html.covers .tags { grid-column: 2 / -1; }
 html.covers .cbody > .score { grid-column: 3; grid-row: 1 / span 2; }
 html.covers .facts { grid-column: 2 / -1; }
 html.covers .cv { display: block; grid-column: 1; grid-row: 1 / span 4; align-self: start; width: 92px; height: 130px; margin-top: 2px; border-radius: 8px; overflow: hidden; background: var(--chip); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06); }
-.cv img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .3s ease; }
+.cv img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
 /* Langes Drücken auf das Cover soll kein Bild-Menü öffnen: Berührungen gehen am Bild vorbei an die Karte */
 .cv, .cv img { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
 .cv img { pointer-events: none; -webkit-user-drag: none; }
@@ -576,7 +576,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V91</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V92</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1371,6 +1371,19 @@ const COVER_Q = {
   "Sekaiichi Hatsukoi: The World's Greatest First Love": "Sekaiichi Hatsukoi", "Go For It, Nakamura-kun!!": "Ganbare! Nakamura-kun!!", "Journal with Witch": "Ikoku Nikki",
   "Jaadugar: A Witch in Mongolia": "Tenmaku no Jaadugar", "Yatagarasu": "Karasu wa Aruji wo Erabanai"
 };
+// Nach dem Start im Hintergrund alle übrigen Cover vorladen und vorbereiten (in kleinen Portionen, wenn das iPhone Luft hat).
+// Beim Scrollen müssen die Bilder dann nicht mehr erst geladen und entpackt werden – das macht das Scrollen flüssig.
+let warmT = 0;
+function warmCovers() {
+  clearTimeout(warmT);
+  const idle = window.requestIdleCallback || (f => setTimeout(f, 200));
+  const step = () => idle(() => {
+    const rest = [...document.querySelectorAll('.cv img[loading="lazy"][src]')].slice(0, 8);
+    rest.forEach(img => { img.loading = "eager"; if (img.decode) img.decode().catch(() => {}); });
+    if (rest.length) warmT = setTimeout(step, 250);
+  });
+  warmT = setTimeout(step, 1500);
+}
 function applyCovers() {
   const any = items.some(coverOf);
   document.documentElement.classList.toggle("covers", any);
@@ -1379,6 +1392,7 @@ function applyCovers() {
     const u = coverOf(it), el = cardEls.get(it.id), img = el && el.querySelector(".cv img");
     if (u && img && !img.getAttribute("src")) img.src = u;
   });
+  warmCovers();
 }
 // Mehrere Wege pro Titel, nacheinander: MyAnimeList-Nummer, fester Suchname, Titel, japanischer Suchbegriff
 const coverWays = it => {
@@ -1414,20 +1428,38 @@ async function loadCovers() {
 function buildCards() {
   $("#list").innerHTML = byMine.map(card).join("");
   // „Mehr lesen“ nur, wenn wirklich mehr als eine Zeile fehlt: Passt der Text in 4 Zeilen, wird er ganz gezeigt.
-  // Gemessen wird erst, wenn eine Karte in die Nähe des Bildschirms kommt (sonst hat sie keine Breite).
-  const fitDesc = el => {
-    const d = el.querySelector(".desc"), m = el.querySelector(".more");
-    if (!d || !m || m.getAttribute("aria-expanded") === "true" || !el.offsetParent) return;
-    d.classList.remove("clamp");
-    const cs = getComputedStyle(d), lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.45;
-    const fits = d.offsetHeight / lh < 4.5;
-    d.classList.toggle("clamp", !fits); m.hidden = fits;
+  // Die Zeilen werden mit der Schrift im Speicher ausgerechnet (Canvas), nicht durch Messen jeder Karte:
+  // das kostet beim Scrollen keine Leistung. Neu gerechnet wird nur, wenn sich die Breite ändert.
+  const ctx2d = document.createElement("canvas").getContext("2d");
+  const lineCount = (text, width) => {
+    let n = 1, line = "";
+    for (const w of text.split(" ")) { const t = line ? line + " " + w : w; if (line && ctx2d.measureText(t).width > width) { n++; line = w; } else line = t; }
+    return n;
   };
-  const descIO = "IntersectionObserver" in window ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) fitDesc(e.target); }), { rootMargin: "900px 0px" }) : null;
-  $("#list").querySelectorAll(".card").forEach(el => { if (el.querySelector(".more")) { if (descIO) descIO.observe(el); } });
-  const refit = () => $("#list").querySelectorAll(".card").forEach(el => { if (el.querySelector(".more")) fitDesc(el); });
-  let rw = innerWidth; addEventListener("resize", () => { if (innerWidth !== rw) { rw = innerWidth; refit(); } });
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
+  let fitW = 0;
+  const fitAll = () => {
+    const ref = [...$("#list").children].find(el => el.offsetParent && el.querySelector(".desc"));
+    if (!ref) return;
+    const d0 = ref.querySelector(".desc"), w = d0.clientWidth;
+    if (!w || w === fitW) return;
+    fitW = w;
+    const cs = getComputedStyle(d0); ctx2d.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    // Eindeutige Fälle rechnet die Schrift-Berechnung, nur knappe Fälle (4–5 Zeilen) werden einmal gemeinsam gemessen
+    const close = [], lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.45;
+    const set = (el, m, fits) => { el.querySelector(".desc").classList.toggle("clamp", !fits); m.hidden = fits; };
+    byMine.forEach(it => {
+      const el = cardEls.get(it.id), m = el && el.querySelector(".more");
+      if (!m || m.getAttribute("aria-expanded") === "true") return;
+      const n = lineCount(it.desc, w);
+      if (n <= 3 || n >= 6 || !el.offsetParent) set(el, m, n <= 4); else close.push([el, m]);
+    });
+    close.forEach(([el]) => el.querySelector(".desc").classList.remove("clamp"));
+    const hs = close.map(([el]) => el.querySelector(".desc").offsetHeight);
+    close.forEach(([el, m], i) => set(el, m, hs[i] / lh < 4.5));
+  };
+  window.fitAll = fitAll;
+  addEventListener("resize", () => requestAnimationFrame(fitAll));
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fitW = 0; fitAll(); });
   $("#list").addEventListener("click", e => {
     const m = e.target.closest(".more"); if (!m) return;
     const d = m.previousElementSibling, open = d.classList.toggle("clamp") === false;
@@ -1477,6 +1509,7 @@ function render() {
   arrowOff = (state.view === "genres" && !state.g2) || ((state.view === "saved" || state.view === "seen") && !filtered().length);
   requestAnimationFrame(onScroll);
   if (!cardEls) { buildCards(); applyCovers(); setTimeout(loadCovers, 1200); }
+  requestAnimationFrame(() => { if (window.fitAll) window.fitAll(); });
   const tilesView = state.view === "genres" && !state.g2;
   $("#tiles").hidden = !tilesView;
   $("#gbar").hidden = !(state.view === "genres" && state.g2);
