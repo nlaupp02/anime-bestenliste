@@ -228,12 +228,12 @@ main { padding-block: 18px calc(max(16px, env(safe-area-inset-bottom, 0px)) + 76
 /* Wertungen */
 .score { grid-column: 2; grid-row: 1 / span 3; display: grid; justify-items: center; gap: 6px; align-self: start; }
 .cv { display: none; }
-html.covers .cbody { grid-template-columns: 76px minmax(0, 1fr) auto; }
+html.covers .cbody { grid-template-columns: 92px minmax(0, 1fr) auto; }
 html.covers .cbody > .meta, html.covers .card h2 { grid-column: 2; }
 html.covers .tags { grid-column: 2 / -1; }
 html.covers .cbody > .score { grid-column: 3; grid-row: 1 / span 2; }
 html.covers .facts { grid-column: 2 / -1; }
-html.covers .cv { display: block; grid-column: 1; grid-row: 1 / span 4; align-self: start; width: 76px; height: 108px; margin-top: 2px; border-radius: 8px; overflow: hidden; background: var(--chip); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06); }
+html.covers .cv { display: block; grid-column: 1; grid-row: 1 / span 4; align-self: start; width: 92px; height: 130px; margin-top: 2px; border-radius: 8px; overflow: hidden; background: var(--chip); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06); }
 .cv img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .3s ease; }
 .cv img.ok { opacity: 1; }
 .stamp {
@@ -1321,6 +1321,11 @@ let cardEls = null;
 // Die Bilder selbst lädt das iPhone erst, wenn die Karte ins Bild kommt. Geht AniList nicht (z. B. ohne Netz), bleibt alles wie vorher.
 const KEY_COV = "cr-top100-covers-v1";
 let covers = load(KEY_COV, {});
+// Nicht gefundene Cover beim nächsten Start noch einmal versuchen (z. B. nach einem Netzfehler oder korrigiertem Suchnamen)
+Object.keys(covers).forEach(k => { if (!String(covers[k]).startsWith("https://")) delete covers[k]; });
+// Wo die Suche nicht trifft: direkt über die MyAnimeList-Nummer
+const ID_MAL = { "Attack on Titan: The Last Attack": 59571, "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You": 54714,
+  "Cherry Magic! Thirty Years of Virginity Can Make You a Wizard?!": 55973, "Alya Sometimes Hides Her Feelings in Russian": 54744 };
 const coverOf = it => { const u = covers[it.key]; return u && u.startsWith("https://") ? u : ""; };
 const COVER_Q = {
   "Frieren – Nach dem Ende der Reise": "Sousou no Frieren", "Die Tagebücher der Apothekerin": "Kusuriya no Hitorigoto", "Oshi no Ko – Mein Star": "Oshi no Ko",
@@ -1356,6 +1361,7 @@ async function loadCovers() {
     for (let i = 0; i < need.length; i += 15) {
       const part = need.slice(i, i + 15);
       const query = "query{" + part.map((it, j) => {
+        if (round === 1 && ID_MAL[it.key]) return `m${j}:Page(perPage:1){media(idMal:${ID_MAL[it.key]},type:ANIME){coverImage{large}}}`;
         const q = round === 1 ? (COVER_Q[it.key] || it.key) : it.sq;
         return `m${j}:Page(perPage:1){media(search:${JSON.stringify(q)},type:ANIME,${it.type === "F" ? "format:MOVIE" : "format_not:MOVIE"},sort:[SEARCH_MATCH,POPULARITY_DESC]){coverImage{large}}}`;
       }).join(" ") + "}";
