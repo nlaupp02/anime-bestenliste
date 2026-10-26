@@ -2,6 +2,9 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
+<!-- Dunkler Hintergrund ganz am Anfang, noch vor Symbolen und Schriften: So ist die Seite beim Öffnen sofort dunkel statt weiß -->
+<meta name="color-scheme" content="dark">
+<style>html{background:#0F1120}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="description" content="Die besten Animes auf Crunchyroll Deutschland, mit Wertung und deutscher Synchro.">
 <meta name="theme-color" content="#0F1120">
@@ -17,8 +20,40 @@
 <script>
 // App-Ansicht schon vor dem ersten Bild festlegen (als Homescreen-App und genauso in Safari/Chrome auf dem Handy, am PC nicht).
 // Sonst ist die Seite beim Öffnen kurz eine normale Webseite, und eine Berührung in diesem Moment lässt alles verschoben hängen.
-if (navigator.standalone === true || matchMedia("(display-mode: standalone)").matches) document.documentElement.classList.add("app", "standalone");
-else if (matchMedia("(hover: none) and (pointer: coarse) and (max-width: 820px)").matches) document.documentElement.classList.add("app");
+(() => {
+  const d = document.documentElement, app = navigator.standalone === true || matchMedia("(display-mode: standalone)").matches;
+  const phone = !app && matchMedia("(hover: none) and (pointer: coarse) and (max-width: 820px)").matches;
+  if (app) d.classList.add("app", "standalone", "boot");
+  else if (phone) d.classList.add("app", "boot");
+  // Hinweis „Als App speichern“ schon hier festlegen: Dann steht er von Anfang an da und schiebt die Seite nicht nachträglich nach unten.
+  // Nur im Handy-Browser, nicht in Claude, nicht in der App und nicht mehr nach „Für immer ausblenden“.
+  try {
+    const ua = navigator.userAgent, mobile = /iPhone|iPod|iPad|Android/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    if (!app && mobile && window.self === window.top && !localStorage.getItem("cr-top100-install-closed")) d.classList.add("inst");
+  } catch (e) {}
+  if (!app && !phone) return;
+  // Öffnen und Neuladen: Das iPhone zeigt die Seite oft schon, bevor das Skript unten fertig ist. In Safari steht sie dann
+  // noch 200px zu tief (siehe OFF im Skript) und die Zahlen fehlen, in der App kommt die Höhe der Statusleiste erst etwas später.
+  // Deshalb bleibt die Seite kurz verdeckt (nur der dunkle Hintergrund), bis sich nichts mehr bewegt, und wird dann eingeblendet.
+  const t0 = Date.now(); let last = "", same = 0;
+  const show = () => d.classList.remove("boot");
+  const check = () => {
+    if (!d.classList.contains("boot")) return;
+    const t = Date.now() - t0, h = document.querySelector("header.top"), h1 = document.querySelector("h1"), sc = document.getElementById("sc");
+    if (t > 1200) return show();
+    if (h && h1 && document.readyState === "complete") {
+      const pad = parseFloat(getComputedStyle(h).paddingTop) || 0;
+      const sig = [innerWidth, innerHeight, scrollY, sc ? sc.scrollTop : 0, pad, Math.round(h1.getBoundingClientRect().top)].join();
+      same = sig === last ? same + 1 : 0; last = sig;
+      // erst zeigen, wenn 4 Bilder lang alles stillstand; in der App außerdem erst, wenn die Statusleiste bekannt ist
+      // (Abstand oben größer als die 36px ohne Statusleiste)
+      if (same >= 4 && (!app || pad > 36.5 || t > 500) && (!document.fonts || document.fonts.status === "loaded")) return show();
+    }
+    requestAnimationFrame(check);
+  };
+  requestAnimationFrame(check);
+  setTimeout(show, 1500); // Sicherung
+})();
 </script>
 <!-- Schriften direkt eingebettet: kein Nachladen, kein Umspringen der Schrift beim Öffnen -->
 <style>
@@ -61,6 +96,9 @@ body::before {
 /* Kopf */
 header.top { padding-block: 30px 14px; display: grid; gap: 10px; }
 .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+/* Versionsnummer neben dem Stand, etwas blasser. Entspricht der Deployment-Nummer bei GitHub nach dem Hochladen
+   (jedes Hochladen zählt dort eins hoch). Wird bei jedem Update um eins erhöht. */
+.eyebrow .ver { opacity: .55; }
 h1 {
   font-family: var(--f-display); font-weight: 400;
   font-size: clamp(2.3rem, 7vw, 4.4rem); line-height: 1.02; margin: 0;
@@ -170,6 +208,8 @@ main { padding-block: 18px calc(max(16px, env(safe-area-inset-bottom, 0px)) + 76
 .btn[aria-pressed="true"].save { color: var(--ink); border-color: var(--ink); }
 .btn[aria-pressed="true"].save svg path { fill: currentColor; }
 .btn[aria-pressed="true"].seen { color: var(--ok); border-color: var(--ok); background: var(--ok-soft); }
+/* Gesehene Titel kann man nicht mehr merken: der Merken-Knopf ist dann ausgeblendet */
+.btn[hidden] { display: none; }
 .card.is-seen { background: var(--paper); }
 .card.is-seen h2, .card.is-seen .desc { color: var(--muted); }
 
@@ -348,12 +388,39 @@ button, a, summary, input, label { touch-action: manipulation; }
 .sharebox { grid-column: 1 / -1; display: grid; gap: 8px; background: var(--sheet); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 13px; color: var(--muted); }
 .sharebox textarea { font: inherit; font-size: 13px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 8px; min-height: 120px; resize: vertical; width: 100%; }
 .sharebox .row { justify-content: flex-end; }
-.install { width: 100%; max-width: 460px; justify-self: start; display: grid; gap: 10px; background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
-.inst-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; }
-.inst-ico { width: 40px; height: 40px; font-size: 13px; border-width: 2px; }
-.inst-ico small { font-size: 7px; margin-top: 1px; }
-.inst-txt b { display: block; font-size: 15.5px; line-height: 1.25; }
-.inst-txt small { display: block; font-size: 12.5px; line-height: 1.3; color: var(--muted); margin-top: 1px; }
+/* Hinweis „Als App speichern“ ganz oben (nur im Handy-Browser) */
+.ibanner { width: 100%; max-width: 520px; justify-self: start; display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 10px; align-items: center; background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; padding: 9px 8px 9px 10px; }
+html:not(.inst) .ibanner { display: none; }
+.ib-ico { width: 40px; height: 40px; font-size: 13px; border-width: 2px; }
+.ib-ico small { font-size: 7px; margin-top: 1px; }
+.ib-txt b { display: block; font-size: 15px; line-height: 1.25; }
+.ib-txt small { display: block; font-size: 12.5px; line-height: 1.3; color: var(--muted); margin-top: 1px; }
+.ib-go { font: inherit; font-size: 14px; font-weight: 700; color: var(--on-gold); background: var(--gold); border: 0; border-radius: 999px; padding: 7px 14px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.ib-go:active { filter: brightness(.9); }
+.ib-x { width: 30px; height: 30px; border-radius: 50%; border: 0; background: transparent; color: var(--muted); display: grid; place-items: center; cursor: pointer; padding: 0; -webkit-tap-highlight-color: transparent; }
+.ib-x svg { width: 14px; height: 14px; }
+/* Fenster für Anleitung und Nachfrage */
+.ov { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 16px; animation: ovIn .18s ease-out; }
+.ov[hidden] { display: none; }
+.ov-bg { position: absolute; inset: 0; background: rgba(4, 5, 12, .66); touch-action: none; }
+.ov-card { position: relative; width: 100%; max-width: 380px; max-height: calc(100% - 40px); overflow-y: auto; overscroll-behavior: contain; display: grid; gap: 14px; background: var(--sheet); border: 1px solid var(--line); border-radius: 18px; padding: 16px; box-shadow: 0 18px 50px rgba(0, 0, 0, .45); animation: cardIn .2s ease-out; }
+.ov-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+.ov-head b, .ask b { font-size: 17px; line-height: 1.3; }
+.ask { max-width: 320px; text-align: center; gap: 8px; padding-top: 20px; }
+.ask p { margin: 0 0 8px; font-size: 14px; line-height: 1.45; color: var(--muted); }
+.ov-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ov-btn { font: inherit; font-size: 15px; font-weight: 700; color: var(--ink); background: var(--chip); border: 1px solid var(--line); border-radius: 12px; padding: 11px 10px; cursor: pointer; line-height: 1.2; -webkit-tap-highlight-color: transparent; }
+.ov-btn.main { color: var(--on-gold); background: var(--gold); border-color: var(--gold); }
+.ov-btn.danger { color: var(--on-hanko); background: var(--hanko); border-color: var(--hanko); }
+.ov-btn:active { filter: brightness(.9); }
+@keyframes ovIn { from { opacity: 0; } }
+@keyframes cardIn { from { opacity: 0; transform: translateY(10px) scale(.97); } }
+/* Handy: Die Fenster sind nicht „fest“ (fixed). Feste Flächen am Bildschirmrand färbt das iPhone oben und unten als Balken ein.
+   Sie liegen deshalb wie der Scrollbereich (#sc) auf der Seite und reichen über Uhr und Safari-Leiste hinaus.
+   Der Innenabstand hält das Fenster selbst in der Mitte des sichtbaren Bereichs. */
+.app .ov { position: absolute; top: 0; left: 0; right: 0; }
+.app:not(.standalone) .ov { bottom: -400px; padding: 216px 16px; }
+.standalone .ov { bottom: -200px; padding: 16px 16px 216px; }
 .inst-x { width: 32px; height: 32px; border-radius: 50%; border: 0; background: var(--chip); color: var(--muted); display: grid; place-items: center; cursor: pointer; }
 .inst-x svg { width: 14px; height: 14px; }
 .inst-steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 8px; font-size: 14px; line-height: 1.45; }
@@ -377,9 +444,18 @@ button, a, summary, input, label { touch-action: manipulation; }
   .card h2 { font-size: 17px; }
 }
 /* Handy: kein eigener Streifen oben, die Liste läuft unter der Uhr durch (wie bei iPhone-Apps).
-   Als App vom Homescreen ist die Statusleiste durchsichtig. Der Kopf beginnt an derselben Stelle wie bisher unter der Uhr. */
+   Als App vom Homescreen ist die Statusleiste durchsichtig. Das iPhone legt dort selbst eine Unschärfe unter die Uhr,
+   die etwa 30px weiter nach unten reicht. Der Kopf beginnt deshalb 36px unter der Statusleiste, knapp unterhalb davon.
+   In Safari hält Safari den Bereich der Uhr selbst frei, dort reicht ein kleiner Abstand. */
 .app body::before { display: none; }
 .standalone header.top { padding-top: calc(env(safe-area-inset-top, 0px) + 36px); }
+.app:not(.standalone) header.top { padding-top: 8px; }
+/* App-Start: kurz verdeckt, bis alles stillsteht (siehe Kopf der Seite), dann sanft eingeblendet.
+   Solange die Seite verdeckt ist, gibt es keine Bewegungen (z. B. die Blase der Leiste): Alles steht schon an seinem Platz,
+   wenn die Seite erscheint. */
+.app body { transition: opacity .32s cubic-bezier(.25, .6, .3, 1); }
+html.boot body { opacity: 0; }
+html.boot *, html.boot *::before, html.boot *::after { transition: none !important; }
 /* App und Handy-Safari: Die Liste rollt in einem eigenen Bereich, die Glas-Leiste liegt außerhalb davon.
    So reagiert die Leiste sofort, auch während die Liste noch nachrollt (wie bei iPhone-Apps). Die Seite selbst rollt nie,
    deshalb springt auch die Safari-Leiste unten nicht mehr. */
@@ -395,8 +471,8 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
 /* App: Auch unter dem Home-Balken unten zeigt das iPhone die Seite. Der Scrollbereich reicht deshalb dort hinunter. */
 .standalone #sc { bottom: -200px; }
 .standalone #sc > .wrap { padding-bottom: 200px; }
-/* Die Installations-Anleitung nur auf dem Reiter Alle */
-.top.sub .install { display: none !important; }
+/* Der Hinweis „Als App speichern“ nur auf dem Reiter Alle */
+.top.sub .ibanner { display: none !important; }
 /* App: Auf Genres, Gemerkt und Gesehen nur ein großer Reiter-Titel statt des ganzen Kopfes (wie bei iPhone-Apps) */
 .vtitle { display: none; }
 .app .top.sub .eyebrow, .app .top.sub h1, .app .top.sub .counts, .app .top.sub .why { display: none; }
@@ -412,20 +488,18 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
 <div id="sc">
 <div class="wrap">
   <header class="top">
+    <div class="ibanner" id="ibanner">
+      <span class="stamp top ib-ico" aria-hidden="true">9,0<small>/10</small></span>
+      <div class="ib-txt"><b>Die besten Animes</b><small>Als App speichern für das beste Erlebnis.</small></div>
+      <button type="button" class="ib-go" id="ibSave">Speichern</button>
+      <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+    </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026</div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V73</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
     <details class="why"><summary><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".95" fill="currentColor"/></svg>So entsteht die Wertung<svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="why-body"><p>Eine KI nimmt die Fan-Bewertungen von MyAnimeList und IMDb und passt sie um bis zu 1 Punkt an: mehr für gute Story, Figuren, Animation und Ende, weniger für Füllerfolgen und Längen.</p><p>Ab 9 herausragend · ab 8 sehr gut · ab 7 gut</p></div></details>
-    <div class="install" id="install" hidden>
-      <div class="inst-head">
-        <span class="stamp top inst-ico" aria-hidden="true">9,0<small>/10</small></span>
-        <div class="inst-txt"><b id="instTitle">Als App aufs iPhone</b><small>Dann öffnet sich die Liste wie eine echte App.</small></div>
-        <button type="button" class="inst-x" id="instClose" aria-label="Anleitung schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-      </div>
-      <ol class="inst-steps" id="instSteps"></ol>
-    </div>
   </header>
 
   <div class="bar">
@@ -477,6 +551,30 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
 
 </div>
 </div>
+<div class="ov" id="instSheet" hidden>
+  <div class="ov-bg" data-close></div>
+  <div class="ov-card" role="dialog" aria-modal="true" aria-labelledby="instTitle">
+    <div class="ov-head"><b id="instTitle">Zum Home-Bildschirm hinzufügen</b><button type="button" class="inst-x" data-close aria-label="Anleitung schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
+    <ol class="inst-steps" id="instSteps"></ol>
+    <button type="button" class="ov-btn main" data-close>OK</button>
+  </div>
+</div>
+<div class="ov" id="seenAsk" hidden>
+  <div class="ov-bg" data-close></div>
+  <div class="ov-card ask" role="alertdialog" aria-modal="true" aria-labelledby="seenAskTitle" aria-describedby="seenAskText">
+    <b id="seenAskTitle">Nicht mehr als gesehen markieren?</b>
+    <p id="seenAskText"></p>
+    <div class="ov-row"><button type="button" class="ov-btn" data-close>Abbrechen</button><button type="button" class="ov-btn danger" id="seenAskOk">Entfernen</button></div>
+  </div>
+</div>
+<div class="ov" id="instAsk" hidden>
+  <div class="ov-bg" data-close></div>
+  <div class="ov-card ask" role="alertdialog" aria-modal="true" aria-labelledby="askTitle" aria-describedby="askText">
+    <b id="askTitle">Hinweis ausblenden?</b>
+    <p id="askText">Du kannst die Liste auch später noch als App speichern: über Teilen und „Zum Home-Bildschirm“.</p>
+    <div class="ov-row"><button type="button" class="ov-btn" data-close>Lassen</button><button type="button" class="ov-btn main" id="askHide">Für immer ausblenden</button></div>
+  </div>
+</div>
 
 <script>
 // Die App-Ansicht (Glas-Leiste unten, Reiter-Überschriften) wird schon ganz oben im Kopf der Seite festgelegt.
@@ -521,153 +619,174 @@ const jumpTo = y => {
 // [Titel, Art S/F, Genres, meine Wertung, IMDb, IMDb-Stimmen in Tsd., Ton de/teil/sub/unk, Länge, Beschreibung, Tipp, Suchbegriffe, Stimmungen, Crunchyroll-Suchwort]
 const DATA = [
 ["Frieren – Nach dem Ende der Reise","S","Fantasy|Abenteuer|Drama",9.4,8.9,86,"de","2 Staffeln · 38 Folgen","Die Elfenmagierin Frieren hat mit ihren Gefährten den Dämonenkönig besiegt. Elfen leben über tausend Jahre, deshalb merkt sie erst nach dem Tod ihres Freundes Himmel, wie wenig sie die Menschen kannte. Also bricht sie zu einer neuen Reise auf. Ruhig, warm und mit herausragenden Kämpfen.","","sousou no frieren","chill|herz","Frieren"],
-["Steins;Gate","S","Sci-Fi|Thriller",9.2,8.8,97,"de","25 Folgen","Der exzentrische Bastler Okabe baut aus einer Mikrowelle versehentlich eine Maschine, die Nachrichten in die Vergangenheit schickt. Jede Änderung hat Folgen, und eine Geheimorganisation wird auf ihn aufmerksam.","Die ersten Folgen sind langsam. Ab etwa Folge 12 lässt es dich nicht mehr los.","steins gate zeitreise","dn|kurz","Steins;Gate"],
-["Attack on Titan","S","Action|Fantasy|Drama",9.2,9.1,547,"de","4 Staffeln · 89 Folgen","Die Menschheit lebt hinter riesigen Mauern, weil draußen menschenfressende Titanen umherziehen. Als die Mauer fällt, schwört Eren Rache. Die Wahrheit über diese Welt ist viel größer, als er ahnt.","Sehr brutal. Wird mit jeder Staffel besser, dranbleiben lohnt sich.","shingeki no kyojin aot","","Attack on Titan"],
-["Chainsaw Man – The Movie: Reze Arc","F","Action|Horror|Romance",9.0,8.3,70,"de","Film · 1 Std. 40 Min.","Denji, halb Mensch und halb Kettensägen-Teufel, verliebt sich in die geheimnisvolle Café-Kellnerin Reze. Bildgewaltig, rasant und am Ende schmerzhaft.","Setzt direkt nach Staffel 1 der Serie an.","chainsaw man film reze","","Chainsaw Man Reze"],
-["Gintama","S","Comedy|Action|Sci-Fi",9.0,8.7,22,"sub","12 Staffeln · über 360 Folgen","Aliens haben das Japan der Edo-Zeit erobert, Samurai sind arbeitslos. Der faule Gintoki nimmt mit seiner kleinen Truppe jeden Gelegenheitsjob an. Absurde Parodie, die immer wieder in epische, ernste Geschichten umschlägt.","Fang ruhig mit Folge 3 an, Folge 1 und 2 sind eine Sonderfolge. Viele Witze spielen auf japanische Popkultur an, die besten Arcs kommen später.","gintama","","Gintama"],
+["Attack on Titan","S","Action|Fantasy|Drama",9.2,9.1,547,"de","4 Staffeln · 89 Folgen","Die Menschheit lebt hinter riesigen Mauern, weil draußen menschenfressende Titanen umherziehen. Als die Mauer fällt, schwört Eren Rache. Die Wahrheit über diese Welt ist viel größer, als er ahnt.","Sehr brutal. Wird mit jeder Staffel besser, dranbleiben lohnt sich.","shingeki no kyojin aot","dn","Attack on Titan"],
+["Chainsaw Man – The Movie: Reze Arc","F","Action|Horror|Romance",9.0,8.3,70,"de","Film · 1 Std. 40 Min.","Denji, halb Mensch und halb Kettensägen-Teufel, verliebt sich in die geheimnisvolle Café-Kellnerin Reze. Bildgewaltig, rasant und am Ende schmerzhaft.","Setzt direkt nach Staffel 1 der Serie an.","chainsaw man film reze","kurz","Chainsaw Man Reze"],
+["Gintama","S","Comedy|Action|Sci-Fi",9.0,8.7,22,"sub","12 Staffeln · über 360 Folgen","Aliens haben das Japan der Edo-Zeit erobert, Samurai sind arbeitslos. Der faule Gintoki nimmt mit seiner kleinen Truppe jeden Gelegenheitsjob an. Absurde Parodie, die immer wieder in epische, ernste Geschichten umschlägt.","Fang ruhig mit Folge 3 an, Folge 1 und 2 sind eine Sonderfolge. Viele Witze spielen auf japanische Popkultur an, die besten Arcs kommen später.","gintama","chill","Gintama"],
 ["Vinland Saga","S","Historie|Action|Drama",9.0,8.9,153,"de","2 Staffeln · 48 Folgen","Nordeuropa um das Jahr 1000: Der junge Thorfinn kämpft in der Söldnertruppe des Mannes, der seinen Vater getötet hat, und wartet auf die Chance zur Rache. Staffel 2 wird zu einer ruhigen Geschichte über Schuld und Frieden.","","wikinger vinland","herz","Vinland Saga"],
 ["Code Geass","S","Thriller|Sci-Fi|Drama",9.0,8.7,83,"de","2 Staffeln · 50 Folgen","Der verstoßene Prinz Lelouch erhält die Macht, jedem Menschen einen Befehl aufzuzwingen. Maskiert als Zero führt er einen Aufstand gegen das Imperium an, das seine Familie zerstört hat.","Für Death-Note-Fans die erste Wahl.","code geass lelouch","dn","Code Geass"],
-["A Silent Voice","F","Drama|Romance",9.0,8.2,149,"de","Film · 2 Std. 9 Min.","Shoya hat in der Grundschule ein gehörloses Mädchen gemobbt und wurde danach selbst ausgegrenzt. Jahre später sucht er sie auf, um es wiedergutzumachen. Leise und sehr bewegend.","","koe no katachi","kurz|herz","A Silent Voice"],
-["Kaguya-sama: Love Is War","S","Romance|Comedy",8.9,8.5,32,"de","4 Staffeln · 42 Folgen","Die zwei Genies des Schülerrats sind ineinander verliebt, aber zu stolz, es zuzugeben. Also planen sie Psychospiele, damit der andere zuerst gesteht.","Mind Games wie bei Death Note, nur mit Liebe statt Mord.","kaguya sama","dn","Kaguya-sama"],
-["Die Tagebücher der Apothekerin","S","Mystery|Historie|Drama",8.9,8.6,29,"de","3 Staffeln, Staffel 3 läuft gerade","Maomao, Tochter eines Apothekers, wird an den Kaiserhof verschleppt und arbeitet dort als Dienerin. Mit ihrem Wissen über Gifte löst sie Todesfälle und Intrigen im Palast.","","apothecary diaries kusuriya no hitorigoto","dn|chill","Apothekerin"],
+["A Silent Voice","F","Drama|Romance",9.0,8.2,149,"de","Film · 2 Std. 9 Min.","Shoya hat in der Grundschule ein gehörloses Mädchen gemobbt und wurde danach selbst ausgegrenzt. Jahre später sucht er sie auf, um es wiedergutzumachen. Leise und sehr bewegend.","","koe no katachi","herz|kurz","A Silent Voice"],
+["Kaguya-sama: Love Is War","S","Romance|Comedy",8.9,8.5,32,"de","4 Staffeln · 42 Folgen","Die zwei Genies des Schülerrats sind ineinander verliebt, aber zu stolz, es zuzugeben. Also planen sie Psychospiele, damit der andere zuerst gesteht.","Mind Games wie bei Death Note, nur mit Liebe statt Mord.","kaguya sama","chill","Kaguya-sama"],
+["Die Tagebücher der Apothekerin","S","Mystery|Historie|Drama",8.9,8.6,29,"de","3 Staffeln, Staffel 3 läuft gerade","Maomao, Tochter eines Apothekers, wird an den Kaiserhof verschleppt und arbeitet dort als Dienerin. Mit ihrem Wissen über Gifte löst sie Todesfälle und Intrigen im Palast.","","apothecary diaries kusuriya no hitorigoto","chill|dn","Apothekerin"],
 ["Haikyu!!","S","Sport|Comedy",8.9,8.7,57,"de","4 Staffeln · 87 Folgen","Hinata ist klein, will aber Volleyballstar werden. Ausgerechnet mit seinem Rivalen Kageyama muss er sich im Team zusammenraufen. Spannender als die meisten Actionserien.","Auch ohne Sportinteresse sehenswert.","haikyuu volleyball","","Haikyu"],
-["Death Note","S","Thriller|Mystery|Krimi",8.9,8.9,504,"de","37 Folgen","Der Schüler Light Yagami findet ein Notizbuch: Wessen Namen man hineinschreibt, der stirbt. Light will damit die Welt von Verbrechern befreien, doch der geniale Detektiv L kommt ihm auf die Spur. Ein packendes Duell zweier Genies.","Die erste Hälfte ist am stärksten.","death note light yagami","","Death Note"],
-["Mob Psycho 100","S","Action|Comedy",8.8,8.5,73,"de","3 Staffeln · 37 Folgen","Mob ist ein schüchterner Junge mit gewaltigen Psychokräften, die er lieber unterdrückt. Er jobbt für einen Hochstapler, der sich als Geisterjäger ausgibt. Wilde Animation und überraschend viel Herz.","","mob psycho","","Mob Psycho 100"],
+["Death Note","S","Thriller|Mystery|Krimi",8.9,8.9,504,"de","37 Folgen","Der Schüler Light Yagami findet ein Notizbuch: Wessen Namen man hineinschreibt, der stirbt. Light will damit die Welt von Verbrechern befreien, doch der geniale Detektiv L kommt ihm auf die Spur. Ein packendes Duell zweier Genies.","Die erste Hälfte ist am stärksten.","death note light yagami","dn","Death Note"],
+["Mob Psycho 100","S","Action|Comedy",8.8,8.5,73,"de","3 Staffeln · 37 Folgen","Mob ist ein schüchterner Junge mit gewaltigen Psychokräften, die er lieber unterdrückt. Er jobbt für einen Hochstapler, der sich als Geisterjäger ausgibt. Wilde Animation und überraschend viel Herz.","","mob psycho","herz","Mob Psycho 100"],
 ["Re:Zero","S","Isekai|Fantasy|Thriller",8.8,8.3,99,"de","4 Staffeln · 85 Folgen","Subaru landet in einer Fantasywelt und stellt fest, dass er nach jedem Tod an einen früheren Punkt zurückgesetzt wird. Er muss immer wieder sterben, um die Menschen zu retten, die ihm wichtig sind. Hart und psychologisch.","","re zero rezero","dn","Re:Zero"],
 ["One Piece","S","Abenteuer|Action|Comedy",8.8,9,370,"sub","über 1.100 Folgen","Ruffy will König der Piraten werden und sammelt eine bunte Crew um sich. Ein gigantisches Abenteuer mit großem Herz und starkem Weltenbau.","Hat ein paar zähe Abschnitte und Füllerfolgen. Spätestens ab dem Arlong-Park-Arc (ab Folge 31) bist du drin.","one piece ruffy","","One Piece"],
 ["Fruits Basket","S","Drama|Romance|Fantasy",8.8,8.5,14,"de","3 Staffeln · 63 Folgen","Die Waise Tohru zieht bei der Familie Soma ein. Deren Mitglieder verwandeln sich in Tiere des chinesischen Tierkreises, wenn man sie umarmt. Hinter dem Fluch steckt ein schweres Familiendrama.","Gemeint ist die Neuverfilmung von 2019.","fruits basket","herz","Fruits Basket"],
-["Attack on Titan: The Last Attack","F","Action|Fantasy",8.8,8.9,37,"de","Film · 2 Std. 25 Min.","Das große Finale von Attack on Titan als Kinofassung in einem Stück.","Enthält dasselbe Finale wie die zwei letzten Spezialfolgen der Serie. Schau ihn statt dieser Folgen, nicht zusätzlich.","shingeki no kyojin film finale","","Attack on Titan The Last Attack"],
+["Attack on Titan: The Last Attack","F","Action|Fantasy",8.8,8.9,37,"de","Film · 2 Std. 25 Min.","Das große Finale von Attack on Titan als Kinofassung in einem Stück.","Enthält dasselbe Finale wie die zwei letzten Spezialfolgen der Serie. Schau ihn statt dieser Folgen, nicht zusätzlich.","shingeki no kyojin film finale","kurz","Attack on Titan The Last Attack"],
 ["Demon Slayer: Kimetsu no Yaiba","S","Action|Fantasy",8.5,8.5,240,"de","5 Staffeln · 63 Folgen","Dämonen haben Tanjiros Familie getötet und seine Schwester Nezuko in einen Dämon verwandelt. Er wird Dämonenjäger, um sie zu retten. Die Kampfszenen gehören zum Spektakulärsten, was Anime zu bieten hat.","Danach geht es mit dem Film Infinity Castle weiter.","kimetsu no yaiba","","Demon Slayer"],
-["Demon Slayer: Infinity Castle","F","Action|Fantasy",8.7,8.3,88,"de","Film · 2 Std. 35 Min.","Der Auftakt zum Finale: Die Dämonenjäger werden in die endlose Festung der Oberdämonen gezogen. Die Kämpfe gehören zum Besten, was je animiert wurde.","Setzt die Serie voraus.","kimetsu no yaiba film","","Demon Slayer Infinity Castle"],
+["Demon Slayer: Infinity Castle","F","Action|Fantasy",8.7,8.3,88,"de","Film · 2 Std. 35 Min.","Der Auftakt zum Finale: Die Dämonenjäger werden in die endlose Festung der Oberdämonen gezogen. Die Kämpfe gehören zum Besten, was je animiert wurde.","Setzt die Serie voraus.","kimetsu no yaiba film","kurz","Demon Slayer Infinity Castle"],
 ["Odd Taxi","S","Krimi|Mystery",8.7,8.3,8.4,"sub","13 Folgen","Ein wortkarger Walross-Taxifahrer in Tokio gerät durch seine Fahrgäste in einen Vermisstenfall. Sieht harmlos aus, ist aber ein dicht verwobener Krimi, bei dem jedes Detail zählt.","","odd taxi","dn|kurz","Odd Taxi"],
 ["Golden Kamuy","S","Abenteuer|Historie|Action",8.6,8.1,4,"de","5 Staffeln · 62 Folgen","Ein Kriegsveteran und ein junges Ainu-Mädchen jagen im eisigen Hokkaido um 1900 einen versteckten Goldschatz. Brutale Action, Jagd, Kochen und völlig absurder Humor in einem.","","golden kamuy","","Golden Kamuy"],
-["Mushishi","S","Mystery|Fantasy|Slice of Life",8.6,8.5,17,"sub","2 Staffeln · 46 Folgen","Der Wanderer Ginko untersucht seltsame Lebewesen namens Mushi, die Menschen krank machen oder verändern. Jede Folge ist eine eigene, ruhige Geschichte.","","mushi-shi","chill","Mushishi"],
 ["Jujutsu Kaisen","S","Action|Fantasy",8.6,8.5,224,"de","4 Staffeln · 63 Folgen","Der Schüler Yuji schluckt den Finger eines uralten Fluchs und wird zu dessen Gefäß. Er schließt sich einer Schule für Fluchbanner an. Moderne Action mit spektakulären Kämpfen.","Nach Staffel 1 den Film Jujutsu Kaisen 0 schauen, er erzählt die Vorgeschichte.","jjk","","Jujutsu Kaisen"],
 ["Dandadan","S","Action|Comedy|Sci-Fi",8.6,8.3,58,"de","2 Staffeln · 24 Folgen","Momo glaubt an Geister, Okarun an Aliens. Um sich gegenseitig das Gegenteil zu beweisen, treffen beide auf beides. Laut, schräg, romantisch und ständig über dem Limit.","","dan da dan","","Dandadan"],
 ["Link Click","S","Thriller|Mystery|Drama",8.6,8.5,8.1,"sub","4 Staffeln · 42 Folgen","Zwei Freunde betreiben ein Fotostudio und können in Fotos springen, um die Vergangenheit zu erleben. Sie dürfen nichts verändern, tun es aber trotzdem.","","shi guang dai li ren","dn","Link Click"],
-["86 – Eighty Six","S","Sci-Fi|Drama|Action",8.6,8.3,17,"de","23 Folgen","Die Republik behauptet, ihr Krieg werde von Drohnen geführt. In Wahrheit kämpfen ausgegrenzte Jugendliche, die offiziell nicht als Menschen gelten. Emotionales Kriegsdrama.","","eighty six","kurz|herz","86 Eighty Six"],
-["The Promised Neverland","S","Thriller|Mystery|Horror",8.6,8.1,59,"de","2 Staffeln · 23 Folgen","Kinder in einem idyllischen Waisenhaus entdecken, wofür sie wirklich großgezogen werden, und planen die Flucht. Ein spannendes Katz-und-Maus-Spiel.","Nur Staffel 1 schauen, Staffel 2 ist deutlich schwächer.","yakusoku no neverland","dn|kurz","The Promised Neverland"],
-["Great Teacher Onizuka","S","Comedy|Drama",8.6,8.5,16,"sub","43 Folgen","Der Ex-Rocker Onizuka wird Lehrer der schlimmsten Klasse der Schule. Mit völlig unorthodoxen Methoden rettet er einen Schüler nach dem anderen. Lustig und rührend.","","gto","","Great Teacher Onizuka"],
-["A Place Further Than the Universe","S","Abenteuer|Drama|Comedy",8.6,8.1,3.6,"sub","13 Folgen","Vier Schülerinnen setzen alles daran, mit einer Expedition in die Antarktis zu reisen. Lustig, mitreißend und am Ende zum Heulen schön.","","sora yori mo tooi basho antarktis","kurz|herz","A Place Further Than the Universe"],
+["86 – Eighty Six","S","Sci-Fi|Drama|Action",8.6,8.3,17,"de","23 Folgen","Die Republik behauptet, ihr Krieg werde von Drohnen geführt. In Wahrheit kämpfen ausgegrenzte Jugendliche, die offiziell nicht als Menschen gelten. Emotionales Kriegsdrama.","","eighty six","herz","86 Eighty Six"],
+["The Promised Neverland","S","Thriller|Mystery|Horror",8.6,8.1,59,"de","2 Staffeln · 23 Folgen","Kinder in einem idyllischen Waisenhaus entdecken, wofür sie wirklich großgezogen werden, und planen die Flucht. Ein spannendes Katz-und-Maus-Spiel.","Nur Staffel 1 schauen, Staffel 2 ist deutlich schwächer.","yakusoku no neverland","dn","The Promised Neverland"],
+["Great Teacher Onizuka","S","Comedy|Drama",8.6,8.5,16,"sub","43 Folgen","Der Ex-Rocker Onizuka wird Lehrer der schlimmsten Klasse der Schule. Mit völlig unorthodoxen Methoden rettet er einen Schüler nach dem anderen. Lustig und rührend.","","gto","herz","Great Teacher Onizuka"],
+["A Place Further Than the Universe","S","Abenteuer|Drama|Comedy",8.6,8.1,3.6,"sub","13 Folgen","Vier Schülerinnen setzen alles daran, mit einer Expedition in die Antarktis zu reisen. Lustig, mitreißend und am Ende zum Heulen schön.","","sora yori mo tooi basho antarktis","herz|kurz","A Place Further Than the Universe"],
 ["Psycho-Pass","S","Sci-Fi|Krimi|Thriller",8.5,8.1,23,"de","3 Staffeln · 41 Folgen","In der Zukunft misst ein System die kriminelle Neigung jedes Menschen. Die junge Inspektorin Akane jagt mit verurteilten Vollstreckern Verbrecher und beginnt am System zu zweifeln.","Staffel 1 ist die stärkste.","psycho pass","dn","Psycho-Pass"],
 ["Jujutsu Kaisen 0","F","Action|Fantasy",8.5,7.8,68,"de","Film · 1 Std. 45 Min.","Vorgeschichte zur Serie: Yuta wird vom Fluch seiner verstorbenen Kindheitsfreundin heimgesucht und kommt an die Schule für Fluchbanner.","Am besten nach Staffel 1 schauen.","jjk 0 film","kurz","Jujutsu Kaisen 0"],
-["In This Corner of the World","F","Drama|Historie",8.4,7.8,12,"sub","Film · 2 Std. 10 Min.","Die verträumte Suzu heiratet in den 1940er-Jahren nach Kure bei Hiroshima. Der Alltag im Krieg wird immer schwerer. Zart gezeichnet und erschütternd.","","kono sekai no katasumi ni","kurz|herz","In This Corner of the World"],
+["In This Corner of the World","F","Drama|Historie",8.4,7.8,12,"sub","Film · 2 Std. 10 Min.","Die verträumte Suzu heiratet in den 1940er-Jahren nach Kure bei Hiroshima. Der Alltag im Krieg wird immer schwerer. Zart gezeichnet und erschütternd.","","kono sekai no katasumi ni","herz|kurz","In This Corner of the World"],
 ["Oshi no Ko – Mein Star","S","Drama|Mystery",8.4,8.3,18,"de","3 Staffeln · 35 Folgen","Ein Arzt wird als Kind seines Lieblings-Idols wiedergeboren. Als sie ermordet wird, sucht er im Showbusiness nach dem Täter. Ein düsterer Blick hinter die Kulissen der Unterhaltungsindustrie.","Folge 1 ist fast so lang wie ein Film und ein echter Paukenschlag.","oshi no ko","dn","Oshi no Ko"],
 ["Spy x Family","S","Comedy|Action",8.4,8.2,66,"de","3 Staffeln · 50 Folgen","Ein Spion braucht für seine Mission eine Familie und heiratet zum Schein eine Auftragsmörderin. Die adoptierte Tochter kann Gedanken lesen und weiß als Einzige alles.","","spy family","chill","Spy x Family"],
 ["One Punch Man","S","Action|Comedy",8.4,8.6,232,"de","3 Staffeln · 36 Folgen","Saitama besiegt jeden Gegner mit einem einzigen Schlag und langweilt sich deshalb zu Tode. Eine Parodie auf Superhelden mit einigen der besten Kämpfe überhaupt.","Staffel 1 ist die beste.","one punch man saitama","","One Punch Man"],
 ["Grand Blue Dreaming","S","Comedy",8.4,7.9,7.4,"sub","3 Staffeln · 36 Folgen","Iori will ein entspanntes Studentenleben und landet in einem Tauchclub, der vor allem trinkt und sich auszieht. Eine der lustigsten Comedys überhaupt.","","grand blue","chill","Grand Blue"],
 ["Mushoku Tensei","S","Isekai|Fantasy|Abenteuer",8.4,8.2,66,"de","3 Staffeln · 62 Folgen","Ein gescheiterter Mann wird als Rudeus in eine Fantasywelt wiedergeboren und nimmt sich vor, dieses Leben nicht zu verschwenden. Riesiger, detailreicher Weltenbau.","Der Hauptcharakter ist anfangs oft unangenehm. Das ist gewollt, schreckt aber manche ab.","jobless reincarnation","","Mushoku Tensei"],
 ["JoJo's Bizarre Adventure","S","Action|Abenteuer",8.4,8.6,58,"de","6 Staffeln · über 200 Folgen","Generationen der Familie Joestar kämpfen gegen übernatürliche Feinde, später mit Geisterwesen namens Stands. Exzentrisch, kreativ und voller cleverer Kämpfe.","Teil 1 wirkt etwas altmodisch, ab Teil 2 geht es richtig los. Teil 4 und 5 gelten als Höhepunkte.","jojo","","JoJo's Bizarre Adventure"],
-["Lord of the Mysteries","S","Mystery|Fantasy|Horror",8.4,8.6,17,"de","13 Folgen","Ein Mann erwacht im Körper von Klein Moretti in einer viktorianischen Steampunk-Welt. Mit Zaubertränken erlangt er Kräfte und gerät zwischen Geheimbünde und kosmischen Horror.","","guimi zhi zhu","dn","Lord of the Mysteries"],
-["Nichijou – Das ganz normale Leben","S","Comedy|Slice of Life",8.3,8.3,4.7,"sub","26 Folgen","Alltag von Schülerinnen, einem Roboter-Mädchen und einer sprechenden Katze. Banale Situationen eskalieren in völlig übertriebene Action.","Absurder Humor, der nicht jedem liegt.","nichijou my ordinary life","chill|kurz","Nichijou"],
+["Lord of the Mysteries","S","Mystery|Fantasy|Horror",8.4,8.6,17,"de","13 Folgen","Ein Mann erwacht im Körper von Klein Moretti in einer viktorianischen Steampunk-Welt. Mit Zaubertränken erlangt er Kräfte und gerät zwischen Geheimbünde und kosmischen Horror.","","guimi zhi zhu","dn|kurz","Lord of the Mysteries"],
+["Nichijou – Das ganz normale Leben","S","Comedy|Slice of Life",8.3,8.3,4.7,"sub","26 Folgen","Alltag von Schülerinnen, einem Roboter-Mädchen und einer sprechenden Katze. Banale Situationen eskalieren in völlig übertriebene Action.","Absurder Humor, der nicht jedem liegt.","nichijou my ordinary life","chill","Nichijou"],
 ["To Your Eternity","S","Fantasy|Drama",8.3,8.2,13,"de","3 Staffeln · 62 Folgen","Ein unsterbliches Wesen wird auf die Erde geschickt. Es lernt, indem es die Gestalt der Menschen annimmt, die es trifft und wieder verliert. Tieftraurig und philosophisch.","","fumetsu no anata e","herz","To Your Eternity"],
-["Suzume","F","Fantasy|Abenteuer|Drama",8.3,7.6,67,"de","Film · 2 Std. 2 Min.","Die Schülerin Suzume reist durch Japan und schließt verlassene Türen, aus denen Katastrophen dringen. Ein Roadtrip mit einem sprechenden Stuhl als Begleiter.","","suzume no tojimari","kurz|herz","Suzume"],
-["Witch Hat Atelier","S","Fantasy|Abenteuer",8.3,8.3,9.2,"de","13 Folgen","Coco träumt vom Zaubern, doch Magie ist Hexen vorbehalten. Als sie entdeckt, dass Zauber gezeichnet werden, verwandelt sie versehentlich ihre Mutter zu Stein und wird Lehrling eines Hexers.","","tongari boushi no atelier","chill","Witch Hat Atelier"],
+["Suzume","F","Fantasy|Abenteuer|Drama",8.3,7.6,67,"de","Film · 2 Std. 2 Min.","Die Schülerin Suzume reist durch Japan und schließt verlassene Türen, aus denen Katastrophen dringen. Ein Roadtrip mit einem sprechenden Stuhl als Begleiter.","","suzume no tojimari","herz|kurz","Suzume"],
+["Witch Hat Atelier","S","Fantasy|Abenteuer",8.3,8.3,9.2,"de","13 Folgen","Coco träumt vom Zaubern, doch Magie ist Hexen vorbehalten. Als sie entdeckt, dass Zauber gezeichnet werden, verwandelt sie versehentlich ihre Mutter zu Stein und wird Lehrling eines Hexers.","","tongari boushi no atelier","chill|kurz","Witch Hat Atelier"],
 ["Das Band der Unterwelt","S","Action|Fantasy",8.2,7.7,4,"de","24 Folgen","Yuru lebt als Jäger in einem abgelegenen Bergdorf, seine Zwillingsschwester wird dort wie eine Gottheit verehrt und eingesperrt. Als Fremde das Dorf überfallen, erfährt er, was es mit den Dämonen-Paaren auf sich hat.","","daemons of the shadow realm yomi no tsugai","","Das Band der Unterwelt"],
 ["The Elusive Samurai","S","Historie|Action",8.2,7.3,2.2,"sub","2 Staffeln · 24 Folgen","Japan im Jahr 1333: Der Clan des jungen Tokiyuki wird ausgelöscht. Statt zu kämpfen, nutzt er sein Talent zum Weglaufen, um zu überleben und Rache zu planen.","","nige jouzu no wakagimi","","The Elusive Samurai"],
-["Megalo Box","S","Sport|Sci-Fi|Drama",8.2,7.8,4.7,"sub","2 Staffeln · 26 Folgen","In der Zukunft boxen Kämpfer mit mechanischen Armverstärkern. Ein Untergrundboxer tritt ohne Ausrüstung an, um das große Turnier zu gewinnen.","","megalobox boxen","kurz","Megalo Box"],
+["Megalo Box","S","Sport|Sci-Fi|Drama",8.2,7.8,4.7,"sub","2 Staffeln · 26 Folgen","In der Zukunft boxen Kämpfer mit mechanischen Armverstärkern. Ein Untergrundboxer tritt ohne Ausrüstung an, um das große Turnier zu gewinnen.","","megalobox boxen","","Megalo Box"],
 ["Dorohedoro","S","Fantasy|Comedy|Horror",8.2,8.1,17,"de","2 Staffeln · 23 Folgen","Caiman hat einen Echsenkopf und kein Gedächtnis. Er jagt Magier, um herauszufinden, wer ihn verflucht hat. Blutig, dreckig und mit sehr schrägem Humor.","","dorohedoro","","Dorohedoro"],
-["Rascal Does Not Dream of Bunny Girl Senpai","S","Romance|Mystery|Drama",8.2,8.1,29,"de","2 Staffeln · 26 Folgen","Sakuta trifft eine Schauspielerin im Hasenkostüm, die niemand mehr wahrnimmt. In jedem Arc löst er ein übernatürliches Phänomen, hinter dem echte Teenager-Probleme stecken.","","seishun buta yarou bunny girl","","Bunny Girl Senpai"],
+["Rascal Does Not Dream of Bunny Girl Senpai", "S", "Romance|Mystery|Drama", 8.2, 8.1, 29, "de", "2 Staffeln · 26 Folgen", "Sakuta trifft eine Schauspielerin im Hasenkostüm, die niemand mehr wahrnimmt. In jedem Arc löst er ein übernatürliches Phänomen, hinter dem echte Teenager-Probleme stecken.", "", "seishun buta yarou bunny girl", "herz", "Bunny Girl Senpai"],
 ["Dr. Stone","S","Sci-Fi|Abenteuer",8.2,8.1,46,"de","4 Staffeln · 94 Folgen","Die ganze Menschheit wird zu Stein. Tausende Jahre später erwacht das Wissenschaftsgenie Senku und baut die Zivilisation mit Chemie und Physik neu auf.","","dr stone senku","","Dr. Stone"],
 ["Solo Leveling","S","Action|Fantasy",8.2,8.5,123,"de","2 Staffeln · 25 Folgen","Jinwoo ist der schwächste Jäger der Welt. Nach einem fast tödlichen Dungeon kann er als Einziger aufleveln wie in einem Videospiel. Pure, gut gemachte Power-Fantasie.","","solo leveling","","Solo Leveling"],
 ["Konosuba","S","Comedy|Isekai",8.1,7.8,23,"de","3 Staffeln","Kazuma stirbt auf peinliche Weise und landet in einer Fantasywelt mit der nutzlosesten Heldentruppe, die man sich vorstellen kann. Sehr witzige Parodie auf Isekai-Geschichten.","Nach Staffel 2 den Film Legend of Crimson schauen, er gehört zur Geschichte.","kono subarashii sekai","chill","Konosuba"],
 ["Aoashi","S","Sport|Drama",8.1,8.1,4.9,"de","2 Staffeln, Staffel 2 läuft gerade","Der talentierte, aber ungeschliffene Ashito wird in die Jugendakademie eines Profiklubs geholt. Ein Fußball-Anime, der echte Taktik erklärt.","","ao ashi fussball","","Aoashi"],
-["Horimiya","S","Romance|Slice of Life",8.1,8.0,28,"de","13 Folgen","Die beliebte Hori und der stille Miyamura entdecken die geheime Seite des jeweils anderen. Eine schnell erzählte Liebesgeschichte ohne künstliches Drama.","","horimiya","chill|kurz","Horimiya"],
+["Horimiya","S","Romance|Slice of Life",8.1,8.0,28,"de","13 Folgen","Die beliebte Hori und der stille Miyamura entdecken die geheime Seite des jeweils anderen. Eine schnell erzählte Liebesgeschichte ohne künstliches Drama.","","horimiya","chill|herz|kurz","Horimiya"],
 ["My Teen Romantic Comedy SNAFU","S","Romance|Comedy|Drama",8.1,8,14,"sub","3 Staffeln · 38 Folgen","Der zynische Einzelgänger Hachiman muss einem Schulclub beitreten, der anderen Schülern hilft. Klug geschriebenes Drama über Freundschaft und Selbstbetrug.","Staffel 2 und 3 werden deutlich besser.","oregairu","","My Teen Romantic Comedy SNAFU"],
-["Naruto Shippuden","S","Action|Abenteuer",8.1,8.7,233,"sub","500 Folgen","Naruto kehrt nach zwei Jahren Training zurück, um seinen Freund Sasuke zurückzuholen und sein Ninja-Dorf zu schützen.","Rund 200 der 500 Folgen sind Füller, die du überspringen kannst.","naruto","","Naruto Shippuden"],
+["Naruto Shippuden","S","Action|Abenteuer",8.1,8.7,233,"sub","500 Folgen","Naruto kehrt nach zwei Jahren Training zurück, um seinen Freund Sasuke zurückzuholen und sein Ninja-Dorf zu schützen.","Fortsetzung von Naruto, das zuerst schauen. Rund 200 der 500 Folgen sind Füller, die du überspringen kannst.","naruto","","Naruto Shippuden"],
 ["Hell's Paradise","S","Action|Fantasy|Horror",8.1,8.1,34,"de","2 Staffeln · 25 Folgen","Der zum Tode verurteilte Ninja Gabimaru bekommt eine Chance auf Begnadigung: Er soll auf einer mysteriösen Insel das Elixier des ewigen Lebens finden. Dort warten Monster und andere Verurteilte.","Sehr blutig und brutal.","jigokuraku","","Hell's Paradise"],
 ["Food Wars!","S","Comedy",8.0,8.0,15,"de","5 Staffeln · 86 Folgen","Soma will den Imbiss seines Vaters übernehmen und landet an einer Elite-Kochschule, an der Kochduelle über alles entscheiden.","Die Reaktionen auf das Essen sind sehr freizügig inszeniert.","shokugeki no soma","chill","Food Wars"],
-["Kill la Kill","S","Action|Comedy",8,7.8,20,"sub","25 Folgen","Ryuko sucht den Mörder ihres Vaters an einer Schule, an der Uniformen Superkräfte verleihen. Überdreht, laut und völlig übertrieben.","Viel bewusst überzogener Fanservice.","kill la kill","kurz","Kill la Kill"],
+["Kill la Kill","S","Action|Comedy",8,7.8,20,"sub","25 Folgen","Ryuko sucht den Mörder ihres Vaters an einer Schule, an der Uniformen Superkräfte verleihen. Überdreht, laut und völlig übertrieben.","Viel bewusst überzogener Fanservice.","kill la kill","","Kill la Kill"],
 ["Blue Lock","S","Sport|Thriller",8.0,8.1,35,"de","38 Folgen","Japan sperrt 300 Stürmer in ein Trainingslager. Nur einer soll als größter Egoist übrig bleiben und die Nationalmannschaft retten. Fußball als Survival-Spiel.","","bluelock fussball","","Blue Lock"],
-["Shangri-La Frontier","S","Action|Abenteuer|Comedy",8.0,7.6,8,"de","2 Staffeln · 50 Folgen","Ein Spieler, der eigentlich nur verbuggte Trash-Spiele mag, testet das beste Online-Rollenspiel der Welt. Gaming-Abenteuer mit viel Spaß.","","shangri la","chill","Shangri-La Frontier"],
+["Shangri-La Frontier","S","Action|Abenteuer|Comedy",8.0,7.6,8,"de","2 Staffeln · 50 Folgen","Ein Spieler, der eigentlich nur verbuggte Trash-Spiele mag, testet das beste Online-Rollenspiel der Welt. Gaming-Abenteuer mit viel Spaß.","","shangri la","","Shangri-La Frontier"],
 ["World Trigger","S","Action|Sci-Fi",8.0,7.4,1.7,"sub","3 Staffeln · über 100 Folgen","Aus Portalen fallen Monster nach Japan, eine Organisation bildet junge Kämpfer aus. Taktische Teamkämpfe statt reiner Muskelkraft.","Startet langsam, wird aber immer taktischer. Staffel 2 und 3 sind die stärksten.","world trigger","","World Trigger"],
 ["Ascendance of a Bookworm","S","Isekai|Fantasy|Slice of Life",8.0,7.8,2.4,"de","4 Staffeln","Eine Bücherliebhaberin wird als kränkliches Mädchen in einer mittelalterlichen Welt ohne Bücher wiedergeboren. Also stellt sie sich welche her.","Langsam, aber sehr befriedigend.","honzuki no gekokujou","chill","Ascendance of a Bookworm"],
 ["Gachiakuta","S","Action|Fantasy",8,8,16,"de","24 Folgen","Rudo wird für einen Mord, den er nicht begangen hat, in die Müllhalde unter der Stadt verbannt. Dort kämpft er mit Waffen aus weggeworfenen Gegenständen.","","gachiakuta","","Gachiakuta"],
 ["My Dress-Up Darling","S","Romance|Comedy",8.0,7.9,30,"de","2 Staffeln · 24 Folgen","Der schüchterne Puppenmacher Gojo hilft der beliebten Marin, ihre Cosplay-Kostüme zu nähen. Eine süße Romcom.","Etwas Fanservice.","sono bisque doll","chill","My Dress-Up Darling"],
-["Detektiv Conan","S","Krimi|Mystery",8.0,8.5,19,"de","über 1.100 Folgen","Ein junger Meisterdetektiv wird vergiftet und schrumpft zum Grundschüler. Getarnt löst er Mordfall um Mordfall.","Du kannst überall einsteigen.","detective conan meitantei","","Detektiv Conan"],
-["Konosuba: Legend of Crimson","F","Comedy|Isekai",8.0,7.8,7.7,"de","Film · 1 Std. 30 Min.","Kinofilm, in dem die Truppe in Megumins Heimatdorf voller Magier reist.","Nach Staffel 2 der Serie schauen.","konosuba film","","Konosuba Legend of Crimson"],
+["Detektiv Conan","S","Krimi|Mystery",8.0,8.5,19,"de","über 1.100 Folgen","Ein junger Meisterdetektiv wird vergiftet und schrumpft zum Grundschüler. Getarnt löst er Mordfall um Mordfall.","Du kannst überall einsteigen.","detective conan meitantei","dn","Detektiv Conan"],
+["Konosuba: Legend of Crimson","F","Comedy|Isekai",8.0,7.8,7.7,"de","Film · 1 Std. 30 Min.","Kinofilm, in dem die Truppe in Megumins Heimatdorf voller Magier reist.","Nach Staffel 2 der Serie schauen.","konosuba film","chill|kurz","Konosuba Legend of Crimson"],
 ["Dragonball Super: Broly","F","Action",8,7.7,38,"de","Film · 1 Std. 41 Min.","Goku und Vegeta treffen auf den gewaltigen Saiyajin Broly. Einer der am besten animierten Kämpfe der ganzen Reihe.","Auch ohne Vorwissen verständlich, Dragon-Ball-Fans haben aber mehr davon.","dragon ball broly","kurz","Dragon Ball Super Broly"],
-["Josie, der Tiger und die Fische","F","Romance|Drama",8.0,7.7,13,"de","Film · 1 Std. 38 Min.","Ein Student verliebt sich in eine junge Frau im Rollstuhl, die von der Welt draußen träumt. Eine ehrliche, unkitschige Liebesgeschichte.","","josee tora sakana","kurz|herz","Josee"],
+["Josie, der Tiger und die Fische","F","Romance|Drama",8.0,7.7,13,"de","Film · 1 Std. 38 Min.","Ein Student verliebt sich in eine junge Frau im Rollstuhl, die von der Welt draußen träumt. Eine ehrliche, unkitschige Liebesgeschichte.","","josee tora sakana","herz|kurz","Josee"],
 ["Kaiju No. 8","S","Action|Sci-Fi",7.9,8.2,34,"de","2 Staffeln · 23 Folgen","Kafka reinigt nach Monsterangriffen die Straßen und träumt von der Abwehrtruppe. Dann verwandelt er sich selbst in ein Monster.","","kaiju 8","","Kaiju No. 8"],
 ["Classroom of the Elite","S","Thriller|Drama",7.9,7.7,28,"de","4 Staffeln · 54 Folgen","An einer Eliteschule werden Klassen nach Punkten bewertet. Der scheinbar durchschnittliche Ayanokoji zieht im Hintergrund die Fäden.","Staffel 2 und 3 werden besser.","youkoso jitsuryoku","dn","Classroom of the Elite"],
 ["Saga of Tanya the Evil","S","Action|Isekai",7.9,7.6,7,"de","2 Staffeln · 25 Folgen","Ein skrupelloser Manager wird als Mädchen in einer magischen Version des Ersten Weltkriegs wiedergeboren und macht in der Armee eiskalt Karriere.","","youjo senki","","Saga of Tanya the Evil"],
 ["Welcome to Demon-School, Iruma-kun","S","Comedy|Fantasy",7.9,7.6,4.1,"de","4 Staffeln · 90 Folgen","Iruma wird von seinen Eltern an einen Dämon verkauft, der ihn als Enkel adoptiert und auf eine Dämonenschule schickt. Er darf nicht auffliegen.","","mairimashita iruma","chill","Iruma-kun"],
-["Meine Wiedergeburt als Schleim in einer anderen Welt","S","Isekai|Fantasy",7.9,8.0,29,"de","4 Staffeln · 97 Folgen","Ein Angestellter wird als Schleim wiedergeboren und baut mit Monstern ein eigenes Reich auf. Gemütliche Aufbau-Fantasy.","","that time i got reincarnated as a slime tensura","chill","Schleim"],
+["Meine Wiedergeburt als Schleim in einer anderen Welt", "S", "Isekai|Fantasy", 7.9, 8.0, 29, "de", "4 Staffeln · 97 Folgen", "Ein Angestellter wird als Schleim wiedergeboren und baut mit Monstern ein eigenes Reich auf. Gemütliche Aufbau-Fantasy.", "", "that time i got reincarnated as a slime tensura", "chill", "Schleim"],
 ["Inuyasha","S","Fantasy|Abenteuer|Romance",7.9,7.9,20,"de","193 Folgen","Kagome fällt durch einen Brunnen ins Japan der Kriegerzeit und muss mit dem Halbdämon Inuyasha die Splitter eines magischen Juwels sammeln.","","inuyasha","","Inuyasha"],
 ["My Hero Academia","S","Action",7.9,8.2,128,"de","8 Staffeln · 170 Folgen","Fast alle Menschen haben Superkräfte, nur Deku nicht. Bis der größte Held ihm seine Kraft vererbt. Klassische Heldengeschichte mit großen Momenten.","Startet etwas langsam, ab Staffel 2 wird es richtig gut.","boku no hero academia mha","","My Hero Academia"],
 ["Black Clover","S","Action|Fantasy",7.9,8.2,57,"de","über 170 Folgen, läuft wieder","Asta ist der einzige Junge ohne Magie in einer Welt voller Magier und will trotzdem Zauberkaiser werden.","Anfangs anstrengend laut, später richtig gut.","black clover","","Black Clover"],
-["Fate/Grand Order – Babylonia","S","Action|Fantasy",7.9,7.2,1.6,"sub","21 Folgen","Zwei Helden reisen ins antike Mesopotamien, um die Geschichte der Menschheit zu retten. Bombastische Kämpfe an der Seite von Gilgamesch.","Ohne Vorwissen zur Fate-Reihe stellenweise verwirrend.","fgo fate grand order","kurz","Fate/Grand Order Babylonia"],
+["Fate/Grand Order – Babylonia","S","Action|Fantasy",7.9,7.2,1.6,"sub","21 Folgen","Zwei Helden reisen ins antike Mesopotamien, um die Geschichte der Menschheit zu retten. Bombastische Kämpfe an der Seite von Gilgamesch.","Ohne Vorwissen zur Fate-Reihe stellenweise verwirrend.","fgo fate grand order","","Fate/Grand Order Babylonia"],
 ["Lupin III.","S","Krimi|Abenteuer|Comedy",7.9,7.8,2.8,"de","6 Staffeln · über 300 Folgen","Der Meisterdieb Lupin und seine Komplizen jagen Schätze, immer verfolgt vom hartnäckigen Inspektor Zenigata. Lässiger Kult seit den 70ern.","Jede Staffel steht für sich, du kannst überall einsteigen.","lupin","chill","Lupin"],
-["A Sign of Affection","S","Romance",7.9,7.8,5.4,"de","12 Folgen","Die gehörlose Studentin Yuki verliebt sich in einen weltgewandten Kommilitonen, der viele Sprachen spricht. Eine sanfte, schön gezeichnete Liebesgeschichte.","","yubisaki to renren","chill","A Sign of Affection"],
-["Kyousougiga","S","Fantasy|Drama",7.9,null,null,"sub","13 Folgen","Die wilde Koto landet in einer Spiegelwelt von Kyoto, die ihre verschwundene Familie erschaffen hat. Bunt, verspielt und überraschend gefühlvoll.","","kyousougiga","kurz","Kyousougiga"],
+["A Sign of Affection","S","Romance",7.9,7.8,5.4,"de","12 Folgen","Die gehörlose Studentin Yuki verliebt sich in einen weltgewandten Kommilitonen, der viele Sprachen spricht. Eine sanfte, schön gezeichnete Liebesgeschichte.","","yubisaki to renren","chill|herz|kurz","A Sign of Affection"],
+["Kyousougiga","S","Fantasy|Drama",7.9,null,null,"sub","13 Folgen","Die wilde Koto landet in einer Spiegelwelt von Kyoto, die ihre verschwundene Familie erschaffen hat. Bunt, verspielt und überraschend gefühlvoll.","","kyousougiga","herz|kurz","Kyousougiga"],
 ["Magi: The Labyrinth of Magic","S","Abenteuer|Fantasy",7.9,7.8,5.9,"sub","2 Staffeln · 50 Folgen","Der junge Aladdin und sein Freund Alibaba erobern magische Labyrinthe in einer Welt, die an 1001 Nacht erinnert.","Staffel 2 ist stärker.","magi","","Magi"],
 ["FLCL","S","Sci-Fi|Comedy",7.9,8.0,22,"sub","6 Folgen, dazu Fortsetzungen","Ein gelangweilter Junge wird von einer Außerirdischen mit einer Bassgitarre umgefahren, danach wachsen Roboter aus seinem Kopf. Chaotischer Kult über das Erwachsenwerden.","Das Original mit 6 Folgen reicht völlig.","fooly cooly","kurz","FLCL"],
 ["Fire Force","S","Action|Sci-Fi",7.8,7.6,22,"de","3 Staffeln · 73 Folgen","Menschen gehen plötzlich in Flammen auf und werden zu Monstern. Shinra tritt einer Spezialfeuerwehr bei, die sie bekämpft.","Die Animation ist top, die Story wird später stark.","enen no shouboutai","","Fire Force"],
-["Zombie 100 – Bucket List of the Dead","S","Comedy|Horror",7.8,7.3,14,"de","12 Folgen","Ein ausgebeuteter Büroangestellter erlebt die Zombie-Apokalypse als Befreiung, weil er nicht mehr zur Arbeit muss. Er schreibt eine Liste, was er vor dem Tod noch erleben will.","","zom 100","","Zom 100"],
+["Zombie 100 – Bucket List of the Dead", "S", "Comedy|Horror", 7.8, 7.3, 14, "de", "12 Folgen", "Ein ausgebeuteter Büroangestellter erlebt die Zombie-Apokalypse als Befreiung, weil er nicht mehr zur Arbeit muss. Er schreibt eine Liste, was er vor dem Tod noch erleben will.", "", "zom 100", "kurz", "Zom 100"],
 ["Deca-Dence","S","Sci-Fi|Action",7.8,7.0,2,"de","12 Folgen","Die letzten Menschen leben in einer wandelnden Festung und kämpfen gegen riesige Monster. Folge 1 endet mit einer Wendung, die alles umdreht.","","decadence","kurz","Deca-Dence"],
-["Mashle: Magic and Muscles","S","Comedy|Action|Fantasy",7.8,7.5,17,"de","2 Staffeln · 24 Folgen","Mash kann nicht zaubern und löst in einer Welt der Magie trotzdem jedes Problem mit Muskeln. Herrlich trockene Parodie.","","mashle","","Mashle"],
-["Spy x Family Code: White","F","Comedy|Action",7.7,7.3,9.9,"de","Film · 1 Std. 50 Min.","Die Familie Forger fährt in den Winterurlaub und gerät in eine militärische Verschwörung.","Eigenständige Geschichte, auch ohne Serie verständlich.","spy family film","kurz","Spy x Family Code White"],
+["Mashle: Magic and Muscles","S","Comedy|Action|Fantasy",7.8,7.5,17,"de","2 Staffeln · 24 Folgen","Mash kann nicht zaubern und löst in einer Welt der Magie trotzdem jedes Problem mit Muskeln. Herrlich trockene Parodie.","","mashle","chill","Mashle"],
+["Spy x Family Code: White","F","Comedy|Action",7.7,7.3,9.9,"de","Film · 1 Std. 50 Min.","Die Familie Forger fährt in den Winterurlaub und gerät in eine militärische Verschwörung.","Eigenständige Geschichte, auch ohne Serie verständlich.","spy family film","chill|kurz","Spy x Family Code White"],
 ["Black Butler","S","Mystery|Fantasy",7.7,8.1,2.9,"de","5 Staffeln · 71 Folgen","Der junge Graf Ciel hat im viktorianischen London einen Pakt mit einem Dämon geschlossen, der ihm als perfekter Butler dient. Düster und stilvoll.","Die zweite Hälfte von Staffel 1 und ganz Staffel 2 sind eigene Anime-Geschichten. Mit Book of Circus geht es wie im Manga weiter.","kuroshitsuji","","Black Butler"],
 ["Campfire Cooking in Another World","S","Isekai|Comedy|Slice of Life",7.7,7.6,4.7,"de","2 Staffeln · 36 Folgen","Mukohda wird in eine Fantasywelt beschworen und kann nur Lebensmittel aus seinem alten Supermarkt bestellen. Damit zähmt er einen legendären Wolf.","","tondemo skill","chill","Campfire Cooking"],
-["Penguin Highway","F","Fantasy|Slice of Life",7.7,7.1,4.7,"de","Film · 1 Std. 58 Min.","Ein frühreifer Viertklässler untersucht, warum plötzlich Pinguine in seiner Stadt auftauchen. Verträumt und charmant.","","penguin highway","kurz|chill","Penguin Highway"],
-["Dragon Ball Daima","S","Action|Abenteuer|Comedy",7.7,7.7,20,"sub","20 Folgen","Durch eine Verschwörung werden Goku und seine Freunde wieder zu Kindern. Um das rückgängig zu machen, reisen sie in die Dämonenwelt.","","dragonball daima","kurz","Dragon Ball Daima"],
+["Penguin Highway","F","Fantasy|Slice of Life",7.7,7.1,4.7,"de","Film · 1 Std. 58 Min.","Ein frühreifer Viertklässler untersucht, warum plötzlich Pinguine in seiner Stadt auftauchen. Verträumt und charmant.","","penguin highway","chill|herz|kurz","Penguin Highway"],
+["Dragon Ball Daima","S","Action|Abenteuer|Comedy",7.7,7.7,20,"sub","20 Folgen","Durch eine Verschwörung werden Goku und seine Freunde wieder zu Kindern. Um das rückgängig zu machen, reisen sie in die Dämonenwelt.","","dragonball daima","","Dragon Ball Daima"],
 ["Tokyo Revengers","S","Action|Drama",7.6,7.7,35,"de","Staffel 1 · 24 Folgen","Takemichi springt zwölf Jahre in die Vergangenheit, um den Tod seiner Ex-Freundin zu verhindern. Dafür muss er eine Motorradgang von innen verändern.","Bei Crunchyroll gibt es nur Staffel 1. Die Fortsetzung läuft bei Disney+.","tokyo revengers","","Tokyo Revengers"],
 ["Blue Exorcist","S","Action|Fantasy",7.6,7.4,17,"de","5 Staffeln · 74 Folgen","Rin erfährt, dass er der Sohn Satans ist, und will Exorzist werden, um gegen seinen Vater zu kämpfen.","Nach Folge 17 direkt mit der Kyoto Saga weitermachen. Der Rest von Staffel 1 ist eine eigene Anime-Geschichte.","ao no exorcist","","Blue Exorcist"],
 ["Tower of God","S","Fantasy|Abenteuer",7.6,7.4,12,"de","2 Staffeln · 39 Folgen","Bam folgt seiner einzigen Freundin in einen geheimnisvollen Turm, dessen Spitze jeden Wunsch erfüllt. Jede Etage ist eine tödliche Prüfung.","","kami no tou","","Tower of God"],
-["One Piece Film: Red","F","Abenteuer|Action",7.6,6.7,27,"de","Film · 1 Std. 55 Min.","Ruffy und seine Crew besuchen das Konzert der Sängerin Uta, die mehr mit Shanks zu tun hat, als alle denken.","Sehr musiklastig.","one piece red film","","One Piece Film Red"],
+["One Piece Film: Red","F","Abenteuer|Action",7.6,6.7,27,"de","Film · 1 Std. 55 Min.","Ruffy und seine Crew besuchen das Konzert der Sängerin Uta, die mehr mit Shanks zu tun hat, als alle denken.","Sehr musiklastig.","one piece red film","kurz","One Piece Film Red"],
 ["Patema Inverted","F","Sci-Fi|Abenteuer",7.6,7.3,12,"de","Film · 1 Std. 40 Min.","Patema stammt aus einer Welt mit umgekehrter Schwerkraft und würde ohne Halt in den Himmel fallen. Ein kreatives Sci-Fi-Märchen.","","sakasama no patema","kurz","Patema Inverted"],
-["Mirai – Das Mädchen aus der Zukunft","F","Fantasy|Drama",7.4,7,18,"de","Film · 1 Std. 40 Min.","Der vierjährige Kun ist eifersüchtig auf seine kleine Schwester, bis er im Garten Familienmitgliedern aus anderen Zeiten begegnet.","","mirai no mirai","kurz|herz","Mirai"],
+["Mirai – Das Mädchen aus der Zukunft","F","Fantasy|Drama",7.4,7,18,"de","Film · 1 Std. 40 Min.","Der vierjährige Kun ist eifersüchtig auf seine kleine Schwester, bis er im Garten Familienmitgliedern aus anderen Zeiten begegnet.","","mirai no mirai","herz|kurz","Mirai das Mädchen aus der Zukunft"],
 ["Sword Art Online","S","Action|Sci-Fi|Isekai",7.3,7.5,54,"de","4 Staffeln · 97 Folgen","Tausende Spieler sind in einem Virtual-Reality-Spiel gefangen. Wer im Spiel stirbt, stirbt auch in echt. Kirito kämpft sich nach oben.","Die erste Hälfte von Staffel 1 und die Alicization-Staffel sind die stärksten Teile.","sao","","Sword Art Online"]
 ];
 // Zusätzliche Titel, die nur in den Genre-Listen auftauchen (gleiches Format, letztes Feld = Crunchyroll-Link)
 const EXTRA = [
-["Yuri!!! on Ice", "S", "Sport|Drama|Romance", 8.1, 8.2, 13, "de", "12 Folgen", "Der Eiskunstläufer Yuri Katsuki will nach einer schweren Niederlage aufhören. Doch ausgerechnet sein großes Vorbild, Weltmeister Victor, will plötzlich sein Trainer werden. Wunderschön animierte Kür-Szenen.", "", "yuri on ice eiskunstlauf", "", "Yuri on Ice", "GY2PEJ0MY"],
+["Yuri!!! on Ice", "S", "Sport|Drama|Romance", 8.1, 8.2, 13, "de", "12 Folgen", "Der Eiskunstläufer Yuri Katsuki will nach einer schweren Niederlage aufhören. Doch ausgerechnet sein großes Vorbild, Weltmeister Victor, will plötzlich sein Trainer werden. Wunderschön animierte Kür-Szenen.", "", "yuri on ice eiskunstlauf", "herz|kurz", "Yuri on Ice", "GY2PEJ0MY"],
 ["Yowamushi Pedal", "S", "Sport|Comedy|Drama", 7.9, 7.6, 1.2, "sub", "5 Staffeln · 137 Folgen", "Der schüchterne Anime-Fan Onoda fährt jede Woche mit seinem klapprigen Damenrad bis nach Akihabara. Als der Radsportclub sein Talent entdeckt, folgt ein mitreißendes Rennen auf das nächste.", "", "yowamushi pedal radsport", "", "Yowamushi Pedal", "GRGGVKP4R"],
-["Ping Pong the Animation", "S", "Sport|Drama", 8.7, 8.6, 6.4, "sub", "11 Folgen", "Die Jugendfreunde Smile und Peco spielen an der Oberschule Tischtennis: der eine verschlossen, der andere übermütig. Eine der besten Sportgeschichten überhaupt.", "Der skizzenhafte Zeichenstil ist gewollt. Nach zwei Folgen hat man sich daran gewöhnt.", "ping pong tischtennis", "", "Ping Pong the Animation", "GRJQV0N3Y"],
-["Chihayafuru", "S", "Sport|Romance|Drama", 8.3, 8.1, 1.9, "sub", "3 Staffeln · 74 Folgen", "Chihaya entdeckt Karuta, ein japanisches Kartenspiel mit Gedichten, bei dem blitzschnelle Reflexe zählen. Mit zwei Kindheitsfreunden will sie die Beste in ganz Japan werden.", "Klingt nach Nischensport, ist aber so spannend wie Haikyu!!.", "chihayafuru karuta", "", "Chihayafuru", "GYGG57V3Y"],
+["Ping Pong the Animation", "S", "Sport|Drama", 8.7, 8.6, 6.4, "sub", "11 Folgen", "Die Jugendfreunde Smile und Peco spielen an der Oberschule Tischtennis: der eine verschlossen, der andere übermütig. Eine der besten Sportgeschichten überhaupt.", "Der skizzenhafte Zeichenstil ist gewollt. Nach zwei Folgen hat man sich daran gewöhnt.", "ping pong tischtennis", "herz|kurz", "Ping Pong the Animation", "GRJQV0N3Y"],
+["Chihayafuru", "S", "Sport|Romance|Drama", 8.3, 8.1, 1.9, "sub", "3 Staffeln · 74 Folgen", "Chihaya entdeckt Karuta, ein japanisches Kartenspiel mit Gedichten, bei dem blitzschnelle Reflexe zählen. Mit zwei Kindheitsfreunden will sie die Beste in ganz Japan werden.", "Klingt nach Nischensport, ist aber so spannend wie Haikyu!!.", "chihayafuru karuta", "herz", "Chihayafuru", "GYGG57V3Y"],
 ["Ace of the Diamond", "S", "Sport|Comedy", 8.0, 8.1, 1.8, "sub", "über 200 Folgen, läuft noch", "Der hitzköpfige Werfer Eijun wechselt an eine Eliteschule für Baseball und muss sich dort gegen Dutzende talentierte Mitspieler durchsetzen.", "", "diamond no ace baseball", "", "Ace of the Diamond", "GYX0MZ58R"],
 ["Free!", "S", "Sport|Drama|Comedy", 7.4, 7.3, 4.4, "de", "3 Staffeln · 38 Folgen", "Haruka lebt fürs Schwimmen und gründet mit alten Freunden einen Schwimmclub an seiner Oberschule. Locker, freundschaftlich und mit viel Wasser.", "", "free schwimmen iwatobi", "", "Free!", "GRDQV2VWY"],
-["SK8 the Infinity", "S", "Sport|Comedy|Action", 8.0, 8.0, 6.5, "sub", "13 Folgen", "Reki bringt dem Neuen Langa das Skateboarden bei. Bald fahren beide bei illegalen Nachtrennen auf einer verlassenen Mine mit. Bunt, schnell und gut gelaunt.", "", "sk8 skateboard", "", "SK8 the Infinity", "G5PHNM434"],
+["SK8 the Infinity", "S", "Sport|Comedy|Action", 8.0, 8.0, 6.5, "sub", "13 Folgen", "Reki bringt dem Neuen Langa das Skateboarden bei. Bald fahren beide bei illegalen Nachtrennen auf einer verlassenen Mine mit. Bunt, schnell und gut gelaunt.", "", "sk8 skateboard", "chill|kurz", "SK8 the Infinity", "G5PHNM434"],
 ["Captain Tsubasa", "S", "Sport|Drama", 7.8, 8.1, 3.1, "sub", "2 Staffeln · 91 Folgen", "Das Fußballwunder Tsubasa will Weltmeister werden. Die Neuauflage von 2018 des Klassikers, den viele als „Die tollen Fußballstars“ kennen.", "", "captain tsubasa fussball die tollen fussballstars", "", "Captain Tsubasa", "GZJH3D7G9"],
 ["EyeShield 21", "S", "Sport|Comedy|Action", 7.6, 7.5, 1, "sub", "145 Folgen", "Der schüchterne Laufbursche Sena ist unglaublich schnell und wird deshalb heimlich zum Star eines American-Football-Teams. Klassiker mit viel Humor.", "", "eyeshield 21 american football", "", "EyeShield 21", "GRE5KGN36"],
-["Oblivion Battery", "S", "Sport|Comedy", 7.5, 7.5, 0.45, "sub", "13 Folgen", "Ein einst gefürchtetes Baseball-Duo landet an einer ganz normalen Schule. Der Fänger hat sein Gedächtnis verloren und benimmt sich seitdem wie ein Komiker.", "", "boukyaku battery baseball", "", "Oblivion Battery", "GXJHM3GDX/oblivion-battery"],
-["Moriarty the Patriot", "S", "Krimi|Historie|Thriller", 8.1, 8.0, 6.1, "sub", "2 Staffeln · 25 Folgen", "Im viktorianischen England plant der junge William James Moriarty Verbrechen gegen eine korrupte Oberschicht. Die Welt von Sherlock Holmes aus Sicht seines berühmtesten Gegners.", "Für Death-Note-Fans: ein genialer Verbrecher als Hauptfigur.", "yuukoku no moriarty sherlock", "", "Moriarty the Patriot", "GXJHM379D"],
+["Oblivion Battery", "S", "Sport|Comedy", 7.5, 7.5, 0.45, "sub", "13 Folgen", "Ein einst gefürchtetes Baseball-Duo landet an einer ganz normalen Schule. Der Fänger hat sein Gedächtnis verloren und benimmt sich seitdem wie ein Komiker.", "", "boukyaku battery baseball", "chill|kurz", "Oblivion Battery", "GXJHM3GDX/oblivion-battery"],
+["Moriarty the Patriot", "S", "Krimi|Historie|Thriller", 8.1, 8.0, 6.1, "sub", "2 Staffeln · 25 Folgen", "Im viktorianischen England plant der junge William James Moriarty Verbrechen gegen eine korrupte Oberschicht. Die Welt von Sherlock Holmes aus Sicht seines berühmtesten Gegners.", "Für Death-Note-Fans: ein genialer Verbrecher als Hauptfigur.", "yuukoku no moriarty sherlock", "dn", "Moriarty the Patriot", "GXJHM379D"],
 ["Bungou Stray Dogs", "S", "Action|Krimi|Mystery", 7.8, 7.8, 14, "sub", "5 Staffeln · 61 Folgen", "Der verstoßene Waise Atsushi landet bei einer Detektei, deren Mitglieder übernatürliche Kräfte haben, alle benannt nach berühmten Schriftstellern. Kriminalfälle, Mafia und schräger Humor.", "", "bungo stray dogs", "", "Bungou Stray Dogs", "GR5VXQ8PR"],
-["Durarara!!", "S", "Krimi|Mystery|Action", 8.0, 7.8, 8.9, "de", "2 Staffeln · 62 Folgen", "Im Tokioter Viertel Ikebukuro kreuzen sich die Wege von Straßengangs, einem kopflosen Motorradkurier und vielen schrägen Gestalten. Die Geschichte setzt sich wie ein Puzzle zusammen.", "", "durarara drrr", "", "Durarara", "G619XVNEY"],
-["Lycoris Recoil", "S", "Action|Krimi|Comedy", 7.8, 7.6, 4.6, "de", "13 Folgen", "Tokio wirkt friedlich, weil Agentinnen namens Lycoris Verbrechen heimlich verhindern. Die strenge Takina wird in ein Café zur fröhlichen Chisato versetzt, der besten Lycoris von allen.", "", "lycoris recoil", "", "Lycoris Recoil", "G1XHJV2X9"],
-["Buddy Daddies", "S", "Krimi|Comedy|Action", 7.9, 8.0, 4.3, "sub", "13 Folgen", "Zwei Auftragskiller müssen sich plötzlich um ein vierjähriges Mädchen kümmern. Herzlich und witzig, mit Action zwischendurch.", "", "buddy daddies", "", "Buddy Daddies", "GG5H5X3DE"],
-["ID: INVADED", "S", "Mystery|Krimi|Sci-Fi", 7.8, 7.5, 3.9, "sub", "13 Folgen", "Mit einer Maschine tauchen Ermittler in die Gedankenwelten von Serienmördern ein. Dort muss ein Detektiv ohne Gedächtnis jedes Mal den Tod eines Mädchens aufklären.", "", "id invaded", "", "ID INVADED", "G79H230GE"],
-["Michiko & Hatchin", "S", "Krimi|Abenteuer|Drama", 7.6, 7.5, 1.5, "de", "22 Folgen", "Die ausgebrochene Gefangene Michiko holt das Mädchen Hana aus einer schrecklichen Pflegefamilie. Gemeinsam ziehen sie durch ein südamerikanisch geprägtes Land und suchen Hanas Vater.", "", "michiko to hatchin", "", "Michiko & Hatchin", "G6Q4Z8PQR"],
-["Akiba Maid War", "S", "Krimi|Comedy|Action", 7.5, 7.3, 0.9, "sub", "12 Folgen", "Akihabara 1999: Maid-Cafés führen Bandenkriege wie die Yakuza, und die naive Nagomi gerät mitten hinein. Völlig absurd und überraschend brutal.", "", "akiba maid sensou", "", "Akiba Maid War", "https://www.crunchyroll.com/akiba-maid-war"],
-["Magic Kaito 1412", "S", "Krimi|Comedy|Abenteuer", 7.4, 7.3, 0.7, "de", "24 Folgen", "Der Schüler Kaito führt ein Doppelleben als Meisterdieb Kaito Kid, den Fans von Detektiv Conan kennen. Leicht, verspielt und voller cleverer Tricks.", "", "magic kaito kid 1412", "", "Magic Kaito 1412", "GRDQN0M9Y"],
+["Durarara!!", "S", "Krimi|Mystery|Action", 8.0, 7.8, 8.9, "de", "2 Staffeln · 62 Folgen", "Im Tokioter Viertel Ikebukuro kreuzen sich die Wege von Straßengangs, einem kopflosen Motorradkurier und vielen schrägen Gestalten. Die Geschichte setzt sich wie ein Puzzle zusammen.", "", "durarara drrr", "dn", "Durarara", "G619XVNEY"],
+["Lycoris Recoil", "S", "Action|Krimi|Comedy", 7.8, 7.6, 4.6, "de", "13 Folgen", "Tokio wirkt friedlich, weil Agentinnen namens Lycoris Verbrechen heimlich verhindern. Die strenge Takina wird in ein Café zur fröhlichen Chisato versetzt, der besten Lycoris von allen.", "", "lycoris recoil", "chill|kurz", "Lycoris Recoil", "G1XHJV2X9"],
+["Buddy Daddies", "S", "Krimi|Comedy|Action", 7.9, 8.0, 4.3, "sub", "13 Folgen", "Zwei Auftragskiller müssen sich plötzlich um ein vierjähriges Mädchen kümmern. Herzlich und witzig, mit Action zwischendurch.", "", "buddy daddies", "herz|kurz", "Buddy Daddies", "GG5H5X3DE"],
+["ID: INVADED", "S", "Mystery|Krimi|Sci-Fi", 7.8, 7.5, 3.9, "sub", "13 Folgen", "Mit einer Maschine tauchen Ermittler in die Gedankenwelten von Serienmördern ein. Dort muss ein Detektiv ohne Gedächtnis jedes Mal den Tod eines Mädchens aufklären.", "", "id invaded", "dn|kurz", "ID INVADED", "G79H230GE"],
+["Michiko & Hatchin", "S", "Krimi|Abenteuer|Drama", 7.6, 7.5, 1.5, "de", "22 Folgen", "Die ausgebrochene Gefangene Michiko holt das Mädchen Hana aus einer schrecklichen Pflegefamilie. Gemeinsam ziehen sie durch ein südamerikanisch geprägtes Land und suchen Hanas Vater.", "", "michiko to hatchin", "herz", "Michiko & Hatchin", "G6Q4Z8PQR"],
+["Akiba Maid War", "S", "Krimi|Comedy|Action", 7.5, 7.3, 0.9, "sub", "12 Folgen", "Akihabara 1999: Maid-Cafés führen Bandenkriege wie die Yakuza, und die naive Nagomi gerät mitten hinein. Völlig absurd und überraschend brutal.", "", "akiba maid sensou", "kurz", "Akiba Maid War", "G79H23XPW"],
+["Magic Kaito 1412", "S", "Krimi|Comedy|Abenteuer", 7.4, 7.3, 0.7, "de", "24 Folgen", "Der Schüler Kaito führt ein Doppelleben als Meisterdieb Kaito Kid, den Fans von Detektiv Conan kennen. Leicht, verspielt und voller cleverer Tricks.", "", "magic kaito kid 1412", "chill", "Magic Kaito 1412", "GRDQN0M9Y"],
 ["Kingdom", "S", "Historie|Action|Drama", 8.6, 8.8, 7.2, "sub", "6 Staffeln · 156 Folgen", "Im alten China träumt der Waisenjunge Xin davon, der größte General aller Zeiten zu werden. Er hilft einem jungen König, das zerstrittene Land zu einen. Gewaltige Schlachten.", "Staffel 1 sieht wegen der Computergrafik schwach aus. Ab Staffel 2 wird es viel besser.", "kingdom china", "", "Kingdom", "GRWE89KMR"],
 ["Rurouni Kenshin", "S", "Historie|Action|Drama", 7.9, 8.0, 3.4, "sub", "2 Staffeln · 47 Folgen", "Japan um 1878: Der frühere Attentäter Kenshin hat geschworen, nie wieder zu töten, und zieht mit einem Schwert mit umgedrehter Klinge umher.", "Gemeint ist die Neuverfilmung von 2023.", "rurouni kenshin samurai x", "", "Rurouni Kenshin", "G0XHWM1NK"],
-["The Heike Story", "S", "Historie|Drama|Fantasy", 7.5, 7.5, 0.5, "sub", "11 Folgen", "Das Mädchen Biwa kann die Zukunft sehen und wird Zeugin, wie der mächtige Heike-Clan im Japan des 12. Jahrhunderts untergeht. Wunderschön und melancholisch.", "", "heike monogatari", "", "The Heike Story", "G79H230XN"],
-["Raven of the Inner Palace", "S", "Historie|Mystery|Fantasy", 7.5, 7.4, 1.1, "sub", "13 Folgen", "In einem Kaiserpalast im Stil des alten China lebt die geheimnisvolle Raven-Konkubine, die Flüche löst und Geister vertreibt. Ruhiges Mystery voller Hofgeheimnisse.", "Für Fans der Tagebücher der Apothekerin.", "koukyuu no karasu", "", "Raven of the Inner Palace", "GP5HJ8E99"],
-["Princess Principal", "S", "Action|Thriller|Historie", 7.7, 7.6, 1.1, "de", "12 Folgen", "In einem geteilten London um 1900 arbeiten fünf junge Spioninnen getarnt an einer Eliteschule. Stilvoll, spannend und mit viel Steampunk.", "Die Folgen springen bewusst in der Zeit. Die Nummer im Folgentitel zeigt die Reihenfolge.", "princess principal spione", "", "Princess Principal", "GEXH3W414/princess-principal"],
-["Yatagarasu", "S", "Historie|Fantasy|Mystery", 7.7, 7.7, 0.5, "sub", "20 Folgen", "In einer Welt von Krähen, die Menschengestalt annehmen, wird ein Junge vom Land zum Diener eines exzentrischen Thronfolgers. Hofintrigen mit überraschenden Wendungen.", "", "karasu wa aruji wo erabanai raven", "", "Yatagarasu", "G5PHNM92J/yatagarasu-the-raven-does-not-choose-its-master"],
-["Chainsaw Man", "S", "Action|Horror|Comedy", 8.5, 8.3, 113, "de", "12 Folgen", "Der bettelarme Denji verschmilzt mit seinem Hundeteufel Pochita und wird zum Kettensägenmann. Jetzt jagt er für eine Behörde Teufel. Brutal, schräg und herausragend animiert.", "Danach den Film Reze Arc schauen, er setzt direkt an.", "chainsaw man denji", "", "Chainsaw Man", "GVDHX8QNW"],
-["Shadows House", "S", "Mystery|Horror|Fantasy", 7.5, 7.3, 1.5, "sub", "2 Staffeln · 25 Folgen", "In einem Herrenhaus leben gesichtslose Schattenadlige, und jede hat eine lebende Puppe als Dienerin, die ihr Gesicht darstellt. Unheimlich, rätselhaft und sehr schön gezeichnet.", "", "shadows house", "", "Shadows House", "G1XHJVEXE"],
+["The Heike Story", "S", "Historie|Drama|Fantasy", 7.5, 7.5, 0.5, "sub", "11 Folgen", "Das Mädchen Biwa kann die Zukunft sehen und wird Zeugin, wie der mächtige Heike-Clan im Japan des 12. Jahrhunderts untergeht. Wunderschön und melancholisch.", "", "heike monogatari", "herz|kurz", "The Heike Story", "G79H230XN"],
+["Raven of the Inner Palace", "S", "Historie|Mystery|Fantasy", 7.5, 7.4, 1.1, "sub", "13 Folgen", "In einem Kaiserpalast im Stil des alten China lebt die geheimnisvolle Raven-Konkubine, die Flüche löst und Geister vertreibt. Ruhiges Mystery voller Hofgeheimnisse.", "Für Fans der Tagebücher der Apothekerin.", "koukyuu no karasu", "dn|kurz", "Raven of the Inner Palace", "GP5HJ8E99"],
+["Princess Principal", "S", "Action|Thriller|Historie", 7.7, 7.6, 1.1, "de", "12 Folgen", "In einem geteilten London um 1900 arbeiten fünf junge Spioninnen getarnt an einer Eliteschule. Stilvoll, spannend und mit viel Steampunk.", "Die Folgen springen bewusst in der Zeit. Die Nummer im Folgentitel zeigt die Reihenfolge.", "princess principal spione", "dn|kurz", "Princess Principal", "GEXH3W414/princess-principal"],
+["Yatagarasu", "S", "Historie|Fantasy|Mystery", 7.7, 7.7, 0.5, "sub", "20 Folgen", "In einer Welt von Krähen, die Menschengestalt annehmen, wird ein Junge vom Land zum Diener eines exzentrischen Thronfolgers. Hofintrigen mit überraschenden Wendungen.", "", "karasu wa aruji wo erabanai raven", "dn", "Yatagarasu", "G5PHNM92J/yatagarasu-the-raven-does-not-choose-its-master"],
+["Chainsaw Man", "S", "Action|Horror|Comedy", 8.5, 8.3, 113, "de", "12 Folgen", "Der bettelarme Denji verschmilzt mit seinem Hundeteufel Pochita und wird zum Kettensägenmann. Jetzt jagt er für eine Behörde Teufel. Brutal, schräg und herausragend animiert.", "Danach den Film Reze Arc schauen, er setzt direkt an.", "chainsaw man denji", "kurz", "Chainsaw Man", "GVDHX8QNW"],
+["Shadows House", "S", "Mystery|Horror|Fantasy", 7.5, 7.3, 1.5, "sub", "2 Staffeln · 25 Folgen", "In einem Herrenhaus leben gesichtslose Schattenadlige, und jede hat eine lebende Puppe als Dienerin, die ihr Gesicht darstellt. Unheimlich, rätselhaft und sehr schön gezeichnet.", "", "shadows house", "dn", "Shadows House", "G1XHJVEXE"],
 ["Mein Schulgeist Hanako", "S", "Horror|Comedy|Fantasy", 7.6, 7.5, 4.2, "sub", "2 Staffeln · 36 Folgen", "Nene beschwört Hanako, den Geist einer Schultoilette, und muss ihm fortan helfen, die übrigen Geister der Schule in Schach zu halten. Bunt, gruselig und witzig.", "", "toilet-bound hanako-kun jibaku shounen", "", "Hanako", "G24H1N3ZP"],
 ["The Case Study of Vanitas", "S", "Fantasy|Mystery|Horror", 7.7, 7.6, 4.3, "de", "24 Folgen", "Im Paris des 19. Jahrhunderts heilt der exzentrische Vanitas verfluchte Vampire, an seiner Seite der Vampir Noé. Stilvoll und düster.", "", "vanitas no karte", "", "Vanitas", "GEXH3W8DG"],
-["Zombie Land Saga", "S", "Comedy|Horror", 7.3, 7.1, 1.9, "de", "2 Staffeln · 24 Folgen", "Sakura wacht als Zombie auf und soll mit anderen untoten Mädchen als Idol-Gruppe die Präfektur Saga retten. Albern, herzlich und viel besser, als es klingt.", "", "zombieland saga", "", "Zombie Land Saga", "GRJ0K7X5Y"],
-["Natsume's Book of Friends", "S", "Fantasy|Slice of Life|Drama", 8.5, 8.1, 3.3, "sub", "7 Staffeln · 93 Folgen", "Der Schüler Natsume kann Geister sehen und erbt von seiner Großmutter ein Buch mit ihren Namen. Einen nach dem anderen gibt er sie zurück. Ruhig, warmherzig und oft rührend.", "Fast jede Folge steht für sich, ideal für zwischendurch.", "natsume yuujinchou", "", "Natsume", "GRE5XQJV6"],
-["Laid-Back Camp", "S", "Slice of Life|Comedy", 8.2, 8.1, 2.5, "sub", "4 Staffeln · 42 Folgen", "Rin zeltet am liebsten allein im Winter, bis die quirlige Nadeshiko auftaucht. Zelten, Kochen und schöne Landschaften: pure Entspannung.", "", "yuru camp", "", "Laid-Back Camp", "GRWEW95KR"],
-["Skip and Loafer", "S", "Slice of Life|Romance|Comedy", 8.2, null, null, "sub", "12 Folgen", "Mitsumi kommt vom Land an eine Elite-Oberschule in Tokio und will alles perfekt planen. Stattdessen findet sie chaotische, liebenswerte Freunde. Herzerwärmend und lustig.", "", "skip to loafer", "", "Skip and Loafer", "G9VHN9185"],
-["Bocchi the Rock!", "S", "Comedy|Slice of Life", 8.7, 8.3, 9.7, "sub", "12 Folgen", "Hitori spielt fantastisch Gitarre, ist aber so schüchtern, dass sie kaum mit Menschen reden kann. Dann landet sie in einer Schülerband. Eine der witzigsten Serien der letzten Jahre.", "", "bocchi the rock band", "", "Bocchi the Rock", "GXJHM3P19"],
-["My Love Story with Yamada-kun at Lv999", "S", "Romance|Comedy", 7.7, 7.6, 7.4, "sub", "13 Folgen", "Nach einer Trennung lernt die Studentin Akane in ihrem Online-Spiel den wortkargen Profispieler Yamada kennen. Süße, ruhige Liebeskomödie.", "", "yamada-kun lv999 koi wo suru", "", "Yamada-kun Lv999", "GNVHKNPQ7/my-love-story-with-yamada-kun-at-lv999"],
-["The Ancient Magus' Bride", "S", "Fantasy|Romance|Drama", 7.8, 7.6, 5.3, "de", "2 Staffeln · 48 Folgen", "Die einsame Chise wird auf einer Auktion von einem Magier mit Tierschädel gekauft, der sie zu seiner Schülerin und Braut machen will. Düsteres, märchenhaftes England.", "", "mahoutsukai no yome", "", "Ancient Magus Bride", "GRZXQJJ8Y"],
-["Tomodachi Game", "S", "Thriller|Mystery|Drama", 7.7, 7.6, 7, "sub", "12 Folgen", "Fünf Freunde werden in ein Spiel gezwungen, weil einer von ihnen riesige Schulden hat. Doch wer hat sie verraten? Fies und spannend.", "", "tomodachi game", "", "Tomodachi Game", "GJ0H7QX0Z"],
+["Zombie Land Saga", "S", "Comedy|Horror", 7.3, 7.1, 1.9, "de", "2 Staffeln · 24 Folgen", "Sakura wacht als Zombie auf und soll mit anderen untoten Mädchen als Idol-Gruppe die Präfektur Saga retten. Albern, herzlich und viel besser, als es klingt.", "", "zombieland saga", "chill", "Zombie Land Saga", "GRJ0K7X5Y"],
+["Natsume's Book of Friends", "S", "Fantasy|Slice of Life|Drama", 8.5, 8.1, 3.3, "sub", "7 Staffeln · 93 Folgen", "Der Schüler Natsume kann Geister sehen und erbt von seiner Großmutter ein Buch mit ihren Namen. Einen nach dem anderen gibt er sie zurück. Ruhig, warmherzig und oft rührend.", "Fast jede Folge steht für sich, ideal für zwischendurch.", "natsume yuujinchou", "chill|herz", "Natsume", "GRE5XQJV6"],
+["Laid-Back Camp", "S", "Slice of Life|Comedy", 8.2, 8.1, 2.5, "sub", "4 Staffeln · 42 Folgen", "Rin zeltet am liebsten allein im Winter, bis die quirlige Nadeshiko auftaucht. Zelten, Kochen und schöne Landschaften: pure Entspannung.", "", "yuru camp", "chill", "Laid-Back Camp", "GRWEW95KR"],
+["Skip and Loafer", "S", "Slice of Life|Romance|Comedy", 8.2, null, null, "sub", "12 Folgen", "Mitsumi kommt vom Land an eine Elite-Oberschule in Tokio und will alles perfekt planen. Stattdessen findet sie chaotische, liebenswerte Freunde. Herzerwärmend und lustig.", "", "skip to loafer", "chill|herz|kurz", "Skip and Loafer", "G9VHN9185"],
+["Bocchi the Rock!", "S", "Comedy|Slice of Life", 8.7, 8.3, 9.7, "sub", "12 Folgen", "Hitori spielt fantastisch Gitarre, ist aber so schüchtern, dass sie kaum mit Menschen reden kann. Dann landet sie in einer Schülerband. Eine der witzigsten Serien der letzten Jahre.", "", "bocchi the rock band", "chill|kurz", "Bocchi the Rock", "GXJHM3P19"],
+["My Love Story with Yamada-kun at Lv999", "S", "Romance|Comedy", 7.7, 7.6, 7.4, "sub", "13 Folgen", "Nach einer Trennung lernt die Studentin Akane in ihrem Online-Spiel den wortkargen Profispieler Yamada kennen. Süße, ruhige Liebeskomödie.", "", "yamada-kun lv999 koi wo suru", "chill|kurz", "Yamada-kun Lv999", "GNVHKNPQ7/my-love-story-with-yamada-kun-at-lv999"],
+["The Ancient Magus' Bride", "S", "Fantasy|Romance|Drama", 7.8, 7.6, 5.3, "de", "2 Staffeln · 48 Folgen", "Die einsame Chise wird auf einer Auktion von einem Magier mit Tierschädel gekauft, der sie zu seiner Schülerin und Braut machen will. Düsteres, märchenhaftes England.", "", "mahoutsukai no yome", "herz", "Ancient Magus Bride", "GRZXQJJ8Y"],
+["Tomodachi Game", "S", "Thriller|Mystery|Drama", 7.7, 7.6, 7, "sub", "12 Folgen", "Fünf Freunde werden in ein Spiel gezwungen, weil einer von ihnen riesige Schulden hat. Doch wer hat sie verraten? Fies und spannend.", "", "tomodachi game", "dn|kurz", "Tomodachi Game", "GJ0H7QX0Z"],
 ["The Rising of the Shield Hero", "S", "Isekai|Fantasy|Action", 7.5, 7.6, 24, "de", "4 Staffeln · 62 Folgen", "Naofumi wird als Held des Schildes in eine Fantasywelt gerufen, aber gleich verraten und fälschlich beschuldigt. Allein muss er sich wieder hocharbeiten.", "Staffel 1 ist mit Abstand die beste.", "tate no yuusha shield hero", "", "Shield Hero", "G6W4QKX0R"],
 ["Log Horizon", "S", "Isekai|Fantasy|Abenteuer", 7.6, 7.4, 5.9, "de", "3 Staffeln · 62 Folgen", "Tausende Spieler sind plötzlich in ihrem Online-Rollenspiel gefangen. Der Stratege Shiroe hilft, dort eine funktionierende Gesellschaft aufzubauen. Mehr Taktik und Politik als Kämpfe.", "Staffel 1 und 2 sind die stärksten.", "log horizon", "", "Log Horizon", "GRVNMG93Y"],
 ["So I'm a Spider, So What?", "S", "Isekai|Fantasy|Comedy", 7.4, null, null, "de", "24 Folgen", "Eine Schülerin wird als kleine Spinne in einem Monster-Dungeon wiedergeboren und muss sich hochleveln. Ihre Selbstgespräche sind das Beste an der Serie.", "", "kumo desu ga nani ka spinne", "", "So I'm a Spider", "G79H23G0D"],
-["Restaurant to Another World", "S", "Isekai|Slice of Life|Fantasy", 7.6, 7.2, 1.1, "sub", "2 Staffeln · 24 Folgen", "Einmal pro Woche öffnet sich die Tür eines Tokioter Restaurants in eine Fantasywelt. Elfen, Drachen und Ritter kommen zum Essen. Gemütlich und macht hungrig.", "", "isekai shokudou", "", "Restaurant to Another World", "GR49493P6"],
+["Restaurant to Another World", "S", "Isekai|Slice of Life|Fantasy", 7.6, 7.2, 1.1, "sub", "2 Staffeln · 24 Folgen", "Einmal pro Woche öffnet sich die Tür eines Tokioter Restaurants in eine Fantasywelt. Elfen, Drachen und Ritter kommen zum Essen. Gemütlich und macht hungrig.", "", "isekai shokudou", "chill", "Restaurant to Another World", "GR49493P6"],
 // Neu 2026 (Stand Oktober 2026)
-["Journal with Witch", "S", "Drama|Slice of Life", 8.6, null, null, "sub", "13 Folgen", "Die eigenbrötlerische Romanautorin Makio nimmt ihre 15-jährige Nichte Asa bei sich auf, nachdem deren Eltern bei einem Unfall gestorben sind. Zwei Menschen, die kaum gegensätzlicher sein könnten, lernen zusammenzuleben. Leise, ehrlich und sehr berührend.", "", "ikoku nikki", "herz|chill|kurz", "Journal with Witch", "GT00365571"],
+["Journal with Witch", "S", "Drama|Slice of Life", 8.6, null, null, "sub", "13 Folgen", "Die eigenbrötlerische Romanautorin Makio nimmt ihre 15-jährige Nichte Asa bei sich auf, nachdem deren Eltern bei einem Unfall gestorben sind. Zwei Menschen, die kaum gegensätzlicher sein könnten, lernen zusammenzuleben. Leise, ehrlich und sehr berührend.", "", "ikoku nikki", "herz|kurz", "Journal with Witch", "GT00365571"],
 ["You and I Are Polar Opposites", "S", "Romance|Comedy|Slice of Life", 8.3, null, null, "de", "2 Staffeln · 25 Folgen", "Die quirlige Suzuki verliebt sich ausgerechnet in den stillen, ernsten Tani aus ihrer Klasse. Eine natürliche, witzige Liebesgeschichte über zwei, die verschiedener nicht sein könnten.", "Staffel 2 ist noch besser als Staffel 1.", "seihantai na kimi to boku", "chill", "You and I Are Polar Opposites", "GT00365624"],
 ["Jaadugar: A Witch in Mongolia", "S", "Historie|Drama|Abenteuer", 8.3, null, null, "de", "12 Folgen", "13. Jahrhundert: Die Mongolen erobern Persien, und die gebildete Fatima wird als Sklavin verschleppt. Mit Wissen, List und viel Geduld will sie sich am Hof der Eroberer behaupten. Klug, ruhig und bildgewaltig.", "", "tenmaku no jaadugar mongolei", "kurz", "Jaadugar", "GT00378078"],
 ["Love Unseen Beneath the Clear Night Sky", "S", "Romance|Drama", 8.3, null, null, "sub", "12 Folgen", "Der schüchterne Student Kakeru lernt die blinde Koharu kennen, die fröhlich durchs Leben geht und ihn aus seinem Schneckenhaus holt. Als sie sagt, dass sie einmal ein Feuerwerk sehen möchte, sucht er einen Weg, ihr diesen Wunsch zu erfüllen. Sanft und herzerwärmend.", "", "toumei na yoru ni kakeru kimi to", "herz|kurz", "Love Unseen Beneath the Clear Night Sky", "GT00378087"],
-["Sentenced to Be a Hero", "S", "Action|Fantasy", 8.0, null, null, "de", "12 Folgen", "In dieser Welt ist „Held“ eine Strafe: Verurteilte kämpfen an vorderster Front gegen Dämonen und werden nach jedem Tod wiederbelebt. Der frühere Kommandant Xylo, verurteilt für den Mord an einer Göttin, trifft auf die junge Göttin Teoritta, die ihn zu ihrem Ritter macht. Düster und actionreich.", "", "yuusha-kei ni shosu", "", "Sentenced to Be a Hero", "GT00356809"]
+["Sentenced to Be a Hero", "S", "Action|Fantasy", 8.0, null, null, "de", "12 Folgen", "In dieser Welt ist „Held“ eine Strafe: Verurteilte kämpfen an vorderster Front gegen Dämonen und werden nach jedem Tod wiederbelebt. Der frühere Kommandant Xylo, verurteilt für den Mord an einer Göttin, trifft auf die junge Göttin Teoritta, die ihn zu ihrem Ritter macht. Düster und actionreich.", "", "yuusha-kei ni shosu", "kurz", "Sentenced to Be a Hero", "GT00356809"],
+["Takopi und die Sache mit dem Glück", "S", "Drama|Thriller|Sci-Fi", 8.6, 8.7, 30, "sub", "6 Folgen", "Das Alien Takopi landet auf der Erde, um Menschen glücklich zu machen. Doch die verschlossene Schülerin Shizuka wird zu Hause und in der Schule gequält, und Takopis Wunderhelfer machen alles nur schlimmer. Kurz, verstörend und unglaublich stark.", "Sehr düster, es geht um Mobbing, Gewalt und Suizid. Nichts für nebenbei.", "takopi no genzai takopis original sin", "dn|kurz", "Takopi", "GKEH2G0X4"],
+["TO BE HERO X", "S", "Action|Sci-Fi|Drama", 8.4, 8.5, 11, "de", "24 Folgen", "In dieser Welt bekommen Helden ihre Kräfte vom Vertrauen der Menschen. Wer die Fans verliert, verliert auch seine Macht. Alle zwei Jahre wird der größte Held gesucht, „X“, und der Weg dorthin fordert große Opfer.", "Jede Heldengeschichte hat ihren eigenen Zeichenstil, mal 2D, mal 3D. Das ist Absicht.", "to be hero x", "", "TO BE HERO X", "GQWH0M1J3"],
+["Naruto", "S", "Action|Abenteuer", 8.0, 8.4, 176, "sub", "220 Folgen", "Der Waisenjunge Naruto trägt einen gefährlichen Fuchsdämon in sich und wird im Dorf gemieden. Er will Hokage werden, der stärkste Ninja des Dorfes. Der Anfang der großen Geschichte, die mit Naruto Shippuden weitergeht.", "Ab etwa Folge 136 kommen fast nur noch Füllfolgen. Dann am besten direkt mit Naruto Shippuden weitermachen.", "naruto ninja", "", "Naruto", "GY9PJ5KWR"],
+["Der Begründer des Diabolismus", "S", "Fantasy|Mystery|Drama", 8.2, 8.4, 3.7, "sub", "2 Staffeln · 23 Folgen", "Wei Wuxian, einst gefürchteter Meister der dunklen Künste, wird Jahre nach seinem Tod im Körper eines anderen wiedergeboren. An der Seite seines alten Rivalen Lan Wangji klärt er rätselhafte Fälle und stößt auf die Wahrheit über seine Vergangenheit.", "Chinesische Serie, nur mit Untertiteln.", "mo dao zu shi grandmaster of demonic cultivation founder of diabolism", "dn", "Der Begründer des Diabolismus", "GMEHME78W"],
+["Ranking of Kings", "S", "Fantasy|Abenteuer|Drama", 8.5, 8.3, 17, "de", "23 Folgen", "Prinz Bojji ist taub, klein und schwach, und niemand traut ihm zu, König zu werden. Mit Kage, einem Schattenwesen, findet er seinen ersten echten Freund. Herzlich und mutig, mit überraschend dunklen Wendungen.", "Der Kinderbuch-Look täuscht: Es wird stellenweise ziemlich düster.", "ousama ranking bojji kage", "herz", "Ranking of Kings", "G79H23W70"],
+["Berserk: Das Goldene Zeitalter – Memorial Edition", "S", "Action|Fantasy|Drama", 8.0, 8.3, 2.8, "sub", "13 Folgen", "Der Söldner Guts schließt sich der Bande der Falken an, angeführt vom charismatischen Griffith. Zwischen Schlachten, Freundschaft und Ehrgeiz bahnt sich ein Verrat an, der alles zerstört. Ein Klassiker der düsteren Fantasy.", "Sehr brutal. Zeigt nur den ersten großen Teil der Geschichte.", "berserk ougon jidai hen golden age", "kurz", "Berserk", "G24H1N8XX"],
+["Barakamon", "S", "Slice of Life|Comedy", 8.3, 8.2, 5.3, "sub", "12 Folgen", "Nach einem Wutausbruch wird der junge Kalligraf Handa auf eine abgelegene Insel geschickt. Dort stürmen ständig Dorfkinder in sein Haus, allen voran die wilde Naru. Warm, witzig und entspannend.", "", "barakamon handa naru", "chill|herz|kurz", "Barakamon", "GYMGD89VY"],
+["Heaven Official's Blessing", "S", "Fantasy|Romance|Action", 8.0, 8.2, 4.4, "sub", "2 Staffeln · 23 Folgen", "Der ehemalige Kronprinz Xie Lian steigt zum dritten Mal in den Himmel auf und wird dort ausgelacht. Weil ihn niemand mehr verehrt, muss er auf der Erde Geister jagen und trifft auf den geheimnisvollen Hua Cheng.", "Chinesische Serie, nur mit Untertiteln.", "tian guan ci fu", "herz", "Heaven Official's Blessing", "G79H23XX8"],
+["Planetes", "S", "Sci-Fi|Drama", 8.3, 8.1, 4.5, "sub", "26 Folgen", "Im Jahr 2075 sammelt eine kleine Crew Weltraummüll ein, der Satelliten und Raumschiffe bedroht. Die Neue, Ai, prallt auf den mürrischen Hachimaki, der von einem eigenen Raumschiff träumt. Realistische Raumfahrt mit viel Menschlichkeit.", "Startet gemächlich, wird ab der Mitte richtig stark.", "planetes weltraummuell", "herz", "Planetes", "G9VHN9Q14"],
+["Keep Your Hands Off Eizouken!", "S", "Comedy|Slice of Life", 8.2, 8.1, 2.5, "sub", "12 Folgen", "Drei Schülerinnen gründen einen Club, um ihren eigenen Anime zu machen: eine Träumerin, ein Model, das Figuren zeichnen will, und eine geschäftstüchtige Produzentin. Ihre Ideen werden direkt auf dem Bildschirm lebendig.", "", "eizouken ni wa te wo dasu na", "chill|kurz", "Keep Your Hands Off Eizouken", "GY0X54Q96"],
+["Akatsuki no Yona – Prinzessin der Morgendämmerung", "S", "Fantasy|Abenteuer|Romance", 8.2, 8.0, 7.1, "sub", "24 Folgen", "Prinzessin Yona lebt behütet im Palast, bis ihr Vater ermordet wird und sie mit ihrem Leibwächter Hak fliehen muss. Um ihr Königreich zu retten, sucht sie vier legendäre Drachenkrieger und wird dabei selbst zur Kämpferin.", "Endet offen, eine zweite Staffel gibt es bisher nicht.", "yona of the dawn akatsuki no yona", "herz", "Yona of the Dawn", "G6VN35J7R"],
+["Vivy: Fluorite Eye's Song", "S", "Sci-Fi|Action|Drama", 8.1, 7.9, 5.6, "sub", "13 Folgen", "Die KI-Sängerin Vivy will mit ihren Liedern Menschen glücklich machen. Da taucht eine KI aus der Zukunft auf: In hundert Jahren werden Maschinen die Menschheit auslöschen, und Vivy soll das verhindern. Spannend, mit tollen Kämpfen und Gefühl.", "", "vivy fluorite eyes song", "herz|dn|kurz", "Vivy Fluorite Eye's Song", "GMEHME4M4"],
+["Mobile Suit Gundam: Iron-Blooded Orphans", "S", "Sci-Fi|Action|Drama", 7.9, 7.9, 2.8, "sub", "2 Staffeln · 50 Folgen", "Auf dem Mars kämpfen Kindersoldaten in einem Sicherheitsdienst ums Überleben. Sie rebellieren gegen ihre Ausbeuter und gründen ihre eigene Truppe. Ein harter, erwachsener Gundam über Loyalität und Krieg.", "Kein Gundam-Vorwissen nötig.", "gundam tekketsu no orphans", "", "Iron-Blooded Orphans", "GYQ4QK446"],
+["Fairy Tail", "S", "Action|Fantasy|Abenteuer", 7.6, 7.8, 33, "de", "über 300 Folgen", "Die junge Magierin Lucy tritt der berüchtigten Gilde Fairy Tail bei. Mit dem feuerspeienden Natsu, dem Eismagier Gray und der strengen Erza erlebt sie Abenteuer, bei denen Freundschaft alles ist.", "Sehr lang. Füllfolgen kannst du überspringen.", "fairy tail natsu lucy", "", "Fairy Tail", "G6DQDD3WR"],
+["Hinamatsuri", "S", "Comedy|Slice of Life", 8.1, 7.8, 3.1, "sub", "12 Folgen", "Bei einem Yakuza landet ein Mädchen mit gewaltigen Psychokräften in einer Metallkapsel im Wohnzimmer. Hina zieht ein und stellt sein geordnetes Leben auf den Kopf. Eine der lustigsten Comedys überhaupt, mit überraschend rührenden Momenten.", "", "hinamatsuri hina nitta", "chill|kurz", "Hinamatsuri", "GR79PWJ16"],
+["Miss Kobayashi's Dragon Maid", "S", "Comedy|Fantasy|Slice of Life", 7.8, 7.7, 7, "de", "2 Staffeln · 25 Folgen", "Die Programmiererin Kobayashi rettet betrunken einem Drachen das Leben. Am nächsten Morgen steht die Drachendame Tohru als Hausmädchen vor ihrer Tür. Gemütlich, lustig und überraschend herzlich.", "", "kobayashi san chi no maid dragon tohru", "chill|herz", "Miss Kobayashi's Dragon Maid", "G6497Z43Y"],
+["Die Melancholie der Haruhi Suzumiya", "S", "Comedy|Sci-Fi|Mystery", 7.6, 7.7, 10, "de", "28 Folgen", "Die exzentrische Haruhi gründet einen Schulclub, um Aliens, Zeitreisende und Esper zu finden. Ihr Mitschüler Kyon merkt bald, dass genau solche Leute längst im Club sitzen und Haruhi die Welt verändern kann, ohne es zu wissen.", "Danach unbedingt den Film „Das Verschwinden der Haruhi Suzumiya“ schauen.", "suzumiya haruhi no yuuutsu melancholy sos brigade", "", "Haruhi Suzumiya", "GRGG7701R"],
+["Firefly Wedding", "S", "Romance|Historie|Drama", 7.9, 7.7, 0.36, "sub", "14 Folgen, läuft gerade", "Die todkranke Adelige Satoko will vor ihrem Tod noch eine gute Ehe eingehen. Dann wird sie vom skrupellosen Auftragskiller Shinpei entführt, und ausgerechnet ihm macht sie einen Heiratsantrag. Eine düstere Liebesgeschichte im Japan der 1920er Jahre.", "Ganz neu, die Wertung beruht noch auf wenigen Stimmen.", "hotaru no yomeiri", "herz", "Firefly Wedding", "GT00383999"],
+["GNOSIA", "S", "Sci-Fi|Mystery|Thriller", 7.5, 7.3, 0.83, "sub", "21 Folgen", "Auf einem Raumschiff versteckt sich ein Feind in Menschengestalt, und jeden Tag muss die Crew jemanden in den Kälteschlaf schicken. Yuri steckt in einer Zeitschleife und erlebt diesen Tag immer wieder. Wie das Spiel Werwolf, nur im All.", "", "gnosia werwolf zeitschleife", "dn", "GNOSIA", "GT00365132"],
+["Das Verschwinden der Haruhi Suzumiya", "F", "Sci-Fi|Mystery|Drama", 8.2, 8.0, 9.1, "de", "Film · 2 Std. 42 Min.", "Kurz vor Weihnachten wacht Kyon in einer Welt auf, in der Haruhi nie existiert hat und niemand ihn kennt. Er sucht verzweifelt nach einem Weg zurück. Gilt als bester Teil der Reihe.", "Setzt die Serie „Die Melancholie der Haruhi Suzumiya“ voraus.", "suzumiya haruhi no shoushitsu disappearance", "dn|kurz", "Das Verschwinden der Haruhi Suzumiya", "GDKHZEJVG"],
+["Night is Short, Walk on Girl", "F", "Comedy|Romance", 7.8, 7.5, 7.6, "de", "Film · 1 Std. 33 Min.", "Ein Student ist in eine junge Frau verliebt und versucht eine ganze Nacht lang, ihr in Kyoto „zufällig“ über den Weg zu laufen. Sie stolpert dabei von einem verrückten Abenteuer ins nächste. Bunt, schräg und voller Energie.", "Sehr eigener Zeichenstil, vom Regisseur von Ping Pong the Animation.", "yoru wa mijikashi aruke yo otome", "chill|kurz", "Night is Short Walk on Girl", "GP5HJ8QJP"],
+["The Cold Sato-san is Only Sweet to Me", "S", "Romance|Comedy", 7.8, 8.7, 0.11, "sub", "12 Folgen, läuft gerade", "Sato gilt als die unnahbarste Schülerin der Klasse. Als Oshio sie zufällig in einem Café trifft, merkt er, dass sie eigentlich schüchtern und tollpatschig ist. Fotos und Süßigkeiten bringen die beiden langsam zusammen.", "Ganz neu, die Wertung beruht noch auf sehr wenigen Stimmen.", "sato san only sweet", "chill|herz|kurz", "The Cold Sato-san is Only Sweet to Me", "GT00384014"],
+["PSYREN", "S", "Sci-Fi|Mystery|Thriller", 7.6, 7.4, 0.12, "de", "13 Folgen, läuft gerade", "Der Schüler Ageha findet eine rote Telefonkarte, kurz darauf verschwindet seine Kindheitsfreundin. Auf der Suche nach ihr gerät er in ein tödliches Spiel in einer verwüsteten Zukunft. Nach einem bekannten Manga.", "Ganz neu, die Wertung beruht noch auf wenigen Stimmen.", "psyren", "dn|kurz", "PSYREN", "GT00371866"]
 ];
 
 
@@ -692,7 +811,7 @@ const byImdb = [...items].sort((a, b) => (b.imdb ?? -1) - (a.imdb ?? -1) || (b.v
 const byAz = [...items].sort((a, b) => a.title.localeCompare(b.title, "de"));
 
 // Gespeicherte Daten (nur in diesem Browser)
-const KEY = { saved: "cr-top100-saved", seen: "cr-top100-seen", filters: "cr-top100-filters" };
+const KEY = { saved: "cr-top100-saved", seen: "cr-top100-seen", filters: "cr-top100-filters", install: "cr-top100-install-closed" };
 function load(k, fallback) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; } }
 function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 // Ältere Einträge (a0, a1, …) auf Titel umstellen
@@ -701,6 +820,8 @@ const migrate = arr => arr.map(x => /^a\d+$/.test(x) && DATA[+x.slice(1)] ? slug
 const known = new Set(items.map(it => it.id));
 let saved = new Set(migrate(load(KEY.saved, [])).filter(id => known.has(id)));
 let seen = new Set(migrate(load(KEY.seen, [])).filter(id => known.has(id)));
+// Gesehenes gehört nicht mehr auf die Merkliste (einmal aufräumen, falls beides markiert war)
+seen.forEach(id => saved.delete(id));
 store(KEY.saved, [...saved]); store(KEY.seen, [...seen]);
 const DEFAULTS = { type: "", sort: "mine", onlyDe: false, hideSeen: false, mood: "", view: "all", g2: "" };
 const FILTER_KEYS = ["type", "onlyDe", "hideSeen", "mood"];
@@ -756,7 +877,6 @@ const CR = {
   "Campfire Cooking in Another World": "GG5H5X3EE/campfire-cooking-in-another-world-with-my-absurd-skill",
   "Blue Exorcist": "G649PJ0JY/blue-exorcist",
   "One Piece Film: Red": "G5PHNMWX9/one-piece-movies",
-  "Steins;Gate": "GYWE7W5GY",
   "Attack on Titan": "GR751KNZY",
   "Vinland Saga": "GEXH3WKK0/vinland-saga",
   "Code Geass": "GY2P9ED0Y",
@@ -764,7 +884,6 @@ const CR = {
   "Die Tagebücher der Apothekerin": "G3KHEVDJ7",
   "Mob Psycho 100": "GY190DKQR",
   "Psycho-Pass": "GR75253JY",
-  "Attack on Titan: The Last Attack": "watch/GJWUQ7WGE",
   "Gintama": "GYQ4MKDZ6",
   "Demon Slayer: Kimetsu no Yaiba": "GY5P48XEY/demon-slayer-kimetsu-no-yaiba",
   "Demon Slayer: Infinity Castle": "G8DHV7809",
@@ -800,7 +919,6 @@ const CR = {
   "Gachiakuta": "GP5HJ84P7",
   "My Dress-Up Darling": "GQWH0M9N8",
   "Detektiv Conan": "G6JQVM3ER",
-  "Konosuba: Legend of Crimson": "watch/G6KE0J8E6",
   "Dragonball Super: Broly": "GMTE00019933",
   "Josie, der Tiger und die Fische": "G3KHEVQ95",
   "Classroom of the Elite": "GRVN8MNQY",
@@ -818,13 +936,10 @@ const CR = {
   "Tower of God": "G6J0G49DR",
   "Sword Art Online": "GR49G9VP6",
   "Death Note": "G6QWD3EE6/death-note",
-  "Mirai – Das Mädchen aus der Zukunft": "watch/GQJUGQWMW",
-  "Patema Inverted": "watch/GMKUXK7KJ",
   "In This Corner of the World": "GNVHKN9PW/in-this-corner-of-the-world",
-  "One Punch Man": "https://www.crunchyroll.com/one-punch-man",
-  "Mushishi": "https://www.crunchyroll.com/mushishi",
+  "One Punch Man": "G63K98PZ6/one-punch-man",
+  "My Teen Romantic Comedy SNAFU": "GYNQJ8GXY/my-teen-romantic-comedy-snafu",
   "Inuyasha": "G6DKW52DR/inuyasha",
-  "My Teen Romantic Comedy SNAFU": "https://www.crunchyroll.com/my-teen-romantic-comedy-snafu",
   "Lupin III.": "G6X01XXKY/lupin-the-third-part-1"
 };
 const crLinkOf = it => CR[it.key] || it.crLink;
@@ -948,7 +1063,7 @@ function card(it) {
       <div class="foot">
         <a class="btn cr" href="${crUrl(it)}" target="_blank" rel="noopener">${ICON.out}${crLinkOf(it) ? "Auf Crunchyroll öffnen" : "Auf Crunchyroll suchen"}</a>
         <button type="button" class="btn seen" id="v-${it.id}" data-id="${it.id}" data-act="seen" aria-pressed="${isSeen}">${ICON.seen}${isSeen ? "Gesehen" : "Schon gesehen"}</button>
-        <button type="button" class="btn save" id="s-${it.id}" data-id="${it.id}" data-act="save" aria-pressed="${isSaved}">${ICON.save}${isSaved ? "Gemerkt" : "Merken"}</button>
+        <button type="button" class="btn save" id="s-${it.id}" data-id="${it.id}" data-act="save" aria-pressed="${isSaved}"${isSeen ? " hidden" : ""}>${ICON.save}${isSaved ? "Gemerkt" : "Merken"}</button>
       </div>
     </li>`;
 }
@@ -1086,18 +1201,25 @@ function render() {
 function setMark(id, act, on) {
   const set = act === "seen" ? seen : saved;
   on ? set.add(id) : set.delete(id);
+  // Gesehen heißt: nicht mehr auf der Merkliste
+  const unsave = act === "seen" && on && saved.delete(id);
   // Erst den Knopf selbst umstellen (die Karte bleibt erhalten), das sieht man sofort.
   const b = document.getElementById((act === "seen" ? "v-" : "s-") + id);
   if (b) {
     b.setAttribute("aria-pressed", String(on));
     b.innerHTML = act === "seen" ? ICON.seen + (on ? "Gesehen" : "Schon gesehen") : ICON.save + (on ? "Gemerkt" : "Merken");
-    if (act === "seen") b.closest(".card").classList.toggle("is-seen", on);
+    if (act === "seen") {
+      b.closest(".card").classList.toggle("is-seen", on);
+      const s = document.getElementById("s-" + id);
+      if (s) { s.hidden = on; s.setAttribute("aria-pressed", "false"); s.innerHTML = ICON.save + "Merken"; }
+    }
   }
   // Speichern, Zähler und ggf. Liste neu filtern erst im nächsten Bild, damit der Knopf nicht hängt
   requestAnimationFrame(() => setTimeout(() => {
     store(act === "seen" ? KEY.seen : KEY.saved, [...set]);
+    if (unsave) store(KEY.saved, [...saved]);
     if (!b) return;
-    if ((act === "seen" && (state.hideSeen || state.view === "seen")) || (act === "save" && state.view === "saved")) { render(); return; }
+    if ((act === "seen" && (state.hideSeen || state.view === "seen" || (unsave && state.view === "saved"))) || (act === "save" && state.view === "saved")) { render(); return; }
     status(document.querySelectorAll("#list .card:not([hidden])").length);
     headFor();
   }, 0));
@@ -1106,8 +1228,24 @@ $("#list").addEventListener("click", e => {
   const b = e.target.closest("button[data-act]");
   if (!b) return;
   const id = b.dataset.id, act = b.dataset.act, on = !(act === "seen" ? seen : saved).has(id);
+  // Gesehen wieder entfernen nur nach Nachfrage, weil es den Fortschritt verändert
+  if (act === "seen" && !on) { askUnseen(id); return; }
+  if (act === "save" && seen.has(id)) return; // Gesehenes kann man nicht merken
   setMark(id, act, on);
 });
+const seenAsk = $("#seenAsk");
+let seenAskId = null;
+function askUnseen(id) {
+  const it = items.find(x => x.id === id);
+  $("#seenAskText").textContent = "„" + (it ? it.title : "Dieser Titel") + "“ zählt dann nicht mehr zu deinem Fortschritt.";
+  seenAskId = id; seenAsk.hidden = false;
+  $("#seenAskOk").focus({ preventScroll: true });
+}
+const closeSeenAsk = () => { seenAsk.hidden = true; seenAskId = null; };
+seenAsk.addEventListener("click", e => { if (e.target.closest("[data-close]")) closeSeenAsk(); });
+seenAsk.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !seenAsk.hidden) closeSeenAsk(); });
+$("#seenAskOk").addEventListener("click", () => { const id = seenAskId; closeSeenAsk(); if (id) setMark(id, "seen", false); });
 
 // Kleine Hinweise unten
 let toastT;
@@ -1126,23 +1264,76 @@ const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // Sichtbar zur Karte gleiten. Das Ziel wird in jedem Bild neu gemessen, weil Karten unterwegs erst gezeichnet werden und ihre Höhe ändern
 let pickAnim = 0;
-function glideTo(el) {
+function glideTo(el, done) {
   cancelAnimationFrame(pickAnim);
   const targetY = () => Math.max(0, Math.min(maxY(), getY() + el.getBoundingClientRect().top - Math.max(16, (viewH() - el.offsetHeight) / 2)));
-  if (reduce) { setY(targetY()); return; }
+  if (reduce) { setY(targetY()); if (done) done(); return; }
   const y0 = getY(), t0 = performance.now(), dur = Math.min(1100, 450 + Math.abs(targetY() - y0) / 30);
   const step = now => {
     const k = Math.min(1, (now - t0) / dur), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
     setY(Math.round(y0 + (targetY() - y0) * e));
     if (k < 1) pickAnim = requestAnimationFrame(step);
-    else pickAnim = requestAnimationFrame(() => { pickAnim = 0; if (Math.abs(targetY() - getY()) > 3) setY(targetY()); });
+    else pickAnim = requestAnimationFrame(() => { pickAnim = 0; if (Math.abs(targetY() - getY()) > 3) setY(targetY()); if (done) done(); });
   };
   pickAnim = requestAnimationFrame(step);
+}
+
+// Zufallstipp-Animation: Der Würfel rollt (Augen wechseln), danach wird auf der gewählten Karte die Wertung
+// wie ein Hanko-Stempel aufgedrückt. Mit „Bewegung reduzieren“ geht es ohne Animation direkt zur Karte.
+const DICE = { 1: [[12, 12]], 2: [[8.2, 8.2], [15.8, 15.8]], 3: [[8.2, 8.2], [12, 12], [15.8, 15.8]],
+  4: [[8.2, 8.2], [15.8, 8.2], [8.2, 15.8], [15.8, 15.8]], 5: [[8.2, 8.2], [15.8, 8.2], [12, 12], [8.2, 15.8], [15.8, 15.8]],
+  6: [[8.2, 7.6], [8.2, 12], [8.2, 16.4], [15.8, 7.6], [15.8, 12], [15.8, 16.4]] };
+const diceSvg = document.querySelector(".pick-ico svg");
+// Die Augen liegen in einer eigenen Gruppe, damit sie beim Rollen gemeinsam weich aus- und einblenden
+const pips = document.createElementNS("http://www.w3.org/2000/svg", "g");
+diceSvg.querySelectorAll("circle").forEach(c => pips.append(c));
+diceSvg.append(pips);
+let diceFace = 5, rolling = false;
+const setFace = n => {
+  pips.replaceChildren(...DICE[n].map(([x, y]) => {
+    const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    c.setAttribute("cx", x); c.setAttribute("cy", y); c.setAttribute("r", "1.6"); c.setAttribute("fill", "currentColor");
+    return c;
+  }));
+};
+function rollDice(done) {
+  if (reduce || !diceSvg.animate) { done(); return; }
+  rolling = true;
+  diceSvg.style.animation = "none";
+  const roll = diceSvg.animate([
+    { transform: "translateY(0) rotate(0deg) scale(1)", offset: 0 },
+    { transform: "translateY(-7px) rotate(260deg) scale(1.18)", offset: .3 },
+    { transform: "translateY(0) rotate(560deg) scale(1)", offset: .62 },
+    { transform: "translateY(-3px) rotate(700deg) scale(1.06)", offset: .78 },
+    { transform: "translateY(0) rotate(714deg) scale(1)", offset: .9 },
+    { transform: "translateY(0) rotate(720deg) scale(1)", offset: 1 }
+  ], { duration: 750, easing: "cubic-bezier(.2,.7,.3,1)" });
+  // Während der schnellen Drehung verschwimmen die Augen (kein hartes Umspringen), die neue Zahl kommt erst,
+  // wenn sie fast unsichtbar sind, und blendet dann weich ein
+  pips.animate([{ opacity: 1 }, { opacity: .15, offset: .2 }, { opacity: .15, offset: .58 }, { opacity: 1, offset: .86 }, { opacity: 1 }],
+    { duration: 750, easing: "ease-in-out" });
+  const sw = setTimeout(() => {
+    let n; do { n = 1 + Math.floor(Math.random() * 6); } while (n === diceFace);
+    diceFace = n; setFace(n);
+  }, 400);
+  roll.onfinish = roll.oncancel = () => { clearTimeout(sw); rolling = false; done(); };
+}
+function pressStamp(el) {
+  if (reduce || !el.animate) return;
+  const st = el.querySelector(".stamp");
+  if (st) st.animate([
+    { transform: "scale(1.9) rotate(-28deg)", opacity: 0, offset: 0 },
+    { transform: "scale(.86) rotate(-6deg)", opacity: 1, offset: .55 },
+    { transform: "scale(1.06) rotate(-9deg)", opacity: 1, offset: .75 },
+    { transform: "scale(1) rotate(-8deg)", opacity: 1, offset: 1 }
+  ], { duration: 520, easing: "cubic-bezier(.3,.7,.2,1)" });
+  el.animate([{ transform: "scale(1)" }, { transform: "scale(1.015)", offset: .5 }, { transform: "scale(1)" }], { duration: 520, easing: "ease-out" });
 }
 
 // Zufallstipp: bevorzugt hoch bewertete Titel, die noch nicht gesehen sind
 let lastPick = null, pickT;
 $("#pick").addEventListener("click", () => {
+  if (rolling) return; // während der Würfel rollt, zählt ein zweiter Tipp nicht
   // Der Zufallstipp wählt immer aus allen Titeln: von einem anderen Reiter aus geht es dafür zu Alle
   if (state.view !== "all") { state.view = "all"; state.g2 = ""; sync(); render(); }
   let pool = filtered().filter(it => !seen.has(it.id));
@@ -1159,11 +1350,13 @@ $("#pick").addEventListener("click", () => {
   const btn = document.getElementById("v-" + pick.id);
   if (!btn) return;
   const el = btn.closest(".card");
-  document.querySelectorAll(".card.pick").forEach(c => c.classList.remove("pick"));
-  el.classList.add("pick");
-  glideTo(el);
-  toast("Wie wär's mit: " + pick.title + "?");
-  clearTimeout(pickT); pickT = setTimeout(() => el.classList.remove("pick"), 6000);
+  rollDice(() => {
+    document.querySelectorAll(".card.pick").forEach(c => c.classList.remove("pick"));
+    el.classList.add("pick");
+    glideTo(el, () => pressStamp(el));
+    toast("Wie wär's mit: " + pick.title + "?");
+    clearTimeout(pickT); pickT = setTimeout(() => el.classList.remove("pick"), 6000);
+  });
 });
 
 // Nach oben
@@ -1323,22 +1516,19 @@ document.addEventListener("touchmove", e => { if (e.touches.length > 1) e.preven
 // Schon beim Aufsetzen des zweiten Fingers sperren, bevor das iPhone eine Zoom-Geste daraus macht
 document.addEventListener("touchstart", e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 
-// Anleitung: als App auf den Homescreen (nur im Handy-Browser, nicht in Claude)
+// Hinweis „Als App speichern“ ganz oben (nur im Handy-Browser, nicht in Claude und nicht in der App)
 (() => {
-  try { if (window.self !== window.top) return; } catch (e) { return; }
+  if (!document.documentElement.classList.contains("inst")) return; // im Kopf der Seite entschieden
   const ua = navigator.userAgent;
   const ipad = /iPad/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   const ios = ipad || /iPhone|iPod/.test(ua);
   const android = /Android/.test(ua);
-  const app = navigator.standalone === true || matchMedia("(display-mode: standalone)").matches;
-  if ((!ios && !android) || app) return;
   const SHARE = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.8v8.6M5.2 4.6L8 1.8l2.8 2.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.6 7H4.4A1.4 1.4 0 0 0 3 8.4v5.2A1.4 1.4 0 0 0 4.4 15h7.2a1.4 1.4 0 0 0 1.4-1.4V8.4A1.4 1.4 0 0 0 11.6 7h-1.2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
   const PLUS = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 5.2v5.6M5.2 8h5.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
   const k = t => '<span class="key">' + t + '</span>';
   let steps;
   if (ios) {
     const safari = !/CriOS|FxiOS|EdgiOS|OPiOS/.test(ua);
-    $("#instTitle").textContent = ipad ? "Als App aufs iPad" : "Als App aufs iPhone";
     const MENU = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 4h11M2.5 8h11M2.5 12h7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
     const MORE = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     steps = [
@@ -1350,7 +1540,7 @@ document.addEventListener("touchstart", e => { if (e.touches.length > 1) e.preve
       "Oben rechts auf " + k("Hinzufügen") + " tippen",
     ];
   } else {
-    $("#instTitle").textContent = "Als App aufs Handy";
+    $("#instTitle").textContent = "Zum Startbildschirm hinzufügen";
     steps = [
       "Oben rechts auf " + k("⋮") + " tippen",
       k("Zum Startbildschirm hinzufügen") + " wählen",
@@ -1358,13 +1548,60 @@ document.addEventListener("touchstart", e => { if (e.touches.length > 1) e.preve
     ];
   }
   $("#instSteps").innerHTML = steps.map(s => "<li><span>" + s + "</span></li>").join("");
-  const box = $("#install");
-  box.hidden = false;
-  $("#instClose").addEventListener("click", () => { box.hidden = true; });
+  if (android) $("#askText").textContent = "Du kannst die Liste auch später noch als App speichern: über ⋮ und „Zum Startbildschirm hinzufügen“.";
+  const banner = $("#ibanner"), sheet = $("#instSheet"), ask = $("#instAsk");
+  const open = el => { el.hidden = false; const b = el.querySelector(".ov-btn.main"); if (b) b.focus({ preventScroll: true }); };
+  const close = el => { el.hidden = true; };
+  [sheet, ask].forEach(el => el.addEventListener("click", e => { if (e.target.closest("[data-close]")) close(el); }));
+  // Wischen auf dem abgedunkelten Hintergrund soll die Liste dahinter nicht bewegen
+  [sheet, ask].forEach(el => el.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false }));
+  document.addEventListener("keydown", e => { if (e.key === "Escape") { close(sheet); close(ask); } });
+  $("#ibSave").addEventListener("click", () => open(sheet));
+  $("#ibClose").addEventListener("click", () => open(ask));
+  $("#askHide").addEventListener("click", () => {
+    store(KEY.install, true);
+    close(ask);
+    document.documentElement.classList.remove("inst");
+    banner.remove();
+  });
 })();
+
+// Solange die App (bzw. der Safari-Tab) offen ist, bleibt alles, wie es war: Reiter, Stelle in der Liste, offenes Genre und Suche.
+// Das iPhone lädt Web-Apps im Hintergrund oft einfach neu (z. B. nach einem Wechsel zu Crunchyroll), dann geht es genau dort weiter.
+// Erst wenn man die App schließt, startet sie wieder oben bei Alle. Der Sitzungsspeicher (sessionStorage) hält genau so lange.
+const SESSION = "cr-top100-session";
+const saveSession = () => {
+  if (!SC) return;
+  try { sessionStorage.setItem(SESSION, JSON.stringify({ view: state.view, g2: state.g2, q: $("#q").value, y: tabPending ? null : getY(), mem: scrollMem })); } catch (e) {}
+};
+const resume = (() => {
+  if (!SC) return null;
+  try { const r = JSON.parse(sessionStorage.getItem(SESSION) || "null"); return r && ["all", "genres", "saved", "seen"].includes(r.view) ? r : null; } catch (e) { return null; }
+})();
+if (resume) {
+  state.view = resume.view;
+  state.g2 = GENRES.includes(resume.g2) ? resume.g2 : "";
+  if (typeof resume.q === "string" && resume.q) { $("#q").value = resume.q; state.q = resume.q.trim().toLowerCase(); }
+  if (resume.mem && typeof resume.mem === "object") Object.keys(resume.mem).forEach(k => { if (typeof resume.mem[k] === "number") scrollMem[k] = resume.mem[k]; });
+}
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") saveSession(); });
+addEventListener("pagehide", saveSession);
+// Zusätzlich kurz nach jedem Rollen und Tippen merken, falls das iPhone die Seite ohne Vorwarnung beendet
+let saveT = 0;
+const saveSoon = () => { clearTimeout(saveT); saveT = setTimeout(saveSession, 400); };
+if (SC) { SC.addEventListener("scroll", saveSoon, { passive: true }); document.addEventListener("click", saveSoon); $("#q").addEventListener("input", saveSoon); }
 
 sync();
 render();
+if (resume) {
+  // Stelle setzen, solange die Seite beim Öffnen noch verdeckt ist (siehe Kopf der Seite). So springt nichts sichtbar.
+  const y = typeof resume.y === "number" ? resume.y : memKey() === "genres:" ? 0 : scrollMem[memKey()];
+  if (y != null) {
+    setY(y); const set = getY();
+    // Falls die Schriften noch nicht ganz geladen waren, danach noch einmal genau an dieselbe Stelle
+    if (document.fonts && document.fonts.status !== "loaded") document.fonts.ready.then(() => { if (getY() === set) setY(y); });
+  }
+}
 onScroll();
 </script>
 
