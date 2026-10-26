@@ -218,6 +218,7 @@ main { padding-block: 18px calc(max(16px, env(safe-area-inset-bottom, 0px)) + 76
 .more svg { width: 12px; height: 12px; transition: transform .2s ease; }
 .more[aria-expanded="true"] svg { transform: rotate(180deg); }
 .more:active { opacity: .7; }
+.more[hidden] { display: none; }
 .foot { flex-wrap: nowrap; align-items: stretch; }
 .foot .btn.seen, .foot .btn.save { width: 42px; padding: 0; justify-content: center; flex: none; }
 .foot .btn.seen svg, .foot .btn.save svg { width: 16px; height: 16px; }
@@ -568,7 +569,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V87</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V89</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1357,16 +1358,22 @@ function applyCovers() {
     if (u && img && !img.getAttribute("src")) img.src = u;
   });
 }
+// Mehrere Wege pro Titel, nacheinander: MyAnimeList-Nummer, fester Suchname, Titel, japanischer Suchbegriff
+const coverWays = it => {
+  const w = [];
+  if (ID_MAL[it.key]) w.push({ mal: ID_MAL[it.key] });
+  [COVER_Q[it.key], it.key, it.key.split(" – ")[0], it.sq].forEach(q => { if (q && !w.some(x => x.q === q)) w.push({ q }); });
+  return w;
+};
 async function loadCovers() {
-  // 1. Runde: Titel (oder fester Suchname), 2. Runde für nicht Gefundene: japanischer Suchbegriff aus der Liste
-  for (const round of [1, 2]) {
-    const need = items.filter(it => round === 1 ? !(it.key in covers) : covers[it.key] === "" && it.sq);
+  for (let round = 0; round < 5; round++) {
+    const need = items.filter(it => !coverOf(it) && coverWays(it)[round]);
     for (let i = 0; i < need.length; i += 15) {
       const part = need.slice(i, i + 15);
       const query = "query{" + part.map((it, j) => {
-        if (round === 1 && ID_MAL[it.key]) return `m${j}:Page(perPage:1){media(idMal:${ID_MAL[it.key]},type:ANIME){coverImage{large}}}`;
-        const q = round === 1 ? (COVER_Q[it.key] || it.key) : it.sq;
-        return `m${j}:Page(perPage:1){media(search:${JSON.stringify(q)},type:ANIME,${it.type === "F" ? "format:MOVIE" : "format_not:MOVIE"},sort:[SEARCH_MATCH,POPULARITY_DESC]){coverImage{large}}}`;
+        const w = coverWays(it)[round];
+        if (w.mal) return `m${j}:Page(perPage:1){media(idMal:${w.mal},type:ANIME){coverImage{large}}}`;
+        return `m${j}:Page(perPage:1){media(search:${JSON.stringify(w.q)},type:ANIME,${it.type === "F" ? "format:MOVIE" : "format_not:MOVIE"},sort:[SEARCH_MATCH,POPULARITY_DESC]){coverImage{large}}}`;
       }).join(" ") + "}";
       try {
         const r = await fetch("https://graphql.anilist.co", { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ query }) });
@@ -1375,7 +1382,7 @@ async function loadCovers() {
         if (!js || !js.data) return;
         part.forEach((it, j) => {
           const m = js.data["m" + j] && js.data["m" + j].media && js.data["m" + j].media[0], u = m && m.coverImage && m.coverImage.large;
-          covers[it.key] = u ? u : round === 1 ? "" : "-";
+          covers[it.key] = u || "";
         });
         store(KEY_COV, covers); applyCovers();
       } catch (e) { return; }
@@ -1384,6 +1391,21 @@ async function loadCovers() {
 }
 function buildCards() {
   $("#list").innerHTML = byMine.map(card).join("");
+  // „Mehr lesen“ nur, wenn wirklich mehr als eine Zeile fehlt: Passt der Text in 4 Zeilen, wird er ganz gezeigt.
+  // Gemessen wird erst, wenn eine Karte in die Nähe des Bildschirms kommt (sonst hat sie keine Breite).
+  const fitDesc = el => {
+    const d = el.querySelector(".desc"), m = el.querySelector(".more");
+    if (!d || !m || m.getAttribute("aria-expanded") === "true" || !el.offsetParent) return;
+    d.classList.remove("clamp");
+    const cs = getComputedStyle(d), lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.45;
+    const fits = d.offsetHeight / lh < 4.5;
+    d.classList.toggle("clamp", !fits); m.hidden = fits;
+  };
+  const descIO = "IntersectionObserver" in window ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) fitDesc(e.target); }), { rootMargin: "900px 0px" }) : null;
+  $("#list").querySelectorAll(".card").forEach(el => { if (el.querySelector(".more")) { if (descIO) descIO.observe(el); } });
+  const refit = () => $("#list").querySelectorAll(".card").forEach(el => { if (el.querySelector(".more")) fitDesc(el); });
+  let rw = innerWidth; addEventListener("resize", () => { if (innerWidth !== rw) { rw = innerWidth; refit(); } });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
   $("#list").addEventListener("click", e => {
     const m = e.target.closest(".more"); if (!m) return;
     const d = m.previousElementSibling, open = d.classList.toggle("clamp") === false;
