@@ -159,11 +159,10 @@ h1 .red { color: var(--hanko); }
 .seg button { background: none; border: 0; padding: 8px 12px; }
 .seg button + button { border-left: 1px solid var(--line); }
 .seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
-/* Priscilla-Modus: aktive Filter dezent rosa (nur Rahmen und leichter Schimmer) */
-html.prisc .seg button[aria-pressed="true"] { background: rgba(255,111,168,.16); color: #FFC2DB; box-shadow: inset 0 0 0 1.5px #FF6FA8; border-radius: 7px; }
-html.prisc .seg button + button { border-left-color: transparent; } /* keine Trennlinien, damit beim Umschalten nichts aufploppt */
-html.prisc .toggle[aria-pressed="true"], html.prisc .panel .toggle[aria-pressed="true"], html.prisc .chip[aria-pressed="true"] { background: rgba(255,111,168,.16); border-color: #FF6FA8; color: #FFC2DB; }
-html.prisc .chip[aria-pressed="true"] .mc { color: #FFC2DB; opacity: .7; }
+/* Priscilla-Modus: aktive Filter gefüllt wie im normalen Modus, nur in Rosa statt Weiß */
+html.prisc .seg button[aria-pressed="true"] { background: #FF8FC4; color: #2A0A18; }
+html.prisc .toggle[aria-pressed="true"], html.prisc .panel .toggle[aria-pressed="true"], html.prisc .chip[aria-pressed="true"] { background: #FF8FC4; border-color: #FF8FC4; color: #2A0A18; }
+html.prisc .chip[aria-pressed="true"] .mc { color: #2A0A18; opacity: .7; }
 html.prisc .badge { background: var(--hanko); color: #2A0A18; }
 select { background: var(--sheet); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; max-width: 100%; }
 .toggle {
@@ -744,7 +743,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V177</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V178</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -837,15 +836,10 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
     </div>
     <p class="lg-msg" id="lgMsg" hidden></p>
     <button type="button" class="ov-btn" id="lgClose" data-close>Später</button>
-    <div class="lg-links" id="lgFoot" hidden><button type="button" class="lg-link" id="lgResetSeen">Gesehen zurücksetzen</button><button type="button" class="lg-link" id="lgLogout">Abmelden</button></div>
-    <div class="lg-form" id="lgResetAsk" hidden>
-      <p class="sub" id="lgResetTxt" style="margin:0"></p>
-      <div class="ov-row"><button type="button" class="ov-btn" id="lgResetNo">Abbrechen</button><button type="button" class="ov-btn danger" id="lgResetYes">Zurücksetzen</button></div>
-    </div>
+    <div class="lg-links" id="lgFoot" style="justify-content:center" hidden><button type="button" class="lg-link" id="lgLogout">Abmelden</button></div>
     <div class="lg-form" id="lgChoice" hidden>
       <p class="sub" id="lgChoiceTxt" style="margin:0"></p>
       <button type="button" class="ov-btn main" data-pick="account">Konto behalten</button>
-      <button type="button" class="ov-btn" data-pick="merge">Beides zusammenlegen</button>
       <button type="button" class="ov-btn" data-pick="device">Dieses Gerät übernehmen</button>
     </div>
   </div>
@@ -2154,13 +2148,19 @@ const rankOf = p => { const n = items.filter(it => seen.has(it.id) && (!p || isR
 const rankAck = Object.assign({ n: rankOf(false), p: prisc ? rankOf(true) : 0 }, load(KEY_RACK, {}) || {});
 store(KEY_RACK, rankAck);
 let rankQ = [];
+// Das Rang-Fenster kommt erst, wenn die Liste stillsteht (nicht mitten ins Scrollen)
+function whenIdle(fn) {
+  const quiet = () => Date.now() - lastScroll > 450 && !touching;
+  if (quiet()) return fn();
+  const t = setInterval(() => { if (quiet()) { clearInterval(t); fn(); } }, 150);
+}
 function checkRanks() {
   const k = prisc ? "p" : "n", cur = rankOf(prisc), from = rankAck[k];
   if (cur < from) { rankAck[k] = cur; store(KEY_RACK, rankAck); }
   if (cur <= from) return;
   rankAck[k] = cur; store(KEY_RACK, rankAck);
   for (let i = from + 1; i <= cur; i++) rankQ.push(i);
-  if ($("#rankUp").hidden) rankUp(rankQ.shift());
+  if ($("#rankUp").hidden) whenIdle(() => { if ($("#rankUp").hidden && rankQ.length) rankUp(rankQ.shift()); });
 }
 function renderProg() {
   const box = $("#prog"), on = state.view === "seen";
@@ -2298,10 +2298,10 @@ function rankUp(ri) {
     card.animate([{ transform: "scale(.96)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 220, easing: "ease-out" });
     $("#ruSt").animate([{ transform: "scale(.85)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 300, delay: 120, easing: "ease-out", fill: "backwards" });
   }
-  // Nicht aus Versehen wegtippen: Schließen nur mit OK, und OK geht erst nach 1,5 Sekunden
+  // Nicht aus Versehen wegtippen: Schließen nur mit OK, und OK geht erst nach 1 Sekunde
   const ok = $("#ruOk"), close = () => { box.hidden = true; const nx = rankQ.shift(); if (nx != null) setTimeout(() => rankUp(nx), 250); };
   ok.disabled = true; clearTimeout(rankUp.t);
-  rankUp.t = setTimeout(() => { ok.disabled = false; }, 1500);
+  rankUp.t = setTimeout(() => { ok.disabled = false; }, 1000);
   box.onclick = e => { if (e.target.id === "ruOk" && !ok.disabled) close(); };
 }
 function setMark(id, act, on) {
@@ -2622,7 +2622,13 @@ const placeLens = (() => {
 })();
 
 // Wischen ist kein Tippen: Genre-Kacheln und Karten-Knöpfe reagieren nur, wenn der Finger still war und die Seite nicht gescrollt hat
-let touchInfo = null, lastScroll = 0;
+let touchInfo = null, lastScroll = 0, touching = false;
+document.addEventListener("touchstart", () => { touching = true; }, { passive: true });
+document.addEventListener("touchend", e => { if (!e.touches.length) touching = false; }, { passive: true });
+document.addEventListener("touchcancel", e => { if (!e.touches.length) touching = false; }, { passive: true });
+// Solange das Rang-Fenster offen ist, bewegt sich die Liste dahinter nicht
+$("#rankUp").addEventListener("touchmove", e => { if (e.cancelable) e.preventDefault(); }, { passive: false });
+$("#rankUp").addEventListener("wheel", e => e.preventDefault(), { passive: false });
 scrollEl.addEventListener("scroll", () => { lastScroll = Date.now(); }, { passive: true });
 document.addEventListener("touchstart", e => {
   const t = e.touches[0];
@@ -2892,10 +2898,9 @@ function acctUi() {
   acctBtn.classList.toggle("on", !!me); acctBtn.classList.toggle("pic", !!(me && me.av));
   acctBtn.setAttribute("aria-label", me ? "Konto: " + me.name : "Anmelden");
   acctBtn.classList.toggle("warn", !!me && syncSt === "err");
-  const ed = !!me && lgEditing, ch = !!user && !!choice, ra = !!me && resetAsk && !ed && !ch;
+  const ed = !!me && lgEditing, ch = !!user && !!choice, ra = false;
   $("#lgOutBox").hidden = !!me; $("#lgInBox").hidden = !me || ed || ch || ra; $("#peBox").hidden = !ed || ch;
-  $("#lgFoot").hidden = !me || ed || ch || ra; $("#lgResetAsk").hidden = !ra; $("#lgChoice").hidden = !ch;
-  if (ra) $("#lgResetTxt").textContent = `Alle ${seen.size} als gesehen markierten Animes werden auf allen Geräten wieder auf „nicht gesehen“ gesetzt. Dein Rang fängt von vorn an.`;
+  $("#lgFoot").hidden = !me || ed || ch; $("#lgChoice").hidden = !ch;
   if (ch) {
     const z = (a, w) => `${a} ${w}`;
     $("#lgChoiceTxt").innerHTML = `Auf diesem Gerät: <b>${z(choice.here[0], "gesehen")}</b>, ${z(choice.here[1], "gemerkt")}<br>In deinem Konto: <b>${z(choice.there[0], "gesehen")}</b>, ${z(choice.there[1], "gemerkt")}`;
@@ -2903,7 +2908,7 @@ function acctUi() {
   $("#lgSub").hidden = !!me;
   // Passwort vergessen: eigene Ansicht nur mit E-Mail-Feld; nach dem Abschicken nur noch „Zur Anmeldung“
   const rs = lgReset && !me, done = rs && lgSent;
-  $("#lgTitle").innerHTML = ch ? "Welche Liste soll gelten?" : ra ? "Gesehen zurücksetzen?" : done ? '<span class="lg-ok">✓</span> E-Mail ist unterwegs' : rs ? "Passwort zurücksetzen" : ed ? "Profil bearbeiten" : "Konto";
+  $("#lgTitle").innerHTML = ch ? "Welche Liste soll gelten?" : done ? '<span class="lg-ok">✓</span> E-Mail ist unterwegs' : rs ? "Passwort zurücksetzen" : ed ? "Profil bearbeiten" : "Konto";
   $("#lgSub").textContent = done ? `Wir haben dir einen Link an ${lgSentTo} geschickt. Damit legst du ein neues Passwort fest. Schau auch im Spam-Ordner nach.`
     : rs ? "Gib deine E-Mail-Adresse ein. Wir schicken dir einen Link, mit dem du ein neues Passwort festlegst."
     : "Melde dich an, damit Gesehen, Gemerkt und dein Rang gesichert sind und auf Handy und PC gleich bleiben.";
@@ -2991,14 +2996,6 @@ async function openAcct() {
 $("#lgChoice").addEventListener("click", e => {
   const b = e.target.closest("[data-pick]"); if (!b || !user) return;
   firstPick = b.dataset.pick; choice = null; acctUi(); acctSync();
-});
-$("#lgResetSeen").addEventListener("click", () => { resetAsk = true; acctUi(); });
-$("#lgResetNo").addEventListener("click", () => { resetAsk = false; acctUi(); });
-$("#lgResetYes").addEventListener("click", () => {
-  resetAsk = false;
-  applyMarks(new Set(), new Set(saved)); // Knöpfe und Liste anpassen, Rang neu berechnen
-  if (onMarks) onMarks(); // im Konto sichern, damit es auf allen Geräten gilt
-  acctUi(); toast("Gesehen zurückgesetzt");
 });
 const closeAcct = () => { acctOv.hidden = true; document.activeElement && document.activeElement.blur && document.activeElement.blur(); };
 acctBtn.addEventListener("click", openAcct);
