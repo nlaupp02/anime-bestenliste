@@ -439,6 +439,10 @@ html:not(.prisc) .pick-btn { background: linear-gradient(100deg, #F05A50, #F4752
 }
 .share-btn svg { width: 13px; height: 13px; }
 .card { scroll-margin-top: 20px; }
+/* Handy: Karten außerhalb des Bildschirms werden nicht gezeichnet, bis man hinscrollt. So geht der Wechsel zu „Alle“ ohne Hänger */
+.app #list > .card { content-visibility: auto; contain-intrinsic-size: auto 340px; }
+/* Beim ersten Anzeigen einmal alle Karten zeichnen, damit sich das iPhone ihre echte Höhe merkt (sonst springt die Liste beim Hochscrollen) */
+.app #list.cvwarm > .card { content-visibility: visible; }
 .card.pick { outline: 3px solid var(--hanko); outline-offset: 3px; }
 html:not(.prisc) .card.pick { outline-color: #F47521; } /* Orange wie „Crunchyroll“ oben und der Würfel-Knopf */
 .totop {
@@ -629,7 +633,9 @@ html.boot *, html.boot *::before, html.boot *::after { transition: none !importa
    So reagiert die Leiste sofort, auch während die Liste noch nachrollt (wie bei iPhone-Apps). Die Seite selbst rollt nie,
    deshalb springt auch die Safari-Leiste unten nicht mehr. */
 html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: none; }
-.app #sc { position: absolute; inset: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }
+.app #sc { position: absolute; inset: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: contain; scrollbar-width: none; }
+/* Kein Scrollbalken am rechten Rand (zum Zurückspringen gibt es den Pfeil nach oben) */
+.app #sc::-webkit-scrollbar { display: none; width: 0; height: 0; }
 /* Der Scrollbereich ist bewusst nicht „fest“ (fixed): Feste Bereiche am Bildschirmrand überdeckt das iPhone dort
    mit einer einfarbigen Fläche (die blauen Balken).
    Safari (nicht als App) zeigt die Seite auch unter der Uhr oben und unter seiner Leiste unten. Dafür reicht der
@@ -676,6 +682,7 @@ html.prisc .acct.on { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); col
 .acct.warn::after { content: ""; position: absolute; top: 0; right: 0; width: 10px; height: 10px; border-radius: 50%; background: #F0C064; border: 2px solid var(--paper); }
 @media (min-width: 1400px) and (hover: hover) and (pointer: fine) { html:not(.app) header.top { position: relative; } html:not(.app) .eyebrow { position: static; } html:not(.app) .acct { top: 24px; margin-top: 0; } }
 .app .top.sub .vtitle { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.app header.top:not([data-v="seen"]) .acct { display: none; } /* App: Konto nur bei Gesehen (dort ist der Rang), am PC überall oben rechts */
 .vtitle .acct { position: static; margin-top: 0; flex: none; font-family: var(--f-body); line-height: 1; }
 .lg-card { gap: 12px; }
 .lg-card .sub { margin: 2px 0 0; color: var(--muted); font-size: 13.5px; line-height: 1.4; }
@@ -764,7 +771,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
     <p class="favg" id="favg" hidden></p>
     <div class="gbar" id="gbar" hidden><button type="button" class="gback" id="gback">← Alle Genres</button><h3 id="gtitle"></h3></div>
     <div class="tiles" id="tiles" hidden></div>
-    <ol class="grid" id="list"></ol>
+    <ol class="grid cvwarm" id="list"></ol>
     <ul class="shelf" id="shelf" hidden></ul>
     <p class="empty" id="empty" hidden>Kein Titel passt zu diesen Filtern. Setz einzelne Filter zurück oder leere die Suche.</p>
   </main>
@@ -1916,13 +1923,22 @@ function headFor() {
   const top = document.querySelector("header.top"), sub = state.view !== "all";
   top.classList.toggle("sub", sub);
   top.classList.toggle("nopick", sub);
+  top.dataset.v = state.view;
   $("#vtText").textContent = { genres: "Genres", saved: "Gemerkt", seen: "Gesehen" }[state.view] || "";
   // Konto-Knopf: in der App auf jedem Reiter oben rechts – bei Alle in der Stand-Zeile, sonst neben dem großen Titel
   const ab = document.getElementById("acct"), host = sub && document.documentElement.classList.contains("app") ? $("#vtitle") : top.querySelector(".eyebrow");
   if (ab && ab.parentNode !== host) host === top.querySelector(".eyebrow") ? host.prepend(ab) : host.append(ab);
 }
 // Die Karten werden nur einmal gebaut und danach nur ein- und ausgeblendet. So geht der Reiterwechsel schneller.
-let cardEls = null;
+let cardEls = null, cvWarm = true;
+// Alle Karten einmal ganz zeichnen, damit die gemerkten Höhen wieder stimmen (nach dem Start, nach Schrift-Laden oder geänderter Breite)
+function cvRewarm() {
+  const L = document.getElementById("list");
+  if (!document.documentElement.classList.contains("app")) return;
+  if (L.hidden) { cvWarm = true; return; }
+  cvWarm = false; L.classList.add("cvwarm");
+  requestAnimationFrame(() => requestAnimationFrame(() => L.classList.remove("cvwarm")));
+}
 // Cover von AniList (freie Anime-Datenbank). Gesucht wird einmal nach dem Titel, gespeichert wird nur die Bildadresse.
 // Die Bilder selbst lädt das iPhone erst, wenn die Karte ins Bild kommt. Geht AniList nicht (z. B. ohne Netz), bleibt alles wie vorher.
 const KEY_COV = "cr-top100-covers-v1";
@@ -2047,6 +2063,8 @@ function buildCards() {
       if (!m || m.getAttribute("aria-expanded") === "true") return;
       todo.push([it, el, m, el.offsetParent !== null]);
     });
+    const state0 = () => todo.map(([, el, m]) => (el.querySelector(".desc").classList.contains("clamp") ? 1 : 0) + (m.hidden ? 2 : 0)).join("");
+    const before = state0();
     todo.forEach(([it, el, m, vis]) => {
       const n = lineCount(it.desc, w);
       if (n <= 3 || n >= 6 || !vis) set(el, m, n <= 4); else close.push([el, m]);
@@ -2054,6 +2072,7 @@ function buildCards() {
     close.forEach(([el]) => el.querySelector(".desc").classList.remove("clamp"));
     const hs = close.map(([el]) => el.querySelector(".desc").offsetHeight);
     close.forEach(([el, m], i) => set(el, m, hs[i] / lh < 4.5));
+    if (state0() !== before) cvRewarm(); // Kartenhöhen haben sich geändert: neu merken
   };
   window.fitAll = fitAll;
   addEventListener("resize", () => requestAnimationFrame(fitAll));
@@ -2096,7 +2115,7 @@ function renderProg() {
   $("#progRank").textContent = r[3];
   $("#progTitle").textContent = prisc ? `${n} von ${total} Romanzen` : `${n} von ${total} gesehen`;
   const next = nx ? `<span class="nx">Noch <b>${nx[0] - n}</b> bis ${nx[3]}</span>` : `<span class="nx">Höchster Rang erreicht</span>`;
-  if (!n) { $("#progText").innerHTML = (prisc ? "Markiere Romanzen als gesehen, dann steigt dein Liebes-Rang." : "Tippe bei einem Anime auf den Haken ✓. Hier siehst du dann, wie viel du schon geschaut hast.") + next; return; }
+  if (!n) { $("#progText").innerHTML = (prisc ? "Markiere Romanzen als gesehen, dann steigt dein Liebes-Rang." : "Tippe bei einem Anime auf den Haken&nbsp;✓. Hier siehst du dann, wie viel du schon geschaut hast.") + next; return; }
   // Kompakt: zuerst der Weg zum nächsten Rang, darunter klein die geschauten Stunden
   const h = Math.round(list.reduce((a, it) => a + minutesOf(it), 0) / 60);
   $("#progText").innerHTML = `${next}<span class="hrs">≈ ${h.toLocaleString("de-DE")} ${h === 1 ? "Stunde" : "Stunden"} geschaut</span>`;
@@ -2133,21 +2152,25 @@ function render() {
   e.hidden = list.length > 0 || (state.view === "seen" && !seen.size); // bei 0 Gesehenen erklärt die Fortschritts-Karte alles
   const romOf = set => items.some(it => set.has(it.id) && isRom(it));
   e.textContent = state.view === "saved" && !saved.size ? "Noch nichts gemerkt. Tippe bei einem Anime auf das Lesezeichen, dann landet er hier."
-    : state.view === "seen" && !seen.size ? "Noch nichts als gesehen markiert. Tippe bei einem Anime auf den Haken ✓."
+    : state.view === "seen" && !seen.size ? "Noch nichts als gesehen markiert. Tippe bei einem Anime auf den Haken\u00A0✓."
     : prisc && state.view === "saved" && !romOf(saved) ? "Noch keine Romanze gemerkt. Tippe bei einer Romanze auf das Lesezeichen."
-    : prisc && state.view === "seen" && !romOf(seen) ? "Noch keine Romanze als gesehen markiert. Tippe bei einer Romanze auf den Haken ✓."
+    : prisc && state.view === "seen" && !romOf(seen) ? "Noch keine Romanze als gesehen markiert. Tippe bei einer Romanze auf den Haken\u00A0✓."
     : "Kein Titel passt zu diesen Filtern. Setz einzelne Filter zurück oder leere die Suche.";
   e.dataset.ic = /gemerkt/.test(e.textContent) ? "saved" : /gesehen markiert/.test(e.textContent) ? "seen" : "find";
   renderShelf(list);
   status(list.length);
+  // Sobald die Liste einmal sichtbar gezeichnet wurde, kennt das iPhone alle Kartenhöhen: ab dann nur noch sichtbare Karten zeichnen
+  if (cvWarm && !$("#list").hidden) cvRewarm();
 }
 // Gesehen als Regal: Cover zu dritt, sortiert wie die Liste. Darüber die Lieblingsgenres.
 let shelfList = [];
 function renderShelf(list) {
   const on = state.view === "seen";
-  if (on) $("#list").hidden = true;
-  shelfList = on ? list : [];
-  $("#shelf").hidden = !on || !list.length;
+  // Außerhalb von Gesehen nur ausblenden: die Cover bleiben stehen, so ist das Regal beim Zurückwechseln sofort da
+  if (!on) { shelfList = []; $("#shelf").hidden = true; $("#favg").hidden = true; return; }
+  $("#list").hidden = true;
+  shelfList = list;
+  $("#shelf").hidden = !list.length;
   // Vorhandene Cover bleiben stehen (kein Neuladen, kein Aufblitzen): nur Fehlendes ergänzen, Entferntes herausnehmen
   const box = $("#shelf"), have = new Map([...box.children].map(li => [li.dataset.id, li]));
   const want = new Set(shelfList.map(it => it.id));
@@ -2169,7 +2192,7 @@ function renderShelf(list) {
   const mine = items.filter(it => seen.has(it.id) && (!prisc || isRom(it))), cnt = {};
   mine.forEach(it => it.genres.forEach(g => { if (!(prisc && g === "Romance")) cnt[g] = (cnt[g] || 0) + 1; }));
   const top = Object.entries(cnt).sort((a, b) => b[1] - a[1]).slice(0, 3);
-  $("#favg").hidden = !on || !top.length;
+  $("#favg").hidden = !top.length;
   $("#favg").innerHTML = "Deine Lieblingsgenres: " + top.map(([g, n]) => `<b>${g}</b> ${n}`).join(" · ");
 }
 // Antippen eines Covers: die normale Karte erscheint als Fenster (die Karte selbst wird kurz dorthin verschoben)
@@ -2775,7 +2798,7 @@ function acctUi() {
   $("#lgGo").textContent = lgCreate ? "Konto erstellen" : "Anmelden";
   $("#lgMode").textContent = lgCreate ? "Ich habe schon ein Konto" : "Neues Konto erstellen";
   $("#lgPass").setAttribute("autocomplete", lgCreate ? "new-password" : "current-password");
-  $("#lgPass").placeholder = lgCreate ? "Passwort (mindestens 6 Zeichen)" : "Passwort";
+  $("#lgPass").placeholder = lgCreate ? "Passwort (mindestens 8 Zeichen)" : "Passwort";
 }
 const USER_ICON = acctBtn.innerHTML;
 function lgMsg(t, ok) { const m = $("#lgMsg"); m.hidden = !t; m.textContent = t || ""; m.classList.toggle("ok", !!ok); }
@@ -2788,7 +2811,7 @@ const ERR = {
   "auth/wrong-password": "E-Mail oder Passwort ist falsch.",
   "auth/user-not-found": "Zu dieser E-Mail gibt es noch kein Konto. Tippe auf „Neues Konto erstellen“.",
   "auth/email-already-in-use": "Für diese E-Mail gibt es schon ein Konto. Melde dich einfach an.",
-  "auth/weak-password": "Das Passwort braucht mindestens 6 Zeichen.",
+  "auth/weak-password": "Das Passwort braucht mindestens 8 Zeichen.",
   "auth/too-many-requests": "Zu viele Versuche. Warte kurz und versuch es dann nochmal.",
   "auth/network-request-failed": "Keine Verbindung zum Internet.",
   "auth/popup-blocked": "Das Google-Fenster wurde blockiert. Melde dich mit E-Mail und Passwort an.",
@@ -2821,6 +2844,7 @@ $("#lgForm").addEventListener("submit", e => {
   const mail = $("#lgMail").value.trim(), pass = $("#lgPass").value;
   if (!mail) return lgMsg(ERR["auth/missing-email"]);
   if (!pass) return lgMsg(ERR["auth/missing-password"]);
+  if (lgCreate && pass.length < 8) return lgMsg(ERR["auth/weak-password"]);
   lgRun(({ U, auth }) => (lgCreate ? U.createUserWithEmailAndPassword : U.signInWithEmailAndPassword)(auth, mail, pass).then(() => { $("#lgPass").value = ""; }));
 });
 $("#lgMode").addEventListener("click", () => { lgCreate = !lgCreate; lgMsg(""); acctUi(); });
