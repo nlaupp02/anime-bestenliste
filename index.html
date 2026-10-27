@@ -666,6 +666,36 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
   html:not(.app) header.top > .eyebrow, html:not(.app) header.top > h1, html:not(.app) header.top > .counts, html:not(.app) header.top > .why { grid-column: 1; }
   html:not(.app) header.top > .pick-btn { grid-column: 2; grid-row: span 3; align-self: center; width: 100%; max-width: none; }
 }
+/* ===== Konto (Anmeldung und Sicherung) ===== */
+.eyebrow { position: relative; }
+.acct { position: absolute; right: 0; top: 50%; margin-top: -19px; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: var(--sheet); color: var(--ink);
+  display: grid; place-items: center; padding: 0; cursor: pointer; font: inherit; font-size: 15px; font-weight: 800; letter-spacing: 0; text-transform: none; -webkit-tap-highlight-color: transparent; }
+.acct svg { width: 19px; height: 19px; }
+.acct.on { background: linear-gradient(135deg, #F05A50, #F47521); border-color: transparent; color: #1A0C0B; }
+html.prisc .acct.on { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color: #2A0A18; }
+.acct.warn::after { content: ""; position: absolute; top: 0; right: 0; width: 10px; height: 10px; border-radius: 50%; background: #F0C064; border: 2px solid var(--paper); }
+@media (min-width: 1400px) and (hover: hover) and (pointer: fine) { html:not(.app) header.top { position: relative; } html:not(.app) .eyebrow { position: static; } html:not(.app) .acct { top: 24px; margin-top: 0; } }
+.lg-card { gap: 12px; }
+.lg-card .sub { margin: 2px 0 0; color: var(--muted); font-size: 13.5px; line-height: 1.4; }
+.lg-g { display: flex; align-items: center; justify-content: center; gap: 10px; background: #fff; color: #1f1f1f; border-color: #fff; }
+.lg-g svg { width: 18px; height: 18px; }
+.lg-or { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; }
+.lg-or::before, .lg-or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.lg-form { display: grid; gap: 10px; }
+.lg-in { font: inherit; font-size: 16px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px 13px; width: 100%; box-sizing: border-box; }
+.lg-in:focus { outline: none; border-color: var(--muted); }
+.lg-links { display: flex; justify-content: space-between; gap: 10px; }
+.lg-link { font: inherit; font-size: 13px; color: var(--muted); background: none; border: 0; padding: 2px 0; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.lg-msg { margin: 0; font-size: 13px; line-height: 1.4; color: #F0C064; }
+.lg-msg.ok { color: #5FD3A6; }
+.lg-me { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 12px; align-items: center; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
+.lg-av { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(135deg, #F05A50, #F47521); color: #1A0C0B; font-weight: 800; font-size: 19px; }
+html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color: #2A0A18; }
+.lg-me b { display: block; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lg-me small { display: block; color: var(--muted); font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lg-sync { font-size: 13px; color: #5FD3A6; }
+.lg-sync.busy { color: var(--muted); } .lg-sync.err { color: #F0C064; }
+.lg-card button:disabled { opacity: .5; cursor: default; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 
@@ -682,7 +712,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V163</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V164</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -747,6 +777,30 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
     <div class="ov-head"><b id="instTitle">Zum Home-Bildschirm hinzufügen</b><button type="button" class="inst-x" data-close aria-label="Anleitung schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
     <ol class="inst-steps" id="instSteps"></ol>
     <button type="button" class="ov-btn main" data-close>OK</button>
+  </div>
+</div>
+<div class="ov" id="acctOv" hidden>
+  <div class="ov-bg" data-close></div>
+  <div class="ov-card lg-card" role="dialog" aria-modal="true" aria-labelledby="lgTitle">
+    <div><b id="lgTitle" style="font-size:17px">Konto</b><p class="sub" id="lgSub">Melde dich an, damit Gesehen, Gemerkt und dein Rang gesichert sind und auf Handy und PC gleich bleiben.</p></div>
+    <div id="lgOutBox" class="lg-form">
+      <button type="button" class="ov-btn lg-g" id="lgGoogle"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 38.1 44 33 44 24c0-1.3-.1-2.3-.4-3.5z"/></svg>Mit Google anmelden</button>
+      <div class="lg-or">oder mit E-Mail</div>
+      <form class="lg-form" id="lgForm" novalidate>
+        <input class="lg-in" id="lgMail" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="E-Mail-Adresse">
+        <input class="lg-in" id="lgPass" type="password" autocomplete="current-password" placeholder="Passwort">
+        <button type="submit" class="ov-btn main" id="lgGo">Anmelden</button>
+      </form>
+      <div class="lg-links"><button type="button" class="lg-link" id="lgMode">Neues Konto erstellen</button><button type="button" class="lg-link" id="lgForgot">Passwort vergessen?</button></div>
+    </div>
+    <div id="lgInBox" class="lg-form" hidden>
+      <div class="lg-me"><span class="lg-av" id="lgAv">?</span><span><b id="lgName"></b><small id="lgEmail"></small></span></div>
+      <div class="lg-sync" id="lgSync"></div>
+      <p class="sub" style="margin:0">Gesehen, Gemerkt und dein Rang werden automatisch gespeichert. Auf einem anderen Gerät einfach mit demselben Konto anmelden.</p>
+      <button type="button" class="ov-btn" id="lgLogout">Abmelden</button>
+    </div>
+    <p class="lg-msg" id="lgMsg" hidden></p>
+    <button type="button" class="ov-btn" id="lgClose" data-close>Später</button>
   </div>
 </div>
 <div class="ov rankup" id="rankUp" hidden role="status" aria-live="polite">
@@ -1448,7 +1502,8 @@ const byAz = [...items].sort((a, b) => a.title.localeCompare(b.title, "de"));
 // Gespeicherte Daten (nur in diesem Browser)
 const KEY = { saved: "cr-top100-saved", seen: "cr-top100-seen", filters: "cr-top100-filters", install: "cr-top100-install-closed" };
 function load(k, fallback) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; } }
-function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+let onMarks = null; // wird vom Konto gesetzt: Gesehen/Gemerkt geändert -> online sichern
+function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} if (onMarks && (k === KEY.saved || k === KEY.seen)) onMarks(); }
 // Ältere Einträge (a0, a1, …) auf Titel umstellen
 const migrate = arr => arr.map(x => /^a\d+$/.test(x) && DATA[+x.slice(1)] ? slug(DATA[+x.slice(1)][0]) : x);
 // Markierungen von Titeln, die nicht mehr in der Liste sind, werden entfernt (sonst zählt z. B. Gesehen „3“ bei leerer Liste)
@@ -2596,6 +2651,190 @@ if (resume) {
   }
 }
 onScroll();
+// ===== Konto: Anmeldung (Firebase) und Sicherung von Gesehen und Gemerkt =====
+const FB_CFG = { apiKey: "AIzaSyAPZuYvJScQErCrRSyc4z-ZJsb8GgDJm_g", authDomain: "anime-bestenliste.firebaseapp.com", projectId: "anime-bestenliste",
+  storageBucket: "anime-bestenliste.firebasestorage.app", messagingSenderId: "518675323227", appId: "1:518675323227:web:6ac9b40e8847524902227e" };
+const FB_URL = n => `https://www.gstatic.com/firebasejs/10.12.2/firebase-${n}.js`;
+// Nur auf der echten Seite (GitHub) – in Vorschauen ohne Internetzugang gibt es keinen Konto-Knopf
+const FB_HOST = /(^|\.)github\.io$/.test(location.hostname) || location.hostname === "localhost";
+const KEY_ACCT = "cr-top100-acct"; // { uid, ver, dirty, base } – ver/base = letzter gemeinsamer Stand mit dem Konto
+let acct = load(KEY_ACCT, {}) || {};
+let fb = null, fbWait = null, user = null, syncSt = "", syncAt = 0, pushT = 0, retryT = 0, busy = false, again = false, gen = 0, lastPull = 0, lgCreate = false;
+const acctBtn = $("#acct"), acctOv = $("#acctOv");
+const saveAcct = () => store(KEY_ACCT, acct);
+function fbLoad() {
+  if (fb) return Promise.resolve(fb);
+  if (!fbWait) fbWait = Promise.all([import(FB_URL("app")), import(FB_URL("auth")), import(FB_URL("firestore-lite"))]).then(([A, U, F]) => {
+    const app = A.initializeApp(FB_CFG), auth = U.getAuth(app);
+    auth.languageCode = "de";
+    fb = { U, F, auth, db: F.getFirestore(app) };
+    U.onAuthStateChanged(auth, u => {
+      user = u || null;
+      if (!user && acct.uid) { acct = {}; saveAcct(); } // woanders abgemeldet
+      acctUi();
+      if (user) acctSync();
+    });
+    return fb;
+  }).catch(e => { fbWait = null; throw e; });
+  return fbWait;
+}
+const ref = () => fb.F.doc(fb.db, "users", user.uid);
+const newVer = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+// Zusammenführen: was auf einem Gerät dazukam, kommt dazu; was auf einem Gerät entfernt wurde, fliegt raus
+const merge3 = (mine, theirs, base) => {
+  const b = new Set(base), t = new Set(theirs), m = new Set(mine);
+  return new Set([...m, ...t].filter(id => (m.has(id) && t.has(id)) || (m.has(id) && !b.has(id)) || (t.has(id) && !b.has(id))));
+};
+const same = (a, b) => a.length === b.size && a.every(x => b.has(x));
+// Abgleich mit dem Konto: Online-Stand holen, zusammenführen, Ergebnis speichern
+async function acctSync() {
+  if (!user || !fb) return;
+  if (busy) { again = true; return; }
+  busy = true; again = false; clearTimeout(pushT); clearTimeout(retryT);
+  const g = gen, uid = user.uid;
+  lastPull = Date.now(); syncSt = "busy"; acctUi();
+  try {
+    const snap = await fb.F.getDoc(ref()), r = snap.exists() ? snap.data() : null;
+    if (!user || user.uid !== uid) throw 0;
+    const mine = acct.uid === uid, base = mine && acct.base ? acct.base : { seen: [], saved: [] };
+    const rSeen = r ? r.seen || [] : [], rSaved = r ? r.saved || [] : [];
+    // Titel, die diese Version der Liste nicht kennt (z. B. neuer auf dem anderen Gerät), bleiben im Konto erhalten
+    const keepS = rSeen.filter(id => !known.has(id)), keepM = rSaved.filter(id => !known.has(id));
+    if (r && (!mine || r.ver !== acct.ver)) {
+      if (mine && !acct.dirty) applyMarks(new Set(rSeen), new Set(rSaved));
+      else applyMarks(merge3(seen, rSeen, base.seen), merge3(saved, rSaved, base.saved));
+    }
+    const outSeen = [...seen, ...keepS], outSaved = [...saved, ...keepM];
+    let ver = r && r.ver;
+    if (!r || !same(rSeen, new Set(outSeen)) || !same(rSaved, new Set(outSaved))) {
+      ver = newVer();
+      await fb.F.setDoc(ref(), { seen: outSeen, saved: outSaved, ver, at: Date.now() });
+    }
+    acct = { uid, ver, dirty: gen !== g, base: { seen: outSeen, saved: outSaved } }; saveAcct();
+    syncSt = "ok"; syncAt = Date.now();
+    if (gen !== g) again = true;
+  } catch (e) {
+    if (e !== 0) { syncSt = "err"; retryT = setTimeout(() => { if (acct.dirty) acctSync(); }, 30000); }
+  }
+  busy = false; acctUi();
+  if (again && user) { again = false; pushT = setTimeout(acctSync, 300); }
+}
+// Gesehen/Gemerkt geändert: merken und kurz danach online sichern
+let applying = false;
+onMarks = () => {
+  if (applying || !acct.uid) return;
+  gen++;
+  if (!acct.dirty) { acct.dirty = true; saveAcct(); }
+  if (user) { if (syncSt !== "err") syncSt = "busy"; acctUi(); clearTimeout(pushT); pushT = setTimeout(acctSync, 1200); }
+};
+// Daten aus dem Konto übernehmen und die Knöpfe auf den Karten anpassen
+function applyMarks(nSeen, nSaved) {
+  const ok = id => known.has(id);
+  nSeen = new Set([...nSeen].filter(ok)); nSaved = new Set([...nSaved].filter(id => ok(id) && !nSeen.has(id)));
+  const touched = new Set([...seen, ...nSeen, ...saved, ...nSaved].filter(id => seen.has(id) !== nSeen.has(id) || saved.has(id) !== nSaved.has(id)));
+  if (!touched.size) return;
+  applying = true;
+  seen.clear(); nSeen.forEach(id => seen.add(id)); saved.clear(); nSaved.forEach(id => saved.add(id));
+  store(KEY.seen, [...seen]); store(KEY.saved, [...saved]);
+  applying = false;
+  touched.forEach(id => {
+    const v = document.getElementById("v-" + id), sv = document.getElementById("s-" + id), on = seen.has(id), sOn = saved.has(id);
+    if (v) { v.setAttribute("aria-pressed", String(on)); v.innerHTML = ICON.seen + `<span class="bt">${on ? "Gesehen" : "Schon gesehen"}</span>`; v.closest(".card").classList.toggle("is-seen", on); }
+    if (sv) { sv.hidden = on; sv.setAttribute("aria-pressed", String(sOn)); sv.innerHTML = ICON.save + `<span class="bt">${sOn ? "Gemerkt" : "Merken"}</span>`; }
+  });
+  render();
+}
+// Anzeige: Knopf oben und Fenster
+const nameOf = u => (u.displayName || (u.email || "").split("@")[0] || "Konto").trim();
+function syncText() {
+  if (syncSt === "busy") return "Wird gesichert …";
+  if (syncSt === "err") return "Gerade nicht gesichert, keine Verbindung. Wird automatisch nachgeholt.";
+  if (syncSt === "ok") {
+    const d = new Date(syncAt), sec = (Date.now() - syncAt) / 1000;
+    return "✓ Alles gesichert · " + (sec < 60 ? "gerade eben" : "um " + d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }) + " Uhr");
+  }
+  return "";
+}
+function acctUi() {
+  acctBtn.hidden = !FB_HOST;
+  if (user) { acctBtn.classList.add("on"); acctBtn.textContent = nameOf(user)[0].toUpperCase(); acctBtn.setAttribute("aria-label", "Konto: " + nameOf(user)); }
+  else { acctBtn.classList.remove("on"); acctBtn.innerHTML = USER_ICON; acctBtn.setAttribute("aria-label", "Anmelden"); }
+  acctBtn.classList.toggle("warn", !!user && syncSt === "err");
+  $("#lgOutBox").hidden = !!user; $("#lgInBox").hidden = !user;
+  $("#lgSub").hidden = !!user;
+  $("#lgClose").textContent = user ? "Fertig" : "Später";
+  $("#lgClose").classList.toggle("main", !!user);
+  if (user) {
+    $("#lgAv").textContent = nameOf(user)[0].toUpperCase(); $("#lgName").textContent = nameOf(user); $("#lgEmail").textContent = user.email || "";
+    const t = $("#lgSync"); t.textContent = syncText(); t.className = "lg-sync" + (syncSt === "busy" ? " busy" : syncSt === "err" ? " err" : "");
+  }
+  $("#lgGo").textContent = lgCreate ? "Konto erstellen" : "Anmelden";
+  $("#lgMode").textContent = lgCreate ? "Ich habe schon ein Konto" : "Neues Konto erstellen";
+  $("#lgPass").setAttribute("autocomplete", lgCreate ? "new-password" : "current-password");
+  $("#lgPass").placeholder = lgCreate ? "Passwort (mindestens 6 Zeichen)" : "Passwort";
+}
+const USER_ICON = acctBtn.innerHTML;
+function lgMsg(t, ok) { const m = $("#lgMsg"); m.hidden = !t; m.textContent = t || ""; m.classList.toggle("ok", !!ok); }
+function lgBusy(on) { acctOv.querySelectorAll("#lgOutBox button, #lgOutBox input, #lgLogout").forEach(x => { x.disabled = on; }); }
+const ERR = {
+  "auth/invalid-email": "Die E-Mail-Adresse stimmt nicht.",
+  "auth/missing-email": "Bitte gib deine E-Mail-Adresse ein.",
+  "auth/missing-password": "Bitte gib ein Passwort ein.",
+  "auth/invalid-credential": "E-Mail oder Passwort ist falsch.",
+  "auth/wrong-password": "E-Mail oder Passwort ist falsch.",
+  "auth/user-not-found": "Zu dieser E-Mail gibt es noch kein Konto. Tippe auf „Neues Konto erstellen“.",
+  "auth/email-already-in-use": "Für diese E-Mail gibt es schon ein Konto. Melde dich einfach an.",
+  "auth/weak-password": "Das Passwort braucht mindestens 6 Zeichen.",
+  "auth/too-many-requests": "Zu viele Versuche. Warte kurz und versuch es dann nochmal.",
+  "auth/network-request-failed": "Keine Verbindung zum Internet.",
+  "auth/popup-blocked": "Das Google-Fenster wurde blockiert. Melde dich mit E-Mail und Passwort an.",
+  "auth/operation-not-supported-in-this-environment": "Google-Anmeldung geht hier leider nicht. Melde dich mit E-Mail und Passwort an.",
+  "auth/web-storage-unsupported": "Google-Anmeldung geht hier leider nicht. Melde dich mit E-Mail und Passwort an.",
+  "auth/unauthorized-domain": "Diese Seite ist für die Anmeldung noch nicht freigegeben."
+};
+const errText = e => ERR[e && e.code] || "Das hat nicht geklappt. Versuch es nochmal.";
+async function openAcct() {
+  lgMsg(""); acctUi(); acctOv.hidden = false;
+  if (!fb) {
+    lgBusy(true); lgMsg("Lädt …", true);
+    try { await fbLoad(); lgMsg(""); } catch (e) { lgMsg("Keine Verbindung. Versuch es später nochmal."); }
+    lgBusy(false);
+  } else if (user && Date.now() - lastPull > 20000) acctSync();
+}
+const closeAcct = () => { acctOv.hidden = true; document.activeElement && document.activeElement.blur && document.activeElement.blur(); };
+acctBtn.addEventListener("click", openAcct);
+acctOv.addEventListener("click", e => { if (e.target.closest("[data-close]")) closeAcct(); });
+acctOv.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !acctOv.hidden) closeAcct(); });
+async function lgRun(fn) {
+  lgMsg(""); lgBusy(true);
+  try { await fbLoad(); await fn(fb); } catch (e) { if (!/popup-closed-by-user|cancelled-popup-request|user-cancelled/.test(e && e.code || "")) lgMsg(errText(e)); }
+  lgBusy(false);
+}
+$("#lgGoogle").addEventListener("click", () => lgRun(({ U, auth }) => U.signInWithPopup(auth, new U.GoogleAuthProvider())));
+$("#lgForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const mail = $("#lgMail").value.trim(), pass = $("#lgPass").value;
+  if (!mail) return lgMsg(ERR["auth/missing-email"]);
+  if (!pass) return lgMsg(ERR["auth/missing-password"]);
+  lgRun(({ U, auth }) => (lgCreate ? U.createUserWithEmailAndPassword : U.signInWithEmailAndPassword)(auth, mail, pass).then(() => { $("#lgPass").value = ""; }));
+});
+$("#lgMode").addEventListener("click", () => { lgCreate = !lgCreate; lgMsg(""); acctUi(); });
+$("#lgForgot").addEventListener("click", () => {
+  const mail = $("#lgMail").value.trim();
+  if (!mail) return lgMsg("Gib oben deine E-Mail-Adresse ein, dann schicken wir dir einen Link zum Zurücksetzen.");
+  lgRun(({ U, auth }) => U.sendPasswordResetEmail(auth, mail).then(() => lgMsg("Wir haben dir eine E-Mail zum Zurücksetzen geschickt. Schau auch im Spam-Ordner nach.", true)));
+});
+$("#lgLogout").addEventListener("click", () => lgRun(async ({ U, auth }) => {
+  if (acct.dirty && user) await acctSync();
+  await U.signOut(auth); acct = {}; saveAcct(); syncSt = ""; acctUi();
+}));
+// Beim Zurückkommen in die App kurz nach neuen Daten vom anderen Gerät schauen
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && user && (acct.dirty || Date.now() - lastPull > 60000)) acctSync(); });
+window.addEventListener("online", () => { if (user && acct.dirty) acctSync(); });
+acctUi();
+// Wer schon angemeldet war: Firebase erst kurz nach dem Start laden, damit die Seite nicht langsamer öffnet
+if (FB_HOST && acct.uid) setTimeout(() => fbLoad().catch(() => { syncSt = "err"; acctUi(); }), 1500);
 </script>
 
 </body>
