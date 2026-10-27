@@ -626,7 +626,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V111</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V112</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -963,8 +963,7 @@ const EXTRA = [
 ["Don't Toy with Me, Miss Nagatoro", "S", "Romance|Comedy", 7.2, null, null, "de", "2 Staffeln · 24 Folgen", "Die freche Nagatoro ärgert ihren schüchternen Senpai, wo sie nur kann. Doch hinter den Sticheleien steckt mehr, und er wird langsam mutiger. Frech, peinlich und am Ende richtig süß.", "Am Anfang etwas gemein, ab der Mitte wird es süß.", "ijiranaide nagatoro san", "chill", "Don't Toy with Me, Miss Nagatoro", "GQWH0M455"],
 ["The Girl I Like Forgot Her Glasses", "S", "Romance|Comedy", 7.2, null, null, "sub", "13 Folgen", "Komura sitzt neben Mie, in die er heimlich verliebt ist. Sie vergisst ständig ihre Brille und rückt ihm deshalb ganz nah, um überhaupt etwas zu sehen. Für ihn jedes Mal ein kleiner Herzinfarkt.", "", "suki na ko ga megane wo wasureta", "chill|kurz", "The Girl I Like Forgot Her Glasses", "GNVHKN9DE"],
 ["Honey Lemon Soda", "S", "Romance", 7.1, null, null, "de", "12 Folgen", "Uka wurde in der Mittelschule gemobbt und traut sich kaum etwas. An der neuen Schule trifft sie Kai mit den zitronengelben Haaren, der ihr hilft, Schritt für Schritt aus sich herauszukommen. Zuckersüß und aufbauend.", "", "honey lemon soda", "chill|herz|kurz", "Honey Lemon Soda", "GMEHME77W"],
-["Shikimori's Not Just a Cutie", "S", "Romance|Comedy", 6.9, null, null, "de", "12 Folgen", "Izumi hat ständig Pech, aber seine Freundin Shikimori ist süß und liebevoll. Sobald er in Gefahr ist, wird sie plötzlich unglaublich cool und rettet ihn. Eine leichte Paar-Komödie.", "", "kawaii dake ja nai shikimori san", "chill|kurz", "Shikimori's Not Just a Cutie", "GNVHKN7M4"],
-["Masamune-kun's Revenge", "S", "Romance|Comedy", 6.8, null, null, "de", "2 Staffeln · 24 Folgen", "Als Kind wurde Masamune von der reichen Aki gemein abserviert. Jahre später kommt er gutaussehend zurück und will, dass sie sich in ihn verliebt, um sie dann fallen zu lassen. Doch der Racheplan läuft nicht wie gedacht.", "", "masamune kun no revenge", "chill", "Masamune-kun's Revenge", "GYX02P3MR"]
+["Tying the Knot with an Amagami Sister", "S", "Romance|Comedy", 7.5, null, null, "sub", "24 Folgen", "Uryu will Arzt werden und zieht zum Lernen in einen Schrein, in dem drei Schwestern als Schreinmädchen leben. Dort erfährt er, dass er eine von ihnen heiraten soll, um den Schrein zu übernehmen. Lustig, warmherzig und mit viel Gefühl.", "", "amagami san chi no enmusubi", "chill", "Tying the Knot with an Amagami Sister", "G24H1NWJ0"]
 ];
 
 
@@ -992,7 +991,7 @@ const ROM_MOOD = {
   "You and I Are Polar Opposites": "suess|lachen", "Love Unseen Beneath the Clear Night Sky": "suess|schmerz", "Akatsuki no Yona – Prinzessin der Morgendämmerung": "schmerz", "Firefly Wedding": "schmerz", "Night is Short, Walk on Girl": "lachen",
   "The Cold Sato-san is Only Sweet to Me": "suess|lachen", "Smoking Behind the Supermarket with You": "suess", "The Quintessential Quintuplets": "lachen", "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You": "lachen",
   "The Angel Next Door Spoils Me Rotten": "suess", "More than a Married Couple, but Not Lovers": "lachen", "Alya Sometimes Hides Her Feelings in Russian": "lachen", "Tune In to the Midnight Heart": "suess|lachen",
-  "Spice and Wolf: Merchant Meets the Wise Wolf": "suess", "Makeine: Too Many Losing Heroines!": "lachen|schmerz", "Plastic Memories": "schmerz", "Tomo-chan Is a Girl!": "lachen", "Recovery of an MMO Junkie": "suess", "Tsurezure Children": "suess|lachen", "Don't Toy with Me, Miss Nagatoro": "lachen|suess", "The Girl I Like Forgot Her Glasses": "suess|lachen", "Honey Lemon Soda": "suess", "Shikimori's Not Just a Cutie": "suess", "Masamune-kun's Revenge": "lachen"
+  "Spice and Wolf: Merchant Meets the Wise Wolf": "suess", "Makeine: Too Many Losing Heroines!": "lachen|schmerz", "Plastic Memories": "schmerz", "Tomo-chan Is a Girl!": "lachen", "Recovery of an MMO Junkie": "suess", "Tsurezure Children": "suess|lachen", "Don't Toy with Me, Miss Nagatoro": "lachen|suess", "The Girl I Like Forgot Her Glasses": "suess|lachen", "Honey Lemon Soda": "suess", "Tying the Knot with an Amagami Sister": "suess|lachen"
 };
 items.forEach(it => { if (ROM_MOOD[it.key]) it.moods = it.moods.concat(ROM_MOOD[it.key].split("|")); });
 const byMine = [...items].sort((a, b) => b.mine - a.mine || a.order - b.order);
@@ -1429,8 +1428,7 @@ const COVER_URL = {
   "Don't Toy with Me, Miss Nagatoro": "https://cdn.myanimelist.net/images/anime/1900/110097.jpg",
   "The Girl I Like Forgot Her Glasses": "https://cdn.myanimelist.net/images/anime/1582/136325.jpg",
   "Honey Lemon Soda": "https://cdn.myanimelist.net/images/anime/1382/144602.jpg",
-  "Shikimori's Not Just a Cutie": "https://cdn.myanimelist.net/images/anime/1995/121695.jpg",
-  "Masamune-kun's Revenge": "https://cdn.myanimelist.net/images/anime/12/83709.jpg"
+  "Tying the Knot with an Amagami Sister": "https://cdn.myanimelist.net/images/anime/1410/143586.jpg"
 };
 const coverOf = it => { const u = COVER_URL[it.key] || covers[it.key]; return u && u.startsWith("https://") ? u : ""; };
 const COVER_Q = {
