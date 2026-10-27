@@ -436,6 +436,10 @@ html:not(.prisc) .pick-btn { background: linear-gradient(100deg, #F05A50, #F4752
 }
 .share-btn svg { width: 13px; height: 13px; }
 .card { scroll-margin-top: 20px; }
+/* Am Handy: Karten außerhalb des Bildschirms werden nicht berechnet. So bleiben Reiterwechsel, Filter und Suche
+   auch mit vielen Titeln flüssig. Die Höhe noch nicht gezeigter Karten wird geschätzt (--ch), gezeigte merken sich ihre echte Höhe. */
+.app #list > .card { content-visibility: auto; contain-intrinsic-height: auto var(--ch, 330px); }
+.app #list.cvoff > .card, .app #list > .card.cvm { content-visibility: visible; } /* einmal alles berechnen, z. B. beim Wiederherstellen der Stelle */
 .card.pick { outline: 3px solid var(--hanko); outline-offset: 3px; }
 html:not(.prisc) .card.pick { outline-color: #F47521; } /* Orange wie „Crunchyroll“ oben und der Würfel-Knopf */
 .totop {
@@ -659,7 +663,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V139</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V140</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -869,7 +873,7 @@ const DATA = [
 ["Solo Leveling","S","Action|Fantasy",8.2,8.5,123,"de","2 Staffeln · 25 Folgen","Jinwoo ist der schwächste Jäger der Welt. Nach einem fast tödlichen Dungeon kann er als Einziger aufleveln wie in einem Videospiel. Pure, gut gemachte Power-Fantasie.","","solo leveling","","Solo Leveling"],
 ["Konosuba","S","Comedy|Isekai",8.1,7.8,23,"de","3 Staffeln · 31 Folgen","Kazuma stirbt auf peinliche Weise und landet in einer Fantasywelt mit der nutzlosesten Heldentruppe, die man sich vorstellen kann. Sehr witzige Parodie auf Isekai-Geschichten.","Nach Staffel 2 den Film Legend of Crimson schauen, er gehört zur Geschichte.","kono subarashii sekai","chill","Konosuba"],
 ["Aoashi","S","Sport|Drama",8.1,8.1,4.9,"de","2 Staffeln, Staffel 2 läuft gerade","Der talentierte, aber ungeschliffene Ashito wird in die Jugendakademie eines Profiklubs geholt. Ein Fußball-Anime, der echte Taktik erklärt.","","ao ashi fussball","","Aoashi"],
-["Horimiya","S","Romance|Slice of Life",8.1,8.0,28,"de","2 Staffeln · 26 Folgen","Die beliebte Hori und der stille Miyamura entdecken die geheime Seite des jeweils anderen. Eine schnell erzählte Liebesgeschichte ohne künstliches Drama.","Staffel 2 (The Missing Pieces) erzählt Szenen aus dem Manga nach, die in Staffel 1 fehlten.","horimiya","chill|herz|kurz","Horimiya"],
+["Horimiya", "S", "Romance|Slice of Life", 8.1, 8.0, 28, "de", "2 Staffeln · 26 Folgen", "Die beliebte Hori und der stille Miyamura entdecken die geheime Seite des jeweils anderen. Eine schnell erzählte Liebesgeschichte ohne künstliches Drama.", "Staffel 2 (The Missing Pieces) erzählt Szenen aus dem Manga nach, die in Staffel 1 fehlten.", "horimiya", "chill|herz", "Horimiya"],
 ["My Teen Romantic Comedy SNAFU","S","Romance|Comedy|Drama",8.1,8,14,"sub","3 Staffeln · 38 Folgen","Der zynische Einzelgänger Hachiman muss einem Schulclub beitreten, der anderen Schülern hilft. Klug geschriebenes Drama über Freundschaft und Selbstbetrug.","Staffel 2 und 3 werden deutlich besser.","oregairu","","My Teen Romantic Comedy SNAFU"],
 ["Naruto Shippuden","S","Action|Abenteuer",8.1,8.7,233,"sub","500 Folgen","Naruto kehrt nach zwei Jahren Training zurück, um seinen Freund Sasuke zurückzuholen und sein Ninja-Dorf zu schützen.","Fortsetzung von Naruto, das zuerst schauen. Rund 200 der 500 Folgen sind Füller, die du überspringen kannst.","naruto","","Naruto Shippuden"],
 ["Hell's Paradise","S","Action|Fantasy|Horror",8.1,8.1,34,"de","2 Staffeln · 25 Folgen","Der zum Tode verurteilte Ninja Gabimaru bekommt eine Chance auf Begnadigung: Er soll auf einer mysteriösen Insel das Elixier des ewigen Lebens finden. Dort warten Monster und andere Verurteilte.","Sehr blutig und brutal.","jigokuraku","","Hell's Paradise"],
@@ -1504,7 +1508,10 @@ const passesWith = (it, mood) =>
 let tileCount = GENRES.length;
 // Kurztitel für die Kacheln: „Frieren – Nach dem Ende der Reise“ → „Frieren“ (zu kurze Reste wie „86“ bleiben lang)
 const TILE_SHORT = { "Die Tagebücher der Apothekerin": "Apothekerin", "Rascal Does Not Dream of Bunny Girl Senpai": "Bunny Girl Senpai",
-  "You and I Are Polar Opposites": "Polar Opposites", "Meine Wiedergeburt als Schleim in einer anderen Welt": "Slime" };
+  "You and I Are Polar Opposites": "Polar Opposites", "Meine Wiedergeburt als Schleim in einer anderen Welt": "Slime",
+  "Though I Am an Inept Villainess": "Inept Villainess", "Sacrificial Princess and the King of Beasts": "Sacrificial Princess", "Yamada-kun and the Seven Witches": "Yamada & 7 Witches",
+  "The Quintessential Quintuplets Movie": "Quintuplets-Film", "May I Ask for One Final Thing?": "One Final Thing", "I Want to End This Love Game": "Love Game",
+  "Gals Can't Be Kind to Otaku!?": "Gals & Otaku", "Kono Oto Tomare! Sounds of Life": "Kono Oto Tomare!", "Nicht schon wieder, Takagi-san": "Takagi-san" };
 const shortT = t => { if (TILE_SHORT[t]) return TILE_SHORT[t]; const x = t.split(" – ")[0].split(": ")[0]; return x.length < 4 ? t : x; };
 function renderTiles() {
   // Im Priscilla-Modus ist alles Romance: diese Kachel sagt dann nichts und fällt weg
@@ -1585,6 +1592,7 @@ function warmCovers() {
 }
 function applyCovers() {
   const any = items.some(coverOf);
+  if (any !== document.documentElement.classList.contains("covers") && typeof measureSoon === "function") measureSoon(600); // Cover ändern die Kartenhöhe
   document.documentElement.classList.toggle("covers", any);
   if (any && $("#tiles").childElementCount) renderTiles();
   if (any && state.view === "seen" && shelfList.length) renderShelf(shelfList);
@@ -1643,6 +1651,7 @@ function buildCards() {
     if (!ref) return;
     const d0 = ref.querySelector(".desc"), w = d0.clientWidth;
     if (!w || w === fitW) return;
+    if (fitW) measureSoon(300); // neue Breite: Höhen neu merken
     fitW = w;
     const cs = getComputedStyle(d0); ctx2d.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
     // Eindeutige Fälle rechnet die Schrift-Berechnung, nur knappe Fälle (4–5 Zeilen) werden einmal gemeinsam gemessen
@@ -1708,14 +1717,48 @@ function renderProg() {
   const h = Math.round(list.reduce((a, it) => a + minutesOf(it), 0) / 60);
   $("#progText").innerHTML = `${next}<span class="hrs">≈ ${h.toLocaleString("de-DE")} ${h === 1 ? "Stunde" : "Stunden"} geschaut</span>`;
 }
+// Kurz nach dem Start im Hintergrund alle Karten in kleinen Portionen einmal berechnen.
+// Danach kennt jede Karte ihre echte Höhe: beim Hochrollen springt nichts und gemerkte Stellen stimmen genau.
+let measT = 0;
+function measureSoon(delay = 1500) {
+  if (!document.documentElement.classList.contains("app")) return;
+  clearTimeout(measT);
+  measT = setTimeout(() => {
+    if ($("#list").hidden) { measureSoon(1000); return; }
+    const cards = [...$("#list").children].filter(el => !el.hidden);
+    let i = 0, prev = [];
+    const step = () => {
+      prev.forEach(el => el.classList.remove("cvm"));
+      if (i >= cards.length) return;
+      prev = cards.slice(i, i += 24); prev.forEach(el => el.classList.add("cvm"));
+      requestAnimationFrame(() => requestAnimationFrame(step));
+    };
+    step();
+  }, delay);
+}
+// Geschätzte Kartenhöhe für noch nicht gezeigte Karten: Durchschnitt der gerade sichtbaren Karten
+let cardH = 0;
+function sizeCards() {
+  if (!document.documentElement.classList.contains("app")) return;
+  const vh = innerHeight, hs = [];
+  for (const el of $("#list").children) {
+    if (el.hidden) continue;
+    const r = el.getBoundingClientRect();
+    if (r.bottom < 0) continue; if (r.top > vh) break;
+    hs.push(r.height); if (hs.length >= 6) break;
+  }
+  if (!hs.length) return;
+  const h = Math.round(hs.reduce((a, b) => a + b, 0) / hs.length);
+  if (Math.abs(h - cardH) > 8) { cardH = h; $("#list").style.setProperty("--ch", h + "px"); }
+}
 function render() {
   if (state.view !== "seen") { $("#shelf").hidden = true; $("#favg").hidden = true; }
   headFor();
   renderProg();
   arrowOff = (state.view === "genres" && !state.g2) || ((state.view === "saved" || state.view === "seen") && !filtered().length);
   requestAnimationFrame(onScroll);
-  if (!cardEls) { buildCards(); applyCovers(); setTimeout(loadCovers, 1200); }
-  requestAnimationFrame(() => { if (window.fitAll) window.fitAll(); });
+  if (!cardEls) { buildCards(); applyCovers(); setTimeout(loadCovers, 1200); measureSoon(); }
+  requestAnimationFrame(() => { if (window.fitAll) window.fitAll(); sizeCards(); });
   const tilesView = state.view === "genres" && !state.g2;
   $("#tiles").hidden = !tilesView;
   $("#gbar").hidden = !(state.view === "genres" && state.g2);
@@ -2248,6 +2291,9 @@ if (resume) {
   // Stelle setzen, solange die Seite beim Öffnen noch verdeckt ist (siehe Kopf der Seite). So springt nichts sichtbar.
   const y = typeof resume.y === "number" ? resume.y : memKey() === "genres:" ? 0 : scrollMem[memKey()];
   if (y != null) {
+    // Einmal alle Karten wirklich berechnen, damit die Stelle genau stimmt (sonst zählen geschätzte Höhen)
+    const L = $("#list"); L.classList.add("cvoff"); void L.offsetHeight;
+    requestAnimationFrame(() => requestAnimationFrame(() => L.classList.remove("cvoff")));
     setY(y); const set = getY();
     // Falls die Schriften noch nicht ganz geladen waren, danach noch einmal genau an dieselbe Stelle
     if (document.fonts && document.fonts.status !== "loaded") document.fonts.ready.then(() => { if (getY() === set) setY(y); });
