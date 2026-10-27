@@ -714,10 +714,12 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
 .acct.pic { background: none; border-color: transparent; padding: 0; }
 .lg-av { overflow: hidden; }
 .pe-l { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 2px 0 -4px; }
-.pe-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px 10px; }
-.pe-it { font: inherit; display: grid; justify-items: center; gap: 5px; font-size: 12px; color: var(--muted); font-weight: 600; background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.pe-img { width: 100%; max-width: 56px; aspect-ratio: 1; border-radius: 50%; transition: transform .15s ease; }
-.pe-grp { grid-column: 1 / -1; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 6px 0 -2px; }
+.pe-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px 10px; }
+#peBox { gap: 8px; }
+#peName { padding: 10px 13px; }
+.pe-it { font: inherit; display: grid; justify-items: center; gap: 3px; font-size: 11.5px; color: var(--muted); font-weight: 600; background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.pe-img { width: 100%; max-width: 48px; aspect-ratio: 1; border-radius: 50%; transition: transform .15s ease; }
+.pe-grp { grid-column: 1 / -1; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 4px 0 -2px; }
 .pe-it[aria-pressed="true"] { color: var(--ink); }
 .pe-it[aria-pressed="true"] .pe-img { box-shadow: 0 0 0 2px var(--sheet), 0 0 0 4px var(--ink); transform: scale(1.06); }
 #peNone[aria-pressed="true"] { color: var(--ink); }
@@ -740,7 +742,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V170</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V171</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -828,8 +830,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
       <button type="button" class="ov-btn" id="lgLogout">Abmelden</button>
     </div>
     <div id="peBox" class="lg-form" hidden>
-      <div class="pe-l">Name</div>
-      <input class="lg-in" id="peName" type="text" maxlength="20" autocomplete="nickname" placeholder="Dein Name">
+      <input class="lg-in" id="peName" aria-label="Name" type="text" maxlength="20" autocomplete="nickname" placeholder="Dein Name">
       <div class="pe-grid" id="peGrid"></div>
       <div class="lg-links"><button type="button" class="lg-link" id="peNone">Ohne Bild</button><button type="button" class="lg-link" id="peCancel">Abbrechen</button></div>
       <button type="button" class="ov-btn main" id="peSave">Speichern</button>
@@ -2891,7 +2892,13 @@ function openEdit(isNew) {
   $("#peCancel").textContent = isNew ? "Später" : "Abbrechen";
   lgEditing = true; lgMsg(""); acctUi();
 }
-$("#lgEdit").addEventListener("click", () => openEdit(false));
+// Neuesten Namen und Bild vom Konto holen (wurde vielleicht auf einem anderen Gerät geändert)
+function refreshUser() {
+  if (!fb || !user) return Promise.resolve();
+  return Promise.race([fb.U.reload(user).then(() => { if (fb.auth.currentUser) user = fb.auth.currentUser; acct.name = nameOf(user); acct.av = avOf(user); saveAcct(); acctUi(); }),
+    new Promise(r => setTimeout(r, 1500))]).catch(() => {});
+}
+$("#lgEdit").addEventListener("click", () => refreshUser().then(() => openEdit(false)));
 $("#peGrid").addEventListener("click", e => { const b = e.target.closest(".pe-it"); if (b) { peSel = b.dataset.av; peMark(); } });
 $("#peNone").addEventListener("click", () => { peSel = ""; peMark(); });
 $("#peCancel").addEventListener("click", () => { lgEditing = false; lgMsg(""); acctUi(); if (peNew) closeAcct(); });
@@ -2930,7 +2937,7 @@ async function openAcct() {
     lgBusy(true); lgMsg(acct.uid ? "" : "Lädt …", true);
     try { await fbLoad(); lgMsg(""); } catch (e) { lgMsg("Keine Verbindung. Versuch es später nochmal."); }
     lgBusy(false);
-  } else if (user && Date.now() - lastPull > 20000) acctSync();
+  } else if (user) { refreshUser(); if (Date.now() - lastPull > 20000) acctSync(); }
 }
 const closeAcct = () => { acctOv.hidden = true; document.activeElement && document.activeElement.blur && document.activeElement.blur(); };
 acctBtn.addEventListener("click", openAcct);
@@ -2972,7 +2979,7 @@ $("#lgLogout").addEventListener("click", () => lgRun(async ({ U, auth }) => {
   await U.signOut(auth); acct = {}; saveAcct(); syncSt = ""; lgEditing = false; acctUi();
 }));
 // Beim Zurückkommen in die App kurz nach neuen Daten vom anderen Gerät schauen
-document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && user && (acct.dirty || Date.now() - lastPull > 60000)) acctSync(); });
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && user && (acct.dirty || Date.now() - lastPull > 60000)) { refreshUser(); acctSync(); } });
 window.addEventListener("online", () => { if (user && acct.dirty) acctSync(); });
 acctUi();
 // Wer schon angemeldet war: Firebase erst kurz nach dem Start laden, damit die Seite nicht langsamer öffnet
