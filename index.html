@@ -649,6 +649,24 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
 .app .top.sub .vtitle { display: block; margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 2.05rem; line-height: 1.05; letter-spacing: -.01em; }
 /* Zufallstipp in der App nur bei Alle. In Safari bleibt er auf jedem Reiter, damit die Liste nicht verrutscht */
 .app .top.nopick .pick-btn { display: none; }
+/* ===== PC und große Bildschirme ===== */
+/* Regal: die Wertungs-Kreise ganz rechts bleiben innerhalb des Rands */
+.shelf { padding-right: 4px; }
+/* Genres: Spaltenzahl so, dass keine Kachel allein in der letzten Reihe steht (Zahl kommt aus dem Skript) */
+@media (min-width: 900px) { .tiles { grid-template-columns: repeat(var(--tc, 5), minmax(0, 1fr)); } }
+/* Filter: die drei Gruppen nebeneinander statt untereinander */
+@media (min-width: 900px) { .panel { grid-template-columns: repeat(3, max-content); column-gap: 44px; align-items: start; } }
+/* Pfeil nach oben am PC unten rechts statt über den Karten */
+@media (hover: hover) and (pointer: fine) and (min-width: 900px) { html:not(.app) .totop { left: auto; right: 28px; margin-left: 0; bottom: 28px; } }
+/* Große Bildschirme: breiter, damit drei Karten nebeneinander passen */
+@media (min-width: 1400px) { .wrap { max-width: 1480px; } }
+/* Kopf am PC: „Was soll ich schauen?“ rechts neben der Überschrift */
+@media (min-width: 1400px) and (hover: hover) and (pointer: fine) {
+  html:not(.app) header.top { grid-template-columns: minmax(0, 1fr) 360px; column-gap: 40px; grid-auto-flow: row dense; }
+  html:not(.app) header.top > * { grid-column: 1 / -1; }
+  html:not(.app) header.top > .eyebrow, html:not(.app) header.top > h1, html:not(.app) header.top > .counts, html:not(.app) header.top > .why { grid-column: 1; }
+  html:not(.app) header.top > .pick-btn { grid-column: 2; grid-row: span 3; align-self: center; width: 100%; max-width: none; }
+}
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 
@@ -665,7 +683,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V159</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V160</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1829,6 +1847,9 @@ function renderTiles() {
   // Im Priscilla-Modus ist alles Romance: diese Kachel sagt dann nichts und fällt weg
   const shown = GENRES.map(g => [g, inG(g).filter(passes)]).filter(([g, list]) => list.length && !(prisc && g === "Romance"));
   tileCount = shown.length;
+  // Spalten am PC: möglichst keine leeren Plätze in der letzten Reihe
+  const cols = [5, 4, 6, 7, 3].reduce((b, c) => ((c - tileCount % c) % c) < ((b - tileCount % b) % b) ? c : b, 5);
+  $("#tiles").style.setProperty("--tc", cols);
   $("#tiles").innerHTML = shown.map(([g, list]) => {
     const f = FEATURED[g] && passes(FEATURED[g]) ? FEATURED[g] : list[0];
     const u = f ? coverOf(f) : "";
