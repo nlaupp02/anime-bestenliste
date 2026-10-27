@@ -663,7 +663,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V141</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V143</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -685,7 +685,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <div class="prow"><span class="plabel">Sortieren</span>
         <div class="seg" role="group" aria-label="Sortieren">
           <button type="button" data-sort="mine" aria-pressed="true">Wertung</button>
-          <button type="button" data-sort="neu" aria-pressed="false">Neu dazu</button>
+          <button type="button" data-sort="neu" aria-pressed="false">Neu erschienen</button>
         </div>
       </div>
       <div class="prow"><span class="plabel">Art</span>
@@ -1101,8 +1101,245 @@ const ROM_MOOD = {
 };
 items.forEach(it => { if (ROM_MOOD[it.key]) it.moods = it.moods.concat(ROM_MOOD[it.key].split("|")); });
 const byMine = [...items].sort((a, b) => b.mine - a.mine || a.order - b.order);
-// „Neu dazu“: zuletzt in die Liste aufgenommene Titel zuerst (neue Titel stehen immer am Ende der Daten)
-const byNew = [...items].sort((a, b) => b.order - a.order);
+// „Neu erschienen“: Erscheinungsmonat (erste Staffel bzw. Film), die neuesten zuerst. Gleicher Monat: bessere Wertung zuerst.
+const REL = {"Frieren – Nach dem Ende der Reise": "2023-09",
+  "Attack on Titan": "2013-04",
+  "Chainsaw Man – The Movie: Reze Arc": "2025-09",
+  "Gintama": "2006-04",
+  "Vinland Saga": "2019-07",
+  "Code Geass": "2006-10",
+  "A Silent Voice": "2016-09",
+  "Kaguya-sama: Love Is War": "2019-01",
+  "Die Tagebücher der Apothekerin": "2023-10",
+  "Haikyu!!": "2014-04",
+  "Death Note": "2006-10",
+  "Mob Psycho 100": "2016-07",
+  "Re:Zero": "2016-04",
+  "One Piece": "1999-10",
+  "Fruits Basket": "2019-04",
+  "Attack on Titan: The Last Attack": "2024-11",
+  "Demon Slayer: Kimetsu no Yaiba": "2019-04",
+  "Demon Slayer: Infinity Castle": "2025-07",
+  "Odd Taxi": "2021-04",
+  "Golden Kamuy": "2018-04",
+  "Jujutsu Kaisen": "2020-10",
+  "Dandadan": "2024-10",
+  "Link Click": "2021-04",
+  "86 – Eighty Six": "2021-04",
+  "The Promised Neverland": "2019-01",
+  "Great Teacher Onizuka": "1999-06",
+  "A Place Further Than the Universe": "2018-01",
+  "Psycho-Pass": "2012-10",
+  "Jujutsu Kaisen 0": "2021-12",
+  "In This Corner of the World": "2016-11",
+  "Oshi no Ko – Mein Star": "2023-04",
+  "Spy x Family": "2022-04",
+  "One Punch Man": "2015-10",
+  "Grand Blue Dreaming": "2018-07",
+  "Mushoku Tensei": "2021-01",
+  "JoJo's Bizarre Adventure": "2012-10",
+  "Lord of the Mysteries": "2025-06",
+  "Nichijou – Das ganz normale Leben": "2011-04",
+  "To Your Eternity": "2021-04",
+  "Suzume": "2022-11",
+  "Witch Hat Atelier": "2026-04",
+  "Das Band der Unterwelt": "2026-04",
+  "The Elusive Samurai": "2024-07",
+  "Megalo Box": "2018-04",
+  "Dorohedoro": "2020-01",
+  "Rascal Does Not Dream of Bunny Girl Senpai": "2018-10",
+  "Dr. Stone": "2019-07",
+  "Solo Leveling": "2024-01",
+  "Konosuba": "2016-01",
+  "Aoashi": "2022-04",
+  "Horimiya": "2021-01",
+  "My Teen Romantic Comedy SNAFU": "2013-04",
+  "Naruto Shippuden": "2007-02",
+  "Hell's Paradise": "2023-04",
+  "Food Wars!": "2015-04",
+  "Kill la Kill": "2013-10",
+  "Blue Lock": "2022-10",
+  "Shangri-La Frontier": "2023-10",
+  "World Trigger": "2014-10",
+  "Ascendance of a Bookworm": "2019-10",
+  "Gachiakuta": "2025-07",
+  "My Dress-Up Darling": "2022-01",
+  "Detektiv Conan": "1996-01",
+  "Konosuba: Legend of Crimson": "2019-08",
+  "Dragonball Super: Broly": "2018-12",
+  "Josie, der Tiger und die Fische": "2020-12",
+  "Kaiju No. 8": "2024-04",
+  "Classroom of the Elite": "2017-07",
+  "Saga of Tanya the Evil": "2017-01",
+  "Welcome to Demon-School, Iruma-kun": "2019-10",
+  "Meine Wiedergeburt als Schleim in einer anderen Welt": "2018-10",
+  "Inuyasha": "2000-10",
+  "My Hero Academia": "2016-04",
+  "Black Clover": "2017-10",
+  "Fate/Grand Order – Babylonia": "2019-10",
+  "Lupin III.": "1971-10",
+  "A Sign of Affection": "2024-01",
+  "Kyousougiga": "2013-10",
+  "Magi: The Labyrinth of Magic": "2012-10",
+  "FLCL": "2000-04",
+  "Fire Force": "2019-07",
+  "Zombie 100 – Bucket List of the Dead": "2023-07",
+  "Deca-Dence": "2020-07",
+  "Mashle: Magic and Muscles": "2023-04",
+  "Spy x Family Code: White": "2023-12",
+  "Black Butler": "2008-10",
+  "Campfire Cooking in Another World": "2023-01",
+  "Penguin Highway": "2018-08",
+  "Dragon Ball Daima": "2024-10",
+  "Tokyo Revengers": "2021-04",
+  "Blue Exorcist": "2011-04",
+  "Tower of God": "2020-04",
+  "One Piece Film: Red": "2022-08",
+  "Patema Inverted": "2013-11",
+  "Mirai – Das Mädchen aus der Zukunft": "2018-07",
+  "Sword Art Online": "2012-07",
+  "Yowamushi Pedal": "2013-10",
+  "Ping Pong the Animation": "2014-04",
+  "Chihayafuru": "2011-10",
+  "Ace of the Diamond": "2013-10",
+  "Free!": "2013-07",
+  "SK8 the Infinity": "2021-01",
+  "Captain Tsubasa": "2018-04",
+  "EyeShield 21": "2005-04",
+  "Oblivion Battery": "2024-04",
+  "Moriarty the Patriot": "2020-10",
+  "Bungou Stray Dogs": "2016-04",
+  "Durarara!!": "2010-01",
+  "Lycoris Recoil": "2022-07",
+  "Buddy Daddies": "2023-01",
+  "ID: INVADED": "2020-01",
+  "Michiko & Hatchin": "2008-10",
+  "Akiba Maid War": "2022-10",
+  "Magic Kaito 1412": "2014-10",
+  "Kingdom": "2012-06",
+  "Rurouni Kenshin": "2023-07",
+  "The Heike Story": "2022-01",
+  "Raven of the Inner Palace": "2022-10",
+  "Princess Principal": "2017-07",
+  "Yatagarasu": "2024-04",
+  "Chainsaw Man": "2022-10",
+  "Shadows House": "2021-04",
+  "Mein Schulgeist Hanako": "2020-01",
+  "The Case Study of Vanitas": "2021-07",
+  "Zombie Land Saga": "2018-10",
+  "Natsume's Book of Friends": "2008-07",
+  "Laid-Back Camp": "2018-01",
+  "Skip and Loafer": "2023-04",
+  "Bocchi the Rock!": "2022-10",
+  "My Love Story with Yamada-kun at Lv999": "2023-04",
+  "The Ancient Magus' Bride": "2017-10",
+  "Tomodachi Game": "2022-04",
+  "The Rising of the Shield Hero": "2019-01",
+  "Log Horizon": "2013-10",
+  "So I'm a Spider, So What?": "2021-01",
+  "Restaurant to Another World": "2017-07",
+  "Journal with Witch": "2026-01",
+  "You and I Are Polar Opposites": "2026-01",
+  "Jaadugar: A Witch in Mongolia": "2026-07",
+  "Love Unseen Beneath the Clear Night Sky": "2026-07",
+  "Sentenced to Be a Hero": "2026-01",
+  "Takopi und die Sache mit dem Glück": "2025-06",
+  "TO BE HERO X": "2025-04",
+  "Naruto": "2002-10",
+  "Der Begründer des Diabolismus": "2018-07",
+  "Ranking of Kings": "2021-10",
+  "Berserk: Das Goldene Zeitalter – Memorial Edition": "2022-10",
+  "Barakamon": "2014-07",
+  "Planetes": "2003-10",
+  "Keep Your Hands Off Eizouken!": "2020-01",
+  "Akatsuki no Yona – Prinzessin der Morgendämmerung": "2014-10",
+  "Vivy: Fluorite Eye's Song": "2021-04",
+  "Mobile Suit Gundam: Iron-Blooded Orphans": "2015-10",
+  "Fairy Tail": "2009-10",
+  "Hinamatsuri": "2018-04",
+  "Miss Kobayashi's Dragon Maid": "2017-01",
+  "Die Melancholie der Haruhi Suzumiya": "2006-04",
+  "Firefly Wedding": "2025-10",
+  "GNOSIA": "2025-10",
+  "Das Verschwinden der Haruhi Suzumiya": "2010-02",
+  "Night is Short, Walk on Girl": "2017-04",
+  "The Cold Sato-san is Only Sweet to Me": "2026-10",
+  "PSYREN": "2026-10",
+  "Smoking Behind the Supermarket with You": "2026-07",
+  "The Quintessential Quintuplets": "2019-01",
+  "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You": "2023-10",
+  "The Angel Next Door Spoils Me Rotten": "2023-01",
+  "More than a Married Couple, but Not Lovers": "2023-10",
+  "Alya Sometimes Hides Her Feelings in Russian": "2024-07",
+  "Tune In to the Midnight Heart": "2026-01",
+  "Spice and Wolf: Merchant Meets the Wise Wolf": "2024-04",
+  "Makeine: Too Many Losing Heroines!": "2024-07",
+  "Plastic Memories": "2015-04",
+  "Tomo-chan Is a Girl!": "2023-01",
+  "Recovery of an MMO Junkie": "2017-10",
+  "Tsurezure Children": "2017-07",
+  "Don't Toy with Me, Miss Nagatoro": "2021-04",
+  "The Girl I Like Forgot Her Glasses": "2023-07",
+  "Honey Lemon Soda": "2025-01",
+  "Tying the Knot with an Amagami Sister": "2024-10",
+  "Teasing Master Takagi-san": "2018-01",
+  "Skip Beat!": "2008-10",
+  "Princess Jellyfish": "2010-10",
+  "My Love Story!!": "2015-04",
+  "Tonikawa: Over the Moon for You": "2020-10",
+  "Kono Oto Tomare! Sounds of Life": "2019-04",
+  "Kokoro Connect": "2012-07",
+  "Yamada-kun and the Seven Witches": "2015-04",
+  "My Little Monster": "2012-10",
+  "Saekano: How to Raise a Boring Girlfriend": "2015-01",
+  "Taisho Otome Fairy Tale": "2021-10",
+  "Pseudo Harem": "2024-07",
+  "7th Time Loop": "2024-01",
+  "The Quintessential Quintuplets Movie": "2022-05",
+  "Kakuriyo: Bed & Breakfast for Spirits": "2018-04",
+  "Sacrificial Princess and the King of Beasts": "2023-04",
+  "Darling in the Franxx": "2018-01",
+  "Summer Pockets": "2025-04",
+  "Tamon's B-Side": "2026-01",
+  "Gals Can't Be Kind to Otaku!?": "2026-04",
+  "I Want to End This Love Game": "2026-04",
+  "Agents of the Four Seasons": "2026-04",
+  "KAIJU GIRL CARAMELISE": "2026-07",
+  "Goodbye, Lara": "2026-07",
+  "Though I Am an Inept Villainess": "2026-07",
+  "May I Ask for One Final Thing?": "2025-10",
+  "Mushishi": "2005-10",
+  "Sound! Euphonium": "2015-04",
+  "K-ON!": "2009-04",
+  "Kaleido Star": "2003-04",
+  "Space Dandy": "2014-01",
+  "Asobi Asobase": "2018-07",
+  "Polar Bear Cafe": "2012-04",
+  "GIRLS BAND CRY": "2024-04",
+  "My New Boss Is Goofy": "2023-07",
+  "Yakitate!! Japan": "2004-10",
+  "Akame ga Kill!": "2014-07",
+  "Dragon Quest: The Adventure of Dai": "2020-10",
+  "D.Gray-man": "2006-10",
+  "Fist of the North Star": "1984-10",
+  "The Prince of Tennis": "2001-10",
+  "Anne Shirley": "2025-04",
+  "Black Butler: Book of the Atlantic": "2017-01",
+  "Laid-Back Camp Movie": "2022-07",
+  "My Hero Academia: Heroes Rising": "2019-12",
+  "Miss Kobayashi's Dragon Maid: A Lonely Dragon Wants to Be Loved": "2025-06",
+  "Sonny Boy": "2021-07",
+  "Victoria of Many Faces": "2026-07",
+  "Migi&Dali": "2023-10",
+  "Stars Align": "2019-10",
+  "Uma Musume: Pretty Derby": "2018-04",
+  "SHOSHIMIN: How to Become Ordinary": "2024-07",
+  "Gundam Build Fighters": "2013-10",
+  "In/Spectre": "2020-01"};
+// Bei „Neu erschienen“ zeigt die Liste nur Titel aus dem neuesten Jahr der Liste (jetzt 2026)
+const NEU_JAHR = Object.values(REL).map(r => r.slice(0, 4)).sort().pop();
+const isNeu = it => (REL[it.key] || "").startsWith(NEU_JAHR);
+const byNew = [...items].sort((a, b) => (REL[b.key] || "").localeCompare(REL[a.key] || "") || b.mine - a.mine);
 const sorted = () => state.sort === "neu" ? byNew : byMine;
 byMine.forEach((it, i) => it.rank = i + 1);
 // Platz innerhalb jedes Genres
@@ -1126,7 +1363,7 @@ let seen = new Set(migrate(load(KEY.seen, [])).filter(id => known.has(id)));
 seen.forEach(id => saved.delete(id));
 store(KEY.saved, [...saved]); store(KEY.seen, [...seen]);
 const DEFAULTS = { type: "", sort: "mine", onlyDe: false, hideSeen: false, mood: "", view: "all", g2: "" };
-const FILTER_KEYS = ["type", "onlyDe", "hideSeen", "mood"];
+const FILTER_KEYS = ["sort", "type", "onlyDe", "hideSeen", "mood"];
 // Stimmungen aus den Daten: chill = Zum Abschalten, herz = Fürs Herz, dn = Zum Mitdenken, kurz = Kurz und knackig
 const MOODS = ["chill", "herz", "dn", "kurz", "suess", "lachen", "schmerz"];
 const RMOODS = ["suess", "lachen", "schmerz"]; // nur im Priscilla-Modus
@@ -1455,6 +1692,7 @@ function card(it) {
 function filtered(mood = state.mood) {
   const inGenre = state.view === "genres";
   return sorted().filter(it =>
+    (state.sort !== "neu" || isNeu(it)) &&
     (!mood || state.view === "seen" || it.moods.includes(mood)) &&
     (!inGenre || it.genres.includes(state.g2)) &&
     (!state.type || it.type === state.type) &&
@@ -1483,7 +1721,7 @@ function status(n) {
   $("#n-all").textContent = prisc ? items.filter(isRom).length : topList.length; $("#n-saved").textContent = nSaved; $("#n-seen").textContent = nSeen;
   $("#n-saved").classList.toggle("zero", !nSaved); $("#n-seen").classList.toggle("zero", !nSeen);
   const active = state.q || activeKeys().some(k => state[k] !== DEFAULTS[k]);
-  $("#status").textContent = n < 0 ? `${tileCount} ${tileCount === 1 ? "Genre" : "Genres"}` : (prisc ? `${n} ${n === 1 ? "Romanze" : "Romanzen"}` : active ? `${n} Treffer` : `${n} Titel`) + (state.sort === "neu" ? " · neueste zuerst" : "");
+  $("#status").textContent = n < 0 ? `${tileCount} ${tileCount === 1 ? "Genre" : "Genres"}` : (prisc ? `${n} ${n === 1 ? "Romanze" : "Romanzen"}` : active ? `${n} Treffer` : `${n} Titel`) + (state.sort === "neu" && n >= 0 ? ` · erschienen ${NEU_JAHR}` : "");
   $("#reset").hidden = !active;
   $("#share").hidden = !(state.view === "saved" && nSaved);
   // Im Reiter Gesehen gibt es schon das ⓘ für die Ränge, dort fällt das Wertungs-ⓘ weg
@@ -1509,6 +1747,7 @@ const FEATURED = (() => {
 // Kacheln zählen nur Titel, die zu den eingestellten Filtern und der Suche passen (wie die Liste beim Öffnen)
 const passes = it => passesWith(it, state.mood);
 const passesWith = (it, mood) =>
+  (state.sort !== "neu" || isNeu(it)) &&
   (!mood || it.moods.includes(mood)) &&
   (!state.type || it.type === state.type) &&
   (!state.onlyDe || it.dub === "de") &&
