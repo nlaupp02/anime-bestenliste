@@ -713,6 +713,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
 .avr img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .acct.pic { background: none; border-color: transparent; padding: 0; }
 .lg-av { overflow: hidden; }
+.lg-av.pic, html.prisc .lg-av.pic, .acct.pic, html.prisc .acct.pic, html.prisc .acct.on.pic { background: none; border-color: transparent; }
 .pe-l { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 2px 0 -4px; }
 .pe-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px 8px; }
 #peBox { gap: 10px; }
@@ -743,7 +744,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V172</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V173</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -827,8 +828,6 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
     <div id="lgInBox" class="lg-form" hidden>
       <div class="lg-me"><span class="lg-av" id="lgAv">?</span><span><b id="lgName"></b><small id="lgEmail"></small></span><button type="button" class="lg-pen" id="lgEdit" aria-label="Profil bearbeiten"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 2.5l2.5 2.5L6 12.5H3.5V10z"/></svg></button></div>
       <div class="lg-sync" id="lgSync"></div>
-      <p class="sub" style="margin:0">Gesehen, Gemerkt und dein Rang werden automatisch gespeichert. Auf einem anderen Gerät einfach mit demselben Konto anmelden.</p>
-      <button type="button" class="ov-btn" id="lgLogout">Abmelden</button>
     </div>
     <div id="peBox" class="lg-form" hidden>
       <input class="lg-in" id="peName" aria-label="Name" type="text" maxlength="20" autocomplete="nickname" placeholder="Dein Name">
@@ -838,6 +837,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
     </div>
     <p class="lg-msg" id="lgMsg" hidden></p>
     <button type="button" class="ov-btn" id="lgClose" data-close>Später</button>
+    <button type="button" class="lg-link" id="lgLogout" style="justify-self:center" hidden>Abmelden</button>
   </div>
 </div>
 <div class="ov rankup" id="rankUp" hidden role="status" aria-live="polite">
@@ -2837,7 +2837,7 @@ function syncText() {
   if (syncSt === "err") return "Gerade nicht gesichert, keine Verbindung. Wird automatisch nachgeholt.";
   if (syncSt === "ok") {
     const d = new Date(syncAt), sec = (Date.now() - syncAt) / 1000;
-    return "✓ Alles gesichert · " + (sec < 60 ? "gerade eben" : "um " + d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }) + " Uhr");
+    return "✓ Gesehen, Gemerkt und Rang gesichert · " + (sec < 60 ? "gerade eben" : "um " + d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }) + " Uhr");
   }
   return "";
 }
@@ -2851,7 +2851,7 @@ function acctUi() {
   acctBtn.setAttribute("aria-label", me ? "Konto: " + me.name : "Anmelden");
   acctBtn.classList.toggle("warn", !!me && syncSt === "err");
   const ed = !!me && lgEditing;
-  $("#lgOutBox").hidden = !!me; $("#lgInBox").hidden = !me || ed; $("#peBox").hidden = !ed;
+  $("#lgOutBox").hidden = !!me; $("#lgInBox").hidden = !me || ed; $("#peBox").hidden = !ed; $("#lgLogout").hidden = !me || ed;
   $("#lgSub").hidden = !!me;
   // Passwort vergessen: eigene Ansicht nur mit E-Mail-Feld; nach dem Abschicken nur noch „Zur Anmeldung“
   const rs = lgReset && !me, done = rs && lgSent;
@@ -2866,6 +2866,7 @@ function acctUi() {
   $("#lgClose").classList.toggle("main", !!me);
   if (me) {
     if ($("#lgAv").dataset.face !== faceKey) { $("#lgAv").innerHTML = face(); $("#lgAv").dataset.face = faceKey; }
+    $("#lgAv").classList.toggle("pic", !!me.av);
     $("#lgName").textContent = me.name; $("#lgEmail").textContent = me.email;
     const t = $("#lgSync"); t.textContent = user ? syncText() : "Wird verbunden …"; t.className = "lg-sync" + (!user || syncSt === "busy" ? " busy" : syncSt === "err" ? " err" : "");
   }
