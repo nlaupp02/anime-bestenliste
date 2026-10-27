@@ -197,6 +197,7 @@ main { padding-block: 18px calc(max(16px, env(safe-area-inset-bottom, 0px)) + 76
 .meta { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; font-size: 12px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; font-weight: 700; }
 .rank { font-variant-numeric: tabular-nums; color: var(--ink); }
 .card h2 { grid-column: 1; margin: 2px 0 2px; font-size: 18px; line-height: 1.25; font-weight: 700; text-wrap: balance; -webkit-hyphens: auto; hyphens: auto; overflow-wrap: break-word; }
+.card h2 .sub { display: block; margin-top: 2px; font-size: 13.5px; line-height: 1.3; font-weight: 600; color: var(--muted); }
 .tags { grid-column: 1; display: flex; flex-wrap: wrap; gap: 5px; align-items: flex-start; align-self: start; }
 .tag { font-size: 12px; padding: 1px 8px; border-radius: 4px; background: var(--chip); color: var(--ink); }
 .facts { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; margin-top: 8px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -294,6 +295,11 @@ html.covers .cv { display: block; grid-column: 1; grid-row: 1 / span 4; align-se
 .gbar h3 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 22px; }
 .meta .xtra { color: var(--muted); }
 .empty { padding: 40px 0; text-align: center; color: var(--muted); }
+.empty::before { content: ""; display: block; width: 44px; height: 44px; margin: 0 auto 12px; background: currentColor; opacity: .45;
+  -webkit-mask: var(--ic) center / contain no-repeat; mask: var(--ic) center / contain no-repeat; }
+.empty[data-ic="saved"] { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linejoin='round'%3E%3Cpath d='M6.5 3.5h11v17l-5.5-4-5.5 4z'/%3E%3C/svg%3E"); }
+.empty[data-ic="seen"] { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M8 12.3l2.7 2.7L16.2 9.5'/%3E%3C/svg%3E"); }
+.empty[data-ic="find"] { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6'/%3E%3Cpath d='M15 15l5 5'/%3E%3C/svg%3E"); }
 
 /* Unten */
 .info { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); padding-block: 26px 48px; }
@@ -456,6 +462,8 @@ html.prisc { --hanko: #FF6FA8; --hanko-soft: #3A1A2A; --gold: #FF9CC8; --on-gold
 .app .petals { position: absolute; top: 0; left: 0; right: 0; bottom: auto; height: calc(100% + 400px); }
 .petal { position: absolute; top: -44px; line-height: 1; will-change: transform; }
 .meta .pg { display: none; color: #FF8FBF; }
+.meta .neu { padding: 1px 6px; border-radius: 4px; background: #E8EAF3; color: #10131F; letter-spacing: .08em; }
+html.prisc .meta .neu { background: var(--hanko); color: #2A0A18; }
 html.prisc .meta .pg { display: inline; }
 html.prisc .prog.rt0, html.prisc .ladder li.rt0 { --rc: #F9CFE1; }
 html.prisc .prog.rt1, html.prisc .ladder li.rt1 { --rc: #FF8FC4; }
@@ -630,7 +638,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V114</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V115</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1050,6 +1058,8 @@ const fmt = n => n.toFixed(1).replace(".", ",");
 const fmtVotes = v => v >= 10 ? Math.round(v) + " Tsd." : String(v).replace(".", ",") + " Tsd.";
 const tier = r => r >= 9 ? "top" : r >= 8 ? "mid" : "low";
 const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+// „Frieren – Nach dem Ende der Reise“: Haupttitel groß, Rest klein darunter
+const splitT = t => { const i = t.indexOf(" – "); return i < 2 ? esc(t) : `${esc(t.slice(0, i))}<span class="sub">${esc(t.slice(i + 3))}</span>`; };
 // Direkte Serienseiten bei Crunchyroll (aus dem Crunchyroll-Verzeichnis, Oktober 2026)
 const CR_BASE = "https://www.crunchyroll.com/de/series/";
 const CR = {
@@ -1297,17 +1307,23 @@ const ICON = {
   out: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9 2.5h4.5V7M13.5 2.5L7 9M11.5 9.5v4h-9v-9h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 };
 
+// Neu dazugekommen: Schild „Neu“ bis Ende November 2026
+const NEU = new Set(["Spice and Wolf: Merchant Meets the Wise Wolf", "Makeine: Too Many Losing Heroines!", "Plastic Memories", "Tomo-chan Is a Girl!",
+  "Recovery of an MMO Junkie", "Tsurezure Children", "Don't Toy with Me, Miss Nagatoro", "The Girl I Like Forgot Her Glasses", "Honey Lemon Soda",
+  "Tying the Knot with an Amagami Sister"]);
+const NEU_BIS = new Date("2026-12-01T00:00:00").getTime();
+const isNew = it => NEU.has(it.key) && Date.now() < NEU_BIS;
 function card(it) {
   const isSaved = saved.has(it.id), isSeen = seen.has(it.id);
   return `
     <li class="card${isSeen ? " is-seen" : ""}">
       <div class="cbody">
       <div class="cv" aria-hidden="true"><img alt="" draggable="false" loading="lazy" decoding="async"${coverOf(it) ? ` src="${coverOf(it)}"` : ""} onload="this.classList.add('ok')" onerror="this.remove()"></div>
-      <div class="meta"><span class="rank">${state.view === "genres" && state.g2 ? `Platz ${(prisc ? it.grR : it.gr)[state.g2]}` : `Platz ${it.rank}`}</span><span>${it.type === "F" ? "Film" : "Serie"}</span>${isRom(it) && it.mine >= 8.3 ? '<span class="pg">💘 Priscilla-geprüft</span>' : ""}</div>
+      <div class="meta"><span class="rank">${state.view === "genres" && state.g2 ? `Platz ${(prisc ? it.grR : it.gr)[state.g2]}` : `Platz ${it.rank}`}</span><span>${it.type === "F" ? "Film" : "Serie"}</span>${isNew(it) ? '<span class="neu">Neu</span>' : ""}${isRom(it) && it.mine >= 8.3 ? '<span class="pg">💘 Priscilla-geprüft</span>' : ""}</div>
       <div class="score">
         <div class="stamp ${tier(it.mine)}" aria-label="Wertung ${fmt(it.mine)} von 10">${fmt(it.mine)}<small>/10</small></div>
       </div>
-      <h2>${esc(it.title)}</h2>
+      <h2>${splitT(it.title)}</h2>
       <div class="tags">${it.genres.map(g => `<span class="tag">${g}</span>`).join("")}</div>
       <div class="facts">
         <span class="dub ${it.dub}">${DUB[it.dub]}</span>
@@ -1620,6 +1636,7 @@ function render() {
     : prisc && state.view === "saved" && !romOf(saved) ? "Noch keine Romanze gemerkt. Tippe bei einer Romanze auf das Lesezeichen."
     : prisc && state.view === "seen" && !romOf(seen) ? "Noch keine Romanze als gesehen markiert. Tippe bei einer Romanze auf den Haken ✓."
     : "Kein Titel passt zu diesen Filtern. Setz einzelne Filter zurück oder leere die Suche.";
+  e.dataset.ic = /gemerkt/.test(e.textContent) ? "saved" : /gesehen markiert/.test(e.textContent) ? "seen" : "find";
   status(list.length);
 }
 
