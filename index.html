@@ -668,13 +668,15 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
 }
 /* ===== Konto (Anmeldung und Sicherung) ===== */
 .eyebrow { position: relative; }
-.acct { position: absolute; right: 0; top: 50%; margin-top: -19px; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: var(--sheet); color: var(--ink);
+.acct { position: absolute; right: 0; top: -2px; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: var(--sheet); color: var(--ink);
   display: grid; place-items: center; padding: 0; cursor: pointer; font: inherit; font-size: 15px; font-weight: 800; letter-spacing: 0; text-transform: none; -webkit-tap-highlight-color: transparent; }
 .acct svg { width: 19px; height: 19px; }
 .acct.on { background: linear-gradient(135deg, #F05A50, #F47521); border-color: transparent; color: #1A0C0B; }
 html.prisc .acct.on { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color: #2A0A18; }
 .acct.warn::after { content: ""; position: absolute; top: 0; right: 0; width: 10px; height: 10px; border-radius: 50%; background: #F0C064; border: 2px solid var(--paper); }
 @media (min-width: 1400px) and (hover: hover) and (pointer: fine) { html:not(.app) header.top { position: relative; } html:not(.app) .eyebrow { position: static; } html:not(.app) .acct { top: 24px; margin-top: 0; } }
+.app .top.sub .vtitle { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.vtitle .acct { position: static; margin-top: 0; flex: none; font-family: var(--f-body); line-height: 1; }
 .lg-card { gap: 12px; }
 .lg-card .sub { margin: 2px 0 0; color: var(--muted); font-size: 13.5px; line-height: 1.4; }
 .lg-g { display: flex; align-items: center; justify-content: center; gap: 10px; background: #fff; color: #1f1f1f; border-color: #fff; }
@@ -711,8 +713,8 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
       <button type="button" class="ib-go" id="ibSave">Speichern</button>
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
-    <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V166</span></div>
+    <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V167</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1914,7 +1916,10 @@ function headFor() {
   const top = document.querySelector("header.top"), sub = state.view !== "all";
   top.classList.toggle("sub", sub);
   top.classList.toggle("nopick", sub);
-  $("#vtitle").textContent = { genres: "Genres", saved: "Gemerkt", seen: "Gesehen" }[state.view] || "";
+  $("#vtText").textContent = { genres: "Genres", saved: "Gemerkt", seen: "Gesehen" }[state.view] || "";
+  // Konto-Knopf: in der App auf jedem Reiter oben rechts – bei Alle in der Stand-Zeile, sonst neben dem großen Titel
+  const ab = document.getElementById("acct"), host = sub && document.documentElement.classList.contains("app") ? $("#vtitle") : top.querySelector(".eyebrow");
+  if (ab && ab.parentNode !== host) host === top.querySelector(".eyebrow") ? host.prepend(ab) : host.append(ab);
 }
 // Die Karten werden nur einmal gebaut und danach nur ein- und ausgeblendet. So geht der Reiterwechsel schneller.
 let cardEls = null;
@@ -2656,7 +2661,7 @@ const FB_URL = n => `https://www.gstatic.com/firebasejs/10.12.2/firebase-${n}.js
 const FB_HOST = /(^|\.)github\.io$/.test(location.hostname) || location.hostname === "localhost";
 const KEY_ACCT = "cr-top100-acct"; // { uid, ver, dirty, base } – ver/base = letzter gemeinsamer Stand mit dem Konto
 let acct = load(KEY_ACCT, {}) || {};
-let fb = null, fbWait = null, user = null, syncSt = "", syncAt = 0, pushT = 0, retryT = 0, busy = false, again = false, gen = 0, lastPull = 0, lgCreate = false;
+let fb = null, fbWait = null, user = null, authKnown = false, syncSt = "", syncAt = 0, pushT = 0, retryT = 0, busy = false, again = false, gen = 0, lastPull = 0, lgCreate = false;
 const acctBtn = $("#acct"), acctOv = $("#acctOv");
 const saveAcct = () => store(KEY_ACCT, acct);
 function fbLoad() {
@@ -2666,7 +2671,7 @@ function fbLoad() {
     auth.languageCode = "de";
     fb = { U, F, auth, db: F.getFirestore(app) };
     U.onAuthStateChanged(auth, u => {
-      user = u || null;
+      user = u || null; authKnown = true;
       if (!user && acct.uid) { acct = {}; saveAcct(); } // woanders abgemeldet
       acctUi();
       if (user) acctSync();
@@ -2707,7 +2712,7 @@ async function acctSync() {
       ver = newVer();
       await fb.F.setDoc(ref(), { seen: outSeen, saved: outSaved, ver, at: Date.now() });
     }
-    acct = { uid, ver, dirty: gen !== g, base: { seen: outSeen, saved: outSaved } }; saveAcct();
+    acct = { uid, ver, dirty: gen !== g, base: { seen: outSeen, saved: outSaved }, name: nameOf(user), email: user.email || "" }; saveAcct();
     syncSt = "ok"; syncAt = Date.now();
     if (gen !== g) again = true;
   } catch (e) {
@@ -2754,16 +2759,18 @@ function syncText() {
 }
 function acctUi() {
   acctBtn.hidden = !FB_HOST;
-  if (user) { acctBtn.classList.add("on"); acctBtn.textContent = nameOf(user)[0].toUpperCase(); acctBtn.setAttribute("aria-label", "Konto: " + nameOf(user)); }
+  // Angemeldet: echter Nutzer – oder beim Start, bis Firebase geladen ist, der gemerkte Name (dann ist das N sofort da)
+  const me = user ? { name: nameOf(user), email: user.email || "" } : !authKnown && acct.uid && acct.name ? { name: acct.name, email: acct.email || "" } : null;
+  if (me) { acctBtn.classList.add("on"); acctBtn.textContent = me.name[0].toUpperCase(); acctBtn.setAttribute("aria-label", "Konto: " + me.name); }
   else { acctBtn.classList.remove("on"); acctBtn.innerHTML = USER_ICON; acctBtn.setAttribute("aria-label", "Anmelden"); }
-  acctBtn.classList.toggle("warn", !!user && syncSt === "err");
-  $("#lgOutBox").hidden = !!user; $("#lgInBox").hidden = !user;
-  $("#lgSub").hidden = !!user;
-  $("#lgClose").textContent = user ? "Fertig" : "Später";
-  $("#lgClose").classList.toggle("main", !!user);
-  if (user) {
-    $("#lgAv").textContent = nameOf(user)[0].toUpperCase(); $("#lgName").textContent = nameOf(user); $("#lgEmail").textContent = user.email || "";
-    const t = $("#lgSync"); t.textContent = syncText(); t.className = "lg-sync" + (syncSt === "busy" ? " busy" : syncSt === "err" ? " err" : "");
+  acctBtn.classList.toggle("warn", !!me && syncSt === "err");
+  $("#lgOutBox").hidden = !!me; $("#lgInBox").hidden = !me;
+  $("#lgSub").hidden = !!me;
+  $("#lgClose").textContent = me ? "Fertig" : "Später";
+  $("#lgClose").classList.toggle("main", !!me);
+  if (me) {
+    $("#lgAv").textContent = me.name[0].toUpperCase(); $("#lgName").textContent = me.name; $("#lgEmail").textContent = me.email;
+    const t = $("#lgSync"); t.textContent = user ? syncText() : "Wird verbunden …"; t.className = "lg-sync" + (!user || syncSt === "busy" ? " busy" : syncSt === "err" ? " err" : "");
   }
   $("#lgGo").textContent = lgCreate ? "Konto erstellen" : "Anmelden";
   $("#lgMode").textContent = lgCreate ? "Ich habe schon ein Konto" : "Neues Konto erstellen";
@@ -2793,7 +2800,7 @@ const errText = e => ERR[e && e.code] || "Das hat nicht geklappt. Versuch es noc
 async function openAcct() {
   lgMsg(""); acctUi(); acctOv.hidden = false;
   if (!fb) {
-    lgBusy(true); lgMsg("Lädt …", true);
+    lgBusy(true); lgMsg(acct.uid ? "" : "Lädt …", true);
     try { await fbLoad(); lgMsg(""); } catch (e) { lgMsg("Keine Verbindung. Versuch es später nochmal."); }
     lgBusy(false);
   } else if (user && Date.now() - lastPull > 20000) acctSync();
