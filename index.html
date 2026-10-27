@@ -68,7 +68,7 @@
   --paper: #0F1120; --sheet: #181B2D; --ink: #E8EAF3; --muted: #9EA3BC; --line: #2A2F48;
   --chip: #23273D; --hanko: #F05A50; --hanko-soft: #3A1E22; --on-hanko: #1A0C0B;
   --gold: #F2C14E; --on-gold: #1C1503;
-  --ok: #5FD3A6; --ok-soft: #173329; --warn: #F0C064; --warn-soft: #3A2E14; --focus: #F47521;
+  --ok: #5FD3A6; --ok-soft: #173329; --warn: #F0C064; --warn-soft: #3A2E14; --focus: #E8EAF3;
   --f-display: "Dela Gothic One", "Arial Black", "Helvetica Neue", sans-serif;
   --f-body: "Murecho", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   color-scheme: dark;
@@ -541,13 +541,14 @@ html.prisc .stamp.low { border-color: #E58BB8; color: #F6B9D7; }
   position: fixed; z-index: 30; left: 50%; transform: translateX(-50%);
   bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + 58px);
   width: max-content; max-width: min(88vw, 420px);
-  background: var(--sheet); color: var(--ink); padding: 10px 14px; border-radius: 12px; border: 1px solid #F47521;
+  background: var(--ink); color: var(--paper); padding: 10px 14px; border-radius: 12px; border: 0;
   font-size: 14px; line-height: 1.4; box-shadow: 0 8px 24px rgba(0,0,0,.45);
-}
-html.prisc .toast { border-color: var(--hanko);
 }
 html.prisc { --focus: #FF6FA8;
 }
+/* Suchfeld (normal): beim Tippen nur ein heller Rand, kein Ring; weißer Cursor */
+html:not(.prisc) .search:focus, html:not(.prisc) .search:focus-visible { outline: none; border-color: rgba(232, 234, 243, .75); }
+html:not(.prisc) .search { caret-color: var(--ink); }
 .sharebox { grid-column: 1 / -1; display: grid; gap: 8px; background: var(--sheet); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 13px; color: var(--muted); }
 .sharebox textarea { font: inherit; font-size: 13px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 8px; min-height: 120px; resize: vertical; width: 100%; }
 .sharebox .row { justify-content: flex-end; }
@@ -658,7 +659,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V130</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V131</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
