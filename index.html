@@ -414,7 +414,7 @@ html:not(.prisc) .pick-btn { background: linear-gradient(100deg, #F05A50, #F4752
 .tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); }
 .tabs .n { font-size: 12px; min-width: 22px; padding: 1px 7px; border-radius: 999px; background: var(--chip); color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; }
 .tabs button[aria-selected="true"] .n { background: var(--ink); color: var(--paper); }
-.searchrow { flex-wrap: nowrap; }
+.searchrow { flex-wrap: nowrap; align-items: stretch; }
 .searchrow .search { flex: 1 1 0; width: 0; min-width: 0; }
 .bar { grid-template-columns: minmax(0, 1fr); }
 .wrap { overflow-x: clip; }
@@ -744,7 +744,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V176</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V177</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -763,7 +763,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
       <button type="button" class="filter-btn" id="filterBtn" aria-expanded="false" aria-controls="panel"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12M4.5 8h7M7 12h2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Filter<span class="badge" id="fcount" hidden>0</span></button>
     </div>
     <div class="panel" id="panel" hidden>
-      <div class="prow"><span class="plabel">Sortieren</span>
+      <div class="prow" id="sortRow"><span class="plabel">Sortieren</span>
         <div class="seg" role="group" aria-label="Sortieren">
           <button type="button" data-sort="mine" aria-pressed="true">Wertung</button>
           <button type="button" data-sort="neu" aria-pressed="false">Neu erschienen</button>
@@ -837,7 +837,17 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
     </div>
     <p class="lg-msg" id="lgMsg" hidden></p>
     <button type="button" class="ov-btn" id="lgClose" data-close>Später</button>
-    <button type="button" class="lg-link" id="lgLogout" style="justify-self:center" hidden>Abmelden</button>
+    <div class="lg-links" id="lgFoot" hidden><button type="button" class="lg-link" id="lgResetSeen">Gesehen zurücksetzen</button><button type="button" class="lg-link" id="lgLogout">Abmelden</button></div>
+    <div class="lg-form" id="lgResetAsk" hidden>
+      <p class="sub" id="lgResetTxt" style="margin:0"></p>
+      <div class="ov-row"><button type="button" class="ov-btn" id="lgResetNo">Abbrechen</button><button type="button" class="ov-btn danger" id="lgResetYes">Zurücksetzen</button></div>
+    </div>
+    <div class="lg-form" id="lgChoice" hidden>
+      <p class="sub" id="lgChoiceTxt" style="margin:0"></p>
+      <button type="button" class="ov-btn main" data-pick="account">Konto behalten</button>
+      <button type="button" class="ov-btn" data-pick="merge">Beides zusammenlegen</button>
+      <button type="button" class="ov-btn" data-pick="device">Dieses Gerät übernehmen</button>
+    </div>
   </div>
 </div>
 <div class="ov rankup" id="rankUp" hidden role="status" aria-live="polite">
@@ -1525,7 +1535,9 @@ const REL = {"Frieren – Nach dem Ende der Reise": "2023-09",
 const NEU_JAHR = Object.values(REL).map(r => r.slice(0, 4)).sort().pop();
 const isNeu = it => (REL[it.key] || "").startsWith(NEU_JAHR);
 const byNew = [...items].sort((a, b) => (REL[b.key] || "").localeCompare(REL[a.key] || "") || b.mine - a.mine);
-const sorted = () => state.sort === "neu" ? byNew : byMine;
+// In „Gesehen“ gibt es kein Sortieren (im Regal sieht man kein Datum): dort immer nach Wertung
+const effSort = () => state.view === "seen" ? "mine" : state.sort;
+const sorted = () => effSort() === "neu" ? byNew : byMine;
 byMine.forEach((it, i) => it.rank = i + 1);
 // Platz innerhalb jedes Genres
 GENRES.forEach(g => byMine.filter(it => it.genres.includes(g)).forEach((it, i) => { (it.gr = it.gr || {})[g] = i + 1; }));
@@ -1554,7 +1566,7 @@ const FILTER_KEYS = ["sort", "type", "onlyDe", "hideSeen", "mood"];
 const MOODS = ["chill", "herz", "dn", "kurz", "suess", "lachen", "schmerz"];
 const RMOODS = ["suess", "lachen", "schmerz"]; // nur im Priscilla-Modus
 // Im Reiter Gesehen ergibt „Gesehene ausblenden“ keinen Sinn: dort ausgeblendet und nicht als aktiver Filter gezählt
-const activeKeys = () => FILTER_KEYS.filter(k => !((k === "hideSeen" || k === "mood") && state.view === "seen"));
+const activeKeys = () => FILTER_KEYS.filter(k => !((k === "hideSeen" || k === "mood" || k === "sort") && state.view === "seen"));
 const loaded = load(KEY.filters, {});
 if (loaded.onlySaved && !loaded.view) loaded.view = "saved";
 delete loaded.onlySaved;
@@ -1701,6 +1713,8 @@ function setPrisc(on, fx) {
   if (!fx) return;
   if (on) { petals(); toast("💘 Priscilla-Modus aktiviert: nur noch Romanzen"); }
   else toast("Priscilla-Modus beendet");
+  // Im anderen Modus aufgestiegen? Dann jetzt die neuen Ränge zeigen
+  setTimeout(checkRanks, on ? 1400 : 700);
 }
 // Herzen und Kirschblüten fallen einmal über den Bildschirm (nur transform/opacity, bei „Bewegung reduzieren“ nicht)
 function petals() {
@@ -1829,6 +1843,7 @@ function sync() {
   document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.view === state.view)));
   if (typeof placeLens === "function") placeLens();
   $("#hideSeen").hidden = state.view === "seen";
+  $("#sortRow").hidden = state.view === "seen";
   $("#tonLabel").textContent = state.view === "seen" ? "Ton" : "Ton und Gesehenes";
   const nf = activeKeys().filter(k => state[k] !== DEFAULTS[k]).length;
   $("#fcount").textContent = nf; $("#fcount").hidden = !nf;
@@ -1871,7 +1886,7 @@ function card(it) {
 function filtered(mood = state.mood) {
   const inGenre = state.view === "genres";
   return sorted().filter(it =>
-    (state.sort !== "neu" || isNeu(it)) &&
+    (effSort() !== "neu" || isNeu(it)) &&
     (!mood || state.view === "seen" || it.moods.includes(mood)) &&
     (!inGenre || it.genres.includes(state.g2)) &&
     (!state.type || it.type === state.type) &&
@@ -1891,7 +1906,7 @@ function status(n) {
   $("#n-all").textContent = prisc ? items.filter(isRom).length : topList.length; $("#n-saved").textContent = nSaved; $("#n-seen").textContent = nSeen;
   $("#n-saved").classList.toggle("zero", !nSaved); $("#n-seen").classList.toggle("zero", !nSeen);
   const active = state.q || activeKeys().some(k => state[k] !== DEFAULTS[k]);
-  $("#status").textContent = n < 0 ? `${tileCount} ${tileCount === 1 ? "Genre" : "Genres"}` : (prisc ? `${n} ${n === 1 ? "Romanze" : "Romanzen"}` : active ? `${n} Treffer` : `${n} Titel`) + (state.sort === "neu" && n >= 0 ? ` · erschienen ${NEU_JAHR}` : "");
+  $("#status").textContent = n < 0 ? `${tileCount} ${tileCount === 1 ? "Genre" : "Genres"}` : (prisc ? `${n} ${n === 1 ? "Romanze" : "Romanzen"}` : active ? `${n} Treffer` : `${n} Titel`) + (effSort() === "neu" && n >= 0 ? ` · erschienen ${NEU_JAHR}` : "");
   $("#reset").hidden = !active;
   $("#share").hidden = !(state.view === "saved" && nSaved);
   // Im Reiter Gesehen gibt es schon das ⓘ für die Ränge, dort fällt das Wertungs-ⓘ weg
@@ -2132,6 +2147,21 @@ const LOVE = [[0, "独", "Hitori", "Single", 0], [1, "惚", "Horeru", "Verknallt
 const ranks = () => prisc ? LOVE : RANKS;
 const rankIdx = n => ranks().reduce((a, r, i) => n >= r[0] ? i : a, 0);
 const seenCount = () => items.filter(it => seen.has(it.id) && (!prisc || isRom(it))).length;
+// Zuletzt gezeigter Rang je Modus (n = normal, p = Priscilla). Wer im anderen Modus aufgestiegen ist (z. B. Romanzen
+// im normalen Modus markiert), bekommt beim Wechsel alle neuen Ränge nacheinander gezeigt.
+const KEY_RACK = "cr-top100-rank-seen";
+const rankOf = p => { const n = items.filter(it => seen.has(it.id) && (!p || isRom(it))).length; return (p ? LOVE : RANKS).reduce((a, r, i) => n >= r[0] ? i : a, 0); };
+const rankAck = Object.assign({ n: rankOf(false), p: prisc ? rankOf(true) : 0 }, load(KEY_RACK, {}) || {});
+store(KEY_RACK, rankAck);
+let rankQ = [];
+function checkRanks() {
+  const k = prisc ? "p" : "n", cur = rankOf(prisc), from = rankAck[k];
+  if (cur < from) { rankAck[k] = cur; store(KEY_RACK, rankAck); }
+  if (cur <= from) return;
+  rankAck[k] = cur; store(KEY_RACK, rankAck);
+  for (let i = from + 1; i <= cur; i++) rankQ.push(i);
+  if ($("#rankUp").hidden) rankUp(rankQ.shift());
+}
 function renderProg() {
   const box = $("#prog"), on = state.view === "seen";
   box.hidden = !on; if (!on) return;
@@ -2170,7 +2200,7 @@ function render() {
     status(-1); return;
   }
   if (state.view === "genres") $("#gtitle").textContent = state.g2;
-  if (domSort !== state.sort) { domSort = state.sort; const L = $("#list"); sorted().forEach(it => L.append(cardEls.get(it.id))); }
+  if (state.view !== "seen" && domSort !== state.sort) { domSort = state.sort; const L = $("#list"); sorted().forEach(it => L.append(cardEls.get(it.id))); }
   const list = filtered(), show = new Set(list.map(it => it.id)), gName = state.view === "genres" ? state.g2 : "";
   byMine.forEach(it => {
     const el = cardEls.get(it.id), on = show.has(it.id);
@@ -2269,14 +2299,13 @@ function rankUp(ri) {
     $("#ruSt").animate([{ transform: "scale(.85)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 300, delay: 120, easing: "ease-out", fill: "backwards" });
   }
   // Nicht aus Versehen wegtippen: Schließen nur mit OK, und OK geht erst nach 1,5 Sekunden
-  const ok = $("#ruOk"), close = () => { box.hidden = true; };
+  const ok = $("#ruOk"), close = () => { box.hidden = true; const nx = rankQ.shift(); if (nx != null) setTimeout(() => rankUp(nx), 250); };
   ok.disabled = true; clearTimeout(rankUp.t);
   rankUp.t = setTimeout(() => { ok.disabled = false; }, 1500);
   box.onclick = e => { if (e.target.id === "ruOk" && !ok.disabled) close(); };
 }
 function setMark(id, act, on) {
   const set = act === "seen" ? seen : saved;
-  const riBefore = act === "seen" && on ? rankIdx(seenCount()) : -1;
   on ? set.add(id) : set.delete(id);
   // Gesehen heißt: nicht mehr auf der Merkliste
   const unsave = act === "seen" && on && saved.delete(id);
@@ -2291,7 +2320,7 @@ function setMark(id, act, on) {
       if (s) { s.hidden = on; s.setAttribute("aria-pressed", "false"); s.innerHTML = ICON.save + '<span class="bt">Merken</span>'; }
     }
   }
-  if (riBefore >= 0) { const ri = rankIdx(seenCount()); if (ri > riBefore) setTimeout(() => rankUp(ri), 350); }
+  if (act === "seen" && on) setTimeout(checkRanks, 350);
   // Speichern, Zähler und ggf. Liste neu filtern erst im nächsten Bild, damit der Knopf nicht hängt
   requestAnimationFrame(() => setTimeout(() => {
     store(act === "seen" ? KEY.seen : KEY.saved, [...set]);
@@ -2713,7 +2742,7 @@ const FB_URL = n => `https://www.gstatic.com/firebasejs/10.12.2/firebase-${n}.js
 const FB_HOST = /(^|\.)github\.io$/.test(location.hostname) || location.hostname === "localhost";
 const KEY_ACCT = "cr-top100-acct"; // { uid, ver, dirty, base } – ver/base = letzter gemeinsamer Stand mit dem Konto
 let acct = load(KEY_ACCT, {}) || {};
-let fb = null, fbWait = null, user = null, authKnown = false, syncSt = "", syncAt = 0, pushT = 0, retryT = 0, busy = false, again = false, gen = 0, lastPull = 0, lgCreate = false, lgReset = false, lgSent = false, lgSentTo = "", lgEditing = false, peSel = "";
+let fb = null, fbWait = null, user = null, authKnown = false, syncSt = "", syncAt = 0, pushT = 0, retryT = 0, busy = false, again = false, gen = 0, lastPull = 0, lgCreate = false, lgReset = false, lgSent = false, lgSentTo = "", lgEditing = false, peSel = "", choice = null, firstPick = "", resetAsk = false;
 const acctBtn = $("#acct"), acctOv = $("#acctOv");
 const saveAcct = () => store(KEY_ACCT, acct);
 function fbLoad() {
@@ -2787,7 +2816,18 @@ async function acctSync() {
     const rSeen = r ? r.seen || [] : [], rSaved = r ? r.saved || [] : [];
     // Titel, die diese Version der Liste nicht kennt (z. B. neuer auf dem anderen Gerät), bleiben im Konto erhalten
     const keepS = rSeen.filter(id => !known.has(id)), keepM = rSaved.filter(id => !known.has(id));
-    if (r && (!mine || r.ver !== acct.ver)) {
+    // Erste Anmeldung auf diesem Gerät, und hier steht schon eine andere Liste: fragen, welche gelten soll
+    let how = "";
+    if (r && !mine && (seen.size || saved.size)) {
+      const rs = new Set(rSeen.filter(id => known.has(id))), rm = new Set(rSaved.filter(id => known.has(id)));
+      if (!(same([...seen], rs) && same([...saved], rm))) {
+        if (!firstPick) { choice = { here: [seen.size, saved.size], there: [rs.size, rm.size] }; acctOv.hidden = false; throw 0; }
+        how = firstPick; firstPick = ""; choice = null;
+      }
+    }
+    if (how === "account") applyMarks(new Set(rSeen), new Set(rSaved));
+    else if (how === "device") { /* Liste von diesem Gerät gilt, sie wird gleich ins Konto geschrieben */ }
+    else if (r && (!mine || r.ver !== acct.ver)) {
       if (mine && !acct.dirty) applyMarks(new Set(rSeen), new Set(rSaved));
       else applyMarks(merge3(seen, rSeen, base.seen), merge3(saved, rSaved, base.saved));
     }
@@ -2824,6 +2864,7 @@ function applyMarks(nSeen, nSaved) {
   seen.clear(); nSeen.forEach(id => seen.add(id)); saved.clear(); nSaved.forEach(id => saved.add(id));
   store(KEY.seen, [...seen]); store(KEY.saved, [...saved]);
   applying = false;
+  rankAck.n = rankOf(false); rankAck.p = rankOf(true); store(KEY_RACK, rankAck);
   touched.forEach(id => {
     const v = document.getElementById("v-" + id), sv = document.getElementById("s-" + id), on = seen.has(id), sOn = saved.has(id);
     if (v) { v.setAttribute("aria-pressed", String(on)); v.innerHTML = ICON.seen + `<span class="bt">${on ? "Gesehen" : "Schon gesehen"}</span>`; v.closest(".card").classList.toggle("is-seen", on); }
@@ -2851,18 +2892,24 @@ function acctUi() {
   acctBtn.classList.toggle("on", !!me); acctBtn.classList.toggle("pic", !!(me && me.av));
   acctBtn.setAttribute("aria-label", me ? "Konto: " + me.name : "Anmelden");
   acctBtn.classList.toggle("warn", !!me && syncSt === "err");
-  const ed = !!me && lgEditing;
-  $("#lgOutBox").hidden = !!me; $("#lgInBox").hidden = !me || ed; $("#peBox").hidden = !ed; $("#lgLogout").hidden = !me || ed;
+  const ed = !!me && lgEditing, ch = !!user && !!choice, ra = !!me && resetAsk && !ed && !ch;
+  $("#lgOutBox").hidden = !!me; $("#lgInBox").hidden = !me || ed || ch || ra; $("#peBox").hidden = !ed || ch;
+  $("#lgFoot").hidden = !me || ed || ch || ra; $("#lgResetAsk").hidden = !ra; $("#lgChoice").hidden = !ch;
+  if (ra) $("#lgResetTxt").textContent = `Alle ${seen.size} als gesehen markierten Animes werden auf allen Geräten wieder auf „nicht gesehen“ gesetzt. Dein Rang fängt von vorn an.`;
+  if (ch) {
+    const z = (a, w) => `${a} ${w}`;
+    $("#lgChoiceTxt").innerHTML = `Auf diesem Gerät: <b>${z(choice.here[0], "gesehen")}</b>, ${z(choice.here[1], "gemerkt")}<br>In deinem Konto: <b>${z(choice.there[0], "gesehen")}</b>, ${z(choice.there[1], "gemerkt")}`;
+  }
   $("#lgSub").hidden = !!me;
   // Passwort vergessen: eigene Ansicht nur mit E-Mail-Feld; nach dem Abschicken nur noch „Zur Anmeldung“
   const rs = lgReset && !me, done = rs && lgSent;
-  $("#lgTitle").innerHTML = done ? '<span class="lg-ok">✓</span> E-Mail ist unterwegs' : rs ? "Passwort zurücksetzen" : ed ? "Profil bearbeiten" : "Konto";
+  $("#lgTitle").innerHTML = ch ? "Welche Liste soll gelten?" : ra ? "Gesehen zurücksetzen?" : done ? '<span class="lg-ok">✓</span> E-Mail ist unterwegs' : rs ? "Passwort zurücksetzen" : ed ? "Profil bearbeiten" : "Konto";
   $("#lgSub").textContent = done ? `Wir haben dir einen Link an ${lgSentTo} geschickt. Damit legst du ein neues Passwort fest. Schau auch im Spam-Ordner nach.`
     : rs ? "Gib deine E-Mail-Adresse ein. Wir schicken dir einen Link, mit dem du ein neues Passwort festlegst."
     : "Melde dich an, damit Gesehen, Gemerkt und dein Rang gesichert sind und auf Handy und PC gleich bleiben.";
   $("#lgGoogle").hidden = rs; acctOv.querySelector(".lg-or").hidden = rs;
   $("#lgMail").hidden = done; $("#lgPass").hidden = rs; $("#lgForgot").hidden = rs; $("#lgMode").hidden = done;
-  $("#lgClose").hidden = rs || ed; // beim Zurücksetzen kein „Abbrechen“: zurück geht über den Link, zumachen mit Tipp daneben
+  $("#lgClose").hidden = rs || ed || ch || ra; // beim Zurücksetzen kein „Abbrechen“: zurück geht über den Link, zumachen mit Tipp daneben
   $("#lgClose").textContent = me ? "Fertig" : rs ? "Abbrechen" : "Später";
   if (me) {
     if ($("#lgAv").dataset.face !== faceKey) { $("#lgAv").innerHTML = face(); $("#lgAv").dataset.face = faceKey; }
@@ -2933,7 +2980,7 @@ const ERR = {
 };
 const errText = e => ERR[e && e.code] || "Das hat nicht geklappt. Versuch es nochmal.";
 async function openAcct() {
-  lgReset = lgSent = lgEditing = false;
+  lgReset = lgSent = lgEditing = resetAsk = false;
   lgMsg(""); acctUi(); acctOv.hidden = false;
   if (!fb) {
     lgBusy(true); lgMsg(acct.uid ? "" : "Lädt …", true);
@@ -2941,6 +2988,18 @@ async function openAcct() {
     lgBusy(false);
   } else if (user) { refreshUser(); if (Date.now() - lastPull > 20000) acctSync(); }
 }
+$("#lgChoice").addEventListener("click", e => {
+  const b = e.target.closest("[data-pick]"); if (!b || !user) return;
+  firstPick = b.dataset.pick; choice = null; acctUi(); acctSync();
+});
+$("#lgResetSeen").addEventListener("click", () => { resetAsk = true; acctUi(); });
+$("#lgResetNo").addEventListener("click", () => { resetAsk = false; acctUi(); });
+$("#lgResetYes").addEventListener("click", () => {
+  resetAsk = false;
+  applyMarks(new Set(), new Set(saved)); // Knöpfe und Liste anpassen, Rang neu berechnen
+  if (onMarks) onMarks(); // im Konto sichern, damit es auf allen Geräten gilt
+  acctUi(); toast("Gesehen zurückgesetzt");
+});
 const closeAcct = () => { acctOv.hidden = true; document.activeElement && document.activeElement.blur && document.activeElement.blur(); };
 acctBtn.addEventListener("click", openAcct);
 acctOv.addEventListener("click", e => { if (e.target.closest("[data-close]")) closeAcct(); });
@@ -2978,7 +3037,7 @@ $("#lgMode").addEventListener("click", () => { if (lgReset) lgReset = lgSent = f
 $("#lgForgot").addEventListener("click", () => { lgReset = true; lgSent = false; lgCreate = false; lgMsg(""); acctUi(); });
 $("#lgLogout").addEventListener("click", () => lgRun(async ({ U, auth }) => {
   if (acct.dirty && user) await acctSync();
-  await U.signOut(auth); acct = {}; saveAcct(); syncSt = ""; lgEditing = false; acctUi();
+  await U.signOut(auth); acct = {}; saveAcct(); syncSt = ""; lgEditing = false; choice = null; firstPick = ""; acctUi();
 }));
 // Beim Zurückkommen in die App kurz nach neuen Daten vom anderen Gerät schauen
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && user && (acct.dirty || Date.now() - lastPull > 60000)) { refreshUser(); acctSync(); } });
