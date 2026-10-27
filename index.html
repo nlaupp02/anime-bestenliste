@@ -516,7 +516,7 @@ html.prisc .rankup.rt3 .ru-card { --rc: #C2187A; } html.prisc .rankup.rt4 .ru-ca
 /* „Entfernen“ (nicht mehr gesehen): Gold wie „Speichern“ */
 html:not(.prisc) #seenAskOk { background: linear-gradient(100deg, #F05A50, #F47521); border-color: transparent; color: var(--on-hanko); }
 /* Ränge-Fenster: „OK“ ruhig grau wie „Schließen“ im Regal */
-#rankSheet .ov-btn.main, #ruOk, #instSheet .ov-btn.main, #whySheet .ov-btn.main { background: var(--chip); border-color: var(--line); color: var(--ink); }
+#rankSheet .ov-btn.main, #ruOk, #whySheet .ov-btn.main { background: var(--chip); border-color: var(--line); color: var(--ink); }
 /* Abstände (App und Safari): keine Trennlinie über der Liste, schmale Priscilla-Leiste, etwas mehr Luft zwischen den Karten */
 .app .bar { border-bottom: 0; padding-bottom: 4px; }
 .app main { padding-top: 6px; }
@@ -714,12 +714,13 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
 .acct.pic { background: none; border-color: transparent; padding: 0; }
 .lg-av { overflow: hidden; }
 .pe-l { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 2px 0 -4px; }
-.pe-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px 10px; }
-#peBox { gap: 8px; }
+.pe-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px 8px; }
+#peBox { gap: 10px; }
+#acctOv .ov-card { max-height: calc(100% - 8px); }
 #peName { padding: 10px 13px; }
-.pe-it { font: inherit; display: grid; justify-items: center; gap: 3px; font-size: 11.5px; color: var(--muted); font-weight: 600; background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.pe-img { width: 100%; max-width: 48px; aspect-ratio: 1; border-radius: 50%; transition: transform .15s ease; }
-.pe-grp { grid-column: 1 / -1; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 4px 0 -2px; }
+.pe-it { font: inherit; display: grid; justify-items: center; gap: 3px; font-size: 12px; color: var(--muted); font-weight: 600; background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.pe-img { width: 100%; max-width: 60px; aspect-ratio: 1; border-radius: 50%; transition: transform .15s ease; }
+.pe-grp { grid-column: 1 / -1; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 6px 0 -2px; text-align: center; }
 .pe-it[aria-pressed="true"] { color: var(--ink); }
 .pe-it[aria-pressed="true"] .pe-img { box-shadow: 0 0 0 2px var(--sheet), 0 0 0 4px var(--ink); transform: scale(1.06); }
 #peNone[aria-pressed="true"] { color: var(--ink); }
@@ -742,7 +743,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V171</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V172</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
