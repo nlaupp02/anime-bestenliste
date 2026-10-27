@@ -699,6 +699,7 @@ html.prisc .acct.on { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); col
 .lg-link { font: inherit; font-size: 13px; color: var(--muted); background: none; border: 0; padding: 2px 0; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .lg-msg { margin: 0; font-size: 13px; line-height: 1.4; color: #F0C064; }
 .lg-msg.ok { color: #5FD3A6; }
+.lg-ok { color: #5FD3A6; }
 .lg-me { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 12px; align-items: center; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
 .lg-av { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(135deg, #F05A50, #F47521); color: #1A0C0B; font-weight: 800; font-size: 19px; }
 html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color: #2A0A18; }
@@ -723,7 +724,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V168</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V169</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -2686,7 +2687,7 @@ const FB_URL = n => `https://www.gstatic.com/firebasejs/10.12.2/firebase-${n}.js
 const FB_HOST = /(^|\.)github\.io$/.test(location.hostname) || location.hostname === "localhost";
 const KEY_ACCT = "cr-top100-acct"; // { uid, ver, dirty, base } – ver/base = letzter gemeinsamer Stand mit dem Konto
 let acct = load(KEY_ACCT, {}) || {};
-let fb = null, fbWait = null, user = null, authKnown = false, syncSt = "", syncAt = 0, pushT = 0, retryT = 0, busy = false, again = false, gen = 0, lastPull = 0, lgCreate = false;
+let fb = null, fbWait = null, user = null, authKnown = false, syncSt = "", syncAt = 0, pushT = 0, retryT = 0, busy = false, again = false, gen = 0, lastPull = 0, lgCreate = false, lgReset = false, lgSent = false, lgSentTo = "";
 const acctBtn = $("#acct"), acctOv = $("#acctOv");
 const saveAcct = () => store(KEY_ACCT, acct);
 function fbLoad() {
@@ -2791,14 +2792,23 @@ function acctUi() {
   acctBtn.classList.toggle("warn", !!me && syncSt === "err");
   $("#lgOutBox").hidden = !!me; $("#lgInBox").hidden = !me;
   $("#lgSub").hidden = !!me;
-  $("#lgClose").textContent = me ? "Fertig" : "Später";
+  // Passwort vergessen: eigene Ansicht nur mit E-Mail-Feld; nach dem Abschicken nur noch „Zur Anmeldung“
+  const rs = lgReset && !me, done = rs && lgSent;
+  $("#lgTitle").innerHTML = done ? '<span class="lg-ok">✓</span> E-Mail ist unterwegs' : rs ? "Passwort zurücksetzen" : "Konto";
+  $("#lgSub").textContent = done ? `Wir haben dir einen Link an ${lgSentTo} geschickt. Damit legst du ein neues Passwort fest. Schau auch im Spam-Ordner nach.`
+    : rs ? "Gib deine E-Mail-Adresse ein. Wir schicken dir einen Link, mit dem du ein neues Passwort festlegst."
+    : "Melde dich an, damit Gesehen, Gemerkt und dein Rang gesichert sind und auf Handy und PC gleich bleiben.";
+  $("#lgGoogle").hidden = rs; acctOv.querySelector(".lg-or").hidden = rs;
+  $("#lgMail").hidden = done; $("#lgPass").hidden = rs; $("#lgForgot").hidden = rs; $("#lgMode").hidden = done;
+  $("#lgClose").hidden = rs; // beim Zurücksetzen kein „Abbrechen“: zurück geht über den Link, zumachen mit Tipp daneben
+  $("#lgClose").textContent = me ? "Fertig" : rs ? "Abbrechen" : "Später";
   $("#lgClose").classList.toggle("main", !!me);
   if (me) {
     $("#lgAv").textContent = me.name[0].toUpperCase(); $("#lgName").textContent = me.name; $("#lgEmail").textContent = me.email;
     const t = $("#lgSync"); t.textContent = user ? syncText() : "Wird verbunden …"; t.className = "lg-sync" + (!user || syncSt === "busy" ? " busy" : syncSt === "err" ? " err" : "");
   }
-  $("#lgGo").textContent = lgCreate ? "Konto erstellen" : "Anmelden";
-  $("#lgMode").textContent = lgCreate ? "Ich habe schon ein Konto" : "Neues Konto erstellen";
+  $("#lgGo").textContent = rs ? (lgSent ? "Zur Anmeldung" : "Link zum Zurücksetzen schicken") : lgCreate ? "Konto erstellen" : "Anmelden";
+  $("#lgMode").textContent = rs ? "← Zurück zur Anmeldung" : lgCreate ? "Ich habe schon ein Konto" : "Neues Konto erstellen";
   $("#lgPass").setAttribute("autocomplete", lgCreate ? "new-password" : "current-password");
   $("#lgPass").placeholder = lgCreate ? "Passwort (mindestens 8 Zeichen)" : "Passwort";
 }
@@ -2823,6 +2833,7 @@ const ERR = {
 };
 const errText = e => ERR[e && e.code] || "Das hat nicht geklappt. Versuch es nochmal.";
 async function openAcct() {
+  lgReset = lgSent = false;
   lgMsg(""); acctUi(); acctOv.hidden = false;
   if (!fb) {
     lgBusy(true); lgMsg(acct.uid ? "" : "Lädt …", true);
@@ -2844,17 +2855,20 @@ $("#lgGoogle").addEventListener("click", () => lgRun(({ U, auth }) => U.signInWi
 $("#lgForm").addEventListener("submit", e => {
   e.preventDefault();
   const mail = $("#lgMail").value.trim(), pass = $("#lgPass").value;
+  if (lgReset) {
+    if (lgSent) { lgReset = lgSent = false; lgMsg(""); acctUi(); $("#lgPass").focus(); return; } // „Zur Anmeldung“: E-Mail bleibt stehen, gleich das neue Passwort tippen
+    if (!mail) return lgMsg(ERR["auth/missing-email"]);
+    return lgRun(({ U, auth }) => U.sendPasswordResetEmail(auth, mail).then(() => {
+      lgSent = true; lgSentTo = mail; acctUi();
+    }));
+  }
   if (!mail) return lgMsg(ERR["auth/missing-email"]);
   if (!pass) return lgMsg(ERR["auth/missing-password"]);
   if (lgCreate && pass.length < 8) return lgMsg(ERR["auth/weak-password"]);
   lgRun(({ U, auth }) => (lgCreate ? U.createUserWithEmailAndPassword : U.signInWithEmailAndPassword)(auth, mail, pass).then(() => { $("#lgPass").value = ""; }));
 });
-$("#lgMode").addEventListener("click", () => { lgCreate = !lgCreate; lgMsg(""); acctUi(); });
-$("#lgForgot").addEventListener("click", () => {
-  const mail = $("#lgMail").value.trim();
-  if (!mail) return lgMsg("Gib oben deine E-Mail-Adresse ein, dann schicken wir dir einen Link zum Zurücksetzen.");
-  lgRun(({ U, auth }) => U.sendPasswordResetEmail(auth, mail).then(() => lgMsg("Wir haben dir eine E-Mail zum Zurücksetzen geschickt. Schau auch im Spam-Ordner nach.", true)));
-});
+$("#lgMode").addEventListener("click", () => { if (lgReset) lgReset = lgSent = false; else lgCreate = !lgCreate; lgMsg(""); acctUi(); });
+$("#lgForgot").addEventListener("click", () => { lgReset = true; lgSent = false; lgCreate = false; lgMsg(""); acctUi(); });
 $("#lgLogout").addEventListener("click", () => lgRun(async ({ U, auth }) => {
   if (acct.dirty && user) await acctSync();
   await U.signOut(auth); acct = {}; saveAcct(); syncSt = ""; acctUi();
