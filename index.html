@@ -48,7 +48,7 @@
   // noch 200px zu tief (siehe OFF im Skript) und die Zahlen fehlen, in der App kommt die Höhe der Statusleiste erst etwas später.
   // Deshalb bleibt die Seite kurz verdeckt (nur der dunkle Hintergrund), bis sich nichts mehr bewegt, und wird dann eingeblendet.
   const t0 = Date.now(); let last = "", same = 0;
-  const show = () => d.classList.remove("boot");
+  const show = () => { if (!d.classList.contains("boot")) return; d.classList.add("splash-out"); d.classList.remove("boot"); setTimeout(() => d.classList.remove("splash-out"), 450); };
   const check = () => {
     if (!d.classList.contains("boot")) return;
     const t = Date.now() - t0, h = document.querySelector("header.top"), h1 = document.querySelector("h1"), sc = document.getElementById("sc");
@@ -630,8 +630,13 @@ html:not(.inst) .ibanner { display: none; }
 /* App-Start: kurz verdeckt, bis alles stillsteht (siehe Kopf der Seite), dann sanft eingeblendet.
    Solange die Seite verdeckt ist, gibt es keine Bewegungen (z. B. die Blase der Leiste): Alles steht schon an seinem Platz,
    wenn die Seite erscheint. */
-.app body { transition: opacity .32s cubic-bezier(.25, .6, .3, 1); }
-html.boot body { opacity: 0; }
+/* Startbild: Solange die App beim Öffnen noch nicht stillsteht, liegt ein dunkles Bild mit App-Symbol darüber.
+   Weil darauf etwas zu sehen ist, zeichnet das iPhone sofort (sonst blitzt kurz das Grau des Browsers auf). */
+#splash { display: none; }
+html.boot #splash, html.splash-out #splash { display: grid; place-items: center; position: fixed; inset: 0; z-index: 2147483647; background: #0F1120; }
+html.splash-out #splash { opacity: 0; transition: opacity .32s cubic-bezier(.25, .6, .3, 1); pointer-events: none; }
+#splash img { width: 96px; height: 96px; border-radius: 22px; margin-bottom: 4vh; }
+html:not(.standalone) #splash img { display: none; } /* im Browser nur dunkel, ohne Symbol */
 html.boot *, html.boot *::before, html.boot *::after { transition: none !important; }
 /* App und Handy-Safari: Die Liste rollt in einem eigenen Bereich, die Glas-Leiste liegt außerhalb davon.
    So reagiert die Leiste sofort, auch während die Liste noch nachrollt (wie bei iPhone-Apps). Die Seite selbst rollt nie,
@@ -662,6 +667,8 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
 <style>body{margin:0}</style>
 </head>
 <body>
+<div id="splash" aria-hidden="true"><img id="splashImg" alt="" width="96" height="96"></div>
+<script>try { document.getElementById("splashImg").src = document.querySelector('link[rel="apple-touch-icon"]').href; } catch (e) {}</script>
 <div id="sc">
 <div class="wrap">
   <header class="top">
@@ -672,7 +679,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V146</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V147</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1628,7 +1635,7 @@ document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click
       if (y != null) jumpTo(y);
       else if (state.view === "all") toMain();
       else jumpTo(0); // neuer Reiter: oben mit Überschrift anfangen
-    }, 250)); // erst wenn die Glas-Blase fast angekommen ist: so ruckelt sie nicht, auch bei vielen Titeln
+    }, 120)); // kurz nach dem Antippen: die Glas-Blase ist schon unterwegs und ruckelt nicht
     return;
   }
   state.view = v; if (v === "genres") state.g2 = "";
