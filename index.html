@@ -520,7 +520,6 @@ html:not(.prisc) #seenAskOk { background: linear-gradient(100deg, #F05A50, #F475
 .app .grid { gap: 14px; }
 /* „OK“-Knöpfe in Gold wie „Speichern“ (Priscilla-Modus: rosa) */
 /* Im Priscilla-Modus eigene Stimmungen für Romanzen statt der normalen */
-html:not(.prisc) .chip.rchip, html.prisc .chip.nchip { display: none; }
 html.prisc .stamp.low { border-color: #E58BB8; color: #F6B9D7; }
 /* Alle Ränge */
 .rank-card .sub { margin: 2px 0 0; color: var(--muted); font-size: 13px; line-height: 1.4; }
@@ -695,15 +694,6 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <div class="prow"><span class="plabel" id="tonLabel">Ton und Gesehenes</span>
         <button type="button" class="toggle" id="onlyDe" aria-pressed="false">Nur deutsche Synchro</button>
         <button type="button" class="toggle" id="hideSeen" aria-pressed="false">Gesehene ausblenden</button>
-      </div>
-      <div class="prow" id="moodRow"><span class="plabel">Stimmung</span>
-        <button type="button" class="chip nchip" data-mood="chill" aria-pressed="false">Zum Abschalten <span class="mc"></span></button>
-        <button type="button" class="chip nchip" data-mood="herz" aria-pressed="false">Fürs Herz <span class="mc"></span></button>
-        <button type="button" class="chip nchip" data-mood="dn" aria-pressed="false">Zum Mitdenken <span class="mc"></span></button>
-        <button type="button" class="chip nchip" data-mood="kurz" aria-pressed="false">Kurz und knackig <span class="mc"></span></button>
-        <button type="button" class="chip rchip" data-mood="suess" aria-pressed="false">Zuckersüß <span class="mc"></span></button>
-        <button type="button" class="chip rchip" data-mood="lachen" aria-pressed="false">Zum Lachen <span class="mc"></span></button>
-        <button type="button" class="chip rchip" data-mood="schmerz" aria-pressed="false">Herzschmerz <span class="mc"></span></button>
       </div>
     </div>
     <div class="status"><span id="status" aria-live="polite"></span><button type="button" class="whybtn" id="whyBtn" aria-label="So entsteht die Wertung"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".95" fill="currentColor"/></svg></button><button type="button" class="reset" id="reset" hidden>Filter zurücksetzen</button><button type="button" class="share-btn" id="share" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10V2.5M5 5.5l3-3 3 3M3 9v4.5h10V9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Merkliste teilen</button></div>
@@ -1461,14 +1451,13 @@ if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 setY(0);
 if (!["mine", "neu"].includes(state.sort)) state.sort = "mine";
 if (state.g2 && !GENRES.includes(state.g2)) state.g2 = "";
-if (!MOODS.includes(state.mood)) state.mood = "";
+state.mood = ""; // Stimmungsfilter gibt es nicht mehr
 function saveFilters() { const { q, ...rest } = state; store(KEY.filters, rest); }
 // Priscilla-Modus (Easter Egg): wer „Priscilla“ ins Suchfeld tippt, sieht nur noch Romanzen, bis er ihn beendet
 const KEY_PRISC = "cr-top100-priscilla";
 let prisc = load(KEY_PRISC, false) === true;
 const isRom = it => it.genres.includes("Romance");
 document.documentElement.classList.toggle("prisc", prisc);
-if (state.mood && RMOODS.includes(state.mood) !== prisc) state.mood = "";
 
 const $ = s => document.querySelector(s);
 const fmt = n => n.toFixed(1).replace(".", ",");
@@ -1593,7 +1582,6 @@ $("#q").addEventListener("input", e => {
 function setPrisc(on, fx) {
   prisc = on; store(KEY_PRISC, on);
   // Romanzen-Stimmungen gibt es nur im Modus, die normalen nur außerhalb
-  if (state.mood && RMOODS.includes(state.mood) !== on) { state.mood = ""; sync(); }
   document.documentElement.classList.toggle("prisc", on);
   $("#prisBar").hidden = !on;
   renderCounts();
@@ -1670,7 +1658,6 @@ if (SC) {
 }
 ["onlyDe", "hideSeen"].forEach(k => $("#" + k).addEventListener("click", () => { state[k] = !state[k]; sync(); render(); }));
 // Stimmung: ein Tipp wählt sie, ein zweiter Tipp auf dieselbe hebt sie wieder auf
-document.querySelectorAll("[data-mood]").forEach(b => b.addEventListener("click", () => { state.mood = state.mood === b.dataset.mood ? "" : b.dataset.mood; sync(); render(); }));
 // In der App merkt sich jeder Reiter, wo man war (wie bei iPhone-Apps), bei Genres auch ein geöffnetes Genre.
 // Ein Tipp auf den Reiter, in dem man schon ist, macht nichts. Nach oben geht es mit dem Pfeil.
 const scrollMem = {};
@@ -1725,11 +1712,9 @@ function sync() {
   document.querySelectorAll(".seg button[data-type]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.type === state.type)));
   document.querySelectorAll(".seg button[data-sort]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.sort === state.sort)));
   ["onlyDe", "hideSeen"].forEach(k => $("#" + k).setAttribute("aria-pressed", String(state[k])));
-  document.querySelectorAll("[data-mood]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mood === state.mood)));
   document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.view === state.view)));
   if (typeof placeLens === "function") placeLens();
   $("#hideSeen").hidden = state.view === "seen";
-  $("#moodRow").hidden = state.view === "seen"; // im Regal keine Stimmung
   $("#tonLabel").textContent = state.view === "seen" ? "Ton" : "Ton und Gesehenes";
   const nf = activeKeys().filter(k => state[k] !== DEFAULTS[k]).length;
   $("#fcount").textContent = nf; $("#fcount").hidden = !nf;
@@ -1785,16 +1770,7 @@ function filtered(mood = state.mood) {
   );
 }
 
-// Zahl hinter jeder Stimmung: so viele Titel zeigt der aktuelle Reiter mit dieser Stimmung (bei den anderen Filtern)
-function moodCounts() {
-  const tiles = state.view === "genres" && !state.g2;
-  document.querySelectorAll("[data-mood]").forEach(b => {
-    const m = b.dataset.mood, n = tiles ? byMine.filter(it => passesWith(it, m)).length : filtered(m).length;
-    const c = b.querySelector(".mc"); if (c.textContent !== String(n)) c.textContent = n;
-  });
-}
 function status(n) {
-  moodCounts();
   // Im Priscilla-Modus zählen die Reiter nur Romanzen, sonst passt die Zahl nicht zur Liste
   const cnt = set => prisc ? items.filter(it => set.has(it.id) && isRom(it)).length : set.size;
   const nSaved = cnt(saved), nSeen = cnt(seen);
@@ -2042,6 +2018,8 @@ function renderProg() {
   const h = Math.round(list.reduce((a, it) => a + minutesOf(it), 0) / 60);
   $("#progText").innerHTML = `${next}<span class="hrs">≈ ${h.toLocaleString("de-DE")} ${h === 1 ? "Stunde" : "Stunden"} geschaut</span>`;
 }
+const MONATE = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
+const relText = it => { const v = REL[it.key]; if (!v) return ""; const [y, m] = v.split("-"); return MONATE[+m - 1] + " " + y; };
 let domSort = "mine"; // Reihenfolge der Karten im Moment (gebaut werden sie nach Wertung)
 function render() {
   if (state.view !== "seen") { $("#shelf").hidden = true; $("#favg").hidden = true; }
@@ -2066,7 +2044,7 @@ function render() {
   byMine.forEach(it => {
     const el = cardEls.get(it.id), on = show.has(it.id);
     if (el.hidden === on) el.hidden = !on;
-    if (on) { const r = gName ? `Platz ${(prisc ? it.grR : it.gr)[gName]}` : prisc ? `Platz ${it.grR.Romance}` : `Platz ${it.rank}`; if (el._rank.textContent !== r) el._rank.textContent = r; }
+    if (on) { const r = state.sort === "neu" && relText(it) ? relText(it) : gName ? `Platz ${(prisc ? it.grR : it.gr)[gName]}` : prisc ? `Platz ${it.grR.Romance}` : `Platz ${it.rank}`; if (el._rank.textContent !== r) el._rank.textContent = r; }
   });
   const e = $("#empty");
   e.hidden = list.length > 0 || (state.view === "seen" && !seen.size); // bei 0 Gesehenen erklärt die Fortschritts-Karte alles
