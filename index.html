@@ -295,6 +295,19 @@ html.covers .cv { display: block; grid-column: 1; grid-row: 1 / span 4; align-se
 .gbar h3 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 22px; }
 .meta .xtra { color: var(--muted); }
 .empty { padding: 40px 0; text-align: center; color: var(--muted); }
+/* Gesehen als Regal: Cover zu dritt, Wertung als kleiner Stempel, Antippen öffnet die Karte */
+.favg { margin: -2px 0 14px; font-size: 13px; color: var(--muted); } .favg b { color: var(--ink); font-weight: 700; }
+.favg[hidden], .shelf[hidden] { display: none; }
+.shelf { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 10px; list-style: none; margin: 0; padding: 0; }
+.shelf li { position: relative; min-width: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.shelf .sc { aspect-ratio: 2 / 3; border-radius: 10px; background: var(--chip) center / cover no-repeat; box-shadow: 0 6px 16px rgba(0, 0, 0, .35); }
+.shelf .stamp { position: absolute; top: -6px; right: -4px; width: 34px; height: 34px; font-size: 12px; border-width: 2px; transform: none; }
+.shelf .stamp small { display: none; }
+.shelf .tt { margin-top: 6px; font-size: 12px; line-height: 1.25; font-weight: 700; color: var(--ink); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.shelf li:active .sc { filter: brightness(.85); }
+@media (min-width: 700px) { .shelf { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); } }
+.shelf-one { position: relative; width: 100%; max-width: 520px; max-height: calc(100% - 24px); overflow-y: auto; overscroll-behavior: contain; display: grid; gap: 10px; }
+.shelf-one .grid { list-style: none; margin: 0; padding: 0; display: block; }
 .empty::before { content: ""; display: block; width: 44px; height: 44px; margin: 0 auto 12px; background: currentColor; opacity: .45;
   -webkit-mask: var(--ic) center / contain no-repeat; mask: var(--ic) center / contain no-repeat; }
 .empty[data-ic="saved"] { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linejoin='round'%3E%3Cpath d='M6.5 3.5h11v17l-5.5-4-5.5 4z'/%3E%3C/svg%3E"); }
@@ -462,8 +475,6 @@ html.prisc { --hanko: #FF6FA8; --hanko-soft: #3A1A2A; --gold: #FF9CC8; --on-gold
 .app .petals { position: absolute; top: 0; left: 0; right: 0; bottom: auto; height: calc(100% + 400px); }
 .petal { position: absolute; top: -44px; line-height: 1; will-change: transform; }
 .meta .pg { display: none; color: #FF8FBF; }
-.meta .neu { padding: 1px 6px; border-radius: 4px; background: #E8EAF3; color: #10131F; letter-spacing: .08em; }
-html.prisc .meta .neu { background: var(--hanko); color: #2A0A18; }
 html.prisc .meta .pg { display: inline; }
 html.prisc .prog.rt0, html.prisc .ladder li.rt0 { --rc: #F9CFE1; }
 html.prisc .prog.rt1, html.prisc .ladder li.rt1 { --rc: #FF8FC4; }
@@ -637,7 +648,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V121</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V122</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -687,9 +698,11 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <div class="rk"><div class="ring"><svg viewBox="0 0 84 84" aria-hidden="true"><circle cx="42" cy="42" r="35" fill="none" stroke="var(--line)" stroke-width="9"/><circle id="progArc" cx="42" cy="42" r="35" fill="none" stroke="var(--ok)" stroke-width="9" stroke-linecap="round" stroke-dasharray="219.9" stroke-dashoffset="219.9" transform="rotate(-90 42 42)"/></svg><span class="kj" id="progKj" aria-hidden="true"></span></div><div class="ringcap" id="progRank"></div></div>
       <div><div class="ph"><h4 id="progTitle"></h4><button type="button" class="rinfo" id="rankInfo" aria-label="Alle Ränge anzeigen"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".95" fill="currentColor"/></svg></button></div><p id="progText"></p></div>
     </section>
+    <p class="favg" id="favg" hidden></p>
     <div class="gbar" id="gbar" hidden><button type="button" class="gback" id="gback">← Alle Genres</button><h3 id="gtitle"></h3></div>
     <div class="tiles" id="tiles" hidden></div>
     <ol class="grid" id="list"></ol>
+    <ul class="shelf" id="shelf" hidden></ul>
     <p class="empty" id="empty" hidden>Kein Titel passt zu diesen Filtern. Setz einzelne Filter zurück oder leere die Suche.</p>
   </main>
   <button type="button" class="totop" id="totop" aria-label="Nach oben" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13.5V3M3.5 7.5L8 3l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -707,6 +720,10 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
 </div>
 <div class="ov rankup" id="rankUp" hidden role="status" aria-live="polite">
   <div class="ru-card"><span class="ru-lbl" id="ruLbl">Neuer Rang</span><span class="ru-st" id="ruSt" aria-hidden="true"></span><b class="ru-name" id="ruName"></b><span class="ru-next" id="ruNext"></span><button type="button" class="ov-btn main" id="ruOk">OK</button></div>
+</div>
+<div class="ov" id="shelfOv" hidden>
+  <div class="ov-bg" data-close></div>
+  <div class="shelf-one" role="dialog" aria-modal="true" aria-label="Anime"><ol class="grid" id="shelfOne"></ol><button type="button" class="ov-btn main" data-close>Schließen</button></div>
 </div>
 <div class="ov" id="seenAsk" hidden>
   <div class="ov-bg" data-close></div>
@@ -1321,19 +1338,13 @@ const ICON = {
   out: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9 2.5h4.5V7M13.5 2.5L7 9M11.5 9.5v4h-9v-9h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 };
 
-// Neu dazugekommen: Schild „Neu“ bis Ende November 2026
-const NEU = new Set(["Spice and Wolf: Merchant Meets the Wise Wolf", "Makeine: Too Many Losing Heroines!", "Plastic Memories", "Tomo-chan Is a Girl!",
-  "Recovery of an MMO Junkie", "Tsurezure Children", "Don't Toy with Me, Miss Nagatoro", "The Girl I Like Forgot Her Glasses", "Honey Lemon Soda",
-  "Tying the Knot with an Amagami Sister"]);
-const NEU_BIS = new Date("2026-12-01T00:00:00").getTime();
-const isNew = it => NEU.has(it.key) && Date.now() < NEU_BIS;
 function card(it) {
   const isSaved = saved.has(it.id), isSeen = seen.has(it.id);
   return `
     <li class="card${isSeen ? " is-seen" : ""}">
       <div class="cbody">
       <div class="cv" aria-hidden="true"><img alt="" draggable="false" loading="lazy" decoding="async"${coverOf(it) ? ` src="${coverOf(it)}"` : ""} onload="this.classList.add('ok')" onerror="this.remove()"></div>
-      <div class="meta"><span class="rank">${state.view === "genres" && state.g2 ? `Platz ${(prisc ? it.grR : it.gr)[state.g2]}` : `Platz ${it.rank}`}</span><span>${it.type === "F" ? "Film" : "Serie"}</span>${isNew(it) ? '<span class="neu">Neu</span>' : ""}${isRom(it) && it.mine >= 8.3 ? '<span class="pg">💘 Priscilla-geprüft</span>' : ""}</div>
+      <div class="meta"><span class="rank">${state.view === "genres" && state.g2 ? `Platz ${(prisc ? it.grR : it.gr)[state.g2]}` : `Platz ${it.rank}`}</span><span>${it.type === "F" ? "Film" : "Serie"}</span>${isRom(it) && it.mine >= 8.3 ? '<span class="pg">💘 Priscilla-geprüft</span>' : ""}</div>
       <div class="score">
         <div class="stamp ${tier(it.mine)}" aria-label="Wertung ${fmt(it.mine)} von 10">${fmt(it.mine)}<small>/10</small></div>
       </div>
@@ -1503,6 +1514,7 @@ function applyCovers() {
   const any = items.some(coverOf);
   document.documentElement.classList.toggle("covers", any);
   if (any && $("#tiles").childElementCount) renderTiles();
+  if (any && state.view === "seen" && shelfList.length) renderShelf(shelfList);
   if (!any || !cardEls) return;
   items.forEach(it => {
     const u = coverOf(it), el = cardEls.get(it.id), img = el && el.querySelector(".cv img");
@@ -1651,8 +1663,54 @@ function render() {
     : prisc && state.view === "seen" && !romOf(seen) ? "Noch keine Romanze als gesehen markiert. Tippe bei einer Romanze auf den Haken ✓."
     : "Kein Titel passt zu diesen Filtern. Setz einzelne Filter zurück oder leere die Suche.";
   e.dataset.ic = /gemerkt/.test(e.textContent) ? "saved" : /gesehen markiert/.test(e.textContent) ? "seen" : "find";
+  renderShelf(list);
   status(list.length);
 }
+// Gesehen als Regal: Cover zu dritt, sortiert wie die Liste. Darüber die Lieblingsgenres.
+let shelfList = [];
+function renderShelf(list) {
+  const on = state.view === "seen";
+  if (on) $("#list").hidden = true;
+  shelfList = on ? list : [];
+  $("#shelf").hidden = !on || !list.length;
+  $("#shelf").innerHTML = shelfList.map(it => {
+    const u = coverOf(it);
+    return `<li data-id="${it.id}"><div class="sc"${u ? ` style="background-image:url('${esc(u)}')"` : ""}></div>` +
+      `<div class="stamp ${tier(it.mine)}">${fmt(it.mine)}<small>/10</small></div><div class="tt">${esc(shortT(it.title))}</div></li>`;
+  }).join("");
+  const mine = items.filter(it => seen.has(it.id) && (!prisc || isRom(it))), cnt = {};
+  mine.forEach(it => it.genres.forEach(g => { if (!(prisc && g === "Romance")) cnt[g] = (cnt[g] || 0) + 1; }));
+  const top = Object.entries(cnt).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  $("#favg").hidden = !on || !top.length;
+  $("#favg").innerHTML = "Deine Lieblingsgenres: " + top.map(([g, n]) => `<b>${g}</b> ${n}`).join(" · ");
+}
+// Antippen eines Covers: die normale Karte erscheint als Fenster (die Karte selbst wird kurz dorthin verschoben)
+const shelfOv = $("#shelfOv");
+let shelfPh = null, shelfEl = null;
+function openShelf(id) {
+  const el = cardEls.get(id); if (!el) return;
+  shelfPh = document.createComment(""); el.before(shelfPh); shelfEl = el;
+  el.hidden = false; $("#shelfOne").append(el); shelfOv.hidden = false;
+  requestAnimationFrame(() => { if (window.fitAll) window.fitAll(); });
+}
+function closeShelf() {
+  if (shelfEl && shelfPh) shelfPh.replaceWith(shelfEl);
+  shelfEl = shelfPh = null; shelfOv.hidden = true;
+}
+$("#shelf").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li) openShelf(li.dataset.id); });
+shelfOv.addEventListener("click", e => {
+  if (e.target.closest("[data-close]")) { closeShelf(); return; }
+  const m = e.target.closest(".more");
+  if (m) { const d = m.previousElementSibling, open = d.classList.toggle("clamp") === false;
+    m.firstChild.textContent = open ? "Weniger" : "Mehr lesen"; m.setAttribute("aria-expanded", String(open)); return; }
+  const b = e.target.closest("button[data-act]"); if (!b) return;
+  const id = b.dataset.id, act = b.dataset.act;
+  if (act === "seen" && seen.has(id)) { closeShelf(); askUnseen(id); return; }
+  if (act === "save" && seen.has(id)) return;
+  setMark(id, act, !(act === "seen" ? seen : saved).has(id));
+});
+shelfOv.addEventListener("touchmove", e => { if (!e.target.closest(".shelf-one")) e.preventDefault(); }, { passive: false });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !shelfOv.hidden) closeShelf(); });
 
 // Rang-Aufstieg feiern: nur wenn durch „gesehen“ ein neuer Rang erreicht wird
 function rankUp(ri) {
