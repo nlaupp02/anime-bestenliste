@@ -437,10 +437,6 @@ html:not(.prisc) .pick-btn { background: linear-gradient(100deg, #F05A50, #F4752
 }
 .share-btn svg { width: 13px; height: 13px; }
 .card { scroll-margin-top: 20px; }
-/* Am Handy: Karten außerhalb des Bildschirms werden nicht berechnet. So bleiben Reiterwechsel, Filter und Suche
-   auch mit vielen Titeln flüssig. Die Höhe noch nicht gezeigter Karten wird geschätzt (--ch), gezeigte merken sich ihre echte Höhe. */
-.app #list > .card { content-visibility: auto; contain-intrinsic-height: auto var(--ch, 330px); }
-.app #list.cvoff > .card, .app #list > .card.cvm { content-visibility: visible; } /* einmal alles berechnen, z. B. beim Wiederherstellen der Stelle */
 .card.pick { outline: 3px solid var(--hanko); outline-offset: 3px; }
 html:not(.prisc) .card.pick { outline-color: #F47521; } /* Orange wie „Crunchyroll“ oben und der Würfel-Knopf */
 .totop {
@@ -664,7 +660,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V144</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V145</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1620,7 +1616,7 @@ document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click
       if (y != null) jumpTo(y);
       else if (state.view === "all") toMain();
       else jumpTo(0); // neuer Reiter: oben mit Überschrift anfangen
-    }, 0));
+    }, 250)); // erst wenn die Glas-Blase fast angekommen ist: so ruckelt sie nicht, auch bei vielen Titeln
     return;
   }
   state.view = v; if (v === "genres") state.g2 = "";
@@ -1843,7 +1839,6 @@ function warmCovers() {
 }
 function applyCovers() {
   const any = items.some(coverOf);
-  if (any !== document.documentElement.classList.contains("covers") && typeof measureSoon === "function") measureSoon(600); // Cover ändern die Kartenhöhe
   document.documentElement.classList.toggle("covers", any);
   if (any && $("#tiles").childElementCount) renderTiles();
   if (any && state.view === "seen" && shelfList.length) renderShelf(shelfList);
@@ -1902,7 +1897,6 @@ function buildCards() {
     if (!ref) return;
     const d0 = ref.querySelector(".desc"), w = d0.clientWidth;
     if (!w || w === fitW) return;
-    if (fitW) measureSoon(300); // neue Breite: Höhen neu merken
     fitW = w;
     const cs = getComputedStyle(d0); ctx2d.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
     // Eindeutige Fälle rechnet die Schrift-Berechnung, nur knappe Fälle (4–5 Zeilen) werden einmal gemeinsam gemessen
@@ -1969,48 +1963,14 @@ function renderProg() {
   $("#progText").innerHTML = `${next}<span class="hrs">≈ ${h.toLocaleString("de-DE")} ${h === 1 ? "Stunde" : "Stunden"} geschaut</span>`;
 }
 let domSort = "mine"; // Reihenfolge der Karten im Moment (gebaut werden sie nach Wertung)
-// Kurz nach dem Start im Hintergrund alle Karten in kleinen Portionen einmal berechnen.
-// Danach kennt jede Karte ihre echte Höhe: beim Hochrollen springt nichts und gemerkte Stellen stimmen genau.
-let measT = 0;
-function measureSoon(delay = 1500) {
-  if (!document.documentElement.classList.contains("app")) return;
-  clearTimeout(measT);
-  measT = setTimeout(() => {
-    if ($("#list").hidden) { measureSoon(1000); return; }
-    const cards = [...$("#list").children].filter(el => !el.hidden);
-    let i = 0, prev = [];
-    const step = () => {
-      prev.forEach(el => el.classList.remove("cvm"));
-      if (i >= cards.length) return;
-      prev = cards.slice(i, i += 24); prev.forEach(el => el.classList.add("cvm"));
-      requestAnimationFrame(() => requestAnimationFrame(step));
-    };
-    step();
-  }, delay);
-}
-// Geschätzte Kartenhöhe für noch nicht gezeigte Karten: Durchschnitt der gerade sichtbaren Karten
-let cardH = 0;
-function sizeCards() {
-  if (!document.documentElement.classList.contains("app")) return;
-  const vh = innerHeight, hs = [];
-  for (const el of $("#list").children) {
-    if (el.hidden) continue;
-    const r = el.getBoundingClientRect();
-    if (r.bottom < 0) continue; if (r.top > vh) break;
-    hs.push(r.height); if (hs.length >= 6) break;
-  }
-  if (!hs.length) return;
-  const h = Math.round(hs.reduce((a, b) => a + b, 0) / hs.length);
-  if (Math.abs(h - cardH) > 8) { cardH = h; $("#list").style.setProperty("--ch", h + "px"); }
-}
 function render() {
   if (state.view !== "seen") { $("#shelf").hidden = true; $("#favg").hidden = true; }
   headFor();
   renderProg();
   arrowOff = (state.view === "genres" && !state.g2) || ((state.view === "saved" || state.view === "seen") && !filtered().length);
   requestAnimationFrame(onScroll);
-  if (!cardEls) { buildCards(); applyCovers(); setTimeout(loadCovers, 1200); measureSoon(); }
-  requestAnimationFrame(() => { if (window.fitAll) window.fitAll(); sizeCards(); });
+  if (!cardEls) { buildCards(); applyCovers(); setTimeout(loadCovers, 1200); }
+  requestAnimationFrame(() => { if (window.fitAll) window.fitAll(); });
   const tilesView = state.view === "genres" && !state.g2;
   $("#tiles").hidden = !tilesView;
   $("#gbar").hidden = !(state.view === "genres" && state.g2);
@@ -2544,9 +2504,6 @@ if (resume) {
   // Stelle setzen, solange die Seite beim Öffnen noch verdeckt ist (siehe Kopf der Seite). So springt nichts sichtbar.
   const y = typeof resume.y === "number" ? resume.y : memKey() === "genres:" ? 0 : scrollMem[memKey()];
   if (y != null) {
-    // Einmal alle Karten wirklich berechnen, damit die Stelle genau stimmt (sonst zählen geschätzte Höhen)
-    const L = $("#list"); L.classList.add("cvoff"); void L.offsetHeight;
-    requestAnimationFrame(() => requestAnimationFrame(() => L.classList.remove("cvoff")));
     setY(y); const set = getY();
     // Falls die Schriften noch nicht ganz geladen waren, danach noch einmal genau an dieselbe Stelle
     if (document.fonts && document.fonts.status !== "loaded") document.fonts.ready.then(() => { if (getY() === set) setY(y); });
