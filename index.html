@@ -160,6 +160,9 @@ h1 .red { color: var(--hanko); }
 .seg button + button { border-left: 1px solid var(--line); }
 .seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
 html.prisc .seg button[aria-pressed="true"] { background: var(--hanko); color: #2A0A18; }
+html.prisc .toggle[aria-pressed="true"], html.prisc .panel .toggle[aria-pressed="true"], html.prisc .chip[aria-pressed="true"] { background: var(--hanko); border-color: var(--hanko); color: #2A0A18; }
+html.prisc .chip[aria-pressed="true"] .mc { color: #2A0A18; opacity: .7; }
+html.prisc .badge { background: var(--hanko); color: #2A0A18; }
 select { background: var(--sheet); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; max-width: 100%; }
 .toggle {
   background: var(--sheet); border: 1px solid var(--line); border-radius: 8px; padding: 7px 11px;
@@ -653,7 +656,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V126</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V127</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -683,7 +686,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
         <button type="button" class="toggle" id="onlyDe" aria-pressed="false">Nur deutsche Synchro</button>
         <button type="button" class="toggle" id="hideSeen" aria-pressed="false">Gesehene ausblenden</button>
       </div>
-      <div class="prow"><span class="plabel">Stimmung</span>
+      <div class="prow" id="moodRow"><span class="plabel">Stimmung</span>
         <button type="button" class="chip nchip" data-mood="chill" aria-pressed="false">Zum Abschalten <span class="mc"></span></button>
         <button type="button" class="chip nchip" data-mood="herz" aria-pressed="false">Fürs Herz <span class="mc"></span></button>
         <button type="button" class="chip nchip" data-mood="dn" aria-pressed="false">Zum Mitdenken <span class="mc"></span></button>
@@ -1055,7 +1058,7 @@ const FILTER_KEYS = ["type", "onlyDe", "hideSeen", "mood"];
 const MOODS = ["chill", "herz", "dn", "kurz", "suess", "lachen", "schmerz"];
 const RMOODS = ["suess", "lachen", "schmerz"]; // nur im Priscilla-Modus
 // Im Reiter Gesehen ergibt „Gesehene ausblenden“ keinen Sinn: dort ausgeblendet und nicht als aktiver Filter gezählt
-const activeKeys = () => FILTER_KEYS.filter(k => !(k === "hideSeen" && state.view === "seen"));
+const activeKeys = () => FILTER_KEYS.filter(k => !((k === "hideSeen" || k === "mood") && state.view === "seen"));
 const loaded = load(KEY.filters, {});
 if (loaded.onlySaved && !loaded.view) loaded.view = "saved";
 delete loaded.onlySaved;
@@ -1331,6 +1334,7 @@ function sync() {
   document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.view === state.view)));
   if (typeof placeLens === "function") placeLens();
   $("#hideSeen").hidden = state.view === "seen";
+  $("#moodRow").hidden = state.view === "seen"; // im Regal keine Stimmung
   $("#tonLabel").textContent = state.view === "seen" ? "Ton" : "Ton und Gesehenes";
   const nf = activeKeys().filter(k => state[k] !== DEFAULTS[k]).length;
   $("#fcount").textContent = nf; $("#fcount").hidden = !nf;
@@ -1373,7 +1377,7 @@ function card(it) {
 function filtered(mood = state.mood) {
   const inGenre = state.view === "genres";
   return byMine.filter(it =>
-    (!mood || it.moods.includes(mood)) &&
+    (!mood || state.view === "seen" || it.moods.includes(mood)) &&
     (!inGenre || it.genres.includes(state.g2)) &&
     (!state.type || it.type === state.type) &&
     (!state.onlyDe || it.dub === "de") &&
