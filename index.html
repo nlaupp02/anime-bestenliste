@@ -543,13 +543,6 @@ html.prisc .stamp.low { border-color: #E58BB8; color: #F6B9D7; }
 .ladder li.next .big { box-shadow: 0 0 0 3px color-mix(in srgb, var(--rc) 22%, transparent); }
 .ladder .nm { min-width: 0; }
 .ladder .du { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 99px; background: var(--rc); color: #12131C; font-size: 11px; font-weight: 800; vertical-align: 1px; }
-/* Fortschritt zum nächsten Rang, in der Farbe des eigenen Rangs */
-.rk-prog { margin: 8px 0 0; --pb: #F47521; }
-html.prisc .rk-prog { --pb: #FF6FA8; }
-.rk-prog .t { display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px; color: var(--muted); margin-bottom: 6px; }
-.rk-prog .t b { color: var(--ink); }
-.rk-prog .rkbar { height: 7px; border-radius: 99px; background: var(--line); overflow: hidden; }
-.rk-prog .rkf { display: block; height: 100%; border-radius: 99px; background: var(--pb); }
 .toast {
   position: fixed; z-index: 30; left: 50%; transform: translateX(-50%);
   bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + 58px);
@@ -672,7 +665,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V158</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V159</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -757,7 +750,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
 <div class="ov" id="rankSheet" hidden>
   <div class="ov-bg" data-close></div>
   <div class="ov-card rank-card" role="dialog" aria-modal="true" aria-labelledby="rankTitle">
-    <div><b id="rankTitle"></b><p class="sub" id="rankSub">Steigt mit jedem Anime, den du als gesehen markierst.</p><div class="rk-prog" id="rkProg"></div></div>
+    <div><b id="rankTitle"></b><p class="sub" id="rankSub">Steigt mit jedem Anime, den du als gesehen markierst.</p></div>
     <ol class="ladder" id="ladder"></ol>
     <button type="button" class="ov-btn main" data-close>OK</button>
   </div>
@@ -2203,13 +2196,6 @@ $("#rankInfo").addEventListener("click", () => {
   $("#ladder").innerHTML = R.map(([from, kj, name, de, t], i) =>
     `<li class="rt${t}${i === ri ? " cur" : i === ri + 1 ? " lock next" : i > ri ? " lock" : ""}"><span class="big k${kj.length}${i >= L - 2 ? " fill" : ""}${i === L - 1 ? " glow" : ""}" aria-hidden="true">${kj}</span>` +
     `<span class="nm"><b>${de}${i === ri ? '<span class="du">Du</span>' : ""}</b></span><span class="ab">ab ${from}</span></li>`).join("");
-  // Fortschritt bis zum nächsten Rang
-  const nx = R[ri + 1], pr = $("#rkProg");
-  pr.style.setProperty("--pb", getComputedStyle($("#ladder li.cur")).getPropertyValue("--rc").trim()); // Balken in der Farbe deines Rangs
-  if (nx) {
-    const pct = Math.max(4, Math.round((n - R[ri][0]) / (nx[0] - R[ri][0]) * 100));
-    pr.innerHTML = `<div class="t"><span>Noch <b>${nx[0] - n}</b> bis <b>${nx[3]}</b></span><span>${n} / ${nx[0]}</span></div><div class="rkbar"><span class="rkf" style="width:${pct}%"></span></div>`;
-  } else pr.innerHTML = `<div class="t"><span><b>Höchster Rang erreicht</b></span><span>${n}</span></div><div class="rkbar"><span class="rkf" style="width:100%"></span></div>`;
   rankSheet.hidden = false;
   rankSheet.querySelector(".ov-btn.main").focus({ preventScroll: true });
 });
