@@ -196,7 +196,7 @@ main { padding-block: 18px calc(max(16px, env(safe-area-inset-bottom, 0px)) + 76
 .cbody { flex: 1 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 14px; align-content: start; }
 .meta { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; font-size: 12px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; font-weight: 700; }
 .rank { font-variant-numeric: tabular-nums; color: var(--ink); }
-.card h2 { grid-column: 1; margin: 2px 0 2px; font-size: 18px; line-height: 1.25; font-weight: 700; text-wrap: balance; }
+.card h2 { grid-column: 1; margin: 2px 0 2px; font-size: 18px; line-height: 1.25; font-weight: 700; text-wrap: balance; -webkit-hyphens: auto; hyphens: auto; overflow-wrap: break-word; }
 .tags { grid-column: 1; display: flex; flex-wrap: wrap; gap: 5px; align-items: flex-start; align-self: start; }
 .tag { font-size: 12px; padding: 1px 8px; border-radius: 4px; background: var(--chip); color: var(--ink); }
 .facts { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; margin-top: 8px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -626,7 +626,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V112</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V113</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -828,7 +828,7 @@ const DATA = [
 ["Rascal Does Not Dream of Bunny Girl Senpai", "S", "Romance|Mystery|Drama", 8.2, 8.1, 29, "de", "2 Staffeln · 26 Folgen", "Sakuta trifft eine Schauspielerin im Hasenkostüm, die niemand mehr wahrnimmt. In jedem Arc löst er ein übernatürliches Phänomen, hinter dem echte Teenager-Probleme stecken.", "", "seishun buta yarou bunny girl", "herz", "Bunny Girl Senpai"],
 ["Dr. Stone","S","Sci-Fi|Abenteuer",8.2,8.1,46,"de","4 Staffeln · 94 Folgen","Die ganze Menschheit wird zu Stein. Tausende Jahre später erwacht das Wissenschaftsgenie Senku und baut die Zivilisation mit Chemie und Physik neu auf.","","dr stone senku","","Dr. Stone"],
 ["Solo Leveling","S","Action|Fantasy",8.2,8.5,123,"de","2 Staffeln · 25 Folgen","Jinwoo ist der schwächste Jäger der Welt. Nach einem fast tödlichen Dungeon kann er als Einziger aufleveln wie in einem Videospiel. Pure, gut gemachte Power-Fantasie.","","solo leveling","","Solo Leveling"],
-["Konosuba","S","Comedy|Isekai",8.1,7.8,23,"de","3 Staffeln","Kazuma stirbt auf peinliche Weise und landet in einer Fantasywelt mit der nutzlosesten Heldentruppe, die man sich vorstellen kann. Sehr witzige Parodie auf Isekai-Geschichten.","Nach Staffel 2 den Film Legend of Crimson schauen, er gehört zur Geschichte.","kono subarashii sekai","chill","Konosuba"],
+["Konosuba","S","Comedy|Isekai",8.1,7.8,23,"de","3 Staffeln · 31 Folgen","Kazuma stirbt auf peinliche Weise und landet in einer Fantasywelt mit der nutzlosesten Heldentruppe, die man sich vorstellen kann. Sehr witzige Parodie auf Isekai-Geschichten.","Nach Staffel 2 den Film Legend of Crimson schauen, er gehört zur Geschichte.","kono subarashii sekai","chill","Konosuba"],
 ["Aoashi","S","Sport|Drama",8.1,8.1,4.9,"de","2 Staffeln, Staffel 2 läuft gerade","Der talentierte, aber ungeschliffene Ashito wird in die Jugendakademie eines Profiklubs geholt. Ein Fußball-Anime, der echte Taktik erklärt.","","ao ashi fussball","","Aoashi"],
 ["Horimiya","S","Romance|Slice of Life",8.1,8.0,28,"de","2 Staffeln · 26 Folgen","Die beliebte Hori und der stille Miyamura entdecken die geheime Seite des jeweils anderen. Eine schnell erzählte Liebesgeschichte ohne künstliches Drama.","Staffel 2 (The Missing Pieces) erzählt Szenen aus dem Manga nach, die in Staffel 1 fehlten.","horimiya","chill|herz|kurz","Horimiya"],
 ["My Teen Romantic Comedy SNAFU","S","Romance|Comedy|Drama",8.1,8,14,"sub","3 Staffeln · 38 Folgen","Der zynische Einzelgänger Hachiman muss einem Schulclub beitreten, der anderen Schülern hilft. Klug geschriebenes Drama über Freundschaft und Selbstbetrug.","Staffel 2 und 3 werden deutlich besser.","oregairu","","My Teen Romantic Comedy SNAFU"],
@@ -839,7 +839,7 @@ const DATA = [
 ["Blue Lock","S","Sport|Thriller",8.0,8.1,35,"de","38 Folgen","Japan sperrt 300 Stürmer in ein Trainingslager. Nur einer soll als größter Egoist übrig bleiben und die Nationalmannschaft retten. Fußball als Survival-Spiel.","","bluelock fussball","","Blue Lock"],
 ["Shangri-La Frontier","S","Action|Abenteuer|Comedy",8.0,7.6,8,"de","2 Staffeln · 50 Folgen","Ein Spieler, der eigentlich nur verbuggte Trash-Spiele mag, testet das beste Online-Rollenspiel der Welt. Gaming-Abenteuer mit viel Spaß.","","shangri la","","Shangri-La Frontier"],
 ["World Trigger","S","Action|Sci-Fi",8.0,7.4,1.7,"sub","3 Staffeln · über 100 Folgen","Aus Portalen fallen Monster nach Japan, eine Organisation bildet junge Kämpfer aus. Taktische Teamkämpfe statt reiner Muskelkraft.","Startet langsam, wird aber immer taktischer. Staffel 2 und 3 sind die stärksten.","world trigger","","World Trigger"],
-["Ascendance of a Bookworm","S","Isekai|Fantasy|Slice of Life",8.0,7.8,2.4,"de","4 Staffeln","Eine Bücherliebhaberin wird als kränkliches Mädchen in einer mittelalterlichen Welt ohne Bücher wiedergeboren. Also stellt sie sich welche her.","Langsam, aber sehr befriedigend.","honzuki no gekokujou","chill","Ascendance of a Bookworm"],
+["Ascendance of a Bookworm","S","Isekai|Fantasy|Slice of Life",8.0,7.8,2.4,"de","4 Staffeln · 60 Folgen","Eine Bücherliebhaberin wird als kränkliches Mädchen in einer mittelalterlichen Welt ohne Bücher wiedergeboren. Also stellt sie sich welche her.","Langsam, aber sehr befriedigend.","honzuki no gekokujou","chill","Ascendance of a Bookworm"],
 ["Gachiakuta","S","Action|Fantasy",8,8,16,"de","24 Folgen","Rudo wird für einen Mord, den er nicht begangen hat, in die Müllhalde unter der Stadt verbannt. Dort kämpft er mit Waffen aus weggeworfenen Gegenständen.","","gachiakuta","","Gachiakuta"],
 ["My Dress-Up Darling","S","Romance|Comedy",8.0,7.9,30,"de","2 Staffeln · 24 Folgen","Der schüchterne Puppenmacher Gojo hilft der beliebten Marin, ihre Cosplay-Kostüme zu nähen. Eine süße Romcom.","Etwas Fanservice.","sono bisque doll","chill","My Dress-Up Darling"],
 ["Detektiv Conan","S","Krimi|Mystery",8.0,8.5,19,"de","über 1.100 Folgen","Ein junger Meisterdetektiv wird vergiftet und schrumpft zum Grundschüler. Getarnt löst er Mordfall um Mordfall.","Du kannst überall einsteigen.","detective conan meitantei","dn","Detektiv Conan"],
@@ -1049,6 +1049,8 @@ const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&
 // Direkte Serienseiten bei Crunchyroll (aus dem Crunchyroll-Verzeichnis, Oktober 2026)
 const CR_BASE = "https://www.crunchyroll.com/de/series/";
 const CR = {
+  "Attack on Titan: The Last Attack": "watch/GJWUQ7WGE", "Konosuba: Legend of Crimson": "watch/GMKUXV1Q3",
+  "Patema Inverted": "watch/GMKUXK7KJ", "Mirai – Das Mädchen aus der Zukunft": "watch/GQJUGQWMW",
   "Frieren – Nach dem Ende der Reise": "GG5H5XQX4/frieren-beyond-journeys-end",
   "Chainsaw Man – The Movie: Reze Arc": "GNVHKN92K/chainsaw-man--the-movie-reze-arc",
   "Kaguya-sama: Love Is War": "GRJ0J828Y/kaguya-sama-love-is-war",
@@ -1384,7 +1386,9 @@ const passesWith = (it, mood) =>
 // Genres ohne passenden Titel werden ausgeblendet, die Zahl oben zählt nur die sichtbaren
 let tileCount = GENRES.length;
 // Kurztitel für die Kacheln: „Frieren – Nach dem Ende der Reise“ → „Frieren“ (zu kurze Reste wie „86“ bleiben lang)
-const shortT = t => { const x = t.split(" – ")[0].split(": ")[0]; return x.length < 4 ? t : x; };
+const TILE_SHORT = { "Die Tagebücher der Apothekerin": "Apothekerin", "Rascal Does Not Dream of Bunny Girl Senpai": "Bunny Girl Senpai",
+  "You and I Are Polar Opposites": "Polar Opposites" };
+const shortT = t => { if (TILE_SHORT[t]) return TILE_SHORT[t]; const x = t.split(" – ")[0].split(": ")[0]; return x.length < 4 ? t : x; };
 function renderTiles() {
   // Im Priscilla-Modus ist alles Romance: diese Kachel sagt dann nichts und fällt weg
   const shown = GENRES.map(g => [g, inG(g).filter(passes)]).filter(([g, list]) => list.length && !(prisc && g === "Romance"));
@@ -1547,7 +1551,7 @@ function buildCards() {
   $("#list").querySelectorAll(".card").forEach((el, i) => { el._rank = el.querySelector(".rank"); cardEls.set(byMine[i].id, el); });
 }
 // Fortschritt: Folgen × ca. 24 Minuten, Filme mit echter Laufzeit. Bei laufenden Serien ohne Folgenzahl geschätzt.
-const EP_FIX = { "Die Tagebücher der Apothekerin": 48, "Aoashi": 24, "Konosuba": 31, "Ascendance of a Bookworm": 48 };
+const EP_FIX = { "Die Tagebücher der Apothekerin": 48, "Aoashi": 24, "Konosuba": 31, "Ascendance of a Bookworm": 60 };
 const minutesOf = it => {
   if (it.type === "F") { const m = it.len.match(/(\d+)\s*Std\.(?:\s*(\d+)\s*Min\.)?/); return m ? +m[1] * 60 + +(m[2] || 0) : 100; }
   const m = it.len.match(/([\d.]+)\s*Folgen/);
