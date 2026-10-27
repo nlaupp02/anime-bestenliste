@@ -638,7 +638,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V116</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V117</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1223,7 +1223,8 @@ $("#prisBar").hidden = !prisc;
 document.addEventListener("focusin", e => { if (e.target.matches("input, textarea")) typing = true; });
 // iPhone: Beim Antippen des Suchfelds schiebt iOS die Seite sonst kurz nach unten, obwohl das Feld oben schon sichtbar ist.
 // Deshalb den Fokus selbst setzen, ohne zu rollen (nur bei einem echten Tipp, nicht beim Wischen, und nur wenn das Feld oben steht).
-(() => {
+// Nur als Home-Bildschirm-App: In Safari würde die Seite sonst nach oben springen.
+if (document.documentElement.classList.contains("standalone")) (() => {
   const q = $("#q"); let t0 = null;
   q.addEventListener("touchstart", e => { const t = e.touches[0]; t0 = t ? { x: t.clientX, y: t.clientY } : null; }, { passive: true });
   q.addEventListener("touchend", e => {
