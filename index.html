@@ -303,11 +303,14 @@ html.covers .cv { display: block; grid-column: 1; grid-row: 1 / span 4; align-se
 .shelf .sc { aspect-ratio: 2 / 3; border-radius: 10px; background: var(--chip) center / cover no-repeat; box-shadow: 0 6px 16px rgba(0, 0, 0, .35); }
 .shelf .stamp { position: absolute; top: -6px; right: -4px; width: 34px; height: 34px; font-size: 12px; border-width: 2px; transform: none; }
 .shelf .stamp small { display: none; }
+.shelf .stamp.low { background: var(--paper); }
 .shelf .tt { margin-top: 6px; font-size: 12px; line-height: 1.25; font-weight: 700; color: var(--ink); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .shelf li:active .sc { filter: brightness(.85); }
 @media (min-width: 700px) { .shelf { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); } }
 .shelf-one { position: relative; width: 100%; max-width: 520px; max-height: calc(100% - 24px); overflow-y: auto; overscroll-behavior: contain; display: grid; gap: 10px; }
 .shelf-one .grid { list-style: none; margin: 0; padding: 0; display: block; }
+#shelfOne .card .sclose { display: block; width: 100%; margin-top: 14px; }
+#shelfOne .card h2 .sub { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .empty::before { content: ""; display: block; width: 44px; height: 44px; margin: 0 auto 12px; background: currentColor; opacity: .45;
   -webkit-mask: var(--ic) center / contain no-repeat; mask: var(--ic) center / contain no-repeat; }
 .empty[data-ic="saved"] { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linejoin='round'%3E%3Cpath d='M6.5 3.5h11v17l-5.5-4-5.5 4z'/%3E%3C/svg%3E"); }
@@ -648,7 +651,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"></h2>
-    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V122</span></div>
+    <div class="eyebrow">Stand: Oktober 2026 <span class="ver">· V123</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -723,7 +726,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
 </div>
 <div class="ov" id="shelfOv" hidden>
   <div class="ov-bg" data-close></div>
-  <div class="shelf-one" role="dialog" aria-modal="true" aria-label="Anime"><ol class="grid" id="shelfOne"></ol><button type="button" class="ov-btn main" data-close>Schließen</button></div>
+  <div class="shelf-one" role="dialog" aria-modal="true" aria-label="Anime"><ol class="grid" id="shelfOne"></ol></div>
 </div>
 <div class="ov" id="seenAsk" hidden>
   <div class="ov-bg" data-close></div>
@@ -1432,7 +1435,7 @@ const passesWith = (it, mood) =>
 let tileCount = GENRES.length;
 // Kurztitel für die Kacheln: „Frieren – Nach dem Ende der Reise“ → „Frieren“ (zu kurze Reste wie „86“ bleiben lang)
 const TILE_SHORT = { "Die Tagebücher der Apothekerin": "Apothekerin", "Rascal Does Not Dream of Bunny Girl Senpai": "Bunny Girl Senpai",
-  "You and I Are Polar Opposites": "Polar Opposites" };
+  "You and I Are Polar Opposites": "Polar Opposites", "Meine Wiedergeburt als Schleim in einer anderen Welt": "Slime" };
 const shortT = t => { if (TILE_SHORT[t]) return TILE_SHORT[t]; const x = t.split(" – ")[0].split(": ")[0]; return x.length < 4 ? t : x; };
 function renderTiles() {
   // Im Priscilla-Modus ist alles Romance: diese Kachel sagt dann nichts und fällt weg
@@ -1634,7 +1637,7 @@ function renderProg() {
 function render() {
   headFor();
   renderProg();
-  arrowOff = (state.view === "genres" && !state.g2) || ((state.view === "saved" || state.view === "seen") && !filtered().length);
+  arrowOff = (state.view === "genres" && !state.g2) || state.view === "seen" || (state.view === "saved" && !filtered().length);
   requestAnimationFrame(onScroll);
   if (!cardEls) { buildCards(); applyCovers(); setTimeout(loadCovers, 1200); }
   requestAnimationFrame(() => { if (window.fitAll) window.fitAll(); });
@@ -1691,9 +1694,11 @@ function openShelf(id) {
   const el = cardEls.get(id); if (!el) return;
   shelfPh = document.createComment(""); el.before(shelfPh); shelfEl = el;
   el.hidden = false; $("#shelfOne").append(el); shelfOv.hidden = false;
+  const x = document.createElement("button"); x.type = "button"; x.className = "ov-btn sclose"; x.dataset.close = ""; x.textContent = "Schließen"; el.append(x);
   requestAnimationFrame(() => { if (window.fitAll) window.fitAll(); });
 }
 function closeShelf() {
+  if (shelfEl) { const x = shelfEl.querySelector(".sclose"); if (x) x.remove(); }
   if (shelfEl && shelfPh) shelfPh.replaceWith(shelfEl);
   shelfEl = shelfPh = null; shelfOv.hidden = true;
 }
