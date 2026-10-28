@@ -490,6 +490,21 @@ html.prisc { --hanko: #FF6FA8; --hanko-soft: #3A1A2A; --gold: #FF9CC8; --on-gold
 .petal { position: absolute; top: -44px; line-height: 1; will-change: transform; }
 .meta .pg { display: none; color: #FF8FBF; }
 html.prisc .meta .pg { display: inline; }
+/* Neu in der Liste: Hinweis über der Liste, eigene Ansicht und „Neu“ an der Karte (rot, im Priscilla-Modus pink) */
+.meta .neu { background: var(--hanko); color: #fff; border-radius: 6px; padding: 2px 7px 1px; font-size: 11px; letter-spacing: .1em; line-height: 1.2; }
+html.prisc .meta .neu { color: #2A0A18; }
+.card.is-seen .meta .neu, #list.nv .meta .neu { display: none; } /* schon gesehen oder in der Neu-Ansicht: kein „Neu“ */
+.newbtn { display: inline-flex; align-items: center; gap: 7px; border: 0; background: var(--hanko-soft); color: var(--ink); font: inherit; font-size: 12.5px; padding: 4px 11px 4px 9px; border-radius: 999px; margin-left: auto; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.newbtn[hidden] { display: none; }
+.newbtn i { width: 7px; height: 7px; border-radius: 50%; background: var(--hanko); }
+.newbtn b { font-weight: 700; }
+.newbtn span { color: var(--muted); font-weight: 600; }
+.neubar { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 8px 8px 8px 12px; border-radius: 12px; background: var(--hanko-soft); border: 1px solid var(--hanko); color: var(--ink); font-size: 13.5px; font-weight: 700; }
+.neubar[hidden] { display: none; }
+.neubar span { flex: 1; min-width: 0; }
+.neubar button { font: inherit; font-size: 13px; font-weight: 700; color: #12131C; background: var(--ink); border: 0; border-radius: 999px; padding: 6px 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+html.prisc .neubar { background: #3A1A2A; border-color: #FF6FA8; color: #FFD3E6; }
+html.prisc .neubar button { background: #FF9CC8; color: #2A0A18; }
 html.prisc .prog.rt0, html.prisc .ladder li.rt0 { --rc: #F9CFE1; }
 html.prisc .prog.rt1, html.prisc .ladder li.rt1 { --rc: #FF8FC4; }
 html.prisc .prog.rt2, html.prisc .ladder li.rt2 { --rc: #E8559F; }
@@ -522,6 +537,8 @@ html:not(.prisc) #seenAskOk { background: linear-gradient(100deg, #F05A50, #F475
 .app .status { min-height: 26px; }
 .prisbar { margin-top: 2px; padding: 5px 5px 5px 12px; font-size: 13px; border-radius: 999px; }
 .prisbar button { padding: 5px 12px; font-size: 12.5px; }
+.neubar { margin-top: 2px; padding: 5px 5px 5px 12px; font-size: 13px; border-radius: 999px; }
+.neubar button { padding: 5px 12px; font-size: 12.5px; }
 .app .empty { padding: 28px 12px; }
 .app .grid { gap: 14px; }
 /* „OK“-Knöpfe in Gold wie „Speichern“ (Priscilla-Modus: rosa) */
@@ -743,7 +760,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V184</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V185</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -780,8 +797,9 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
         <button type="button" class="toggle" id="hideSeen" aria-pressed="false">Gesehene ausblenden</button>
       </div>
     </div>
-    <div class="status"><span id="status" aria-live="polite"></span><button type="button" class="whybtn" id="whyBtn" aria-label="So entsteht die Wertung"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".95" fill="currentColor"/></svg></button><button type="button" class="reset" id="reset" hidden>Filter zurücksetzen</button><button type="button" class="share-btn" id="share" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10V2.5M5 5.5l3-3 3 3M3 9v4.5h10V9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Merkliste teilen</button></div>
+    <div class="status"><span id="status" aria-live="polite"></span><button type="button" class="whybtn" id="whyBtn" aria-label="So entsteht die Wertung"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".95" fill="currentColor"/></svg></button><button type="button" class="reset" id="reset" hidden>Filter zurücksetzen</button><button type="button" class="share-btn" id="share" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10V2.5M5 5.5l3-3 3 3M3 9v4.5h10V9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Merkliste teilen</button><button type="button" class="newbtn" id="newBtn" hidden><i></i><b id="newTxt"></b><span>›</span></button></div>
     <div class="prisbar" id="prisBar" hidden><span>💘 Priscilla-Modus · nur Romanzen</span><button type="button" id="prisOff">Beenden</button></div>
+    <div class="neubar" id="neuBar" hidden><span id="neuTxt"></span><button type="button" id="neuOff">Zurück</button></div>
     <div class="sharebox" id="sharebox" hidden><span>Teilen ging hier nicht direkt. Kopier den Text und schick ihn per WhatsApp:</span><textarea id="sharetext" readonly></textarea><div class="row"><button type="button" class="btn" id="shareclose">Schließen</button></div></div>
   </div>
 
@@ -1528,6 +1546,20 @@ const REL = {"Frieren – Nach dem Ende der Reise": "2023-09",
 // Bei „Neu erschienen“ zeigt die Liste nur Titel aus dem neuesten Jahr der Liste (jetzt 2026)
 const NEU_JAHR = Object.values(REL).map(r => r.slice(0, 4)).sort().pop();
 const isNeu = it => (REL[it.key] || "").startsWith(NEU_JAHR);
+// Neu in der Liste: an welchem Tag ein Titel eingetragen wurde. Bis 14 Tage danach (der 14. Tag zählt mit) gilt er als neu.
+// Neue Titel hier mit dem heutigen Datum eintragen.
+const ADDED = {"2026-10-28": ["White Album 2", "I'm the Villainess, So I'm Taming the Final Boss", "A Condition Called Love", "The Duke of Death and His Maid", "Witch Watch", "The Ice Guy and His Cool Female Colleague", "My Senpai Is Annoying", "Love After World Domination", "Science Fell in Love, So I Tried to Prove It", "The World Is Still Beautiful", "Sing \"Yesterday\" for Me", "Ride Your Wave", "Aharen-san wa Hakarenai", "Sugar Apple Fairy Tale", "In the Clear Moonlit Dusk", "I Made Friends with the Second Prettiest Girl in My Class", "Marriagetoxin", "Chitose Is in the Ramune Bottle", "Yanos ganz normaler Alltag", "Betrothed to My Sister's Ex", "Dealing with Mikadono Sisters Is a Breeze", "Solo Camping for Two", "Dank dir überwindet unsere Liebe alle Hindernisse", "Pass the Monster Meat, Milady!", "Tokyo Ghoul", "Trigun Stampede", "Wind Breaker", "Secrets of the Silent Witch", "Reborn!", "NieR:Automata Ver1.1a", "Life Lessons with Uramichi Oniisan", "Sleepy Princess in the Demon Castle", "The Yakuza's Guide to Babysitting", "Ace Attorney", "Cells at Work!", "Kemono Jihen", "Elainas Reise", "Mr. Villain's Day Off", "'Tis Time for \"Torture,\" Princess", "The Faraway Paladin", "Kabaneri of the Iron Fortress", "Dance Dance Danseur", "Ruri Rocks", "The Cat and the Dragon", "Iron Wok Jan", "Tojima Wants to Be a Kamen Rider", "Clevatess", "Fate/strange Fake", "Wistoria: Wand and Sword", "With You and the Rain", "Dara-san of the Reiwa Era", "Tsukimichi -Moonlit Fantasy-", "Dead Mount Death Play", "Mobile Suit Gundam Wing", "Mobile Suit Gundam"]};
+const NEW_DAYS = 14;
+const freshKeys = (() => {
+  const out = new Set(), now = Date.now();
+  for (const [d, keys] of Object.entries(ADDED)) {
+    const t = new Date(d + "T00:00:00").getTime();
+    if (now >= t && now < t + (NEW_DAYS + 1) * 864e5) keys.forEach(k => out.add(k));
+  }
+  return out;
+})();
+const isFresh = it => freshKeys.has(it.key);
+let neuView = false; // eigene Ansicht „Neu in der Liste“ (nur im Reiter Alle, wird nicht gespeichert)
 const byNew = [...items].sort((a, b) => (REL[b.key] || "").localeCompare(REL[a.key] || "") || b.mine - a.mine);
 // In „Gesehen“ gibt es kein Sortieren (im Regal sieht man kein Datum): dort immer nach Wertung
 const effSort = () => state.view === "seen" ? "mine" : state.sort;
@@ -1740,6 +1772,8 @@ prisAsk.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) 
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !prisAsk.hidden) prisAsk.hidden = true; });
 $("#prisAskOk").addEventListener("click", () => { prisAsk.hidden = true; setPrisc(false, true); render(); });
 $("#prisOff").addEventListener("click", askPrisc);
+$("#newBtn").addEventListener("click", () => { neuView = true; render(); });
+$("#neuOff").addEventListener("click", () => { neuView = false; render(); });
 $("#prisBar").hidden = !prisc;
 // iPhone: Für die Tastatur verschiebt das iPhone die (sonst stillstehende) Seite. Danach wieder an ihren Platz.
 document.addEventListener("focusin", e => { if (e.target.matches("input, textarea")) typing = true; });
@@ -1793,6 +1827,7 @@ document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click
     if (v === state.view) return;
     // Wechselt man schnell hintereinander, zeigt der Inhalt noch den alten Reiter: dessen Stelle nicht unter dem neuen Namen merken
     if (!tabPending) scrollMem[memKey()] = getY();
+    if (neuView) { neuView = false; delete scrollMem.all; }
     // Leiste und Blase sofort umstellen, den Inhalt erst im nächsten Bild. So bewegt sich die Blase sofort,
     // auch wenn die lange Liste (z. B. bei Alle) kurz Rechenzeit braucht.
     state.view = v; sync();
@@ -1811,7 +1846,7 @@ document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click
     }, 0));
     return;
   }
-  state.view = v; if (v === "genres") state.g2 = "";
+  state.view = v; if (v === "genres") state.g2 = ""; neuView = false;
   sync(); render();
 }));
 const toMain = () => { const t = document.querySelector("main").getBoundingClientRect().top; if (t < 0) jumpTo(getY() + t); };
@@ -1856,7 +1891,7 @@ function card(it) {
     <li class="card${isSeen ? " is-seen" : ""}">
       <div class="cbody">
       <div class="cv" aria-hidden="true"><img alt="" draggable="false" loading="lazy" decoding="async"${coverOf(it) ? ` src="${coverOf(it)}"` : ""} onload="this.classList.add('ok')" onerror="this.remove()"></div>
-      <div class="meta"><span class="rank">${state.view === "genres" && state.g2 ? `Platz ${(prisc ? it.grR : it.gr)[state.g2]}` : `Platz ${it.rank}`}</span><span>${it.type === "F" ? "Film" : "Serie"}</span>${isRom(it) && it.mine >= 8.3 ? '<span class="pg">💘 Priscilla-geprüft</span>' : ""}</div>
+      <div class="meta"><span class="rank">${state.view === "genres" && state.g2 ? `Platz ${(prisc ? it.grR : it.gr)[state.g2]}` : `Platz ${it.rank}`}</span>${isFresh(it) ? '<span class="neu">Neu</span>' : ""}<span>${it.type === "F" ? "Film" : "Serie"}</span>${isRom(it) && it.mine >= 8.3 ? '<span class="pg">💘 Priscilla-geprüft</span>' : ""}</div>
       <div class="score">
         <div class="stamp ${tier(it.mine)}" aria-label="Wertung ${fmt(it.mine)} von 10">${fmt(it.mine)}<small>/10</small></div>
       </div>
@@ -1881,6 +1916,7 @@ function filtered(mood = state.mood) {
   const inGenre = state.view === "genres";
   return sorted().filter(it =>
     (effSort() !== "neu" || isNeu(it)) &&
+    (!neuView || isFresh(it)) &&
     (!mood || state.view === "seen" || it.moods.includes(mood)) &&
     (!inGenre || it.genres.includes(state.g2)) &&
     (!state.type || it.type === state.type) &&
@@ -1905,6 +1941,14 @@ function status(n) {
   $("#share").hidden = !(state.view === "saved" && nSaved);
   // Im Reiter Gesehen gibt es schon das ⓘ für die Ränge, dort fällt das Wertungs-ⓘ weg
   $("#whyBtn").hidden = state.view === "seen";
+  // Neu in der Liste: Hinweis nur in Alle, in der Neu-Ansicht stattdessen die Leiste (im Priscilla-Modus ersetzt sie die pinke Leiste)
+  const nNew = items.filter(it => isFresh(it) && (!prisc || isRom(it))).length;
+  if (neuView && (state.view !== "all" || !nNew)) neuView = false;
+  $("#newTxt").textContent = `${nNew} neu in der Liste`;
+  $("#newBtn").hidden = !(state.view === "all" && !neuView && nNew);
+  $("#neuTxt").textContent = prisc ? `💘 Neue Romanzen · ${nNew} Titel` : `✦ Neu in der Liste · ${nNew} Titel`;
+  $("#neuBar").hidden = !neuView;
+  $("#prisBar").hidden = !prisc || neuView;
 }
 
 // Pro Genre ein eigener Tipp, kein Titel doppelt:
@@ -2203,6 +2247,8 @@ function render() {
   }
   if (state.view === "genres") $("#gtitle").textContent = state.g2;
   if (state.view !== "seen" && domSort !== state.sort) { domSort = state.sort; const L = $("#list"); sorted().forEach(it => L.append(cardEls.get(it.id))); }
+  if (neuView && state.view !== "all") neuView = false;
+  $("#list").classList.toggle("nv", neuView);
   const list = filtered(), show = new Set(list.map(it => it.id)), gName = state.view === "genres" ? state.g2 : "";
   byMine.forEach(it => {
     const el = cardEls.get(it.id), on = show.has(it.id);
@@ -2473,7 +2519,7 @@ $("#pick").addEventListener("click", () => {
   if (state.view !== "all") { state.view = "all"; state.g2 = ""; sync(); render(); }
   let pool = filtered().filter(it => !seen.has(it.id));
   if (!pool.length && byMine.some(it => !seen.has(it.id))) {
-    Object.assign(state, DEFAULTS, { q: "" }); $("#q").value = ""; sync(); render();
+    Object.assign(state, DEFAULTS, { q: "" }); $("#q").value = ""; neuView = false; sync(); render();
     pool = filtered().filter(it => !seen.has(it.id));
   }
   if (!pool.length) { toast("Du hast schon alle gesehen!"); return; }
