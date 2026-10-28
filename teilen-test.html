@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teilen-Test</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; padding: 20px 16px 40px; background: #0F1120; color: #ECEEF8; font: 15px/1.45 -apple-system, "Helvetica Neue", Arial, sans-serif; }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  p { margin: 0 0 16px; color: #A9AECB; }
+  .t { display: grid; gap: 6px; margin: 0 0 14px; padding: 14px; border-radius: 14px; background: #1A1D2E; border: 1px solid #2A2E45; }
+  .t b { font-size: 16px; }
+  .t small { color: #A9AECB; font-size: 13px; word-break: break-all; }
+  button { margin-top: 4px; font: inherit; font-weight: 700; font-size: 16px; color: #1C1503; background: #F2C14E; border: 0; border-radius: 12px; padding: 12px; cursor: pointer; }
+  button:active { opacity: .7; }
+  #msg { min-height: 20px; color: #5FD3A6; font-weight: 700; }
+</style>
+</head>
+<body>
+<h1>Teilen-Test</h1>
+<p>Tippe jeden Knopf einmal an und schick es in WhatsApp an „Notiz an mich“. Danach schau: Bei welchem kommt das Bild von Frieren, und steht die Zeile „⭐ 9,4 · Frieren“ mit dabei?</p>
+<div id="list"></div>
+<p id="msg"></p>
+<script>
+const SHORT = "https://www.crunchyroll.com/de/series/GG5H5XQX4";
+const LONG = "https://www.crunchyroll.com/de/series/GG5H5XQX4/frieren-beyond-journeys-end";
+const LINE = "⭐ 9,4 · *Frieren*";
+const TESTS = [
+  ["A", "Text und Link getrennt (kurzer Link)", { text: LINE, url: SHORT }],
+  ["B", "Text und Link getrennt (langer Link)", { text: LINE, url: LONG }],
+  ["C", "Alles als Text (langer Link)", { text: LINE + "\n" + LONG }],
+  ["D", "Nur der lange Link", { url: LONG }],
+  ["E", "So wie jetzt in V214 (zum Vergleich)", { text: LINE + "\n" + SHORT }]
+];
+const list = document.getElementById("list"), msg = document.getElementById("msg");
+for (const [k, name, data] of TESTS) {
+  const d = document.createElement("div"); d.className = "t";
+  d.innerHTML = `<b>${k}: ${name}</b><small>${data.text ? data.text.replace(/\n/g, " ⏎ ") : ""}${data.text && data.url ? " + " : ""}${data.url || ""}</small><button type="button">${k} teilen</button>`;
+  d.querySelector("button").addEventListener("click", async () => {
+    msg.textContent = "";
+    if (!navigator.share) { msg.textContent = "Teilen geht hier nicht – bitte am iPhone in Safari öffnen."; return; }
+    try { await navigator.share(data); msg.textContent = k + " geteilt."; }
+    catch (e) { if (!e || e.name !== "AbortError") msg.textContent = "Fehler: " + (e && e.message || e); }
+  });
+  list.append(d);
+}
+</script>
+</body>
+</html>
