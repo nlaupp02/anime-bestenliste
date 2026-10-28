@@ -17,28 +17,18 @@
 <meta property="og:title" content="Die besten Animes auf Crunchyroll">
 <meta property="og:description" content="Die besten Animes auf Crunchyroll Deutschland, mit Wertung und deutscher Synchro.">
 <title>Die besten Animes auf Crunchyroll</title>
-<script>
-// iPhone-Startbild: Ohne eigenes Startbild zeigt das iPhone beim Öffnen der App kurz einen weißen Bildschirm.
-// Hier wird ein schlichtes, dunkles Startbild in genau der Größe dieses Geräts erzeugt (ohne Logo, damit der Übergang
-// zur Seite nahtlos ist). Das iPhone übernimmt es beim „Zum Home-Bildschirm“ hinzufügen.
-(() => {
-  try {
-    const ua = navigator.userAgent;
-    if (!(/iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1))) return;
-    const r = window.devicePixelRatio || 1, w = Math.min(screen.width, screen.height), h = Math.max(screen.width, screen.height);
-    const img = (pw, ph) => { const c = document.createElement("canvas"); c.width = pw; c.height = ph; const g = c.getContext("2d"); g.fillStyle = "#0F1120"; g.fillRect(0, 0, pw, ph); return c.toDataURL("image/png"); };
-    const add = (href, orient) => {
-      const l = document.createElement("link"); l.rel = "apple-touch-startup-image"; l.href = href;
-      if (orient) l.media = `(device-width: ${w}px) and (device-height: ${h}px) and (-webkit-device-pixel-ratio: ${r}) and (orientation: ${orient})`;
-      document.head.appendChild(l);
-    };
-    const port = img(Math.round(w * r), Math.round(h * r));
-    add(port, "portrait");
-    add(img(Math.round(h * r), Math.round(w * r)), "landscape");
-    add(port); // Rückfall ohne Größenangabe
-  } catch (e) {}
-})();
-</script>
+<!-- iPhone-Startbild: dunkel statt weiß beim Öffnen der App (eigene Bilddateien neben der index.html, eine pro iPhone-Größe) -->
+<link rel="apple-touch-startup-image" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="start-1320x2868.png">
+<link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="start-1290x2796.png">
+<link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="start-1284x2778.png">
+<link rel="apple-touch-startup-image" media="(device-width: 420px) and (device-height: 912px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="start-1260x2736.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="start-1242x2688.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="start-828x1792.png">
+<link rel="apple-touch-startup-image" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="start-1206x2622.png">
+<link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="start-1179x2556.png">
+<link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="start-1170x2532.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="start-1125x2436.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="start-750x1334.png">
 <script>
 // App-Ansicht schon vor dem ersten Bild festlegen (als Homescreen-App und genauso in Safari/Chrome auf dem Handy, am PC nicht).
 // Sonst ist die Seite beim Öffnen kurz eine normale Webseite, und eine Berührung in diesem Moment lässt alles verschoben hängen.
@@ -765,7 +755,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V181</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V182</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
