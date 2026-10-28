@@ -457,7 +457,7 @@ html:not(.prisc) .pick-btn { background: linear-gradient(100deg, #F05A50, #F4752
 /* Handy: Karten außerhalb des Bildschirms werden nicht gezeichnet, bis man hinscrollt. So geht der Wechsel zu „Alle“ ohne Hänger */
 .app #list > .card { content-visibility: auto; contain-intrinsic-size: auto 340px; }
 /* Beim ersten Anzeigen einmal alle Karten zeichnen, damit sich das iPhone ihre echte Höhe merkt (sonst springt die Liste beim Hochscrollen) */
-.app #list.cvwarm > .card { content-visibility: visible; }
+.app #list.cvwarm > .card, .app #list > .card.cvw { content-visibility: visible; }
 .card.pick { outline: 3px solid var(--hanko); outline-offset: 3px; }
 html:not(.prisc) .card.pick { outline-color: #F47521; } /* Orange wie „Crunchyroll“ oben und der Würfel-Knopf */
 .totop {
@@ -853,7 +853,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V203</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V204</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -910,7 +910,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
     <p class="favg" id="favg" hidden></p>
     <div class="gbar" id="gbar" hidden><button type="button" class="gback" id="gback">← Alle Genres</button><h3 id="gtitle"></h3></div>
     <div class="tiles" id="tiles" hidden></div>
-    <ol class="grid cvwarm" id="list"></ol>
+    <ol class="grid" id="list"></ol>
     <ul class="shelf" id="shelf" hidden></ul>
     <p class="empty" id="empty" hidden>Kein Titel passt zu diesen Filtern. Setz einzelne Filter zurück oder leere die Suche.</p>
   </main>
@@ -2118,12 +2118,29 @@ function headFor() {
 // Die Karten werden nur einmal gebaut und danach nur ein- und ausgeblendet. So geht der Reiterwechsel schneller.
 let cardEls = null, cvWarm = true;
 // Alle Karten einmal ganz zeichnen, damit die gemerkten Höhen wieder stimmen (nach dem Start, nach Schrift-Laden oder geänderter Breite)
+// In kleinen Portionen (je 12 Karten, zwei Bilder lang), damit kein einzelnes Bild lange hängt. Startet erst nach dem nächsten Bild
+// und pausiert, solange gescrollt wird.
+let warmTok = 0, warmPart = [];
 function cvRewarm() {
   const L = document.getElementById("list");
   if (!document.documentElement.classList.contains("app")) return;
   if (L.hidden) { cvWarm = true; return; }
-  cvWarm = false; L.classList.add("cvwarm");
-  requestAnimationFrame(() => requestAnimationFrame(() => L.classList.remove("cvwarm")));
+  cvWarm = false;
+  const tok = ++warmTok, cards = [...L.children].filter(c => !c.hidden);
+  let i = 0;
+  const done = () => { warmPart.forEach(c => c.classList.remove("cvw")); warmPart = []; };
+  const step = () => {
+    if (tok !== warmTok) return;
+    done();
+    if (L.hidden) { cvWarm = true; return; }
+    if (i >= cards.length) return;
+    // Wird gerade gescrollt oder berührt: warten, bis Ruhe ist (sichtbare Karten zeichnet das iPhone ohnehin)
+    if (touching || Date.now() - lastScroll < 250) { setTimeout(step, 250); return; }
+    warmPart = cards.slice(i, i += 12);
+    warmPart.forEach(c => c.classList.add("cvw"));
+    requestAnimationFrame(() => requestAnimationFrame(step));
+  };
+  requestAnimationFrame(() => setTimeout(step, 0));
 }
 // Cover von AniList (freie Anime-Datenbank). Gesucht wird einmal nach dem Titel, gespeichert wird nur die Bildadresse.
 // Die Bilder selbst lädt das iPhone erst, wenn die Karte ins Bild kommt. Geht AniList nicht (z. B. ohne Netz), bleibt alles wie vorher.
@@ -2268,9 +2285,19 @@ function buildCards() {
       const n = lineCount(it.desc, w);
       if (n <= 3 || n >= 6 || !vis) set(el, m, n <= 4); else close.push([el, m]);
     });
-    close.forEach(([el]) => el.querySelector(".desc").classList.remove("clamp"));
-    const hs = close.map(([el]) => el.querySelector(".desc").offsetHeight);
-    close.forEach(([el, m], i) => set(el, m, hs[i] / lh < 4.5));
+    // Knappe Fälle gemeinsam in einer unsichtbaren Messbox mit gleicher Schrift und Breite messen.
+    // (In den Karten selbst zu messen zwingt jede nicht sichtbare Karte einzeln zum Neuberechnen – das hing beim Start eine halbe Sekunde.)
+    if (close.length) {
+      const box = document.createElement("div");
+      box.setAttribute("aria-hidden", "true");
+      box.style.cssText = `position:fixed;left:-10000px;top:0;width:${w}px;visibility:hidden;pointer-events:none;contain:layout style`;
+      ["fontFamily", "fontSize", "fontWeight", "fontStyle", "fontStretch", "lineHeight", "letterSpacing", "wordSpacing", "fontFeatureSettings", "fontKerning", "textTransform", "hyphens", "overflowWrap", "wordBreak", "textRendering"].forEach(k => { box.style[k] = cs[k]; });
+      close.forEach(([el]) => { const t = document.createElement("div"); t.textContent = el.querySelector(".desc").textContent; box.append(t); });
+      document.body.append(box);
+      const hs = [...box.children].map(t => t.offsetHeight);
+      box.remove();
+      close.forEach(([el, m], i) => set(el, m, hs[i] / lh < 4.5));
+    }
     if (state0() !== before) cvRewarm(); // Kartenhöhen haben sich geändert: neu merken
   };
   window.fitAll = fitAll;
