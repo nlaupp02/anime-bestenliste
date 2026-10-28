@@ -350,6 +350,9 @@ html.covers .cv { display: block; grid-column: 1; grid-row: 1 / span 4; align-se
 .box a { color: var(--hanko); }
 
 [hidden] { display: none !important; }
+/* Kein Zoomen: jedes Element erlaubt nur Wischen. Auch im Scrollbereich (#sc), denn dort fängt das iPhone sonst neu an zu zählen.
+   So muss das iPhone beim Antippen nicht mehr auf die App warten und scrollt sofort los. */
+* { touch-action: pan-x pan-y; }
 html, body { touch-action: pan-x pan-y; }
 /* In der App nur senkrecht scrollen: keine seitliche Verschiebung, kein Zoom */
 html.app, html.app body { touch-action: pan-y; }
@@ -816,6 +819,24 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
 .lg-sync { font-size: 13px; color: #5FD3A6; }
 .lg-sync.busy { color: var(--muted); } .lg-sync.err { color: #F0C064; }
 .lg-card button:disabled { opacity: .5; cursor: default; }
+/* Antippen spürbar wie in iOS-Apps: Knöpfe und Kacheln geben kurz nach und federn beim Loslassen weich zurück.
+   Das Eindrücken startet erst nach 40 ms, damit beim Losscrollen über einen Knopf nichts aufblitzt. */
+.btn, .tile, .filter-btn, .toggle, .chip, .gback, .share-btn, .newbtn, .prisbar button, .neubar button, .lg-pen, .acct, .pe-it,
+.pfh-login button, .ov-btn, .ib-go, .seg button, #pfSaved, .rinfo, .whybtn, .pfh-i, .reset, .lg-link, .toast-act, .ib-x, .inst-x {
+  transition: transform .2s ease, filter .2s ease, opacity .2s ease; -webkit-tap-highlight-color: transparent;
+}
+.ru-card .ov-btn { transition: opacity .3s, transform .2s ease, filter .2s ease; }
+.btn:active, .filter-btn:active, .toggle:active, .chip:active, .gback:active, .share-btn:active, .newbtn:active,
+.prisbar button:active, .neubar button:active, .lg-pen:active, .acct:active, .pe-it:active { transform: scale(.94); }
+.tile:active, .ov-btn:active, .ib-go:active, .pfh-login button:active { transform: scale(.97); filter: brightness(.88); }
+.seg button:active, #pfSaved:active, .rinfo:active, .whybtn:active, .pfh-i:active, .reset:active, .lg-link:active, .toast-act:active, .ib-x:active, .inst-x:active { opacity: .55; }
+.btn:active, .filter-btn:active, .toggle:active, .chip:active, .gback:active, .share-btn:active, .newbtn:active,
+.prisbar button:active, .neubar button:active, .lg-pen:active, .acct:active, .pe-it:active,
+.tile:active, .ov-btn:active, .ib-go:active, .pfh-login button:active,
+.seg button:active, #pfSaved:active, .rinfo:active, .whybtn:active, .pfh-i:active, .reset:active, .lg-link:active, .toast-act:active, .ib-x:active, .inst-x:active {
+  transition-duration: .08s; transition-delay: .04s;
+}
+#ruOk:disabled:active, .lg-card button:disabled:active { transform: none; filter: none; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 
@@ -832,7 +853,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V202</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V203</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -2073,12 +2094,15 @@ function renderTiles() {
   // Spalten am PC: möglichst keine leeren Plätze in der letzten Reihe
   const cols = [5, 4, 6, 7, 3].reduce((b, c) => ((c - tileCount % c) % c) < ((b - tileCount % b) % b) ? c : b, 5);
   $("#tiles").style.setProperty("--tc", cols);
-  $("#tiles").innerHTML = shown.map(([g, list]) => {
+  const html = shown.map(([g, list]) => {
     const f = FEATURED[g] && passes(FEATURED[g]) ? FEATURED[g] : list[0];
     const u = f ? coverOf(f) : "";
     return `<button type="button" class="tile" data-g="${g}"><b>${g}</b><span class="tn">${list.length} Titel</span>${u ? `<i class="gcv" style="background-image:url('${esc(u)}')" aria-hidden="true"></i>` : ""}</button>`;
   }).join("");
+  // Unverändert (z. B. schon im Hintergrund vorbereitet): Kacheln stehen lassen, dann ist der Reiter sofort da
+  if (html !== tilesHtml) { tilesHtml = html; $("#tiles").innerHTML = html; }
 }
+var tilesHtml = "";
 
 // App: Auf Genres, Gemerkt und Gesehen nur der große Reiter-Titel. Den Zufallstipp gibt es nur bei Alle.
 function headFor() {
@@ -2171,6 +2195,7 @@ function applyCovers() {
   document.documentElement.classList.toggle("covers", any);
   if (any && $("#tiles").childElementCount) renderTiles();
   if (any && state.view === "seen" && shelfList.length) renderShelf(shelfList);
+  else if (any) prewarmShelf(); // Cover-Adressen kamen erst nach dem Vorbereiten: im versteckten Regal nachtragen
   if (!any || !cardEls) return;
   items.forEach(it => {
     const u = coverOf(it), el = cardEls.get(it.id), img = el && el.querySelector(".cv img");
@@ -2382,6 +2407,17 @@ function render() {
 }
 // Gesehen als Regal: Cover zu dritt, sortiert wie die Liste. Darüber die Lieblingsgenres.
 let shelfList = [];
+// Ein Cover im Regal (vorhandenes wird weiterverwendet). eager: Bild schon jetzt laden, obwohl das Regal noch versteckt ist
+function shelfLi(it, li, eager) {
+  const u = coverOf(it);
+  if (!li) {
+    li = document.createElement("li"); li.dataset.id = it.id;
+    li.innerHTML = `<div class="sc"></div><div class="stamp ${tier(it.mine)}">${fmt(it.mine)}<small>/10</small></div><div class="tt">${esc(shortT(it.title))}</div>`;
+  }
+  const sc = li.firstElementChild;
+  if (u && !sc.firstElementChild) sc.innerHTML = `<img${coverAttrs(u, SHELF_SIZES)} alt="" loading="${eager ? "eager" : "lazy"}" decoding="async" draggable="false" onerror="if(this.srcset)this.removeAttribute('srcset')">`;
+  return li;
+}
 function renderShelf(list) {
   const on = state.view === "seen";
   // Außerhalb von Gesehen nur ausblenden: die Cover bleiben stehen, so ist das Regal beim Zurückwechseln sofort da
@@ -2395,14 +2431,7 @@ function renderShelf(list) {
   have.forEach((li, id) => { if (!want.has(id)) li.remove(); });
   let prev = null;
   shelfList.forEach(it => {
-    let li = have.get(it.id);
-    const u = coverOf(it);
-    if (!li) {
-      li = document.createElement("li"); li.dataset.id = it.id;
-      li.innerHTML = `<div class="sc"></div><div class="stamp ${tier(it.mine)}">${fmt(it.mine)}<small>/10</small></div><div class="tt">${esc(shortT(it.title))}</div>`;
-    }
-    const sc = li.firstElementChild;
-    if (u && !sc.firstElementChild) sc.innerHTML = `<img${coverAttrs(u, SHELF_SIZES)} alt="" loading="lazy" decoding="async" draggable="false" onerror="if(this.srcset)this.removeAttribute('srcset')">`;
+    const li = shelfLi(it, have.get(it.id), false);
     const at = prev ? prev.nextElementSibling : box.firstElementChild;
     if (at !== li) box.insertBefore(li, at);
     prev = li;
@@ -2421,6 +2450,32 @@ function renderShelf(list) {
   $("#favg").hidden = !best.length;
   $("#favg").innerHTML = best.length === 1 ? `Dein Lieblingsgenre: ${best[0]}` : `Deine Lieblingsgenres: ${best.slice(0, -1).join(", ")} & ${best[best.length - 1]}`;
 }
+// Nach dem Start im Hintergrund: Genre-Kacheln und Profil-Regal schon bauen und deren Bilder laden.
+// So sind beide Reiter beim ersten Öffnen sofort fertig. Wird gerade gewischt, kurz später noch einmal versuchen.
+function prewarmTabs(step = 0) {
+  const busy = touching || Date.now() - lastScroll < 400;
+  if (busy || tabPending) { setTimeout(() => prewarmTabs(step), 800); return; }
+  const next = () => setTimeout(() => (window.requestIdleCallback || (f => f()))(() => prewarmTabs(step + 1)), 120);
+  if (step === 0) {
+    // Genres: Kacheln bauen (bleiben versteckt) und ihre Cover vorladen
+    if (state.view !== "genres") renderTiles();
+    document.querySelectorAll("#tiles .gcv").forEach(i => { const m = /url\('(.+)'\)/.exec(i.style.backgroundImage) || /url\("(.+)"\)/.exec(i.style.backgroundImage); if (m) { const im = new Image(); im.decoding = "async"; im.src = m[1]; } });
+    return next();
+  }
+  if (step === 1) { shelfWarm = true; prewarmShelf(); }
+}
+// Profil: Regal in der Reihenfolge von Gesehen bauen (bleibt versteckt), die ersten drei Reihen laden ihre Cover schon
+var shelfWarm = false;
+function prewarmShelf() {
+  if (!shelfWarm || state.view === "seen") return;
+  const v = state.view, nv = neuView; let list = [];
+  state.view = "seen"; neuView = false;
+  try { list = filtered(); } finally { state.view = v; neuView = nv; }
+  const box = $("#shelf"), have = new Map([...box.children].map(li => [li.dataset.id, li])), frag = document.createDocumentFragment();
+  list.forEach((it, i) => { const li = shelfLi(it, have.get(it.id), i < 9); if (!li.parentNode) frag.append(li); });
+  box.append(frag);
+}
+setTimeout(() => prewarmTabs(0), 2500);
 // Antippen eines Covers: die normale Karte erscheint als Fenster (die Karte selbst wird kurz dorthin verschoben)
 const shelfOv = $("#shelfOv");
 let shelfPh = null, shelfEl = null;
@@ -2819,10 +2874,8 @@ document.addEventListener("click", e => {
 
 // Zoomen mit zwei Fingern verhindern (iPhone)
 ["gesturestart", "gesturechange", "gestureend"].forEach(t => document.addEventListener(t, e => e.preventDefault(), { passive: false }));
-// Zwei-Finger-Gesten ganz abfangen, sonst verschiebt iOS kurz den Bildausschnitt und feste Elemente springen
-document.addEventListener("touchmove", e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
-// Schon beim Aufsetzen des zweiten Fingers sperren, bevor das iPhone eine Zoom-Geste daraus macht
-document.addEventListener("touchstart", e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+// Zwei-Finger-Zoom sperrt jetzt das CSS (touch-action). Früher fingen hier Touch-Listener jede Berührung ab –
+// dadurch musste das iPhone bei jedem Wischen erst auf die App warten, bevor es scrollen durfte.
 
 // Hinweis „Als App speichern“ ganz oben (nur im Handy-Browser, nicht in Claude und nicht in der App)
 (() => {
