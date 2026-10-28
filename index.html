@@ -319,11 +319,6 @@ html.covers .cv { display: block; grid-column: 1; grid-row: 1 / span 4; align-se
 .shelf .stamp.low { background: var(--paper); }
 .shelf .tt { margin-top: 6px; font-size: 12px; line-height: 1.25; font-weight: 700; color: var(--ink); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .shelf li:active .sc { filter: brightness(.85); }
-/* Umdrehen: Das Cover fliegt aus dem Regal (sein Platz bleibt leer, bis es zurück ist) */
-.shelf li.out .sc, .shelf li.out .stamp { visibility: hidden; }
-.flyc { position: fixed; z-index: 45; border-radius: 10px; overflow: hidden; background: var(--chip); box-shadow: 0 14px 34px rgba(0, 0, 0, .55); pointer-events: none; will-change: transform, opacity; }
-.flyc img { display: block; width: 100%; height: 100%; object-fit: cover; }
-#shelfOv { animation: none; } /* eigene Animation (Umdrehen) */
 .shelf .sc { overflow: hidden; } .shelf .sc img { display: block; width: 100%; height: 100%; object-fit: cover; }
 @media (min-width: 700px) { .shelf { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); } }
 .shelf-one { position: relative; width: 100%; max-width: 520px; max-height: calc(100% - 24px); overflow-y: auto; overscroll-behavior: contain; display: grid; gap: 10px; }
@@ -858,7 +853,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V205</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V206</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -2511,73 +2506,21 @@ setTimeout(() => prewarmTabs(0), 2500);
 // Antippen eines Covers: die normale Karte erscheint als Fenster (die Karte selbst wird kurz dorthin verschoben)
 const shelfOv = $("#shelfOv");
 let shelfPh = null, shelfEl = null;
-function openShelf(id, li) {
-  const el = cardEls.get(id); if (!el || shelfAnim) return;
+function openShelf(id) {
+  const el = cardEls.get(id); if (!el) return;
   shelfPh = document.createComment(""); el.before(shelfPh); shelfEl = el;
   el.hidden = false; $("#shelfOne").append(el); shelfOv.hidden = false;
   const x = document.createElement("button"); x.type = "button"; x.className = "ov-btn sclose"; x.dataset.close = ""; x.textContent = "Schließen"; el.append(x);
   requestAnimationFrame(() => { if (window.fitAll) window.fitAll(); });
-  if (li && !noMotion()) flipOpen(li);
 }
 function closeShelf() {
   if (shelfEl) { const x = shelfEl.querySelector(".sclose"); if (x) x.remove(); }
   if (shelfEl && shelfPh) shelfPh.replaceWith(shelfEl);
   shelfEl = shelfPh = null; shelfOv.hidden = true;
-  // Reste der Umdreh-Animation aufräumen
-  shelfOv.querySelectorAll(".shelf-one, .ov-bg").forEach(x => x.getAnimations().forEach(a => a.cancel()));
-  document.querySelectorAll(".flyc").forEach(x => x.remove());
-  if (flipLi) { flipLi.classList.remove("out"); flipLi = null; }
-  shelfAnim = false; clearTimeout(flipT);
 }
-// Umdrehen wie eine Sammelkarte: Das Cover hebt sich aus dem Regal, fliegt zur Mitte und dreht sich um – auf der Rückseite liegt die Karte.
-// Beim Schließen genau rückwärts zurück ins Regal. Mit „Bewegung reduzieren“ geht das Fenster wie früher sofort auf und zu.
-const FLIP_MS = 460;
-let shelfAnim = false, flipLi = null, flipT = 0;
-const noMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
-function flyCover(li) {
-  const sc = li.querySelector(".sc"), r = sc.getBoundingClientRect(), f = document.createElement("div"), img = sc.querySelector("img");
-  f.className = "flyc"; f.setAttribute("aria-hidden", "true");
-  f.style.cssText = `left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px`;
-  if (img) { const i = img.cloneNode(); i.removeAttribute("loading"); i.removeAttribute("onerror"); f.append(i); }
-  document.body.append(f);
-  return [f, r];
-}
-// Weg zwischen Cover (im Regal) und Fenster: halbe Strecke und mittlere Größe, dort steht die Karte genau auf der Kante
-function flipPath(r0) {
-  const r1 = shelfOv.querySelector(".shelf-one").getBoundingClientRect(), mid = (r0.width + r1.width) / 2;
-  return { dx: r0.left + r0.width / 2 - (r1.left + r1.width / 2), dy: r0.top + r0.height / 2 - (r1.top + r1.height / 2), k: mid / r0.width, sm: mid / r1.width };
-}
-function flipOpen(li) {
-  const box = shelfOv.querySelector(".shelf-one"), bg = shelfOv.querySelector(".ov-bg"), H = FLIP_MS / 2;
-  const [f, r0] = flyCover(li), { dx, dy, k, sm } = flipPath(r0);
-  li.classList.add("out"); flipLi = li; shelfAnim = true;
-  clearTimeout(flipT); flipT = setTimeout(() => { shelfAnim = false; }, FLIP_MS + 400); // falls eine Animation hängen bleibt
-  bg.animate([{ opacity: 0 }, { opacity: 1 }], { duration: FLIP_MS, easing: "ease-out" });
-  f.animate([{ transform: "perspective(900px) translate(0,0) rotateY(0deg) scale(1)", opacity: 1 }, { opacity: 1, offset: .85 },
-    { transform: `perspective(900px) translate(${-dx / 2}px,${-dy / 2}px) rotateY(90deg) scale(${k})`, opacity: 0 }],
-    { duration: H, easing: "cubic-bezier(.45,0,.9,.6)", fill: "forwards" }).onfinish = () => f.remove();
-  box.animate([{ transform: `perspective(1600px) translate(${dx / 2}px,${dy / 2}px) rotateY(-90deg) scale(${sm})` }, { transform: "perspective(1600px) translate(0,0) rotateY(0deg) scale(1)" }],
-    { duration: H, delay: H, easing: "cubic-bezier(.15,.6,.35,1)", fill: "backwards" }).onfinish = () => { shelfAnim = false; };
-}
-function closeShelfAnim() {
-  if (shelfAnim) return;
-  const li = flipLi && flipLi.isConnected ? flipLi : null, r = li && li.querySelector(".sc").getBoundingClientRect();
-  // Cover nicht (mehr) zu sehen: einfach schließen
-  if (!li || noMotion() || !r.width || r.bottom < 0 || r.top > innerHeight) { closeShelf(); return; }
-  const box = shelfOv.querySelector(".shelf-one"), bg = shelfOv.querySelector(".ov-bg"), H = FLIP_MS / 2, { dx, dy, k, sm } = flipPath(r);
-  shelfAnim = true; clearTimeout(flipT); flipT = setTimeout(closeShelf, FLIP_MS + 400);
-  bg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: FLIP_MS, easing: "ease-in", fill: "forwards" });
-  box.animate([{ transform: "perspective(1600px) translate(0,0) rotateY(0deg) scale(1)" }, { transform: `perspective(1600px) translate(${dx / 2}px,${dy / 2}px) rotateY(-90deg) scale(${sm})` }],
-    { duration: H, easing: "cubic-bezier(.65,0,.85,.4)", fill: "forwards" });
-  const [f] = flyCover(li);
-  f.animate([{ transform: `perspective(900px) translate(${-dx / 2}px,${-dy / 2}px) rotateY(90deg) scale(${k})`, opacity: 0 }, { opacity: 1, offset: .15 },
-    { transform: "perspective(900px) translate(0,0) rotateY(0deg) scale(1)", opacity: 1 }],
-    { duration: H, delay: H, easing: "cubic-bezier(.1,.4,.55,1)", fill: "backwards" }).onfinish = closeShelf;
-}
-$("#shelf").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li) openShelf(li.dataset.id, li); });
+$("#shelf").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li) openShelf(li.dataset.id); });
 shelfOv.addEventListener("click", e => {
-  if (shelfAnim) return; // während des Umdrehens nichts antippen
-  if (e.target.closest("[data-close]")) { closeShelfAnim(); return; }
+  if (e.target.closest("[data-close]")) { closeShelf(); return; }
   const m = e.target.closest(".more");
   if (m) { const d = m.previousElementSibling, open = d.classList.toggle("clamp") === false;
     m.firstChild.textContent = open ? "Weniger" : "Mehr lesen"; m.setAttribute("aria-expanded", String(open)); return; }
@@ -2588,7 +2531,7 @@ shelfOv.addEventListener("click", e => {
   setMark(id, act, !(act === "seen" ? seen : saved).has(id));
 });
 shelfOv.addEventListener("touchmove", e => { if (!e.target.closest(".shelf-one")) e.preventDefault(); }, { passive: false });
-document.addEventListener("keydown", e => { if (e.key === "Escape" && !shelfOv.hidden) closeShelfAnim(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !shelfOv.hidden) closeShelf(); });
 
 // Rang-Aufstieg feiern: nur wenn durch „gesehen“ ein neuer Rang erreicht wird
 function rankUp(ri) {
