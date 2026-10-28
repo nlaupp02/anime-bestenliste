@@ -111,7 +111,6 @@ h1 {
   text-wrap: balance; letter-spacing: -.01em;
 }
 h1 .red { color: var(--hanko); }
-.lede { max-width: 62ch; margin: 0; color: var(--muted); font-size: 15px; }
 .why { max-width: 70ch; font-size: 13.5px; color: var(--muted); }
 .why summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--muted); padding: 2px 0; }
 .why summary::-webkit-details-marker { display: none; }
@@ -124,8 +123,6 @@ h1 .red { color: var(--hanko); }
 .why-body b { color: var(--ink); }
 .why-body b.g { color: var(--gold); }
 .why-body b.r { color: var(--hanko); }
-.why-body .scale { display: flex; flex-wrap: wrap; gap: 4px 16px; }
-.why-body .scale span { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
 /* Am PC: kleine Stempel wie auf den Karten. Auf dem Handy (ⓘ-Fenster) bleibt die Textzeile. */
 .why summary:focus:not(:focus-visible) { outline: none; }
 .why-body .scale2 { display: flex; flex-wrap: wrap; gap: 6px 16px; }
@@ -135,10 +132,6 @@ h1 .red { color: var(--hanko); }
 .why-body .mini.mid { background: var(--hanko-soft); }
 .why-body .mini.low { border-color: var(--muted); color: var(--muted); }
 .app .why-body .scale2, html:not(.app) .why-body .scale-txt { display: none; }
-.dot { width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--hanko); display: inline-block; flex: none; }
-.dot.top { background: var(--gold); border-color: var(--gold); }
-.dot.mid { background: var(--hanko-soft); }
-.dot.low { border-color: var(--muted); }
 .counts { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 13.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .counts b { font-weight: 700; color: var(--ink); margin-right: 4px; }
 
@@ -151,7 +144,6 @@ h1 .red { color: var(--hanko); }
   display: grid; gap: 10px;
 }
 .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.rowlabel { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); min-width: 64px; }
 .search {
   flex: 1 1 150px; min-width: 0;
   font: inherit; font-size: 15px; color: var(--ink);
@@ -159,14 +151,13 @@ h1 .red { color: var(--hanko); }
   padding: 9px 12px;
 }
 .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--sheet); }
-.seg button, .chip, .toggle, select { font: inherit; font-size: 13px; color: var(--ink); cursor: pointer; }
+.seg button, .toggle, select { font: inherit; font-size: 13px; color: var(--ink); cursor: pointer; }
 .seg button { background: none; border: 0; padding: 8px 12px; }
 .seg button + button { border-left: 1px solid var(--line); }
 .seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
 /* Priscilla-Modus: aktive Filter gefüllt wie im normalen Modus, nur in Rosa statt Weiß */
 html.prisc .seg button[aria-pressed="true"] { background: #FF8FC4; color: #2A0A18; }
-html.prisc .toggle[aria-pressed="true"], html.prisc .panel .toggle[aria-pressed="true"], html.prisc .chip[aria-pressed="true"] { background: #FF8FC4; border-color: #FF8FC4; color: #2A0A18; }
-html.prisc .chip[aria-pressed="true"] .mc { color: #2A0A18; opacity: .7; }
+html.prisc .toggle[aria-pressed="true"], html.prisc .panel .toggle[aria-pressed="true"] { background: #FF8FC4; border-color: #FF8FC4; color: #2A0A18; }
 html.prisc .badge { background: var(--hanko); color: #2A0A18; }
 select { background: var(--sheet); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; max-width: 100%; }
 .toggle {
@@ -175,11 +166,6 @@ select { background: var(--sheet); border: 1px solid var(--line); border-radius:
 }
 .toggle svg { width: 13px; height: 13px; flex: none; }
 .toggle[aria-pressed="true"] { border-color: var(--ink); color: var(--paper); background: var(--ink); }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; flex: 1 1 auto; min-width: 0; }
-.chip { background: var(--chip); border: 1px solid transparent; border-radius: 999px; padding: 4px 11px; }
-.chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
-.chip .mc { opacity: .6; font-variant-numeric: tabular-nums; }
-.genre-select { display: none; }
 button:focus-visible, select:focus-visible, .search:focus-visible, a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .status { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; min-height: 30px; } /* immer gleich hoch, auch mit „Merkliste teilen“ */
 .reset { font: inherit; font-size: 13px; color: var(--ink); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; }
@@ -306,7 +292,6 @@ html.covers .cv { display: block; grid-column: 1; grid-row: 1 / span 4; align-se
 .gbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
 .gback { font: inherit; font-size: 14px; font-weight: 700; color: var(--ink); background: var(--chip); border: 0; border-radius: 999px; padding: 7px 13px; cursor: pointer; }
 .gbar h3 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 22px; }
-.meta .xtra { color: var(--muted); }
 .empty { padding: 40px 0; text-align: center; color: var(--muted); }
 /* Gesehen als Regal: Cover zu dritt, Wertung als kleiner Stempel, Antippen öffnet die Karte */
 .favg { margin: -2px 0 14px; font-size: 13px; color: var(--muted); } .favg b { color: var(--ink); font-weight: 700; }
@@ -340,17 +325,6 @@ html.covers .cv { display: block; grid-column: 1; grid-row: 1 / span 4; align-se
 .empty[data-ic="find"] { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6'/%3E%3Cpath d='M15 15l5 5'/%3E%3C/svg%3E"); }
 
 /* Unten */
-.info { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); padding-block: 26px 48px; }
-.box { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; min-width: 0; }
-.box h3 { margin: 0 0 8px; font-family: var(--f-display); font-weight: 400; font-size: 18px; }
-.box p, .box li { font-size: 14px; color: var(--ink); }
-.box p { margin: 0 0 8px; max-width: 65ch; }
-.box ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
-.box .muted { color: var(--muted); }
-.legend { display: flex; flex-wrap: wrap; gap: 10px 14px; margin-top: 10px; font-size: 13px; color: var(--muted); align-items: center; }
-.legend .stamp { transform: none; width: 34px; height: 34px; font-size: 12px; border-width: 2px; }
-.legend span { display: inline-flex; align-items: center; gap: 8px; }
-.box a { color: var(--hanko); }
 
 [hidden] { display: none !important; }
 /* Kein Zoomen: jedes Element erlaubt nur Wischen. Auch im Scrollbereich (#sc), denn dort fängt das iPhone sonst neu an zu zählen.
@@ -392,7 +366,7 @@ html:not(.prisc) .pick-btn { background: linear-gradient(100deg, #F05A50, #F4752
   bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px; padding: 5px;
   border-radius: 32px; overflow: visible;
-  background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04)), rgba(24,27,45,.66);
+  background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.03)), rgba(20,22,38,.76); /* etwas dunkler: auch über hellen Covern gut lesbar */
   /* etwas leichteres Glas: sieht fast gleich aus, braucht beim Scrollen aber weniger Rechenleistung */
   -webkit-backdrop-filter: blur(16px) saturate(150%); backdrop-filter: blur(16px) saturate(150%);
   border: 1px solid rgba(255,255,255,.16);
@@ -405,7 +379,7 @@ html:not(.prisc) .pick-btn { background: linear-gradient(100deg, #F05A50, #F4752
 .app .tabs .ti { display: block; width: 23px; height: 23px; }
 .app .tabs button[aria-selected="true"] { color: var(--ink); }
 .app .tabs { touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
-.app .tabs button { z-index: 1; -webkit-tap-highlight-color: transparent; }
+.app .tabs button { z-index: 1; -webkit-tap-highlight-color: transparent; text-shadow: 0 1px 2px rgba(0, 0, 0, .45); }
 .app .tabs button.hover { color: var(--ink); }
 .tabs .lens { display: none; }
 .app .tabs .lens {
@@ -437,7 +411,6 @@ html:not(.prisc) .pick-btn { background: linear-gradient(100deg, #F05A50, #F4752
 .searchrow .search { flex: 1 1 0; width: 0; min-width: 0; }
 .bar { grid-template-columns: minmax(0, 1fr); }
 .wrap { overflow-x: clip; }
-.prow > .chips { flex: 1 1 100%; min-width: 0; }
 .filter-btn {
   font: inherit; font-size: 14px; font-weight: 700; color: var(--ink); background: var(--sheet);
   border: 1px solid var(--line); border-radius: 8px; padding: 9px 12px; cursor: pointer;
@@ -461,7 +434,7 @@ html:not(.prisc) .pick-btn { background: linear-gradient(100deg, #F05A50, #F4752
 /* Handy: Karten außerhalb des Bildschirms werden nicht gezeichnet, bis man hinscrollt. So geht der Wechsel zu „Alle“ ohne Hänger */
 .app #list > .card { content-visibility: auto; contain-intrinsic-size: auto 340px; }
 /* Beim ersten Anzeigen einmal alle Karten zeichnen, damit sich das iPhone ihre echte Höhe merkt (sonst springt die Liste beim Hochscrollen) */
-.app #list.cvwarm > .card, .app #list > .card.cvw { content-visibility: visible; }
+.app #list > .card.cvw { content-visibility: visible; }
 .card.pick { outline: 3px solid var(--hanko); outline-offset: 3px; }
 html:not(.prisc) .card.pick { outline-color: #F47521; } /* Orange wie „Crunchyroll“ oben und der Würfel-Knopf */
 .totop {
@@ -485,11 +458,9 @@ html:not(.prisc) .card.pick { outline-color: #F47521; } /* Orange wie „Crunchy
 /* Rang: Kanji im Ring, der Ring füllt sich bis zum nächsten Rang. Farbe steigt mit: grau, grün, gold, rot */
 .prog, .ladder li { --rc: #A3A8C2; }
 .prog.rt5, .ladder li.rt5 { --rc: #7CB4F0; } .prog.rt6, .ladder li.rt6 { --rc: #FF3B3B; } .prog.rt1, .ladder li.rt1 { --rc: #5FD3A6; } .prog.rt2, .ladder li.rt2 { --rc: #F2C14E; } .prog.rt3, .ladder li.rt3 { --rc: #FF8A3D; } .prog.rt4, .ladder li.rt4 { --rc: #FF3B3B; } /* feste Farben, auch im Priscilla-Modus */
-.prog .rk { display: grid; justify-items: center; gap: 4px; width: 84px; }
 .prog .ring .kj { position: absolute; inset: 0; display: grid; place-items: center; font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
   font-weight: 700; font-size: 20px; line-height: 1.05; writing-mode: vertical-rl; color: var(--rc); }
 .prog .ring .kj.k1 { font-size: 30px; } .prog .ring .kj.k3 { font-size: 15px; }
-.prog .ringcap { font-size: 12.5px; font-weight: 700; line-height: 1.2; color: var(--rc); text-align: center; width: 110px; margin-inline: -13px; } /* lange Namen (Seelenverwandt) ragen gleichmäßig über, der Kreis bleibt an seinem Platz */
 .prog #progArc { stroke: var(--rc); }
 .prog .ring circle:first-child { stroke: var(--rc); stroke-opacity: .2; } /* leerer Teil vom Ring: leicht in der Rangfarbe */
 .prog.max .ring svg { filter: drop-shadow(0 0 4px rgba(240, 90, 80, .4)); }
@@ -503,10 +474,6 @@ html.prisc .prog.top.rt4, html.prisc .rankup.top.rt4 { --glow: 246, 196, 83; }
 .prog.top .ring circle:first-child { stroke-opacity: .35; }
 .prog.rt6 .ring .face { background: radial-gradient(circle, #160609, #0B0406 70%); box-shadow: 0 0 0 3px var(--sheet), inset 0 0 8px rgba(255, 40, 40, .35); }
 html.prisc .prog.max .ring svg { filter: drop-shadow(0 0 4px rgba(246, 196, 83, .4)); } /* Herzkönigin leuchtet golden */
-.prog .ph { display: flex; align-items: center; gap: 6px; }
-.prog .nx { display: block; }
-.prog p .nx:first-child { color: var(--ink); }
-.prog .hrs { display: block; font-size: 12.5px; }
 /* Profil (Reiter statt „Gesehen“): Banner in Rangfarbe, Profilbild im Rang-Ring, Name, Rang und Zahlen */
 .prog { --rgb: 163, 168, 194; display: block; position: relative; padding: 0 0 14px; border-radius: 20px; overflow: hidden; text-align: center; }
 .pfh-ban { position: relative; height: 96px; overflow: hidden; background: linear-gradient(140deg, rgba(var(--rgb), .55), rgba(var(--rgb), .14) 55%, rgba(var(--rgb), .04)); }
@@ -543,9 +510,6 @@ html.prisc .prog.max .ring svg { filter: drop-shadow(0 0 4px rgba(246, 196, 83, 
 .tabs .pfi { border-radius: 50%; overflow: hidden; box-shadow: 0 0 0 1.5px rgba(255, 255, 255, .5); }
 .app .tabs .pfi { width: 24px; height: 24px; }
 #n-seen { display: none !important; } /* die Zahl steht jetzt im Profil */
-.rinfo { flex: none; width: 30px; height: 30px; margin: -6px 0; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); display: grid; place-items: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.rinfo svg { width: 18px; height: 18px; }
-.rinfo:active { color: var(--ink); }
 /* Priscilla-Modus: rosa Akzente, Leiste mit „Beenden“, fallende Herzen und Kirschblüten */
 html.prisc { --hanko: #FF6FA8; --hanko-soft: #3A1A2A; --gold: #FF9CC8; --on-gold: #2A0A18; }
 .prisbar { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 8px 8px 8px 12px; border-radius: 12px; background: #3A1A2A; border: 1px solid #FF6FA8; color: #FFD3E6; font-size: 13.5px; font-weight: 700; }
@@ -812,7 +776,6 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
 .acct.pic { background: none; border-color: transparent; padding: 0; }
 .lg-av { overflow: hidden; }
 .lg-av.pic, html.prisc .lg-av.pic, .acct.pic, html.prisc .acct.pic, html.prisc .acct.on.pic { background: none; border-color: transparent; }
-.pe-l { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 2px 0 -4px; }
 .pe-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px 8px; }
 #peBox { gap: 10px; }
 #acctOv .ov-card { max-height: calc(100% - 8px); }
@@ -826,8 +789,10 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
 /* „Ohne Bild“ als Knopf: zeigt den Buchstaben, der dann statt eines Bildes erscheint */
 .pe-none { justify-self: center; display: inline-flex; align-items: center; gap: 9px; font: inherit; font-size: 14px; font-weight: 700; color: var(--muted); background: var(--chip); border: 1px solid var(--line); border-radius: 999px; padding: 5px 14px 5px 5px; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform .2s ease; }
 .pe-none:active { transform: scale(.96); transition-duration: .08s; transition-delay: .04s; }
-.pe-none i { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-weight: 800; font-size: 14px; color: #1A0C0B; background: linear-gradient(135deg, #F05A50, #F47521); }
-html.prisc .pe-none i { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color: #2A0A18; }
+/* Ohne Bild zeigt das Profil dein Rang-Zeichen im Ring: genau das steht hier, in der Rangfarbe */
+.pe-none i { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font: 700 16px/1 "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
+  color: var(--rc, #A3A8C2); background: var(--paper); border: 1.6px solid var(--rc, #A3A8C2); }
+.pe-none i.dk { background: #0B0406; }
 .pe-none[aria-pressed="true"] { color: var(--ink); border-color: var(--gold); }
 .pe-none[aria-pressed="true"] i { box-shadow: 0 0 0 2px var(--chip), 0 0 0 3.5px var(--gold); }
 #peNone[aria-pressed="true"] { color: var(--ink); }
@@ -836,22 +801,26 @@ html.prisc .pe-none i { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); c
 .lg-card button:disabled { opacity: .5; cursor: default; }
 /* Antippen spürbar wie in iOS-Apps: Knöpfe und Kacheln geben kurz nach und federn beim Loslassen weich zurück.
    Das Eindrücken startet erst nach 40 ms, damit beim Losscrollen über einen Knopf nichts aufblitzt. */
-.btn, .tile, .filter-btn, .toggle, .chip, .gback, .share-btn, .newbtn, .prisbar button, .neubar button, .lg-pen, .acct, .pe-it,
-.pfh-login button, .ov-btn, .ib-go, .seg button, #pfSaved, .rinfo, .whybtn, .pfh-i, .reset, .lg-link, .toast-act, .ib-x, .inst-x {
+.btn, .tile, .filter-btn, .toggle, .gback, .share-btn, .newbtn, .prisbar button, .neubar button, .lg-pen, .acct, .pe-it,
+.pfh-login button, .ov-btn, .ib-go, .seg button, #pfSaved, .whybtn, .pfh-i, .reset, .lg-link, .toast-act, .ib-x, .inst-x {
   transition: transform .2s ease, filter .2s ease, opacity .2s ease; -webkit-tap-highlight-color: transparent;
 }
 .ru-card .ov-btn { transition: opacity .3s, transform .2s ease, filter .2s ease; }
-.btn:active, .filter-btn:active, .toggle:active, .chip:active, .gback:active, .share-btn:active, .newbtn:active,
+.btn:active, .filter-btn:active, .toggle:active, .gback:active, .share-btn:active, .newbtn:active,
 .prisbar button:active, .neubar button:active, .lg-pen:active, .acct:active, .pe-it:active { transform: scale(.94); }
 .tile:active, .ov-btn:active, .ib-go:active, .pfh-login button:active { transform: scale(.97); filter: brightness(.88); }
-.seg button:active, #pfSaved:active, .rinfo:active, .whybtn:active, .pfh-i:active, .reset:active, .lg-link:active, .toast-act:active, .ib-x:active, .inst-x:active { opacity: .55; }
-.btn:active, .filter-btn:active, .toggle:active, .chip:active, .gback:active, .share-btn:active, .newbtn:active,
+.seg button:active, #pfSaved:active, .whybtn:active, .pfh-i:active, .reset:active, .lg-link:active, .toast-act:active, .ib-x:active, .inst-x:active { opacity: .55; }
+.btn:active, .filter-btn:active, .toggle:active, .gback:active, .share-btn:active, .newbtn:active,
 .prisbar button:active, .neubar button:active, .lg-pen:active, .acct:active, .pe-it:active,
 .tile:active, .ov-btn:active, .ib-go:active, .pfh-login button:active,
-.seg button:active, #pfSaved:active, .rinfo:active, .whybtn:active, .pfh-i:active, .reset:active, .lg-link:active, .toast-act:active, .ib-x:active, .inst-x:active {
+.seg button:active, #pfSaved:active, .whybtn:active, .pfh-i:active, .reset:active, .lg-link:active, .toast-act:active, .ib-x:active, .inst-x:active {
   transition-duration: .08s; transition-delay: .04s;
 }
 #ruOk:disabled:active, .lg-card button:disabled:active { transform: none; filter: none; }
+/* Kleine Knöpfe: größere Tippfläche (etwa 44 px hoch), ohne dass sie größer aussehen – ein unsichtbarer Rand um den Knopf */
+.more, .whybtn, .newbtn, .share-btn, .prisbar button, .neubar button, .gback, .reset { position: relative; }
+.more::after, .newbtn::after, .share-btn::after, .prisbar button::after, .neubar button::after, .gback::after, .reset::after { content: ""; position: absolute; inset: -9px -4px; }
+.whybtn::after { content: ""; position: absolute; inset: -9px; border-radius: 50%; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 
@@ -868,7 +837,7 @@ html.prisc .pe-none i { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); c
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V211</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V213</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -912,7 +881,7 @@ html.prisc .pe-none i { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); c
   </div>
 
   <main>
-    <section class="prog" id="prog" hidden aria-live="polite">
+    <section class="prog" id="prog" hidden>
       <div class="pfh-ban" aria-hidden="true"><span class="pfh-kj" id="pfKj"></span></div>
       <button type="button" class="lg-pen pfh-set" id="pfEdit" aria-label="Konto und Einstellungen" hidden><svg class="gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
       <div class="pfh-av"><span class="ring"><svg viewBox="0 0 104 104" aria-hidden="true"><circle cx="52" cy="52" r="46" fill="none" stroke="var(--line)" stroke-width="6"/><circle id="progArc" cx="52" cy="52" r="46" fill="none" stroke="var(--ok)" stroke-width="6" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="289" transform="rotate(-90 52 52)"/></svg><span class="face"><span class="kj" id="progKj" aria-hidden="true"></span><span class="fimg" id="pfImg" hidden></span></span></span><span class="pfh-badge" id="pfBadge" aria-hidden="true" hidden></span></div>
@@ -963,7 +932,7 @@ html.prisc .pe-none i { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); c
     <div id="peBox" class="lg-form" hidden>
       <input class="lg-in" id="peName" aria-label="Name" type="text" maxlength="20" autocomplete="nickname" placeholder="Dein Name">
       <div class="pe-grid" id="peGrid"></div>
-      <button type="button" class="pe-none" id="peNone" aria-pressed="false"><i id="peLetter" aria-hidden="true"></i>Ohne Bild – nur Buchstabe</button>
+      <button type="button" class="pe-none" id="peNone" aria-pressed="false"><i id="peLetter" aria-hidden="true"></i>Ohne Bild – Rang-Zeichen</button>
       <div class="ov-row"><button type="button" class="ov-btn" id="peCancel">Abbrechen</button><button type="button" class="ov-btn main" id="peSave">Speichern</button></div>
     </div>
     <p class="lg-msg" id="lgMsg" hidden></p>
@@ -1126,7 +1095,7 @@ const DATA = [
 ["World Trigger","S","Action|Sci-Fi",8.0,7.4,1.7,"sub","3 Staffeln · über 100 Folgen","Aus Portalen fallen Monster nach Japan, eine Organisation bildet junge Kämpfer aus. Taktische Teamkämpfe statt reiner Muskelkraft.","Startet langsam, wird aber immer taktischer. Staffel 2 und 3 sind die stärksten.","world trigger","","World Trigger"],
 ["Ascendance of a Bookworm","S","Isekai|Fantasy|Slice of Life",8.0,7.8,2.4,"de","4 Staffeln · 60 Folgen","Eine Bücherliebhaberin wird als kränkliches Mädchen in einer mittelalterlichen Welt ohne Bücher wiedergeboren. Also stellt sie sich welche her.","Langsam, aber sehr befriedigend.","honzuki no gekokujou","chill","Ascendance of a Bookworm"],
 ["Gachiakuta","S","Action|Fantasy",8,8,16,"de","24 Folgen","Rudo wird für einen Mord, den er nicht begangen hat, in die Müllhalde unter der Stadt verbannt. Dort kämpft er mit Waffen aus weggeworfenen Gegenständen.","","gachiakuta","","Gachiakuta"],
-["My Dress-Up Darling","S","Romance|Comedy",8.0,7.9,30,"de","2 Staffeln · 24 Folgen","Der schüchterne Puppenmacher Gojo hilft der beliebten Marin, ihre Cosplay-Kostüme zu nähen. Eine süße Romcom.","Etwas Fanservice.","sono bisque doll","chill","My Dress-Up Darling"],
+["My Dress-Up Darling","S","Romance|Comedy",8.0,7.9,30,"de","2 Staffeln · 24 Folgen","Der schüchterne Puppenmacher Gojo hilft der beliebten Marin, ihre Cosplay-Kostüme zu nähen. Eine süße Rom-Com.","Etwas Fanservice.","sono bisque doll","chill","My Dress-Up Darling"],
 ["Detektiv Conan","S","Krimi|Mystery",7.7,8.5,19,"de","fast 500 Folgen auf Deutsch","Ein junger Meisterdetektiv wird vergiftet und schrumpft zum Grundschüler. Getarnt löst er Mordfall um Mordfall.","Auf Crunchyroll gibt es die ersten knapp 500 Folgen mit deutscher Synchro, ein paar fehlen. Du kannst überall einsteigen.","detective conan meitantei","dn","Detektiv Conan"],
 ["Dragonball Super: Broly","F","Action",8,7.7,38,"de","Film · 1 Std. 41 Min.","Goku und Vegeta treffen auf den gewaltigen Saiyajin Broly. Einer der am besten animierten Kämpfe der ganzen Reihe.","Auch ohne Vorwissen verständlich, Dragon-Ball-Fans haben aber mehr davon.","dragon ball broly","kurz","Dragon Ball Super Broly"],
 ["Josie, der Tiger und die Fische","F","Romance|Drama",8.0,7.7,13,"de","Film · 1 Std. 38 Min.","Ein Student verliebt sich in eine junge Frau im Rollstuhl, die von der Welt draußen träumt. Eine ehrliche, unkitschige Liebesgeschichte.","","josee tora sakana","herz|kurz","Josee"],
@@ -1138,7 +1107,6 @@ const DATA = [
 ["Inuyasha","S","Fantasy|Abenteuer|Romance",7.6,7.9,20,"de","193 Folgen","Kagome fällt durch einen Brunnen ins Japan der Kriegerzeit und muss mit dem Halbdämon Inuyasha die Splitter eines magischen Juwels sammeln.","","inuyasha","","Inuyasha"],
 ["My Hero Academia","S","Action",7.9,8.2,128,"de","8 Staffeln · 170 Folgen","Fast alle Menschen haben Superkräfte, nur Deku nicht. Bis der größte Held ihm seine Kraft vererbt. Klassische Heldengeschichte mit großen Momenten.","Startet etwas langsam, ab Staffel 2 wird es richtig gut.","boku no hero academia mha","","My Hero Academia"],
 ["Black Clover","S","Action|Fantasy",7.7,8.2,57,"de","über 170 Folgen, läuft wieder","Asta ist der einzige Junge ohne Magie in einer Welt voller Magier und will trotzdem Zauberkaiser werden.","Anfangs anstrengend laut, später richtig gut.","black clover","","Black Clover"],
-["Fate/Grand Order – Babylonia","S","Action|Fantasy",7.9,7.2,1.6,"sub","21 Folgen","Zwei Helden reisen ins antike Mesopotamien, um die Geschichte der Menschheit zu retten. Bombastische Kämpfe an der Seite von Gilgamesch.","Auf Crunchyroll nur mit englischen Untertiteln. Ohne Vorwissen zur Fate-Reihe stellenweise verwirrend.","fgo fate grand order","","Fate/Grand Order Babylonia"],
 ["Lupin III.","S","Krimi|Abenteuer|Comedy",7.9,7.8,2.8,"de","2 Staffeln · 25 Folgen","Der Meisterdieb Lupin und seine Komplizen jagen Schätze, immer verfolgt vom hartnäckigen Inspektor Zenigata. Lässiger Kult seit den 70ern.","Crunchyroll hat Part 6. Er steht für sich, du brauchst kein Vorwissen.","lupin","chill","Lupin"],
 ["A Sign of Affection","S","Romance",7.9,7.8,5.4,"de","12 Folgen","Die gehörlose Studentin Yuki verliebt sich in einen weltgewandten Kommilitonen, der viele Sprachen spricht. Eine sanfte, schön gezeichnete Liebesgeschichte.","","yubisaki to renren","chill|herz|kurz","A Sign of Affection"],
 ["Kyousougiga","S","Fantasy|Drama",7.9,null,null,"sub","13 Folgen","Die wilde Koto landet in einer Spiegelwelt von Kyoto, die ihre verschwundene Familie erschaffen hat. Bunt, verspielt und überraschend gefühlvoll.","","kyousougiga","herz|kurz","Kyousougiga"],
@@ -1151,7 +1119,6 @@ const DATA = [
 ["Black Butler","S","Mystery|Fantasy",7.7,8.1,2.9,"de","5 Staffeln · 71 Folgen","Der junge Graf Ciel hat im viktorianischen London einen Pakt mit einem Dämon geschlossen, der ihm als perfekter Butler dient. Düster und stilvoll.","Die zweite Hälfte von Staffel 1 und ganz Staffel 2 sind eigene Anime-Geschichten. Mit Book of Circus geht es wie im Manga weiter.","kuroshitsuji","","Black Butler"],
 ["Campfire Cooking in Another World","S","Isekai|Comedy|Slice of Life",7.7,7.6,4.7,"de","2 Staffeln · 36 Folgen","Mukohda wird in eine Fantasywelt beschworen und kann nur Lebensmittel aus seinem alten Supermarkt bestellen. Damit zähmt er einen legendären Wolf.","","tondemo skill","chill","Campfire Cooking"],
 ["Penguin Highway","F","Fantasy|Slice of Life",7.7,7.1,4.7,"de","Film · 1 Std. 58 Min.","Ein frühreifer Viertklässler untersucht, warum plötzlich Pinguine in seiner Stadt auftauchen. Verträumt und charmant.","","penguin highway","chill|herz|kurz","Penguin Highway"],
-["Dragon Ball Daima","S","Action|Abenteuer|Comedy",7.7,7.7,20,"sub","20 Folgen","Durch eine Verschwörung werden Goku und seine Freunde wieder zu Kindern. Um das rückgängig zu machen, reisen sie in die Dämonenwelt.","","dragonball daima","","Dragon Ball Daima"],
 ["Tokyo Revengers","S","Action|Drama",7.6,7.7,35,"de","Staffel 1 · 24 Folgen","Takemichi springt zwölf Jahre in die Vergangenheit, um den Tod seiner Ex-Freundin zu verhindern. Dafür muss er eine Motorradgang von innen verändern.","Bei Crunchyroll gibt es nur Staffel 1. Die Fortsetzung läuft bei Disney+.","tokyo revengers","","Tokyo Revengers"],
 ["Tower of God","S","Fantasy|Abenteuer",7.6,7.4,12,"de","2 Staffeln · 39 Folgen","Bam folgt seiner einzigen Freundin in einen geheimnisvollen Turm, dessen Spitze jeden Wunsch erfüllt. Jede Etage ist eine tödliche Prüfung.","","kami no tou","","Tower of God"],
 ["Patema Inverted","F","Sci-Fi|Abenteuer",7.6,7.3,12,"de","Film · 1 Std. 40 Min.","Patema stammt aus einer Welt mit umgekehrter Schwerkraft und würde ohne Halt in den Himmel fallen. Ein kreatives Sci-Fi-Märchen.","","sakasama no patema","kurz","Patema Inverted","G4PH0W3ZZ"],
@@ -1206,14 +1173,14 @@ const EXTRA = [
 ["Sentenced to Be a Hero", "S", "Action|Fantasy", 8.0, null, null, "de", "12 Folgen", "In dieser Welt ist „Held“ eine Strafe: Verurteilte kämpfen an vorderster Front gegen Dämonen und werden nach jedem Tod wiederbelebt. Der frühere Kommandant Xylo, verurteilt für den Mord an einer Göttin, trifft auf die junge Göttin Teoritta, die ihn zu ihrem Ritter macht. Düster und actionreich.", "", "yuusha-kei ni shosu", "kurz", "Sentenced to Be a Hero", "GT00356809"],
 ["Takopi und die Sache mit dem Glück", "S", "Drama|Thriller|Sci-Fi", 8.6, 8.7, 30, "sub", "6 Folgen", "Das Alien Takopi landet auf der Erde, um Menschen glücklich zu machen. Doch die verschlossene Schülerin Shizuka wird zu Hause und in der Schule gequält, und Takopis Wunderhelfer machen alles nur schlimmer. Kurz, verstörend und unglaublich stark.", "Sehr düster, es geht um Mobbing, Gewalt und Suizid. Nichts für nebenbei.", "takopi no genzai takopis original sin", "dn|kurz", "Takopi", "GKEH2G0X4"],
 ["TO BE HERO X", "S", "Action|Sci-Fi|Drama", 8.4, 8.5, 11, "de", "24 Folgen", "In dieser Welt bekommen Helden ihre Kräfte vom Vertrauen der Menschen. Wer die Fans verliert, verliert auch seine Macht. Alle zwei Jahre wird der größte Held gesucht, „X“, und der Weg dorthin fordert große Opfer.", "Jede Heldengeschichte hat ihren eigenen Zeichenstil, mal 2D, mal 3D. Das ist Absicht.", "to be hero x", "", "TO BE HERO X", "GQWH0M1J3"],
-["Naruto", "S", "Action|Abenteuer", 7.6, 8.4, 176, "sub", "220 Folgen", "Der Waisenjunge Naruto trägt einen gefährlichen Fuchsdämon in sich und wird im Dorf gemieden. Er will Hokage werden, der stärkste Ninja des Dorfes. Der Anfang der großen Geschichte, die mit Naruto Shippuden weitergeht.", "Ab etwa Folge 136 kommen fast nur noch Füllfolgen. Dann am besten direkt mit Naruto Shippuden weitermachen.", "naruto ninja", "", "Naruto", "GY9PJ5KWR"],
+["Naruto", "S", "Action|Abenteuer", 7.6, 8.4, 176, "sub", "220 Folgen", "Der Waisenjunge Naruto trägt einen gefährlichen Fuchsdämon in sich und wird im Dorf gemieden. Er will Hokage werden, der stärkste Ninja des Dorfes. Der Anfang der großen Geschichte, die mit Naruto Shippuden weitergeht.", "Ab etwa Folge 136 kommen fast nur noch Füllerfolgen. Dann am besten direkt mit Naruto Shippuden weitermachen.", "naruto ninja", "", "Naruto", "GY9PJ5KWR"],
 ["Ranking of Kings", "S", "Fantasy|Abenteuer|Drama", 8.5, 8.3, 17, "de", "23 Folgen", "Prinz Bojji ist taub, klein und schwach, und niemand traut ihm zu, König zu werden. Mit Kage, einem Schattenwesen, findet er seinen ersten echten Freund. Herzlich und mutig, mit überraschend dunklen Wendungen.", "Der Kinderbuch-Look täuscht: Es wird stellenweise ziemlich düster.", "ousama ranking bojji kage", "herz", "Ranking of Kings", "G79H23W70"],
 ["Berserk: Das Goldene Zeitalter – Memorial Edition", "S", "Action|Fantasy|Drama", 8.0, 8.3, 2.8, "sub", "13 Folgen", "Der Söldner Guts schließt sich der Bande der Falken an, angeführt vom charismatischen Griffith. Zwischen Schlachten, Freundschaft und Ehrgeiz bahnt sich ein Verrat an, der alles zerstört. Ein Klassiker der düsteren Fantasy.", "Sehr brutal. Zeigt nur den ersten großen Teil der Geschichte.", "berserk ougon jidai hen golden age", "kurz", "Berserk", "G24H1N8XX"],
 ["Planetes", "S", "Sci-Fi|Drama", 8.3, 8.1, 4.5, "sub", "26 Folgen", "Im Jahr 2075 sammelt eine kleine Crew Weltraummüll ein, der Satelliten und Raumschiffe bedroht. Die Neue, Ai, prallt auf den mürrischen Hachimaki, der von einem eigenen Raumschiff träumt. Realistische Raumfahrt mit viel Menschlichkeit.", "Startet gemächlich, wird ab der Mitte richtig stark.", "planetes weltraummuell", "herz", "Planetes", "G9VHN9Q14"],
 ["Keep Your Hands Off Eizouken!", "S", "Comedy|Slice of Life", 8.2, 8.1, 2.5, "sub", "12 Folgen", "Drei Schülerinnen gründen einen Club, um ihren eigenen Anime zu machen: eine Träumerin, ein Model, das Figuren zeichnen will, und eine geschäftstüchtige Produzentin. Ihre Ideen werden direkt auf dem Bildschirm lebendig.", "", "eizouken ni wa te wo dasu na", "chill|kurz", "Keep Your Hands Off Eizouken", "GY0X54Q96"],
 ["Vivy: Fluorite Eye's Song", "S", "Sci-Fi|Action|Drama", 8.1, 7.9, 5.6, "sub", "13 Folgen", "Die KI-Sängerin Vivy will mit ihren Liedern Menschen glücklich machen. Da taucht eine KI aus der Zukunft auf: In hundert Jahren werden Maschinen die Menschheit auslöschen, und Vivy soll das verhindern. Spannend, mit tollen Kämpfen und Gefühl.", "", "vivy fluorite eyes song", "herz|dn|kurz", "Vivy Fluorite Eye's Song", "GMEHME4M4"],
 ["Mobile Suit Gundam: Iron-Blooded Orphans", "S", "Sci-Fi|Action|Drama", 7.9, 7.9, 2.8, "sub", "2 Staffeln · 50 Folgen", "Auf dem Mars kämpfen Kindersoldaten in einem Sicherheitsdienst ums Überleben. Sie rebellieren gegen ihre Ausbeuter und gründen ihre eigene Truppe. Ein harter, erwachsener Gundam über Loyalität und Krieg.", "Kein Gundam-Vorwissen nötig.", "gundam tekketsu no orphans", "", "Iron-Blooded Orphans", "GYQ4QK446"],
-["Fairy Tail", "S", "Action|Fantasy|Abenteuer", 7.3, 7.8, 33, "de", "über 300 Folgen", "Die junge Magierin Lucy tritt der berüchtigten Gilde Fairy Tail bei. Mit dem feuerspeienden Natsu, dem Eismagier Gray und der strengen Erza erlebt sie Abenteuer, bei denen Freundschaft alles ist.", "Sehr lang. Füllfolgen kannst du überspringen.", "fairy tail natsu lucy", "", "Fairy Tail", "G6DQDD3WR"],
+["Fairy Tail", "S", "Action|Fantasy|Abenteuer", 7.3, 7.8, 33, "de", "über 300 Folgen", "Die junge Magierin Lucy tritt der berüchtigten Gilde Fairy Tail bei. Mit dem feuerspeienden Natsu, dem Eismagier Gray und der strengen Erza erlebt sie Abenteuer, bei denen Freundschaft alles ist.", "Sehr lang. Füllerfolgen kannst du überspringen.", "fairy tail natsu lucy", "", "Fairy Tail", "G6DQDD3WR"],
 ["Hinamatsuri", "S", "Comedy|Slice of Life", 8.1, 7.8, 3.1, "sub", "12 Folgen", "Bei einem Yakuza landet ein Mädchen mit gewaltigen Psychokräften in einer Metallkapsel im Wohnzimmer. Hina zieht ein und stellt sein geordnetes Leben auf den Kopf. Eine der lustigsten Comedys überhaupt, mit überraschend rührenden Momenten.", "", "hinamatsuri hina nitta", "chill|kurz", "Hinamatsuri", "GR79PWJ16"],
 ["Miss Kobayashi's Dragon Maid", "S", "Comedy|Fantasy|Slice of Life", 7.8, 7.7, 7, "de", "2 Staffeln · 25 Folgen", "Die Programmiererin Kobayashi rettet betrunken einem Drachen das Leben. Am nächsten Morgen steht die Drachendame Tohru als Hausmädchen vor ihrer Tür. Gemütlich, lustig und überraschend herzlich.", "", "kobayashi san chi no maid dragon tohru", "chill|herz", "Miss Kobayashi's Dragon Maid", "G6497Z43Y"],
 ["Die Melancholie der Haruhi Suzumiya", "S", "Comedy|Sci-Fi|Mystery", 7.3, 7.7, 10, "de", "28 Folgen", "Die exzentrische Haruhi gründet einen Schulclub, um Aliens, Zeitreisende und Esper zu finden. Ihr Mitschüler Kyon merkt bald, dass genau solche Leute längst im Club sitzen und Haruhi die Welt verändern kann, ohne es zu wissen.", "Danach unbedingt den Film „Das Verschwinden der Haruhi Suzumiya“ schauen.", "suzumiya haruhi no yuuutsu melancholy sos brigade", "", "Haruhi Suzumiya", "GRGG7701R"],
@@ -1225,7 +1192,7 @@ const EXTRA = [
 ["PSYREN", "S", "Sci-Fi|Mystery|Thriller", 7.6, 7.4, 0.12, "de", "13 Folgen, läuft gerade", "Der Schüler Ageha findet eine rote Telefonkarte, kurz darauf verschwindet seine Kindheitsfreundin. Auf der Suche nach ihr gerät er in ein tödliches Spiel in einer verwüsteten Zukunft. Nach einem bekannten Manga.", "Ganz neu, die Wertung beruht noch auf wenigen Stimmen.", "psyren", "dn|kurz", "PSYREN", "GT00371866"],
 ["Smoking Behind the Supermarket with You", "S", "Romance|Slice of Life", 8.1, null, null, "sub", "12 Folgen", "Der müde Büroangestellte Sasaki findet seine einzige Erholung bei der fröhlichen Kassiererin im Supermarkt um die Ecke. Hinter dem Laden trifft er beim Rauchen eine ganz andere Frau, und zwischen den beiden entsteht eine stille, warme Verbindung. Eine Romanze für Erwachsene.", "Ruhig und erwachsen, ganz ohne Schulkulisse.", "super no ura de yani suu futari", "chill|herz|kurz", "Smoking Behind the Supermarket with You", "GT00378116"],
 ["The Quintessential Quintuplets", "S", "Romance|Comedy", 7.8, null, null, "de", "2 Staffeln + Specials · 28 Folgen", "Der arme Musterschüler Futaro wird Nachhilfelehrer für Fünflinge, die alle gleich aussehen, aber völlig verschieden sind, und keine Lust auf Lernen haben. Von Anfang an ist klar: Eine der fünf wird später seine Braut. Aber welche?", "Nach Staffel 2 den Film schauen, dort endet die Geschichte.", "5 toubun no hanayome gotoubun", "chill", "The Quintessential Quintuplets", "GY4PD7Z06"],
-["The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You", "S", "Romance|Comedy", 7.8, null, null, "de", "5 Staffeln · 60 Folgen", "Rentaro wurde 100-mal abgewiesen. Dann erfährt er, dass ihm das Schicksal 100 Seelenverwandte bestimmt hat, und wenn er eine davon nicht liebt, stirbt sie. Völlig absurd, übertrieben und einer der lustigsten Anime überhaupt.", "Ein Witz pro Sekunde. Ab 16, mit vielen anzüglichen Witzen.", "100 kanojo hyakkano", "chill", "The 100 Girlfriends", "GNVHKN933"],
+["The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You", "S", "Romance|Comedy", 7.8, null, null, "de", "3 Staffeln · 36 Folgen", "Rentaro wurde 100-mal abgewiesen. Dann erfährt er, dass ihm das Schicksal 100 Seelenverwandte bestimmt hat, und wenn er eine davon nicht liebt, stirbt sie. Völlig absurd, übertrieben und einer der lustigsten Anime überhaupt.", "Ein Witz pro Sekunde. Ab 16, mit vielen anzüglichen Witzen.", "100 kanojo hyakkano", "chill", "The 100 Girlfriends", "GNVHKN933"],
 ["The Angel Next Door Spoils Me Rotten", "S", "Romance", 7.6, null, null, "sub", "2 Staffeln · 24 Folgen", "Mahiru gilt als Engel der Schule. Als sie bemerkt, dass ihr unordentlicher Nachbar Amane sich nur von Fertigessen ernährt, kocht sie für ihn, und aus der Nachbarschaft wird langsam mehr. Zuckersüß und gemütlich.", "Staffel 1 ist die stärkere.", "otonari no tenshi sama", "chill|herz", "The Angel Next Door Spoils Me Rotten", "G9VHN91DJ"],
 ["More than a Married Couple, but Not Lovers", "S", "Romance|Comedy", 7.5, null, null, "de", "12 Folgen", "In einem Schulprojekt müssen Jiro und die beliebte Akari als Probe-Ehepaar zusammenwohnen, obwohl beide eigentlich in jemand anderen verliebt sind. Mit der Zeit wird der Streit zum Alltag und der Alltag zu Gefühlen.", "", "fuufu ijou koibito miman", "chill|kurz", "More than a Married Couple, but Not Lovers", "GJ0H7Q5N3"],
 ["Alya Sometimes Hides Her Feelings in Russian", "S", "Romance|Comedy", 7.5, null, null, "de", "12 Folgen", "Die kühle Alya flüstert ihrem Sitznachbarn Masachika ständig verliebte Sätze auf Russisch zu, weil sie denkt, dass er sie nicht versteht. Dabei versteht er jedes Wort. Eine verspielte Rom-Com.", "Staffel 2 ist angekündigt.", "roshidere tokidoki bosotto russia go", "chill|kurz", "Alya Sometimes Hides Her Feelings in Russian", "G1XHJV0XM"],
@@ -1295,11 +1262,11 @@ const EXTRA = [
 ["In/Spectre", "S", "Mystery|Fantasy|Comedy", 7.2, null, null, "sub", "2 Staffeln · 24 Folgen", "Kotoko hat als Kind ein Auge und ein Bein an Geister verloren und ist seitdem deren Göttin der Weisheit, die Streit zwischen Geistern und Menschen schlichtet. Mit Kuro, der nicht sterben kann, löst sie übernatürliche Fälle, oft mit erfundenen, aber logischen Erklärungen.", "Auf Crunchyroll gibt es nur die erste Staffel.", "kyokou suiri", "dn", "In/Spectre", "GYZJEEQGR"],
 ["White Album 2", "S", "Romance|Drama", 8.0, null, null, "sub", "13 Folgen", "Haruki will zum Schulfest mit einer Band auftreten und gewinnt dafür die beliebte Setsuna und die verschlossene Pianistin Kazusa. Aus der Musik wird ein Liebesdreieck, bei dem am Ende jemand verletzt wird.", "Sehr erwachsen und bittersüß, kein Wohlfühl-Anime.", "white album 2", "herz|kurz", "White Album 2", "GR2P5EK0R"],
 ["I'm the Villainess, So I'm Taming the Final Boss", "S", "Romance|Fantasy|Comedy", 7.4, null, null, "sub", "12 Folgen", "Aileen erinnert sich nach ihrer geplatzten Verlobung, dass sie die Schurkin aus einem Otome-Spiel ist und bald sterben soll. Ihr Plan: den gefürchteten Dämonenkönig heiraten, bevor er zum Endgegner wird.", "", "akuyaku reijou nanode last boss wo kattemimashita", "chill|kurz", "I'm the Villainess, So I'm Taming the Final Boss", "GG5H5X0JK"],
-["A Condition Called Love", "S", "Romance|Slice of Life", 7.4, null, null, "sub", "13 Folgen", "Hotaru hat keine Ahnung, was Liebe eigentlich ist. Als der freundliche Hinase ihr seine Gefühle gesteht, will sie es mit ihm gemeinsam herausfinden, ganz langsam und ehrlich.", "", "hananoi kun to koi no yamai", "chill|kurz", "A Condition Called Love", "GP5HJ84QX"],
+["A Condition Called Love", "S", "Romance|Slice of Life", 7.4, null, null, "sub", "13 Folgen", "Hotaru hat keine Ahnung, was Liebe eigentlich ist. Als der freundliche Hananoi ihr seine Gefühle gesteht, will sie es mit ihm gemeinsam herausfinden, ganz langsam und ehrlich.", "", "hananoi kun to koi no yamai", "chill|kurz", "A Condition Called Love", "GP5HJ84QX"],
 ["The Duke of Death and His Maid", "S", "Romance|Comedy|Fantasy", 7.6, null, null, "sub", "3 Staffeln · 36 Folgen", "Ein junger Herzog ist verflucht: Alles, was er berührt, stirbt. Nur seine freche Dienerin Alice bleibt bei ihm und neckt ihn ständig, obwohl sie sich nie berühren dürfen.", "", "shinigami bocchan to kuro maid", "chill", "The Duke of Death and His Maid", "G79H23V0G"],
 ["Witch Watch", "S", "Comedy|Romance|Fantasy", 7.5, null, null, "de", "25 Folgen", "Der Oger Morihito soll seine Kindheitsfreundin Nico beschützen, eine junge Hexe, deren Zauber ständig schiefgehen. Dafür wohnen die beiden plötzlich zusammen. Viel Chaos und Humor vom Macher von Sket Dance.", "", "witch watch", "chill", "Witch Watch", "G5PHNM9P0"],
 ["The Ice Guy and His Cool Female Colleague", "S", "Romance|Comedy", 7.2, null, null, "sub", "12 Folgen", "Himuro ist ein Nachfahre von Schneefrauen: Wenn er verlegen wird, schneit es um ihn herum. Ausgerechnet bei seiner ruhigen Kollegin Fuyutsuki passiert ihm das ständig.", "", "koori zokusei danshi to cool na douryou joshi", "chill|kurz", "The Ice Guy and His Cool Female Colleague", "GW4HM75NP"],
-["My Senpai Is Annoying", "S", "Romance|Comedy|Slice of Life", 7.3, null, null, "sub", "12 Folgen", "Die kleine Futaba arbeitet in einer Firma und hat einen riesigen, lauten Senpai, der sie ständig aufzieht. Mit der Zeit merkt sie, dass sie ihn eigentlich ziemlich gern hat. Ein Büro-Liebesgeschichte für Erwachsene.", "", "senpai ga uzai kouhai no hanashi", "chill|kurz", "My Senpai Is Annoying", "GP5HJ815K"],
+["My Senpai Is Annoying", "S", "Romance|Comedy|Slice of Life", 7.3, null, null, "sub", "12 Folgen", "Die kleine Futaba arbeitet in einer Firma und hat einen riesigen, lauten Senpai, der sie ständig aufzieht. Mit der Zeit merkt sie, dass sie ihn eigentlich ziemlich gern hat. Eine Büro-Liebesgeschichte für Erwachsene.", "", "senpai ga uzai kouhai no hanashi", "chill|kurz", "My Senpai Is Annoying", "GP5HJ815K"],
 ["Love After World Domination", "S", "Romance|Comedy|Action", 7.1, null, null, "sub", "12 Folgen", "Fudo ist der Anführer einer Heldentruppe, Desumi die stärkste Kämpferin der bösen Organisation. Tagsüber kämpfen sie gegeneinander, heimlich sind sie ein Paar.", "", "koi wa sekai seifuku no ato de", "kurz", "Love After World Domination", "GEXH3WG78"],
 ["Science Fell in Love, So I Tried to Prove It", "S", "Romance|Comedy", 7.3, null, null, "sub", "2 Staffeln · 24 Folgen", "Zwei Forschende an der Uni glauben, dass sie ineinander verliebt sind, wollen das aber wissenschaftlich beweisen. Mit Versuchen, Messungen und viel Unsinn.", "", "rikei ga koi ni ochita no de shoumei shitemita", "chill", "Science Fell in Love, So I Tried to Prove It", "G6P5MMXV6"],
 ["The World Is Still Beautiful", "S", "Romance|Fantasy|Abenteuer", 7.6, null, null, "sub", "12 Folgen", "Die Prinzessin Nike aus einem Regenreich soll den jungen Sonnenkönig Livius heiraten, der die halbe Welt erobert hat. Mit ihrem Mut und ihrem Gesang taut sie den kalten Herrscher langsam auf.", "", "soredemo sekai wa utsukushii", "chill|kurz", "The World Is Still Beautiful", "GYMGDG3WY"],
@@ -1326,7 +1293,7 @@ const EXTRA = [
 ["Life Lessons with Uramichi Oniisan", "S", "Comedy", 7.6, null, null, "sub", "13 Folgen", "Uramichi moderiert eine fröhliche Kindersendung und ist innerlich völlig ausgebrannt. Vor den Kindern rutschen ihm immer wieder bittere Wahrheiten übers Erwachsensein heraus.", "", "uramichi oniisan", "kurz", "Life Lessons with Uramichi Oniisan", "GNVHKN75X"],
 ["Sleepy Princess in the Demon Castle", "S", "Comedy|Fantasy", 7.9, null, null, "sub", "12 Folgen", "Prinzessin Syalis wird vom Dämonenkönig entführt und hat nur ein Problem: Sie kann nicht gut schlafen. Für das perfekte Kissen legt sie sich mit dem ganzen Schloss an.", "", "maou jou de oyasumi", "chill|kurz", "Sleepy Princess in the Demon Castle", "G4PH0WXZM"],
 ["The Yakuza's Guide to Babysitting", "S", "Comedy|Slice of Life", 7.6, null, null, "sub", "12 Folgen", "Der gefürchtete Yakuza Kirishima soll auf die kleine Tochter seines Bosses aufpassen, die kaum spricht. Ein Kerl für Gewalt lernt, wie man Zöpfe flicht und Bento packt.", "", "kumichou musume to sewagakari", "chill|herz|kurz", "The Yakuza's Guide to Babysitting", "G79H2300N"],
-["Ace Attorney", "S", "Krimi|Mystery|Comedy", 7.5, null, null, "sub", "2 Staffeln · 36 Folgen", "Der junge Anwalt Phoenix Wright verteidigt Angeklagte, die alle für schuldig halten. Im Gerichtssaal deckt er mit Beweisen und lautem Einspruch die wahren Täter auf.", "", "gyakuten saiban", "dn", "Ace Attorney", "GYE5K0XVR"],
+["Ace Attorney", "S", "Krimi|Mystery|Comedy", 7.5, null, null, "sub", "2 Staffeln · 47 Folgen", "Der junge Anwalt Phoenix Wright verteidigt Angeklagte, die alle für schuldig halten. Im Gerichtssaal deckt er mit Beweisen und lautem Einspruch die wahren Täter auf.", "", "gyakuten saiban", "dn", "Ace Attorney", "GYE5K0XVR"],
 ["Cells at Work!", "S", "Comedy|Action", 7.5, null, null, "de", "2 Staffeln · 22 Folgen", "Im Körper eines Menschen arbeiten Zellen wie in einer Stadt: Rote Blutkörperchen liefern Sauerstoff aus, Weiße bekämpfen Bakterien. Lustig und nebenbei richtig lehrreich.", "", "hataraku saibou", "chill", "Cells at Work!", "GR3KVPQER"],
 ["Kemono Jihen", "S", "Mystery|Action|Fantasy", 7.4, null, null, "sub", "12 Folgen", "Ein Detektiv für übernatürliche Fälle stößt in einem Dorf auf den Jungen Kabane, den alle meiden. Kabane ist halb Dämon und schließt sich der Detektei an, um mehr über seine Herkunft zu erfahren.", "", "kemono jihen", "kurz", "Kemono Jihen", "GKEH2G492"],
 ["Elainas Reise", "S", "Fantasy|Abenteuer", 7.5, null, null, "de", "12 Folgen", "Die junge Hexe Elaina reist allein durch die Welt und besucht in jeder Folge ein anderes Land. Manche Geschichten sind schön, manche überraschend düster.", "", "majo no tabitabi", "chill|kurz", "Elainas Reise", "G79H23VNQ"],
@@ -1335,7 +1302,7 @@ const EXTRA = [
 ["The Faraway Paladin", "S", "Isekai|Fantasy|Abenteuer", 7.6, null, null, "de", "2 Staffeln · 25 Folgen", "Will wächst in einer verfallenen Stadt bei drei Untoten auf: einem Skelett, einer Mumie und einem Geist. Als er erwachsen ist, zieht er hinaus in die Welt. Ruhiges, warmes Fantasy-Abenteuer.", "", "saihate no paladin", "herz", "The Faraway Paladin", "GEXH3W8G1"],
 ["Kabaneri of the Iron Fortress", "S", "Action|Horror", 7.2, null, null, "de", "12 Folgen", "Zombieartige Kabane haben die Welt überrannt, die Menschen leben in Festungen und reisen in gepanzerten Zügen. Der junge Ingenieur Ikoma will zurückschlagen. Bildgewaltig vom Team hinter Attack on Titan.", "", "koutetsujou no kabaneri", "kurz", "Kabaneri of the Iron Fortress", "GR24GX896"],
 ["Dance Dance Danseur", "S", "Drama|Sport", 7.6, null, null, "sub", "11 Folgen", "Junpei liebt Ballett, hat es aber aufgegeben, weil es als unmännlich gilt. Als die Tochter einer Ballettlehrerin sein Talent erkennt, tanzt er wieder, gegen alle Vorurteile.", "", "dance dance danseur", "herz|kurz", "Dance Dance Danseur", "G9VHN9P07"],
-["Ruri Rocks", "S", "Slice of Life|Abenteuer", 8.0, null, null, "sub", "12 Folgen", "Ruri ist von glitzernden Steinen besessen. Zusammen mit einer jungen Mineralogin zieht sie durch Wälder und Flüsse, um Edelsteine selbst zu finden. Ruhig, schön und voller echtem Wissen.", "", "ruri no houseki", "chill|kurz", "Ruri Rocks", "G4PH0WJ2V"],
+["Ruri Rocks", "S", "Slice of Life|Abenteuer", 8.0, null, null, "sub", "12 Folgen", "Ruri ist von glitzernden Steinen besessen. Zusammen mit einer jungen Mineralogin zieht sie durch Wälder und Flüsse, um Edelsteine selbst zu finden. Ruhig, schön und voll echtem Wissen.", "", "ruri no houseki", "chill|kurz", "Ruri Rocks", "G4PH0WJ2V"],
 ["The Cat and the Dragon", "S", "Fantasy|Slice of Life", 7.8, null, null, "sub", "12 Folgen", "Ein Drache zieht ein Katzenkind auf, als wäre es sein eigenes. Kleine, warme Geschichten über eine ungewöhnliche Familie.", "", "neko to ryuu", "chill|kurz", "The Cat and the Dragon", "GT00378117"],
 ["Iron Wok Jan", "S", "Comedy|Drama", 7.6, null, null, "sub", "12 Folgen", "Der überhebliche Jungkoch Jan will der beste chinesische Koch Japans werden und fordert jeden heraus, der sich ihm in den Weg stellt. Hitzige Kochduelle am Wok.", "", "tetsunabe no jan", "kurz", "Iron Wok Jan", "GT00378075"],
 ["Tojima Wants to Be a Kamen Rider", "S", "Comedy|Action", 7.7, null, null, "sub", "12 Folgen", "Tojima ist schon erwachsen und will immer noch ein echter Kamen Rider werden. Er geht Verbrechern an den Kragen und landet dabei mitten in einer echten Schurkenorganisation.", "", "toujima tanzaburou wa kamen rider ni naritai", "kurz", "Tojima Wants to Be a Kamen Rider", "GT00364945"],
@@ -1362,22 +1329,10 @@ const DE_TITLE = { "So I'm a Spider, So What?": "Ich bin eine Spinne, na und?",
   "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You": "The 100 Girlfriends","Lupin III.": "Lupin III. – Part 6" };
 const mk = (d, i, extra) => ({
   id: slug(d[0]), key: d[0], title: DE_TITLE[d[0]] || d[0], type: d[1], genres: d[2].split("|"), mine: d[3], imdb: d[4], votes: d[5],
-  dub: d[6], len: d[7], desc: d[8], note: d[9], alt: (d[10] || "") + (DE_TITLE[d[0]] ? " " + d[0] : ""), sq: d[10] || "", moods: (d[11] || "").split("|").filter(Boolean),
+  dub: d[6], len: d[7], desc: d[8], note: d[9], alt: (d[10] || "") + (DE_TITLE[d[0]] ? " " + d[0] : ""), sq: d[10] || "",
   cr: d[12] || d[0], crLink: d[13] || "", order: i, extra
 });
 const items = [...DATA.map((d, i) => mk(d, i, false)), ...EXTRA.map((d, i) => mk(d, 1000 + i, true))];
-// Stimmungen der Romanzen für den Priscilla-Modus: Zuckersüß, Zum Lachen, Herzschmerz
-const ROM_MOOD = {
-  "Chainsaw Man – The Movie: Reze Arc": "schmerz", "A Silent Voice": "schmerz", "Kaguya-sama: Love Is War": "lachen", "Fruits Basket": "schmerz",
-  "Rascal Does Not Dream of Bunny Girl Senpai": "schmerz", "Horimiya": "suess", "My Teen Romantic Comedy SNAFU": "schmerz", "My Dress-Up Darling": "suess|lachen",
-  "Josie, der Tiger und die Fische": "schmerz", "Inuyasha": "lachen", "A Sign of Affection": "suess", "Chihayafuru": "schmerz",
-  "Skip and Loafer": "suess", "My Love Story with Yamada-kun at Lv999": "suess|lachen", "The Ancient Magus' Bride": "schmerz",
-  "You and I Are Polar Opposites": "suess|lachen", "Love Unseen Beneath the Clear Night Sky": "suess|schmerz", "Firefly Wedding": "schmerz", "Night is Short, Walk on Girl": "lachen",
-  "The Cold Sato-san is Only Sweet to Me": "suess|lachen", "Smoking Behind the Supermarket with You": "suess", "The Quintessential Quintuplets": "lachen", "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You": "lachen",
-  "The Angel Next Door Spoils Me Rotten": "suess", "More than a Married Couple, but Not Lovers": "lachen", "Alya Sometimes Hides Her Feelings in Russian": "lachen", "Tune In to the Midnight Heart": "suess|lachen",
-  "Spice and Wolf: Merchant Meets the Wise Wolf": "suess", "Makeine: Too Many Losing Heroines!": "lachen|schmerz", "Plastic Memories": "schmerz", "Tomo-chan Is a Girl!": "lachen", "Recovery of an MMO Junkie": "suess", "Tsurezure Children": "suess|lachen", "Don't Toy with Me, Miss Nagatoro": "lachen|suess", "The Girl I Like Forgot Her Glasses": "suess|lachen", "Honey Lemon Soda": "suess", "Tying the Knot with an Amagami Sister": "suess|lachen","Skip Beat!": "lachen|schmerz", "Princess Jellyfish": "lachen", "My Love Story!!": "suess|lachen", "Tonikawa: Over the Moon for You": "suess", "Kono Oto Tomare! Sounds of Life": "suess", "Kokoro Connect": "schmerz", "Yamada-kun and the Seven Witches": "lachen", "My Little Monster": "suess|lachen", "Saekano: How to Raise a Boring Girlfriend": "lachen", "Taisho Otome Fairy Tale": "suess", "Pseudo Harem": "suess|lachen", "7th Time Loop": "suess", "The Quintessential Quintuplets Movie": "suess|schmerz", "Kakuriyo: Bed & Breakfast for Spirits": "suess", "Sacrificial Princess and the King of Beasts": "suess", "Darling in the Franxx": "schmerz", "Summer Pockets": "schmerz", "Tamon's B-Side": "lachen|suess", "Gals Can't Be Kind to Otaku!?": "lachen", "I Want to End This Love Game": "lachen|suess", "Agents of the Four Seasons": "schmerz|suess", "KAIJU GIRL CARAMELISE": "lachen|suess", "Goodbye, Lara": "schmerz", "Though I Am an Inept Villainess": "lachen", "May I Ask for One Final Thing?": "lachen", "Victoria of Many Faces": "suess", "White Album 2": "schmerz", "I'm the Villainess, So I'm Taming the Final Boss": "lachen", "A Condition Called Love": "suess", "The Duke of Death and His Maid": "suess|lachen", "Witch Watch": "lachen", "The Ice Guy and His Cool Female Colleague": "suess", "My Senpai Is Annoying": "suess|lachen", "Love After World Domination": "lachen", "Science Fell in Love, So I Tried to Prove It": "lachen", "The World Is Still Beautiful": "suess", "Sing \"Yesterday\" for Me": "schmerz", "Ride Your Wave": "schmerz", "Aharen-san wa Hakarenai": "lachen", "Sugar Apple Fairy Tale": "suess", "In the Clear Moonlit Dusk": "suess", "I Made Friends with the Second Prettiest Girl in My Class": "suess", "Marriagetoxin": "lachen", "Chitose Is in the Ramune Bottle": "schmerz", "Yanos ganz normaler Alltag": "suess", "Betrothed to My Sister's Ex": "suess", "Dealing with Mikadono Sisters Is a Breeze": "lachen", "Solo Camping for Two": "suess", "Dank dir überwindet unsere Liebe alle Hindernisse": "suess", "Pass the Monster Meat, Milady!": "lachen"
-};
-items.forEach(it => { if (ROM_MOOD[it.key]) it.moods = it.moods.concat(ROM_MOOD[it.key].split("|")); });
 const byMine = [...items].sort((a, b) => b.mine - a.mine || a.order - b.order);
 // „Neu erschienen“: Erscheinungsmonat (erste Staffel bzw. Film), die neuesten zuerst. Gleicher Monat: bessere Wertung zuerst.
 const REL = {"Frieren – Nach dem Ende der Reise": "2023-09",
@@ -1452,7 +1407,6 @@ const REL = {"Frieren – Nach dem Ende der Reise": "2023-09",
   "Inuyasha": "2000-10",
   "My Hero Academia": "2016-04",
   "Black Clover": "2017-10",
-  "Fate/Grand Order – Babylonia": "2019-10",
   "Lupin III.": "2021-10",
   "A Sign of Affection": "2024-01",
   "Kyousougiga": "2013-10",
@@ -1465,7 +1419,6 @@ const REL = {"Frieren – Nach dem Ende der Reise": "2023-09",
   "Black Butler": "2008-10",
   "Campfire Cooking in Another World": "2023-01",
   "Penguin Highway": "2018-08",
-  "Dragon Ball Daima": "2024-10",
   "Tokyo Revengers": "2021-04",
   "Tower of God": "2020-04",
   "Patema Inverted": "2013-11",
@@ -1685,12 +1638,17 @@ byMine.forEach((it, i) => it.rank = i + 1);
 GENRES.forEach(g => byMine.filter(it => it.genres.includes(g)).forEach((it, i) => { (it.gr = it.gr || {})[g] = i + 1; }));
 // Plätze nur unter den Romanzen (für den Priscilla-Modus, auch innerhalb eines Genres)
 GENRES.forEach(g => byMine.filter(it => it.genres.includes("Romance") && it.genres.includes(g)).forEach((it, i) => { (it.grR = it.grR || {})[g] = i + 1; }));
-const byImdb = [...items].sort((a, b) => (b.imdb ?? -1) - (a.imdb ?? -1) || (b.votes ?? 0) - (a.votes ?? 0));
-const byAz = [...items].sort((a, b) => a.title.localeCompare(b.title, "de"));
 
 // Gespeicherte Daten (nur in diesem Browser)
 const KEY = { saved: "cr-top100-saved", seen: "cr-top100-seen", filters: "cr-top100-filters", install: "cr-top100-install-closed" };
-function load(k, fallback) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; } }
+function load(k, fallback) {
+  try {
+    const v = localStorage.getItem(k); if (!v) return fallback;
+    const x = JSON.parse(v);
+    if (fallback != null && (x == null || typeof x !== typeof fallback || Array.isArray(x) !== Array.isArray(fallback))) return fallback; // falscher Typ
+    return x;
+  } catch (e) { return fallback; }
+}
 let onMarks = null; // wird vom Konto gesetzt: Gesehen/Gemerkt geändert -> online sichern
 function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} if (onMarks && (k === KEY.saved || k === KEY.seen)) onMarks(); }
 // Ältere Einträge (a0, a1, …) auf Titel umstellen
@@ -1702,13 +1660,10 @@ let seen = new Set(migrate(load(KEY.seen, [])).filter(id => known.has(id)));
 // Gesehenes gehört nicht mehr auf die Merkliste (einmal aufräumen, falls beides markiert war)
 seen.forEach(id => saved.delete(id));
 store(KEY.saved, [...saved]); store(KEY.seen, [...seen]);
-const DEFAULTS = { type: "", sort: "mine", onlyDe: false, hideSeen: false, mood: "", view: "all", g2: "" };
-const FILTER_KEYS = ["sort", "type", "onlyDe", "hideSeen", "mood"];
-// Stimmungen aus den Daten: chill = Zum Abschalten, herz = Fürs Herz, dn = Zum Mitdenken, kurz = Kurz und knackig
-const MOODS = ["chill", "herz", "dn", "kurz", "suess", "lachen", "schmerz"];
-const RMOODS = ["suess", "lachen", "schmerz"]; // nur im Priscilla-Modus
+const DEFAULTS = { type: "", sort: "mine", onlyDe: false, hideSeen: false, view: "all", g2: "" };
+const FILTER_KEYS = ["sort", "type", "onlyDe", "hideSeen"];
 // Im Reiter Gesehen ergibt „Gesehene ausblenden“ keinen Sinn: dort ausgeblendet und nicht als aktiver Filter gezählt
-const activeKeys = () => FILTER_KEYS.filter(k => !((k === "hideSeen" || k === "mood" || k === "sort") && state.view === "seen"));
+const activeKeys = () => FILTER_KEYS.filter(k => !((k === "hideSeen" || k === "sort") && state.view === "seen"));
 const loaded = load(KEY.filters, {});
 if (loaded.onlySaved && !loaded.view) loaded.view = "saved";
 delete loaded.onlySaved;
@@ -1718,7 +1673,7 @@ if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 setY(0);
 if (!["mine", "neu"].includes(state.sort)) state.sort = "mine";
 if (state.g2 && !GENRES.includes(state.g2)) state.g2 = "";
-state.mood = ""; // Stimmungsfilter gibt es nicht mehr
+delete state.mood; // alter Stimmungsfilter (gibt es nicht mehr) aus gespeicherten Filtern entfernen
 function saveFilters() { const { q, ...rest } = state; store(KEY.filters, rest); }
 // Priscilla-Modus (Easter Egg): wer „Priscilla“ ins Suchfeld tippt, sieht nur noch Romanzen, bis er ihn beendet
 const KEY_PRISC = "cr-top100-priscilla";
@@ -1728,7 +1683,6 @@ document.documentElement.classList.toggle("prisc", prisc);
 
 const $ = s => document.querySelector(s);
 const fmt = n => n.toFixed(1).replace(".", ",");
-const fmtVotes = v => v >= 10 ? Math.round(v) + " Tsd." : String(v).replace(".", ",") + " Tsd.";
 const tier = r => r >= 9 ? "top" : r >= 8 ? "mid" : "low";
 const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 // „Frieren – Nach dem Ende der Reise“: Haupttitel groß, Rest klein darunter
@@ -1756,7 +1710,6 @@ const CR = {
   "Kaiju No. 8": "GG5H5XQ7D/kaiju-no-8",
   "Saga of Tanya the Evil": "GR9P57W96/saga-of-tanya-the-evil",
   "Black Clover": "GRE50KV36/black-clover",
-  "Fate/Grand Order – Babylonia": "GR24JZ886/fategrand-order-absolute-demonic-front-babylonia",
   "Magi: The Labyrinth of Magic": "GY09XN14Y/magi",
   "Fire Force": "GYQWNXPZY/fire-force",
   "Black Butler": "GYQ43P3E6/black-butler",
@@ -1815,7 +1768,6 @@ const CR = {
   "Deca-Dence": "GEXH3WK03",
   "Mashle: Magic and Muscles": "GDKHZEP8W",
   "Penguin Highway": "G79H235NJ",
-  "Dragon Ball Daima": "GG5H5XQ35",
   "Tokyo Revengers": "G3KHEVMN1",
   "Tower of God": "G6J0G49DR",
   "Sword Art Online": "GR49G9VP6",
@@ -1831,8 +1783,6 @@ const crUrl = it => { const c = crLinkOf(it); return c ? c.startsWith("http") ? 
 
 // Kopfzahlen
 const topList = items;
-const nS = topList.filter(i => i.type === "S").length;
-const nDe = topList.filter(i => i.dub === "de").length;
 function renderCounts() {
   const l = prisc ? topList.filter(isRom) : topList, s = l.filter(i => i.type === "S").length, de = l.filter(i => i.dub === "de").length;
   $("#counts").innerHTML = `<span><b>${s}</b>Serien</span><span><b>${l.length - s}</b>Filme</span><span><b>${de}</b>auf Deutsch</span>`;
@@ -2007,7 +1957,7 @@ function card(it) {
     <li class="card${isSeen ? " is-seen" : ""}">
       <div class="cbody">
       <div class="cv" aria-hidden="true"><img alt="" draggable="false" loading="lazy" decoding="async"${coverOf(it) ? coverAttrs(coverOf(it), CV_SIZES) : ""}${it.rank <= 3 ? ' fetchpriority="high"' : ""} onload="this.classList.add('ok')" onerror="if(this.srcset)this.removeAttribute('srcset');else this.remove()"></div>
-      <div class="meta"><span class="rank">${state.view === "genres" && state.g2 ? `Platz ${(prisc ? it.grR : it.gr)[state.g2]}` : `Platz ${it.rank}`}</span>${isFresh(it) ? '<span class="neu">Neu</span>' : ""}<span>${it.type === "F" ? "Film" : "Serie"}</span>${isRom(it) && it.mine >= 8.3 ? '<span class="pg">💘 Priscilla-geprüft</span>' : ""}</div>
+      <div class="meta"><span class="rank">Platz ${it.rank}</span>${isFresh(it) ? '<span class="neu">Neu</span>' : ""}<span>${it.type === "F" ? "Film" : "Serie"}</span>${isRom(it) && it.mine >= 8.3 ? '<span class="pg">💘 Priscilla-geprüft</span>' : ""}</div>
       <div class="score">
         <div class="stamp ${tier(it.mine)}" aria-label="Wertung ${fmt(it.mine)} von 10">${fmt(it.mine)}<small>/10</small></div>
       </div>
@@ -2028,12 +1978,11 @@ function card(it) {
     </li>`;
 }
 
-function filtered(mood = state.mood) {
+function filtered() {
   const inGenre = state.view === "genres";
   return sorted().filter(it =>
-    (effSort() !== "neu" || isNeu(it)) &&
+    (neuView || effSort() !== "neu" || isNeu(it)) &&
     (!neuView || isFresh(it)) &&
-    (!mood || state.view === "seen" || it.moods.includes(mood)) &&
     (!inGenre || it.genres.includes(state.g2)) &&
     (!state.type || it.type === state.type) &&
     (!state.onlyDe || it.dub === "de") &&
@@ -2058,7 +2007,7 @@ function status(n) {
     const m = byMine.reduce((a, it) => { const el = cardEls.get(it.id); return el && !el.hidden && el.parentNode && el.parentNode.id === "list" ? a + minutesOf(it) : a; }, 0);
     if (m) hrs = ` · ${Math.max(1, Math.round(m / 60))} Std.`;
   }
-  $("#status").textContent = n < 0 ? `${tileCount} ${tileCount === 1 ? "Genre" : "Genres"}` : (prisc ? `${n} ${n === 1 ? "Romanze" : "Romanzen"}` : active ? `${n} Treffer` : `${n} Titel`) + hrs + (effSort() === "neu" && n >= 0 ? ` · erschienen ${NEU_JAHR}` : "");
+  $("#status").textContent = n < 0 ? `${tileCount} ${tileCount === 1 ? "Genre" : "Genres"}` : (prisc ? `${n} ${n === 1 ? "Romanze" : "Romanzen"}` : active ? `${n} Treffer` : `${n} Titel`) + hrs + (effSort() === "neu" && n >= 0 && !neuView ? ` · erschienen ${NEU_JAHR}` : "");
   $("#reset").hidden = !active;
   $("#share").hidden = !(state.view === "saved" && nSaved);
   // „So entsteht die Wertung“ (ⓘ) nur bei Alle – auf den anderen Reitern nimmt es nur Platz weg
@@ -2068,7 +2017,8 @@ function status(n) {
   if (neuView && (state.view !== "all" || !nNew)) neuView = false;
   $("#newTxt").textContent = `${nNew} neu in der Liste`;
   $("#newBtn").hidden = !(state.view === "all" && !neuView && nNew);
-  $("#neuTxt").textContent = prisc ? `✦ Neue Romanzen · ${nNew} Titel` : `✦ Neu in der Liste · ${nNew} Titel`;
+  const nShow = neuView && n >= 0 ? n : nNew;
+  $("#neuTxt").textContent = prisc ? `✦ Neue Romanzen · ${nShow} Titel` : `✦ Neu in der Liste · ${nShow} Titel`;
   $("#neuBar").hidden = !neuView;
   $("#prisBar").hidden = !prisc || neuView;
 }
@@ -2090,10 +2040,8 @@ const FEATURED = (() => {
   return out;
 })();
 // Kacheln zählen nur Titel, die zu den eingestellten Filtern und der Suche passen (wie die Liste beim Öffnen)
-const passes = it => passesWith(it, state.mood);
-const passesWith = (it, mood) =>
+const passes = it =>
   (state.sort !== "neu" || isNeu(it)) &&
-  (!mood || it.moods.includes(mood)) &&
   (!state.type || it.type === state.type) &&
   (!state.onlyDe || it.dub === "de") &&
   (!state.hideSeen || !seen.has(it.id)) &&
@@ -2102,7 +2050,11 @@ const passesWith = (it, mood) =>
 // Genres ohne passenden Titel werden ausgeblendet, die Zahl oben zählt nur die sichtbaren
 let tileCount = GENRES.length;
 // Kurztitel für die Kacheln: „Frieren – Nach dem Ende der Reise“ → „Frieren“ (zu kurze Reste wie „86“ bleiben lang)
-const TILE_SHORT = { "Die Tagebücher der Apothekerin": "Apothekerin", "Rascal Does Not Dream of Bunny Girl Senpai": "Bunny Girl Senpai",
+const TILE_SHORT = { "Die Tagebücher der Apothekerin": "Apothekerin",
+  // Filme und Ableger bekommen eigene Kurznamen, damit sie im Profil-Regal nicht wie die Serie heißen
+  "Chainsaw Man – The Movie: Reze Arc": "Chainsaw Man: Reze", "Demon Slayer: Infinity Castle": "Infinity Castle", "My Hero Academia: Heroes Rising": "Heroes Rising",
+  "Black Butler: Book of the Atlantic": "Book of the Atlantic", "Mobile Suit Gundam: Iron-Blooded Orphans": "Iron-Blooded Orphans",
+  "Miss Kobayashi's Dragon Maid: A Lonely Dragon Wants to Be Loved": "Dragon Maid (Film)", "Spy x Family Code: White": "Code: White", "Rascal Does Not Dream of Bunny Girl Senpai": "Bunny Girl Senpai",
   "You and I Are Polar Opposites": "Polar Opposites", "Meine Wiedergeburt als Schleim in einer anderen Welt": "Slime",
   "Though I Am an Inept Villainess": "Inept Villainess", "Sacrificial Princess and the King of Beasts": "Sacrificial Princess", "Yamada-kun and the Seven Witches": "Yamada & 7 Witches",
   "The Quintessential Quintuplets Movie": "Quintuplets-Film", "May I Ask for One Final Thing?": "One Final Thing", "I Want to End This Love Game": "Love Game",
@@ -2137,23 +2089,27 @@ function headFor() {
   if (ab && ab.parentNode !== host) host === top.querySelector(".eyebrow") ? host.prepend(ab) : host.append(ab);
 }
 // Die Karten werden nur einmal gebaut und danach nur ein- und ausgeblendet. So geht der Reiterwechsel schneller.
-let cardEls = null, cvWarm = true;
+let cardEls = null;
 // Alle Karten einmal ganz zeichnen, damit die gemerkten Höhen wieder stimmen (nach dem Start, nach Schrift-Laden oder geänderter Breite)
 // In kleinen Portionen (je 12 Karten, zwei Bilder lang), damit kein einzelnes Bild lange hängt. Startet erst nach dem nächsten Bild
 // und pausiert, solange gescrollt wird.
 let warmTok = 0, warmPart = [];
-function cvRewarm() {
+// reset: Höhen haben sich geändert (andere Breite, „Mehr lesen“ neu berechnet) – dann alle noch einmal
+function cvRewarm(reset) {
   const L = document.getElementById("list");
   if (!document.documentElement.classList.contains("app")) return;
-  if (L.hidden) { cvWarm = true; return; }
-  cvWarm = false;
-  const tok = ++warmTok, cards = [...L.children].filter(c => !c.hidden);
+  if (reset) [...L.children].forEach(c => { c._w = false; });
+  if (L.hidden) return;
+  const cards = [...L.children].filter(c => !c.hidden && !c._w);
+  if (!cards.length) return;
+  warmPart.forEach(c => c.classList.remove("cvw")); warmPart = []; // abgebrochene Portion: noch nicht als gemerkt zählen
+  const tok = ++warmTok;
   let i = 0;
-  const done = () => { warmPart.forEach(c => c.classList.remove("cvw")); warmPart = []; };
+  const done = () => { warmPart.forEach(c => { c.classList.remove("cvw"); c._w = true; }); warmPart = []; };
   const step = () => {
     if (tok !== warmTok) return;
     done();
-    if (L.hidden) { cvWarm = true; return; }
+    if (L.hidden) return;
     if (i >= cards.length) return;
     // Wird gerade gescrollt oder berührt: warten, bis Ruhe ist (sichtbare Karten zeichnet das iPhone ohnehin)
     if (touching || Date.now() - lastScroll < 250) { setTimeout(step, 250); return; }
@@ -2201,7 +2157,7 @@ const COVER_Q = {
   "Josie, der Tiger und die Fische": "Josee to Tora to Sakana-tachi", "Meine Wiedergeburt als Schleim in einer anderen Welt": "Tensei shitara Slime Datta Ken",
   "Mirai – Das Mädchen aus der Zukunft": "Mirai no Mirai", "Mein Schulgeist Hanako": "Jibaku Shounen Hanako-kun", "Takopi und die Sache mit dem Glück": "Takopii no Genzai","Berserk: Das Goldene Zeitalter – Memorial Edition": "Berserk: Ougon Jidai-hen - Memorial Edition","Die Melancholie der Haruhi Suzumiya": "Suzumiya Haruhi no Yuuutsu",
   "Das Verschwinden der Haruhi Suzumiya": "Suzumiya Haruhi no Shoushitsu", "86 – Eighty Six": "86 EIGHTY-SIX", "Dragonball Super: Broly": "Dragon Ball Super: Broly",
-  "Fate/Grand Order – Babylonia": "Fate/Grand Order Babylonia", "Zombie 100 – Bucket List of the Dead": "Zom 100", "Lupin III.": "Lupin III",
+  "Zombie 100 – Bucket List of the Dead": "Zom 100", "Lupin III.": "Lupin III",
   "Chainsaw Man – The Movie: Reze Arc": "Chainsaw Man Reze", 
   "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You": "Kimi no Koto ga Daidaidaidaidaisuki na 100-nin no Kanojo",
   "Alya Sometimes Hides Her Feelings in Russian": "Tokidoki Bosotto Russia-go de Dereru Tonari no Alya-san", "Smoking Behind the Supermarket with You": "Super no Ura de Yani Suu Futari",
@@ -2212,7 +2168,6 @@ const COVER_Q = {
 };
 // Nach dem Start im Hintergrund alle übrigen Cover vorladen und vorbereiten (in kleinen Portionen, wenn das iPhone Luft hat).
 // Beim Scrollen müssen die Bilder dann nicht mehr erst geladen und entpackt werden – das macht das Scrollen flüssig.
-let warmT = 0;
 // Cover vorladen: nur was gleich kommt (etwa zwei Bildschirme über und unter der aktuellen Stelle), nicht alle auf einmal.
 // So bleiben Datenmenge und Arbeitsspeicher klein, auch mit den großen Covern – und beim Scrollen ist trotzdem alles rechtzeitig da.
 let warmIO = null;
@@ -2319,7 +2274,7 @@ function buildCards() {
       box.remove();
       close.forEach(([el, m], i) => set(el, m, hs[i] / lh < 4.5));
     }
-    if (state0() !== before) cvRewarm(); // Kartenhöhen haben sich geändert: neu merken
+    if (state0() !== before) cvRewarm(true); // Kartenhöhen haben sich geändert: neu merken
   };
   window.fitAll = fitAll;
   addEventListener("resize", () => requestAnimationFrame(fitAll));
@@ -2437,7 +2392,7 @@ function render() {
   byMine.forEach(it => {
     const el = cardEls.get(it.id), on = show.has(it.id);
     if (el.hidden === on) el.hidden = !on;
-    if (on) { const r = state.sort === "neu" && relText(it) ? relText(it) : gName ? `Platz ${(prisc ? it.grR : it.gr)[gName]}` : prisc ? `Platz ${it.grR.Romance}` : `Platz ${it.rank}`; if (el._rank.textContent !== r) el._rank.textContent = r; }
+    if (on) { const gr = (prisc ? it.grR : it.gr) || {}; const r = effSort() === "neu" && relText(it) ? relText(it) : gName && gr[gName] ? `Platz ${gr[gName]}` : prisc && gr.Romance ? `Platz ${gr.Romance}` : `Platz ${it.rank}`; if (el._rank.textContent !== r) el._rank.textContent = r; }
   });
   const e = $("#empty");
   e.hidden = list.length > 0 || (state.view === "seen" && !seen.size); // bei 0 Gesehenen erklärt die Fortschritts-Karte alles
@@ -2451,7 +2406,9 @@ function render() {
   renderShelf(list);
   status(list.length);
   // Sobald die Liste einmal sichtbar gezeichnet wurde, kennt das iPhone alle Kartenhöhen: ab dann nur noch sichtbare Karten zeichnen
-  if (cvWarm && !$("#list").hidden) cvRewarm();
+  if (!$("#list").hidden) cvRewarm(); // nur Karten, die ihre Höhe noch nicht kennen (z. B. beim Start ausgeblendet)
+  // Das Cover-Fenster im Profil zeigt einen Titel, der gerade weggefallen ist (z. B. vom anderen Gerät): Fenster schließen
+  if (shelfEl && shelfEl.hidden && !shelfOv.hidden) closeShelf();
 }
 // Gesehen als Regal: Cover zu dritt, sortiert wie die Liste. Darüber die Lieblingsgenres.
 let shelfList = [];
@@ -2459,7 +2416,7 @@ let shelfList = [];
 function shelfLi(it, li, eager) {
   const u = coverOf(it);
   if (!li) {
-    li = document.createElement("li"); li.dataset.id = it.id;
+    li = document.createElement("li"); li.dataset.id = it.id; li.tabIndex = 0; li.setAttribute("role", "button"); li.setAttribute("aria-label", it.title);
     li.innerHTML = `<div class="sc"></div><div class="stamp ${tier(it.mine)}">${fmt(it.mine)}<small>/10</small></div><div class="tt">${esc(shortT(it.title))}</div>`;
   }
   const sc = li.firstElementChild;
@@ -2540,6 +2497,7 @@ function closeShelf() {
   shelfEl = shelfPh = null; shelfOv.hidden = true;
 }
 $("#shelf").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li) openShelf(li.dataset.id); });
+$("#shelf").addEventListener("keydown", e => { const li = e.target.closest("li[data-id]"); if (li && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openShelf(li.dataset.id); } });
 shelfOv.addEventListener("click", e => {
   if (e.target.closest("[data-close]")) { closeShelf(); return; }
   const m = e.target.closest(".more");
@@ -2754,8 +2712,9 @@ $("#pick").addEventListener("click", () => {
   lastPick = pick.id;
   const btn = document.getElementById("v-" + pick.id);
   if (!btn) return;
-  const el = btn.closest(".card");
+  const el = btn.closest(".card"), token = tabToken;
   rollDice(() => {
+    if (token !== tabToken || state.view !== "all" || el.hidden) return; // inzwischen anderer Reiter oder Titel ausgeblendet
     document.querySelectorAll(".card.pick").forEach(c => c.classList.remove("pick"));
     el.classList.add("pick");
     glideTo(el, () => pressStamp(el));
@@ -3005,7 +2964,7 @@ const saveSoon = () => { clearTimeout(saveT); saveT = setTimeout(saveSession, 40
 if (SC) { SC.addEventListener("scroll", saveSoon, { passive: true }); document.addEventListener("click", saveSoon); $("#q").addEventListener("input", saveSoon); }
 
 sync();
-render();
+try { render(); } catch (e) { console.error(e); state.view = "all"; state.g2 = ""; neuView = false; try { sync(); render(); } catch (e2) { console.error(e2); } }
 if (resume) {
   // Stelle setzen, solange die Seite beim Öffnen noch verdeckt ist (siehe Kopf der Seite). So springt nichts sichtbar.
   const y = typeof resume.y === "number" ? resume.y : memKey() === "genres:" ? 0 : scrollMem[memKey()];
@@ -3024,7 +2983,7 @@ const FB_URL = n => `https://www.gstatic.com/firebasejs/10.12.2/firebase-${n}.js
 const FB_HOST = /(^|\.)github\.io$/.test(location.hostname) || location.hostname === "localhost";
 const KEY_ACCT = "cr-top100-acct"; // { uid, ver, dirty, base } – ver/base = letzter gemeinsamer Stand mit dem Konto
 let acct = load(KEY_ACCT, {}) || {};
-let fb = null, fbWait = null, user = null, authKnown = false, syncSt = "", syncAt = 0, pushT = 0, retryT = 0, busy = false, again = false, gen = 0, lastPull = 0, lgCreate = false, lgReset = false, lgSent = false, lgSentTo = "", lgEditing = false, peSel = "", choice = null, firstPick = "", resetAsk = false;
+let fb = null, fbWait = null, user = null, authKnown = false, syncSt = "", syncAt = 0, pushT = 0, retryT = 0, busy = false, again = false, gen = 0, lastPull = 0, lgCreate = false, lgReset = false, lgSent = false, lgSentTo = "", lgEditing = false, peSel = "", choice = null, firstPick = "";
 const acctBtn = $("#acct"), acctOv = $("#acctOv");
 const saveAcct = () => store(KEY_ACCT, acct);
 function fbLoad() {
@@ -3084,10 +3043,15 @@ const merge3 = (mine, theirs, base) => {
   return new Set([...m, ...t].filter(id => (m.has(id) && t.has(id)) || (m.has(id) && !b.has(id)) || (t.has(id) && !b.has(id))));
 };
 const same = (a, b) => a.length === b.size && a.every(x => b.has(x));
-// Abgleich mit dem Konto: Online-Stand holen, zusammenführen, Ergebnis speichern
-async function acctSync() {
-  if (!user || !fb) return;
-  if (busy) { again = true; return; }
+// Abgleich mit dem Konto: Online-Stand holen, zusammenführen, Ergebnis speichern.
+// Läuft schon einer, bekommt man dessen Ablauf zurück (zum Warten, z. B. vor dem Abmelden)
+let syncRun = Promise.resolve();
+function acctSync() {
+  if (!user || !fb) return Promise.resolve();
+  if (busy) { again = true; return syncRun; }
+  syncRun = acctSyncRun(); return syncRun;
+}
+async function acctSyncRun() {
   busy = true; again = false; clearTimeout(pushT); clearTimeout(retryT);
   const g = gen, uid = user.uid;
   lastPull = Date.now(); syncSt = "busy"; acctUi();
@@ -3119,6 +3083,7 @@ async function acctSync() {
       ver = newVer();
       await fb.F.setDoc(ref(), { seen: outSeen, saved: outSaved, ver, at: Date.now() });
     }
+    if (!user || user.uid !== uid) throw 0; // inzwischen abgemeldet
     acct = { uid, ver, dirty: gen !== g, base: { seen: outSeen, saved: outSaved }, name: nameOf(user), email: user.email || "", av: avOf(user) }; saveAcct();
     syncSt = "ok"; syncAt = Date.now();
     if (gen !== g) again = true;
@@ -3126,7 +3091,7 @@ async function acctSync() {
     if (e !== 0) { syncSt = "err"; retryT = setTimeout(() => { if (acct.dirty) acctSync(); }, 30000); }
   }
   busy = false; acctUi();
-  if (again && user) { again = false; pushT = setTimeout(acctSync, 300); }
+  if (again && user) { again = false; clearTimeout(pushT); pushT = setTimeout(acctSync, 300); }
 }
 // Gesehen/Gemerkt geändert: merken und kurz danach online sichern
 let applying = false;
@@ -3171,13 +3136,14 @@ function acctUi() {
   acctBtn.hidden = !FB_HOST;
   const me = meNow();
   paintMe();
-  const faceKey = me ? (me.av || "L" + me.name[0].toUpperCase()) : "icon", face = () => me ? (me.av ? avImg(me.av) : me.name[0].toUpperCase()) : USER_ICON;
+  const ch0 = me ? ([...me.name][0] || "?").toUpperCase() : "";
+  const faceKey = me ? (me.av || "L" + ch0) : "icon", face = () => me ? (me.av ? avImg(me.av) : esc(ch0)) : USER_ICON;
   if (acctBtn.dataset.face !== faceKey) { acctBtn.innerHTML = face(); acctBtn.dataset.face = faceKey; }
   acctBtn.classList.toggle("on", !!me); acctBtn.classList.toggle("pic", !!(me && me.av));
   acctBtn.setAttribute("aria-label", me ? "Konto: " + me.name : "Anmelden");
   acctBtn.classList.toggle("warn", !!me && syncSt === "err");
-  const ed = !!me && lgEditing, ch = !!user && !!choice, ra = false;
-  $("#lgOutBox").hidden = !!me; $("#lgInBox").hidden = !me || ed || ch || ra; $("#peBox").hidden = !ed || ch;
+  const ed = !!me && lgEditing, ch = !!user && !!choice;
+  $("#lgOutBox").hidden = !!me; $("#lgInBox").hidden = !me || ed || ch; $("#peBox").hidden = !ed || ch;
   $("#lgFoot").hidden = !me || ed || ch; $("#lgChoice").hidden = !ch;
   if (ch) {
     const z = (a, w) => `${a} ${w}`;
@@ -3192,7 +3158,7 @@ function acctUi() {
     : "Melde dich an, damit Gesehen, Gemerkt und dein Rang gesichert sind und auf Handy und PC gleich bleiben.";
   $("#lgGoogle").hidden = rs; acctOv.querySelector(".lg-or").hidden = rs;
   $("#lgMail").hidden = done; $("#lgPass").hidden = rs; $("#lgForgot").hidden = rs; $("#lgMode").hidden = done;
-  $("#lgClose").hidden = rs || ed || ch || ra; // beim Zurücksetzen kein „Abbrechen“: zurück geht über den Link, zumachen mit Tipp daneben
+  $("#lgClose").hidden = rs || ed || ch; // beim Zurücksetzen kein „Abbrechen“: zurück geht über den Link, zumachen mit Tipp daneben
   $("#lgClose").textContent = me ? "Fertig" : rs ? "Abbrechen" : "Später";
   if (me) {
     if ($("#lgAv").dataset.face !== faceKey) { $("#lgAv").innerHTML = face(); $("#lgAv").dataset.face = faceKey; }
@@ -3212,9 +3178,13 @@ function peMark() {
   $("#peGrid").querySelectorAll(".pe-it").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.av === peSel)));
   $("#peNone").setAttribute("aria-pressed", String(!peSel));
 }
-// Buchstabe für „Ohne Bild“: erster Buchstabe des eingetippten Namens
-function peLetter() { $("#peLetter").textContent = (($("#peName").value.trim() || (user ? nameOf(user) : "") || "?")[0] || "?").toUpperCase(); }
-$("#peName").addEventListener("input", peLetter);
+// „Ohne Bild“: dann steht im Profil-Ring dein Rang-Zeichen – genau das zeigt der Knopf, in der Rangfarbe
+function peLetter() {
+  const box = $("#prog"), i = $("#peLetter");
+  i.textContent = $("#progKj").textContent || "初";
+  i.style.setProperty("--rc", getComputedStyle(box).getPropertyValue("--rc").trim() || "#A3A8C2");
+  i.classList.toggle("dk", box.classList.contains("rt6")); // Dämonenkönig: schwarz wie im Ring
+}
 function openEdit(isNew) {
   if (fb && fb.auth.currentUser) user = fb.auth.currentUser;
   if (!user) return;
@@ -3266,7 +3236,7 @@ const ERR = {
 };
 const errText = e => ERR[e && e.code] || "Das hat nicht geklappt. Versuch es nochmal.";
 async function openAcct() {
-  lgReset = lgSent = lgEditing = resetAsk = false;
+  lgReset = lgSent = lgEditing = false;
   lgMsg(""); acctUi(); acctOv.hidden = false;
   if (!fb) {
     lgBusy(true); lgMsg(acct.uid ? "" : "Lädt …", true);
@@ -3316,7 +3286,8 @@ $("#lgForm").addEventListener("submit", e => {
 $("#lgMode").addEventListener("click", () => { if (lgReset) lgReset = lgSent = false; else lgCreate = !lgCreate; lgMsg(""); acctUi(); });
 $("#lgForgot").addEventListener("click", () => { lgReset = true; lgSent = false; lgCreate = false; lgMsg(""); acctUi(); });
 $("#lgLogout").addEventListener("click", () => lgRun(async ({ U, auth }) => {
-  if (acct.dirty && user) await acctSync();
+  if (user) { await acctSync(); if (acct.dirty && user) await acctSync(); } // laufende Sicherung abwarten, dann Letztes sichern
+  clearTimeout(pushT); clearTimeout(retryT);
   await U.signOut(auth); acct = {}; saveAcct(); syncSt = ""; lgEditing = false; choice = null; firstPick = ""; acctUi();
 }));
 // Beim Zurückkommen in die App kurz nach neuen Daten vom anderen Gerät schauen
