@@ -464,13 +464,14 @@ html:not(.prisc) .card.pick { outline-color: #F47521; } /* Orange wie „Crunchy
 .prog p b { color: var(--ink); }
 /* Rang: Kanji im Ring, der Ring füllt sich bis zum nächsten Rang. Farbe steigt mit: grau, grün, gold, rot */
 .prog, .ladder li { --rc: #A3A8C2; }
-.prog.rt1, .ladder li.rt1 { --rc: #5FD3A6; } .prog.rt2, .ladder li.rt2 { --rc: #F2C14E; } .prog.rt3, .ladder li.rt3 { --rc: #F05A50; } .prog.rt4, .ladder li.rt4 { --rc: #FF3B3B; } /* feste Farben, auch im Priscilla-Modus */
+.prog.rt5, .ladder li.rt5 { --rc: #7CB4F0; } .prog.rt1, .ladder li.rt1 { --rc: #5FD3A6; } .prog.rt2, .ladder li.rt2 { --rc: #F2C14E; } .prog.rt3, .ladder li.rt3 { --rc: #F05A50; } .prog.rt4, .ladder li.rt4 { --rc: #FF3B3B; } /* feste Farben, auch im Priscilla-Modus */
 .prog .rk { display: grid; justify-items: center; gap: 4px; width: 84px; }
 .prog .ring .kj { position: absolute; inset: 0; display: grid; place-items: center; font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
   font-weight: 700; font-size: 20px; line-height: 1.05; writing-mode: vertical-rl; color: var(--rc); }
 .prog .ring .kj.k1 { font-size: 30px; } .prog .ring .kj.k3 { font-size: 15px; }
 .prog .ringcap { font-size: 12.5px; font-weight: 700; line-height: 1.2; color: var(--rc); text-align: center; width: 110px; margin-inline: -13px; } /* lange Namen (Seelenverwandt) ragen gleichmäßig über, der Kreis bleibt an seinem Platz */
 .prog #progArc { stroke: var(--rc); }
+.prog .ring circle:first-child { stroke: var(--rc); stroke-opacity: .2; } /* leerer Teil vom Ring: leicht in der Rangfarbe */
 .prog.max .ring svg { filter: drop-shadow(0 0 6px rgba(240, 90, 80, .55)); }
 html.prisc .prog.max .ring svg { filter: drop-shadow(0 0 6px rgba(246, 196, 83, .55)); } /* Herzkönigin leuchtet golden */
 .prog .ph { display: flex; align-items: center; gap: 6px; }
@@ -506,8 +507,9 @@ html.prisc .meta .neu { color: #2A0A18; }
 .neubar button { font: inherit; font-size: 13px; font-weight: 700; color: #12131C; background: var(--ink); border: 0; border-radius: 999px; padding: 6px 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 html.prisc .neubar { background: #3A1A2A; border-color: #FF6FA8; color: #FFD3E6; }
 html.prisc .neubar button { background: #FF9CC8; color: #2A0A18; }
-/* Liebes-Ränge: Flieder → Rosa → Koralle → Rot → Gold für die Herzkönigin */
-html.prisc .prog.rt0, html.prisc .ladder li.rt0 { --rc: #B9A7EB; }
+/* Liebes-Ränge: Grau (Single) → Flieder → Rosa → Koralle → Rot → Gold für die Herzkönigin */
+html.prisc .prog.rt0, html.prisc .ladder li.rt0 { --rc: #A3A8C2; }
+html.prisc .prog.rt5, html.prisc .ladder li.rt5 { --rc: #B9A7EB; }
 html.prisc .prog.rt1, html.prisc .ladder li.rt1 { --rc: #FF9CC8; }
 html.prisc .prog.rt2, html.prisc .ladder li.rt2 { --rc: #FF8B6E; }
 html.prisc .prog.rt3, html.prisc .ladder li.rt3 { --rc: #FF4D6D; }
@@ -526,8 +528,8 @@ html.prisc .prog.rt4, html.prisc .ladder li.rt4 { --rc: #F6C453; }
 .ru-card .ov-btn { justify-self: stretch; margin-top: 10px; transition: opacity .3s; }
 #ruOk:disabled { opacity: .4; cursor: default; }
 .rankup .ru-card { --rc: #A3A8C2; }
-.rankup.rt1 .ru-card { --rc: #5FD3A6; } .rankup.rt2 .ru-card { --rc: #F2C14E; } .rankup.rt3 .ru-card { --rc: #F05A50; } .rankup.rt4 .ru-card { --rc: #FF3B3B; }
-html.prisc .rankup.rt0 .ru-card { --rc: #B9A7EB; } html.prisc .rankup.rt1 .ru-card { --rc: #FF9CC8; } html.prisc .rankup.rt2 .ru-card { --rc: #FF8B6E; }
+.rankup.rt5 .ru-card { --rc: #7CB4F0; } .rankup.rt1 .ru-card { --rc: #5FD3A6; } .rankup.rt2 .ru-card { --rc: #F2C14E; } .rankup.rt3 .ru-card { --rc: #F05A50; } .rankup.rt4 .ru-card { --rc: #FF3B3B; }
+html.prisc .rankup.rt0 .ru-card { --rc: #A3A8C2; } html.prisc .rankup.rt5 .ru-card { --rc: #B9A7EB; } html.prisc .rankup.rt1 .ru-card { --rc: #FF9CC8; } html.prisc .rankup.rt2 .ru-card { --rc: #FF8B6E; }
 html.prisc .rankup.rt3 .ru-card { --rc: #FF4D6D; } html.prisc .rankup.rt4 .ru-card { --rc: #F6C453; }
 /* „Entfernen“ (nicht mehr gesehen): Gold wie „Speichern“ */
 html:not(.prisc) #seenAskOk { background: linear-gradient(100deg, #F05A50, #F47521); border-color: transparent; color: var(--on-hanko); }
@@ -767,7 +769,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V188</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V189</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -2181,12 +2183,12 @@ const minutesOf = it => {
   const m = it.len.match(/([\d.]+)\s*Folgen/);
   return (EP_FIX[it.key] ?? (m ? +m[1].replace(/\./g, "") : 24)) * 24;
 };
-// Ränge: ab wie vielen gesehenen Titeln, Kanji, Name, Bedeutung, Farbstufe
-const RANKS = [[0, "初", "Shoshinsha", "Anfänger", 0], [1, "新", "Kōhai", "Neuling", 0], [5, "推", "Otaku", "Anime-Fan", 1],
+// Ränge: ab wie vielen gesehenen Titeln, Kanji, Name, Bedeutung, Farbstufe (0 grau, 5 Einstieg, dann 1 bis 4)
+const RANKS = [[0, "初", "Shoshinsha", "Anfänger", 0], [1, "新", "Kōhai", "Neuling", 5], [5, "推", "Otaku", "Anime-Fan", 1],
   [10, "熱", "Senpai", "Serienjunkie", 1], [20, "侍", "Samurai", "Krieger", 2], [45, "師", "Sensei", "Meister", 2], [70, "極", "Shōgun", "Großmeister", 3],
   [105, "伝", "Sennin", "Legende", 3], [150, "鬼", "Oni", "Dämon", 4], [200, "魔", "Maō", "Dämonenkönig", 4]];
 // Im Priscilla-Modus gibt es eigene Liebes-Ränge, die nur gesehene Romanzen zählen
-const LOVE = [[0, "独", "Hitori", "Single", 0], [1, "惚", "Horeru", "Verknallt", 0], [3, "鼓", "Kodō", "Herzklopfen", 1],
+const LOVE = [[0, "独", "Hitori", "Single", 0], [1, "惚", "Horeru", "Verknallt", 5], [3, "鼓", "Kodō", "Herzklopfen", 1],
   [6, "約", "Yakusoku", "Verabredet", 1], [12, "絆", "Kizuna", "Vergeben", 2], [22, "婚", "Kon'yaku", "Verlobt", 2],
   [35, "結", "Kekkon", "Verheiratet", 3], [50, "魂", "Tamashii", "Seelenverwandt", 3], [68, "姫", "Hime", "Herzkönigin", 4]];
 const ranks = () => prisc ? LOVE : RANKS;
