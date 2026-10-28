@@ -494,7 +494,7 @@ html.prisc .meta .pg { display: inline; }
 .meta .neu { background: var(--hanko); color: #fff; border-radius: 6px; padding: 2px 7px 1px; font-size: 11px; letter-spacing: .1em; line-height: 1.2; }
 html.prisc .meta .neu { color: #2A0A18; }
 .card.is-seen .meta .neu, #list.nv .meta .neu { display: none; } /* schon gesehen oder in der Neu-Ansicht: kein „Neu“ */
-.newbtn { display: inline-flex; align-items: center; gap: 7px; border: 0; background: var(--hanko-soft); color: var(--ink); font: inherit; font-size: 12.5px; padding: 4px 11px 4px 9px; border-radius: 999px; margin-left: auto; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.newbtn { display: inline-flex; align-items: center; gap: 7px; border: 0; background: var(--hanko-soft); color: var(--ink); font: inherit; font-size: 12.5px; height: 26px; padding: 0 11px 0 9px; border-radius: 999px; margin-left: auto; /* genau so hoch wie die Zeile, sonst springt der Balken darunter */ cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .newbtn[hidden] { display: none; }
 .newbtn i { width: 7px; height: 7px; border-radius: 50%; background: var(--hanko); }
 .newbtn b { font-weight: 700; }
@@ -540,6 +540,7 @@ html:not(.prisc) #seenAskOk { background: linear-gradient(100deg, #F05A50, #F475
 .prisbar button { padding: 5px 12px; font-size: 12.5px; }
 .neubar { margin-top: 2px; padding: 5px 5px 5px 12px; font-size: 13px; border-radius: 999px; }
 .neubar button { padding: 5px 12px; font-size: 12.5px; }
+.prisbar button, .neubar button { min-width: 80px; } /* „Beenden“ und „Zurück“ gleich breit: beim Wechseln springt nichts */
 .app .empty { padding: 28px 12px; }
 .app .grid { gap: 14px; }
 /* „OK“-Knöpfe in Gold wie „Speichern“ (Priscilla-Modus: rosa) */
@@ -765,7 +766,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V186</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V187</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
