@@ -465,13 +465,14 @@ html:not(.prisc) .card.pick { outline-color: #F47521; } /* Orange wie „Crunchy
 /* Rang: Kanji im Ring, der Ring füllt sich bis zum nächsten Rang. Farbe steigt mit: grau, grün, gold, rot */
 .prog, .ladder li { --rc: #A3A8C2; }
 .prog.rt1, .ladder li.rt1 { --rc: #5FD3A6; } .prog.rt2, .ladder li.rt2 { --rc: #F2C14E; } .prog.rt3, .ladder li.rt3 { --rc: #F05A50; } .prog.rt4, .ladder li.rt4 { --rc: #FF3B3B; } /* feste Farben, auch im Priscilla-Modus */
-.prog .rk { display: grid; justify-items: center; gap: 4px; }
+.prog .rk { display: grid; justify-items: center; gap: 4px; width: 84px; }
 .prog .ring .kj { position: absolute; inset: 0; display: grid; place-items: center; font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
   font-weight: 700; font-size: 20px; line-height: 1.05; writing-mode: vertical-rl; color: var(--rc); }
 .prog .ring .kj.k1 { font-size: 30px; } .prog .ring .kj.k3 { font-size: 15px; }
-.prog .ringcap { font-size: 12.5px; font-weight: 700; line-height: 1.2; color: var(--rc); text-align: center; max-width: 96px; }
+.prog .ringcap { font-size: 12.5px; font-weight: 700; line-height: 1.2; color: var(--rc); text-align: center; width: 110px; margin-inline: -13px; } /* lange Namen (Seelenverwandt) ragen gleichmäßig über, der Kreis bleibt an seinem Platz */
 .prog #progArc { stroke: var(--rc); }
 .prog.max .ring svg { filter: drop-shadow(0 0 6px rgba(240, 90, 80, .55)); }
+html.prisc .prog.max .ring svg { filter: drop-shadow(0 0 6px rgba(246, 196, 83, .55)); } /* Herzkönigin leuchtet golden */
 .prog .ph { display: flex; align-items: center; gap: 6px; }
 .prog .nx { display: block; }
 .prog p .nx:first-child { color: var(--ink); }
@@ -766,7 +767,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V187</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V188</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
