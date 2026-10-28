@@ -472,13 +472,13 @@ html:not(.prisc) .card.pick { outline-color: #F47521; } /* Orange wie „Crunchy
 .prog .ringcap { font-size: 12.5px; font-weight: 700; line-height: 1.2; color: var(--rc); text-align: center; width: 110px; margin-inline: -13px; } /* lange Namen (Seelenverwandt) ragen gleichmäßig über, der Kreis bleibt an seinem Platz */
 .prog #progArc { stroke: var(--rc); }
 .prog .ring circle:first-child { stroke: var(--rc); stroke-opacity: .2; } /* leerer Teil vom Ring: leicht in der Rangfarbe */
-.prog.max .ring svg { filter: drop-shadow(0 0 6px rgba(240, 90, 80, .55)); }
+.prog.max .ring svg { filter: drop-shadow(0 0 4px rgba(240, 90, 80, .4)); }
 /* Dämon und Dämonenkönig: das Zeichen glüht rot wie Dämonenaugen, innen ein roter Schein */
-html:not(.prisc) .prog.rt4 .ring::before { content: ""; position: absolute; inset: 9px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 40, 40, .32), rgba(255, 40, 40, .08) 55%, rgba(255, 40, 40, 0) 72%); }
-html:not(.prisc) .prog.rt4 .ring .kj { text-shadow: 0 0 8px rgba(255, 50, 50, .9), 0 0 18px rgba(255, 30, 30, .5); }
+html:not(.prisc) .prog.rt4 .ring::before { content: ""; position: absolute; inset: 9px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 40, 40, .18), rgba(255, 40, 40, .05) 55%, rgba(255, 40, 40, 0) 72%); }
+html:not(.prisc) .prog.rt4 .ring .kj { text-shadow: 0 0 6px rgba(255, 50, 50, .6); }
 html:not(.prisc) .prog.rt4 .ring circle:first-child { stroke-opacity: .35; }
-html:not(.prisc) .rankup.rt4 .ru-st { text-shadow: 0 0 10px rgba(255, 50, 50, .9), 0 0 22px rgba(255, 30, 30, .5); }
-html.prisc .prog.max .ring svg { filter: drop-shadow(0 0 6px rgba(246, 196, 83, .55)); } /* Herzkönigin leuchtet golden */
+html:not(.prisc) .rankup.rt4 .ru-st { text-shadow: 0 0 6px rgba(255, 50, 50, .6); }
+html.prisc .prog.max .ring svg { filter: drop-shadow(0 0 4px rgba(246, 196, 83, .4)); } /* Herzkönigin leuchtet golden */
 .prog .ph { display: flex; align-items: center; gap: 6px; }
 .prog .nx { display: block; }
 .prog p .nx:first-child { color: var(--ink); }
@@ -567,11 +567,11 @@ html.prisc .stamp.low { border-color: #E58BB8; color: #F6B9D7; }
 /* Priscilla: weiße Zeichen in den gefüllten Kästchen (auf Gold dunkel), die Herzkönigin leuchtet golden */
 html.prisc .ladder .big.fill { color: #fff; }
 /* Normal: die Dämonen-Kästchen schwarz mit rot glühendem Zeichen */
-html:not(.prisc) .ladder li.rt4 .big { box-shadow: 0 0 9px rgba(255, 50, 50, .55); }
-html:not(.prisc) .ladder li.rt4 .big.glow { box-shadow: 0 0 12px rgba(255, 50, 50, .7); }
-html:not(.prisc) .ladder li.rt4 .big.fill { background: #2A0608; color: #FF4A4A; text-shadow: 0 0 6px rgba(255, 60, 60, .9); }
+html:not(.prisc) .ladder li.rt4 .big { box-shadow: 0 0 6px rgba(255, 50, 50, .35); }
+html:not(.prisc) .ladder li.rt4 .big.glow { box-shadow: 0 0 8px rgba(255, 50, 50, .45); }
+html:not(.prisc) .ladder li.rt4 .big.fill { background: #2A0608; color: #FF4A4A; text-shadow: 0 0 4px rgba(255, 60, 60, .6); }
 html.prisc .ladder li.rt4 .big.fill { color: #2A1A05; }
-html.prisc .ladder .big.glow { box-shadow: 0 0 12px rgba(246, 196, 83, .6); }
+html.prisc .ladder .big.glow { box-shadow: 0 0 8px rgba(246, 196, 83, .4); }
 .ladder b { font-size: 15px; line-height: 1.3; }
 .ladder small { color: var(--muted); font-size: 13px; line-height: 1.3; }
 .ladder .ab { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -778,7 +778,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V190</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V191</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
