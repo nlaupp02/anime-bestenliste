@@ -473,11 +473,14 @@ html:not(.prisc) .card.pick { outline-color: #F47521; } /* Orange wie „Crunchy
 .prog #progArc { stroke: var(--rc); }
 .prog .ring circle:first-child { stroke: var(--rc); stroke-opacity: .2; } /* leerer Teil vom Ring: leicht in der Rangfarbe */
 .prog.max .ring svg { filter: drop-shadow(0 0 4px rgba(240, 90, 80, .4)); }
-/* Dämon und Dämonenkönig: das Zeichen glüht rot wie Dämonenaugen, innen ein roter Schein */
-html:not(.prisc) .prog.rt4 .ring::before { content: ""; position: absolute; inset: 9px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 40, 40, .18), rgba(255, 40, 40, .05) 55%, rgba(255, 40, 40, 0) 72%); }
-html:not(.prisc) .prog.rt4 .ring .kj { text-shadow: 0 0 6px rgba(255, 50, 50, .6); }
-html:not(.prisc) .prog.rt4 .ring circle:first-child { stroke-opacity: .35; }
-html:not(.prisc) .rankup.rt4 .ru-st { text-shadow: 0 0 6px rgba(255, 50, 50, .6); }
+/* Die zwei höchsten Ränge schimmern leicht (beide Modi gleich): innen ein Schein, das Zeichen leuchtet leicht.
+   Normal rot (Dämon, Dämonenkönig), Priscilla rosé (Seelenverwandt) und golden (Herzkönigin) */
+.prog.top, .rankup.top { --glow: 255, 50, 50; }
+html.prisc .prog.top.rt3, html.prisc .rankup.top.rt3 { --glow: 255, 77, 109; }
+html.prisc .prog.top.rt4, html.prisc .rankup.top.rt4 { --glow: 246, 196, 83; }
+.prog.top .ring::before { content: ""; position: absolute; inset: 9px; border-radius: 50%; background: radial-gradient(circle, rgba(var(--glow), .16), rgba(var(--glow), .05) 55%, rgba(var(--glow), 0) 72%); }
+.prog.top .ring .kj, .rankup.top .ru-st { text-shadow: 0 0 6px rgba(var(--glow), .5); }
+.prog.top .ring circle:first-child { stroke-opacity: .35; }
 html.prisc .prog.max .ring svg { filter: drop-shadow(0 0 4px rgba(246, 196, 83, .4)); } /* Herzkönigin leuchtet golden */
 .prog .ph { display: flex; align-items: center; gap: 6px; }
 .prog .nx { display: block; }
@@ -492,7 +495,7 @@ html.prisc { --hanko: #FF6FA8; --hanko-soft: #3A1A2A; --gold: #FF9CC8; --on-gold
 .prisbar[hidden] { display: none; }
 .prisbar span { flex: 1; min-width: 0; }
 .prisbar button { font: inherit; font-size: 13px; font-weight: 700; color: #2A0A18; background: #FF9CC8; border: 0; border-radius: 999px; padding: 6px 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.petals { position: fixed; inset: 0; z-index: 60; overflow: hidden; pointer-events: none; }
+.petals { position: fixed; inset: 0; z-index: 80; overflow: hidden; pointer-events: none; }
 .app .petals { position: absolute; top: 0; left: 0; right: 0; bottom: auto; height: calc(100% + 400px); }
 .petal { position: absolute; top: -44px; line-height: 1; will-change: transform; }
 .meta .pg { display: none; color: #FF8FBF; }
@@ -777,7 +780,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V192</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V193</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -2232,7 +2235,7 @@ function renderProg() {
   // Der Ring zeigt den Weg zum nächsten Rang, ganz oben ist er voll
   const R = ranks(), ri = rankIdx(n), r = R[ri], nx = R[ri + 1], kj = $("#progKj");
   $("#progArc").style.strokeDashoffset = String(219.9 * (nx ? 1 - (n - r[0]) / (nx[0] - r[0]) : 0));
-  box.className = "prog rt" + r[4] + (nx ? "" : " max");
+  box.className = "prog rt" + r[4] + (nx ? "" : " max") + (ri >= R.length - 2 ? " top" : "");
   kj.textContent = r[1]; kj.className = "kj k" + r[1].length;
   $("#progRank").textContent = r[3];
   $("#progTitle").textContent = prisc ? `${n} von ${total} Romanzen` : `${n} von ${total} gesehen`;
@@ -2352,7 +2355,7 @@ document.addEventListener("keydown", e => { if (e.key === "Escape" && !shelfOv.h
 // Rang-Aufstieg feiern: nur wenn durch „gesehen“ ein neuer Rang erreicht wird
 function rankUp(ri) {
   const R = ranks(), r = R[ri], nx = R[ri + 1], box = $("#rankUp");
-  box.className = "ov rankup rt" + r[4];
+  box.className = "ov rankup rt" + r[4] + (ri >= R.length - 2 ? " top" : "");
   $("#ruLbl").textContent = prisc ? "Neuer Liebes-Rang" : "Neuer Rang";
   $("#ruSt").textContent = r[1]; $("#ruName").textContent = r[3];
   $("#ruNext").textContent = nx ? `Nächster Rang: ${nx[3]} ab ${nx[0]}` : "Höchster Rang erreicht";
@@ -2363,6 +2366,7 @@ function rankUp(ri) {
     card.animate([{ transform: "scale(.96)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 220, easing: "ease-out" });
     $("#ruSt").animate([{ transform: "scale(.85)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 300, delay: 120, easing: "ease-out", fill: "backwards" });
   }
+  if (prisc) petals(); // Liebes-Rang: Blüten und Herzen fallen über die Meldung
   // Nicht aus Versehen wegtippen: Schließen nur mit OK, und OK geht erst nach 1 Sekunde
   const ok = $("#ruOk"), close = () => { box.hidden = true; const nx = rankQ.shift(); if (nx != null) setTimeout(() => rankUp(nx), 250); };
   ok.disabled = true; clearTimeout(rankUp.t);
