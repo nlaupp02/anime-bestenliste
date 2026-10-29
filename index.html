@@ -981,7 +981,7 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V234</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V235</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -2184,22 +2184,18 @@ document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click
     // Wechselt man schnell hintereinander, zeigt der Inhalt noch den alten Reiter: dessen Stelle nicht unter dem neuen Namen merken
     if (!tabPending) scrollMem[memKey()] = getY();
     if (neuView) { neuView = false; delete scrollMem.all; }
-    // Leiste und Blase sofort umstellen, den Inhalt erst im nächsten Bild. So bewegt sich die Blase sofort,
-    // auch wenn die lange Liste (z. B. bei Alle) kurz Rechenzeit braucht.
+    // Blase und Inhalt im selben Bild umstellen: Sonst sah man ein, zwei Bilder lang noch die Cover des alten Reiters
+    // (beim Schwung-Scrollen sogar weiterlaufend). Das Umschalten ist inzwischen schnell genug dafür.
     state.view = v; sync();
-    const token = ++tabToken; tabPending = true;
-    requestAnimationFrame(() => setTimeout(() => {
-      if (token !== tabToken) return;
-      tabPending = false;
-      render();
-      // Die kurze Kachel-Übersicht startet immer oben, ein geöffnetes Genre (z. B. Action) merkt sich die Stelle
-      if (memKey() === "genres:") { jumpTo(0); return; }
-      // Nur ein kleines Stück gescrollt (der Pfeil nach oben war noch nicht da): beim Zurückkommen ganz nach oben
-      const y = scrollMem[memKey()];
-      if (y != null) jumpTo(y < 300 ? 0 : y);
-      else if (state.view === "all") toMain();
-      else jumpTo(0); // neuer Reiter: oben mit Überschrift anfangen
-    }, 0));
+    ++tabToken; tabPending = false;
+    render();
+    // Die kurze Kachel-Übersicht startet immer oben, ein geöffnetes Genre (z. B. Action) merkt sich die Stelle
+    if (memKey() === "genres:") { jumpTo(0); return; }
+    // Nur ein kleines Stück gescrollt (der Pfeil nach oben war noch nicht da): beim Zurückkommen ganz nach oben
+    const y = scrollMem[memKey()];
+    if (y != null) jumpTo(y < 300 ? 0 : y);
+    else if (state.view === "all") toMain();
+    else jumpTo(0); // neuer Reiter: oben mit Überschrift anfangen
     return;
   }
   state.view = v; if (v === "genres") state.g2 = ""; neuView = false;
