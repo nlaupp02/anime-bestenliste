@@ -296,6 +296,7 @@ html.covers .cv { display: block; grid-column: 1; grid-row: 1 / span 4; align-se
 .imdb .v { display: block; font-size: 10.5px; color: var(--muted); }
 
 .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); gap: 8px; }
+html.prisc .tiles { grid-auto-rows: 1fr; }
 .tile {
   text-align: left; font: inherit; color: var(--ink); background: var(--sheet); border: 1px solid var(--line);
   border-radius: 12px; padding: 10px 12px; cursor: pointer; display: grid; align-content: start; min-width: 0;
@@ -967,7 +968,7 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V227</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V228</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1483,7 +1484,10 @@ const EXTRA = [
 ["Tsukimichi -Moonlit Fantasy-", "S", "Isekai|Fantasy|Comedy", 7.6, null, null, "de", "2 Staffeln · 37 Folgen", "Makoto wird in eine Fantasywelt gerufen, doch die Göttin findet ihn hässlich und schickt ihn ans Ende der Welt. Dort stellt sich heraus, dass er unfassbar stark ist.", "", "tsuki ga michibiku isekai douchuu", "chill", "Tsukimichi -Moonlit Fantasy-", "GZJH3D719/tsukimichi--moonlit-fantasy-"],
 ["Dead Mount Death Play", "S", "Action|Fantasy|Krimi", 7.2, null, null, "de", "24 Folgen", "Ein mächtiger Totenbeschwörer wird nach seiner Niederlage im Körper eines toten Jungen im heutigen Tokio wiedergeboren. Dort gerät er mitten in die Unterwelt der Stadt.", "", "dead mount death play", "", "Dead Mount Death Play", "G3KHEV04J/dead-mount-death-play"],
 ["Mobile Suit Gundam Wing", "S", "Action|Sci-Fi|Drama", 7.7, null, null, "sub", "49 Folgen", "Fünf Jungen steuern Kampfroboter und sollen die Weltraumkolonien von der Erde befreien. Klassiker mit viel Politik, Krieg und Drama.", "", "gundam wing", "", "Mobile Suit Gundam Wing", "G63VP3PMY/mobile-suit-gundam-wing"],
-["Mobile Suit Gundam", "S", "Action|Sci-Fi|Drama", 7.7, null, null, "sub", "43 Folgen", "Der junge Amuro gerät in einen Krieg zwischen Erde und Weltraumkolonien und muss einen neuen Kampfroboter steuern. Der Ursprung aller Gundam-Serien.", "", "kidou senshi gundam 0079", "", "Mobile Suit Gundam", "GKEH2G9XV/mobile-suit-gundam"]
+["Mobile Suit Gundam", "S", "Action|Sci-Fi|Drama", 7.7, null, null, "sub", "43 Folgen", "Der junge Amuro gerät in einen Krieg zwischen Erde und Weltraumkolonien und muss einen neuen Kampfroboter steuern. Der Ursprung aller Gundam-Serien.", "", "kidou senshi gundam 0079", "", "Mobile Suit Gundam", "GKEH2G9XV/mobile-suit-gundam"],
+["My Next Life as a Villainess", "S", "Romance|Comedy|Fantasy", 7.4, null, null, "de", "2 Staffeln · 25 Folgen", "Catarina stößt sich als Kind den Kopf und erinnert sich: Sie lebt in einem Otome-Spiel, als Schurkin, der nur Verbannung oder Tod droht. Also ist sie einfach nett zu allen. Prompt verlieben sich alle in sie, nur sie selbst merkt nichts. Albern, warmherzig und sehr lustig.", "", "otome game no hametsu flag shika nai akuyaku reijou ni tensei shiteshimatta hamefura bakarina all routes lead to doom wie überlebe ich in einem dating-game", "chill", "My Next Life as a Villainess", "GY5PW4JEY/my-next-life-as-a-villainess-all-routes-lead-to-doom"],
+["Raeliana – Warum sie die Verlobte des Dukes wurde", "S", "Romance|Fantasy|Mystery", 7.2, null, null, "de", "12 Folgen", "Rinko stirbt und wacht als Raeliana in einem Roman auf, als Nebenfigur, die von ihrem eigenen Verlobten umgebracht wird. Um das zu verhindern, wird sie zum Schein die Verlobte des kühlen Dukes Noah. Romanze mit kleinen Rätseln, das Ende bleibt aber offen.", "", "kanojo ga koushaku-tei ni itta riyuu why raeliana ended up at the dukes mansion", "chill|kurz", "Raeliana", "GVDHX8Q71/why-raeliana-ended-up-at-the-dukes-mansion"],
+["Tearmoon Empire", "S", "Comedy|Fantasy|Romance", 7.1, null, null, "sub", "12 Folgen", "Prinzessin Mia stirbt in der Revolution unter der Guillotine und wacht als Zwölfjährige wieder auf, neben ihrem blutigen Tagebuch. Um ihr Schicksal zu ändern, macht sie plötzlich alles richtig, nur aus Eigennutz. Alle halten sie aber für ein Genie und eine Heilige. Sehr lustig, die Romanze läuft eher nebenbei.", "", "tearmoon teikoku monogatari dantoudai kara hajimaru hime no tensei gyakuten story", "chill|kurz", "Tearmoon Empire", "G9VHN9QVN/tearmoon-empire"]
 ];
 
 
@@ -1505,6 +1509,7 @@ const items = [...DATA.map((d, i) => mk(d, i, false)), ...EXTRA.map((d, i) => mk
 const byMine = [...items].sort((a, b) => b.mine - a.mine || a.order - b.order);
 // „Neu erschienen“: Erscheinungsmonat (erste Staffel bzw. Film), die neuesten zuerst. Gleicher Monat: bessere Wertung zuerst.
 const REL = {"Frieren – Nach dem Ende der Reise": "2023-09",
+  "My Next Life as a Villainess": "2020-04", "Raeliana – Warum sie die Verlobte des Dukes wurde": "2023-04", "Tearmoon Empire": "2023-10",
   "Attack on Titan": "2013-04",
   "Chainsaw Man – The Movie: Reze Arc": "2025-09",
   "Gintama": "2006-04",
@@ -1784,7 +1789,7 @@ const NEU_JAHR = Object.values(REL).map(r => r.slice(0, 4)).sort().pop();
 const isNeu = it => (REL[it.key] || "").startsWith(NEU_JAHR);
 // Neu in der Liste: an welchem Tag ein Titel eingetragen wurde. Bis 14 Tage danach (der 14. Tag zählt mit) gilt er als neu.
 // Neue Titel hier mit dem heutigen Datum eintragen.
-const ADDED = {"2026-10-28": ["White Album 2", "I'm the Villainess, So I'm Taming the Final Boss", "A Condition Called Love", "The Duke of Death and His Maid", "Witch Watch", "The Ice Guy and His Cool Female Colleague", "My Senpai Is Annoying", "Love After World Domination", "Science Fell in Love, So I Tried to Prove It", "The World Is Still Beautiful", "Sing \"Yesterday\" for Me", "Ride Your Wave", "Aharen-san wa Hakarenai", "Sugar Apple Fairy Tale", "In the Clear Moonlit Dusk", "I Made Friends with the Second Prettiest Girl in My Class", "Marriagetoxin", "Chitose Is in the Ramune Bottle", "Yanos ganz normaler Alltag", "Betrothed to My Sister's Ex", "Dealing with Mikadono Sisters Is a Breeze", "Solo Camping for Two", "Dank dir überwindet unsere Liebe alle Hindernisse", "Pass the Monster Meat, Milady!", "Tokyo Ghoul", "Trigun Stampede", "Wind Breaker", "Secrets of the Silent Witch", "Reborn!", "NieR:Automata Ver1.1a", "Life Lessons with Uramichi Oniisan", "Sleepy Princess in the Demon Castle", "The Yakuza's Guide to Babysitting", "Ace Attorney", "Cells at Work!", "Kemono Jihen", "Elainas Reise", "Mr. Villain's Day Off", "'Tis Time for \"Torture,\" Princess", "The Faraway Paladin", "Kabaneri of the Iron Fortress", "Dance Dance Danseur", "Ruri Rocks", "The Cat and the Dragon", "Iron Wok Jan", "Tojima Wants to Be a Kamen Rider", "Clevatess", "Fate/strange Fake", "Wistoria: Wand and Sword", "With You and the Rain", "Dara-san of the Reiwa Era", "Tsukimichi -Moonlit Fantasy-", "Dead Mount Death Play", "Mobile Suit Gundam Wing", "Mobile Suit Gundam"]};
+const ADDED = {"2026-10-29": ["My Next Life as a Villainess", "Raeliana – Warum sie die Verlobte des Dukes wurde", "Tearmoon Empire"], "2026-10-28": ["White Album 2", "I'm the Villainess, So I'm Taming the Final Boss", "A Condition Called Love", "The Duke of Death and His Maid", "Witch Watch", "The Ice Guy and His Cool Female Colleague", "My Senpai Is Annoying", "Love After World Domination", "Science Fell in Love, So I Tried to Prove It", "The World Is Still Beautiful", "Sing \"Yesterday\" for Me", "Ride Your Wave", "Aharen-san wa Hakarenai", "Sugar Apple Fairy Tale", "In the Clear Moonlit Dusk", "I Made Friends with the Second Prettiest Girl in My Class", "Marriagetoxin", "Chitose Is in the Ramune Bottle", "Yanos ganz normaler Alltag", "Betrothed to My Sister's Ex", "Dealing with Mikadono Sisters Is a Breeze", "Solo Camping for Two", "Dank dir überwindet unsere Liebe alle Hindernisse", "Pass the Monster Meat, Milady!", "Tokyo Ghoul", "Trigun Stampede", "Wind Breaker", "Secrets of the Silent Witch", "Reborn!", "NieR:Automata Ver1.1a", "Life Lessons with Uramichi Oniisan", "Sleepy Princess in the Demon Castle", "The Yakuza's Guide to Babysitting", "Ace Attorney", "Cells at Work!", "Kemono Jihen", "Elainas Reise", "Mr. Villain's Day Off", "'Tis Time for \"Torture,\" Princess", "The Faraway Paladin", "Kabaneri of the Iron Fortress", "Dance Dance Danseur", "Ruri Rocks", "The Cat and the Dragon", "Iron Wok Jan", "Tojima Wants to Be a Kamen Rider", "Clevatess", "Fate/strange Fake", "Wistoria: Wand and Sword", "With You and the Rain", "Dara-san of the Reiwa Era", "Tsukimichi -Moonlit Fantasy-", "Dead Mount Death Play", "Mobile Suit Gundam Wing", "Mobile Suit Gundam"]};
 const NEW_DAYS = 14;
 const freshKeys = (() => {
   const out = new Set(), now = Date.now();
@@ -1807,6 +1812,21 @@ byMine.forEach((it, i) => it.rank = i + 1);
 GENRES.forEach(g => byMine.filter(it => it.genres.includes(g)).forEach((it, i) => { (it.gr = it.gr || {})[g] = i + 1; }));
 // Plätze nur unter den Romanzen (für den Priscilla-Modus, auch innerhalb eines Genres)
 GENRES.forEach(g => byMine.filter(it => it.genres.includes("Romance") && it.genres.includes(g)).forEach((it, i) => { (it.grR = it.grR || {})[g] = i + 1; }));
+// Priscilla-Modus: statt Genres Romanzen-Themen. Ein Titel kann in mehreren Themen stehen.
+const SPANNUNG = ["Action", "Abenteuer", "Mystery", "Sci-Fi", "Horror", "Thriller", "Krimi", "Sport"];
+const THEMES = {
+  "Historisch & Fantasy": it => it.genres.some(g => g === "Historie" || g === "Fantasy" || g === "Isekai"),
+  "Zum Lachen": it => it.genres.includes("Comedy"),
+  "Zum Weinen": it => it.genres.includes("Drama"),
+  // Reine Liebesgeschichten ohne weiteres Genre gehören auch hierher
+  "Zum Wohlfühlen": it => it.genres.includes("Slice of Life") || it.genres.every(g => g === "Romance"),
+  "Zum Mitfiebern": it => it.genres.some(g => SPANNUNG.includes(g))
+};
+const THEME_KEYS = Object.keys(THEMES);
+const isTheme = k => !!k && Object.prototype.hasOwnProperty.call(THEMES, k);
+THEME_KEYS.forEach(k => byMine.filter(it => it.genres.includes("Romance") && THEMES[k](it)).forEach((it, i) => { (it.grR = it.grR || {})[k] = i + 1; }));
+// Gewähltes Genre oder Thema
+const inSel = it => isTheme(state.g2) ? THEMES[state.g2](it) : it.genres.includes(state.g2);
 
 // Gespeicherte Daten (nur in diesem Browser)
 const KEY = { saved: "cr-top100-saved", seen: "cr-top100-seen", filters: "cr-top100-filters", install: "cr-top100-install-closed" };
@@ -1967,6 +1987,7 @@ $("#q").addEventListener("input", e => {
 });
 function setPrisc(on, fx) {
   prisc = on; store(KEY_PRISC, on);
+  state.g2 = "";
   // Romanzen-Stimmungen gibt es nur im Modus, die normalen nur außerhalb
   document.documentElement.classList.toggle("prisc", on);
   $("#prisBar").hidden = !on;
@@ -2176,7 +2197,7 @@ function filtered() {
   return sorted().filter(it =>
     (neuView || effSort() !== "neu" || isNeu(it)) &&
     (!neuView || isFresh(it)) &&
-    (!inGenre || it.genres.includes(state.g2)) &&
+    (!inGenre || inSel(it)) &&
     (!state.type || it.type === state.type) &&
     (!state.onlyDe || it.dub === "de") &&
     (!state.hideSeen || state.view === "seen" || !seen.has(it.id)) &&
@@ -2200,7 +2221,7 @@ function status(n) {
     const m = byMine.reduce((a, it) => { const el = cardEls.get(it.id); return el && !el.hidden && el.parentNode && el.parentNode.id === "list" ? a + minutesOf(it) : a; }, 0);
     if (m) hrs = ` · ${Math.max(1, Math.round(m / 60))} Std.`;
   }
-  $("#status").textContent = n < 0 ? `${tileCount} ${tileCount === 1 ? "Genre" : "Genres"}` : (prisc ? `${n} ${n === 1 ? "Romanze" : "Romanzen"}` : active ? `${n} Treffer` : `${n} Titel`) + hrs + (effSort() === "neu" && n >= 0 && !neuView ? ` · erschienen ${NEU_JAHR}` : "");
+  $("#status").textContent = n < 0 ? `${tileCount} ${prisc ? (tileCount === 1 ? "Thema" : "Themen") : tileCount === 1 ? "Genre" : "Genres"}` : (prisc ? `${n} ${n === 1 ? "Romanze" : "Romanzen"}` : active ? `${n} Treffer` : `${n} Titel`) + hrs + (effSort() === "neu" && n >= 0 && !neuView ? ` · erschienen ${NEU_JAHR}` : "");
   $("#reset").hidden = !active;
   $("#share").hidden = !(state.view === "saved" && nSaved);
   // „So entsteht die Wertung“ (ⓘ) nur bei Alle – auf den anderen Reitern nimmt es nur Platz weg
@@ -2254,14 +2275,18 @@ const TILE_SHORT = { "Die Tagebücher der Apothekerin": "Apothekerin",
   "Gals Can't Be Kind to Otaku!?": "Gals & Otaku", "Kono Oto Tomare! Sounds of Life": "Kono Oto Tomare!"};
 const shortT = t => { if (TILE_SHORT[t]) return TILE_SHORT[t]; const x = t.split(" – ")[0].split(": ")[0]; return x.length < 4 ? t : x; };
 function renderTiles() {
-  // Im Priscilla-Modus ist alles Romance: diese Kachel sagt dann nichts und fällt weg
-  const shown = GENRES.map(g => [g, inG(g).filter(passes)]).filter(([g, list]) => list.length && !(prisc && g === "Romance"));
+  // Im Priscilla-Modus Romanzen-Themen statt Genres (Romance allein sagt dort nichts)
+  const shown = prisc
+    ? THEME_KEYS.map(k => [k, byMine.filter(it => THEMES[k](it) && passes(it))]).filter(([k, list]) => list.length)
+    : GENRES.map(g => [g, inG(g).filter(passes)]).filter(([g, list]) => list.length);
   tileCount = shown.length;
   // Spalten am PC: möglichst keine leeren Plätze in der letzten Reihe
   const cols = [5, 4, 6, 7, 3].reduce((b, c) => ((c - tileCount % c) % c) < ((b - tileCount % b) % b) ? c : b, 5);
   $("#tiles").style.setProperty("--tc", cols);
+  const used = new Set(); // Themen: jedes mit eigenem Cover
   const html = shown.map(([g, list]) => {
-    const f = FEATURED[g] && passes(FEATURED[g]) ? FEATURED[g] : list[0];
+    const f = prisc ? list.find(x => !used.has(x.id)) || list[0] : FEATURED[g] && passes(FEATURED[g]) ? FEATURED[g] : list[0];
+    if (f) used.add(f.id);
     const u = f ? coverOf(f) : "";
     return `<button type="button" class="tile" data-g="${g}"><b>${g}</b><span class="tn">${list.length} Titel</span>${u ? `<i class="gcv" style="background-image:url('${esc(u)}')" aria-hidden="true"></i>` : ""}</button>`;
   }).join("");
@@ -2319,7 +2344,8 @@ let covers = load(KEY_COV, {});
 // Nicht gefundene Cover beim nächsten Start noch einmal versuchen (z. B. nach einem Netzfehler oder korrigiertem Suchnamen)
 Object.keys(covers).forEach(k => { if (!String(covers[k]).startsWith("https://")) delete covers[k]; });
 // Wo die Suche nicht trifft: direkt über die MyAnimeList-Nummer
-const ID_MAL = { "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You": 54714,
+const ID_MAL = { "My Next Life as a Villainess": 38555, "Raeliana – Warum sie die Verlobte des Dukes wurde": 52308, "Tearmoon Empire": 52962,
+  "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You": 54714,
   "Alya Sometimes Hides Her Feelings in Russian": 54744,"Skip Beat!": 4722, "Princess Jellyfish": 8129, "My Love Story!!": 28297, "Tonikawa: Over the Moon for You": 41389, "Kono Oto Tomare! Sounds of Life": 38080, "Kokoro Connect": 11887, "Yamada-kun and the Seven Witches": 28677, "My Little Monster": 14227, "Saekano: How to Raise a Boring Girlfriend": 23277, "Taisho Otome Fairy Tale": 45055, "Pseudo Harem": 54968, "7th Time Loop": 56352, "The Quintessential Quintuplets Movie": 48548, "Kakuriyo: Bed & Breakfast for Spirits": 36754, "Sacrificial Princess and the King of Beasts": 46422, "Darling in the Franxx": 35849, "Mushishi": 457, "Sound! Euphonium": 27989, "K-ON!": 5680, "Kaleido Star": 427, "Space Dandy": 20057, "Asobi Asobase": 37171, "Polar Bear Cafe": 12815, "GIRLS BAND CRY": 55102, "My New Boss Is Goofy": 55310, "Yakitate!! Japan": 28, "Dragon Quest: The Adventure of Dai": 40906, "D.Gray-man": 1482, "Fist of the North Star": 967, "The Prince of Tennis": 22, "Anne Shirley": 60334, "Black Butler: Book of the Atlantic": 31812, "Laid-Back Camp Movie": 38475, "My Hero Academia: Heroes Rising": 39565, "Miss Kobayashi's Dragon Maid: A Lonely Dragon Wants to Be Loved": 59897, "Sonny Boy": 48849 };
 // Feste Bildadressen (MyAnimeList) für Titel, die AniList nicht findet
 const COVER_URL = {
@@ -2577,7 +2603,7 @@ function render() {
     const e0 = $("#empty"); e0.hidden = tileCount > 0; e0.textContent = "Kein Titel passt zu diesen Filtern. Setz einzelne Filter zurück oder leere die Suche.";
     status(-1); return;
   }
-  if (state.view === "genres") $("#gtitle").textContent = state.g2;
+  if (state.view === "genres") { $("#gtitle").textContent = state.g2; $("#gback").textContent = prisc ? "← Alle Themen" : "← Alle Genres"; }
   if (state.view !== "seen" && domSort !== state.sort) { domSort = state.sort; const L = $("#list"); sorted().forEach(it => L.append(cardEls.get(it.id))); }
   if (neuView && state.view !== "all") neuView = false;
   $("#list").classList.toggle("nv", neuView);
@@ -3160,7 +3186,7 @@ const resume = (() => {
 })();
 if (resume) {
   state.view = resume.view;
-  state.g2 = GENRES.includes(resume.g2) ? resume.g2 : "";
+  state.g2 = (prisc ? isTheme(resume.g2) : GENRES.includes(resume.g2)) ? resume.g2 : "";
   if (typeof resume.q === "string" && resume.q) { $("#q").value = resume.q; state.q = resume.q.trim().toLowerCase(); }
   if (resume.mem && typeof resume.mem === "object") Object.keys(resume.mem).forEach(k => { if (typeof resume.mem[k] === "number") scrollMem[k] = resume.mem[k]; });
 }
