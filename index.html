@@ -478,8 +478,8 @@ html:not(.prisc) .card.pick { outline-color: #F47521; } /* Orange wie „Crunchy
 .prog p { margin: 3px 0 0; color: var(--muted); font-size: 13.5px; line-height: 1.45; }
 .prog p b { color: var(--ink); }
 /* Rang: Kanji im Ring, der Ring füllt sich bis zum nächsten Rang. Farbe steigt mit: grau, grün, gold, rot */
-.prog, .ladder li { --rc: #A3A8C2; }
-.prog.rt5, .ladder li.rt5 { --rc: #7CB4F0; } .prog.rt6, .ladder li.rt6 { --rc: #FF3B3B; } .prog.rt1, .ladder li.rt1 { --rc: #5FD3A6; } .prog.rt2, .ladder li.rt2 { --rc: #F2C14E; } .prog.rt3, .ladder li.rt3 { --rc: #FF8A3D; } .prog.rt4, .ladder li.rt4 { --rc: #FF3B3B; } /* feste Farben, auch im Priscilla-Modus */
+.prog, .ladder li, .frk { --rc: #A3A8C2; }
+.prog.rt5, .ladder li.rt5, .frk.rt5 { --rc: #7CB4F0; } .prog.rt6, .ladder li.rt6, .frk.rt6 { --rc: #FF3B3B; } .prog.rt1, .ladder li.rt1, .frk.rt1 { --rc: #5FD3A6; } .prog.rt2, .ladder li.rt2, .frk.rt2 { --rc: #F2C14E; } .prog.rt3, .ladder li.rt3, .frk.rt3 { --rc: #FF8A3D; } .prog.rt4, .ladder li.rt4, .frk.rt4 { --rc: #FF3B3B; } /* feste Farben, auch im Priscilla-Modus */
 .prog .ring .kj { position: absolute; inset: 0; display: grid; place-items: center; font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
   font-weight: 700; font-size: 20px; line-height: 1.05; writing-mode: vertical-rl; color: var(--rc); }
 .prog .ring .kj.k1 { font-size: 30px; } .prog .ring .kj.k3 { font-size: 15px; }
@@ -559,12 +559,12 @@ html.prisc .meta .neu { color: #2A0A18; }
 html.prisc .neubar { background: #3A1A2A; border-color: #FF6FA8; color: #FFD3E6; }
 html.prisc .neubar button { background: #FF9CC8; color: #2A0A18; }
 /* Liebes-Ränge: Grau (Single) → Flieder → Rosa → Koralle → Rot → Gold für die Herzkönigin */
-html.prisc .prog.rt0, html.prisc .ladder li.rt0 { --rc: #A3A8C2; }
-html.prisc .prog.rt5, html.prisc .ladder li.rt5 { --rc: #B9A7EB; }
-html.prisc .prog.rt1, html.prisc .ladder li.rt1 { --rc: #FF9CC8; }
-html.prisc .prog.rt2, html.prisc .ladder li.rt2 { --rc: #FF8B6E; }
-html.prisc .prog.rt3, html.prisc .ladder li.rt3 { --rc: #FF4D6D; }
-html.prisc .prog.rt4, html.prisc .ladder li.rt4 { --rc: #F6C453; }
+html.prisc .prog.rt0, html.prisc .ladder li.rt0, html.prisc .frk.rt0 { --rc: #A3A8C2; }
+html.prisc .prog.rt5, html.prisc .ladder li.rt5, html.prisc .frk.rt5 { --rc: #B9A7EB; }
+html.prisc .prog.rt1, html.prisc .ladder li.rt1, html.prisc .frk.rt1 { --rc: #FF9CC8; }
+html.prisc .prog.rt2, html.prisc .ladder li.rt2, html.prisc .frk.rt2 { --rc: #FF8B6E; }
+html.prisc .prog.rt3, html.prisc .ladder li.rt3, html.prisc .frk.rt3 { --rc: #FF4D6D; }
+html.prisc .prog.rt4, html.prisc .ladder li.rt4, html.prisc .frk.rt4 { --rc: #F6C453; }
 .ladder li.lock { opacity: .55; }
 /* Kein blauer Rahmen um die Knöpfe in den Fenstern */
 .ov-btn:focus { outline: none; }
@@ -797,6 +797,64 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
 .avr img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .acct.pic { background: none; border-color: transparent; padding: 0; }
 .lg-av { overflow: hidden; }
+/* ===== Freunde: Reihe im Profil, Freund hinzufügen, Profil eines Freundes ===== */
+.fr-sec { margin: 2px 0 18px; }
+.fr-sec[hidden] { display: none; }
+.fr-h { display: flex; align-items: baseline; justify-content: space-between; margin: 0 2px 10px; }
+.fr-h b { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.fr-h small { font-size: 13px; color: var(--muted); }
+.fr-row { display: flex; gap: 14px; overflow-x: auto; padding: 4px 2px 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.fr-row::-webkit-scrollbar { display: none; }
+.fr-it { display: grid; justify-items: center; gap: 6px; width: 66px; flex: none; font: inherit; font-size: 12px; font-weight: 700; color: var(--ink); background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.fr-it:active { transform: scale(.95); }
+.fr-nm { max-width: 66px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fr-add { width: auto; min-width: 66px; } .fr-add .fr-nm { max-width: none; }
+.fr-av { position: relative; width: 58px; height: 58px; }
+.fr-av .avr { box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--rc); }
+.avr.fr-l { display: grid; place-items: center; background: linear-gradient(135deg, #F05A50, #F47521); color: #1A0C0B; font-weight: 800; font-size: 22px; }
+html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color: #2A0A18; }
+.fr-kj { position: absolute; right: -4px; bottom: -3px; width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; background: var(--sheet); border: 1.5px solid var(--rc); color: var(--rc);
+  font: 700 12px/1 "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif; }
+.frk.rt6 .fr-kj { background: #0B0406; }
+.fr-add { color: var(--muted); }
+.fr-add .fr-av { border: 2px dashed var(--line); border-radius: 50%; display: grid; place-items: center; font-size: 26px; font-weight: 400; box-sizing: border-box; }
+.fr-msg { margin: 8px 2px 0; font-size: 13px; color: var(--muted); }
+.fr-msg[hidden] { display: none; }
+.fr-title { font-size: 19px; }
+.fr-form { display: grid; gap: 10px; }
+.fr-in { text-transform: uppercase; letter-spacing: .08em; font-size: 18px; text-align: center; padding: 14px; }
+.fr-in::placeholder { text-transform: none; letter-spacing: normal; font-size: 16px; }
+.fr-mine { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-top: 1px solid var(--line); padding-top: 14px; font-size: 14px; color: var(--muted); }
+.fr-mine b { color: var(--ink); font-family: ui-monospace, "SF Mono", Menlo, monospace; letter-spacing: .08em; margin-left: 6px; font-size: 15px; -webkit-user-select: all; user-select: all; }
+.fr-shr { display: inline-flex; align-items: center; gap: 6px; flex: none; font: inherit; font-size: 14px; font-weight: 700; color: var(--ink); background: var(--chip); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.fr-shr:active { filter: brightness(.9); }
+.fr-shr svg { width: 15px; height: 15px; }
+.fr-err { margin: -4px 0 0; font-size: 13.5px; color: var(--warn); text-align: center; }
+.fr-err[hidden] { display: none; }
+.fp-top { display: grid; justify-items: center; gap: 3px; padding-top: 4px; }
+#frCard { position: relative; }
+.fp-x { position: absolute; top: 12px; right: 12px; z-index: 1; }
+.fp-av { position: relative; width: 92px; height: 92px; }
+.fp-av .avr { box-shadow: 0 0 0 3px var(--sheet), 0 0 0 6px var(--rc); }
+.fp-av .avr.fr-l { font-size: 34px; }
+.fp-av .fr-kj { width: 30px; height: 30px; font-size: 16px; border-radius: 9px; right: -6px; bottom: -4px; }
+.fp-name { font-size: 22px; font-weight: 800; color: var(--ink); margin-top: 8px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fp-rank { font-size: 14px; font-weight: 700; color: var(--rc); }
+.fp-rank small { color: var(--muted); font-weight: 600; font-size: 14px; }
+.fp-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--line); padding-top: 12px; text-align: center; }
+.fp-stats > div { min-width: 0; padding: 0 4px; }
+.fp-stats > div + div { border-left: 1px solid var(--line); }
+.fp-stats b { display: block; font-size: 18px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fp-stats small { font-size: 12px; font-weight: 600; color: var(--muted); }
+.fp-cmp { display: flex; align-items: center; gap: 10px; background: var(--ok-soft); border: 1px solid rgba(95, 211, 166, .35); border-radius: 12px; padding: 10px 12px; font-size: 14px; color: var(--ink); }
+.fp-cmp b { color: var(--ok); }
+.fp-sec { font-size: 13px; font-weight: 700; color: var(--muted); margin: 2px 0 -2px; }
+.fp-none { margin: 0; font-size: 14px; color: var(--muted); text-align: center; }
+.fp-none[hidden] { display: none; }
+.fp-shelf { padding: 6px 4px 0 0; gap: 12px 8px; }
+.fp-shelf .tt { font-size: 11.5px; }
+.fp-rm { justify-self: center; margin-top: -2px; }
+.fp-rm.sure { color: var(--hanko); font-weight: 700; }
 .lg-av.pic, html.prisc .lg-av.pic, .acct.pic, html.prisc .acct.pic, html.prisc .acct.on.pic { background: none; border-color: transparent; }
 .pe-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px 8px; }
 #peBox { gap: 10px; }
@@ -853,7 +911,7 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V219</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V220</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -906,6 +964,11 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
       <p class="pfh-hint" id="pfHint" hidden></p>
       <div class="pfh-login" id="pfLogin" hidden><p>Melde dich an, dann ist deine Liste auf allen Geräten.</p><button type="button" id="pfLoginBtn">Anmelden</button></div>
       <div class="pfh-stats"><div><b id="pfSeen">0</b><small id="pfSeenL">Gesehen</small></div><div><b id="pfHrs">0</b><small id="pfHrsL">Stunden</small></div><button type="button" id="pfSaved"><b id="pfSavedN">0</b><small>Gemerkt</small></button></div>
+    </section>
+    <section class="fr-sec" id="frSec" hidden aria-labelledby="frHead">
+      <div class="fr-h"><b id="frHead">Freunde</b><small id="frN"></small></div>
+      <div class="fr-row" id="frRow"></div>
+      <p class="fr-msg" id="frMsg" hidden></p>
     </section>
     <p class="favg" id="favg" hidden></p>
     <div class="gbar" id="gbar" hidden><button type="button" class="gback" id="gback">← Alle Genres</button><h3 id="gtitle"></h3></div>
@@ -963,6 +1026,19 @@ html.prisc .lg-av { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); color
 </div>
 <div class="ov rankup" id="rankUp" hidden role="status" aria-live="polite">
   <div class="ru-card"><span class="ru-lbl" id="ruLbl">Neuer Rang</span><span class="ru-st" id="ruSt" aria-hidden="true"></span><b class="ru-name" id="ruName"></b><span class="ru-next" id="ruNext"></span><button type="button" class="ov-btn main" id="ruOk">OK</button></div>
+</div>
+<div class="ov" id="frAddOv" hidden>
+  <div class="ov-bg" data-close></div>
+  <div class="ov-card" role="dialog" aria-modal="true" aria-labelledby="frAddTitle">
+    <div class="ov-head"><b class="fr-title" id="frAddTitle">Freund hinzufügen</b><button type="button" class="inst-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
+    <form class="fr-form" id="frForm" autocomplete="off"><input class="lg-in fr-in" id="frIn" type="text" inputmode="text" autocapitalize="characters" autocorrect="off" spellcheck="false" placeholder="Code deines Freundes" aria-label="Code deines Freundes"><button type="submit" class="ov-btn main" id="frGo">Hinzufügen</button></form>
+    <p class="fr-err" id="frErr" role="alert" hidden></p>
+    <div class="fr-mine"><span>Dein Code <b id="frMyCode">…</b></span><button type="button" class="fr-shr" id="frSend"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10V1.8M5.2 4.4L8 1.6l2.8 2.8M4.6 6.8H3.5v7.2h9V6.8h-1.1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Schicken</button></div>
+  </div>
+</div>
+<div class="ov" id="frOv" hidden>
+  <div class="ov-bg" data-close></div>
+  <div class="ov-card" id="frCard" role="dialog" aria-modal="true" aria-labelledby="fpName"></div>
 </div>
 <div class="ov" id="shelfOv" hidden>
   <div class="ov-bg" data-close></div>
@@ -2348,7 +2424,7 @@ function checkRanks() {
 }
 function renderProg() {
   const box = $("#prog"), on = state.view === "seen";
-  box.hidden = !on; if (!on) return;
+  box.hidden = !on; if (!on) { const fs = $("#frSec"); if (fs) fs.hidden = true; return; }
   const list = items.filter(it => seen.has(it.id) && (!prisc || isRom(it))), n = list.length;
   // Der Ring ums Profilbild zeigt den Weg zum nächsten Rang, ganz oben ist er voll
   const R = ranks(), ri = rankIdx(n), r = R[ri], nx = R[ri + 1], kj = $("#progKj");
@@ -2380,6 +2456,7 @@ function paintMe() {
   $("#pfName").hidden = !me; if (me) $("#pfName").textContent = me.name;
   $("#pfEdit").hidden = !(fbOk && me); $("#pfEdit").classList.toggle("warn", err);
   $("#pfLogin").hidden = !(fbOk && !me);
+  try { frTick(me); } catch (e) {} // Konto-Teil noch nicht geladen
 }
 
 const MONATE = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
@@ -2513,6 +2590,7 @@ function closeShelf() {
   if (shelfEl) { const x = shelfEl.querySelector(".sclose"); if (x) x.remove(); }
   if (shelfEl && shelfPh) shelfPh.replaceWith(shelfEl);
   shelfEl = shelfPh = null; shelfOv.hidden = true;
+  try { if (!frOv.hidden && frCur) frShow(frCur); } catch (e) {}
 }
 $("#shelf").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li) openShelf(li.dataset.id); });
 $("#shelf").addEventListener("keydown", e => { const li = e.target.closest("li[data-id]"); if (li && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openShelf(li.dataset.id); } });
@@ -3024,7 +3102,7 @@ function fbLoad() {
     fb = { U, F, auth, db: F.getFirestore(app) };
     U.onAuthStateChanged(auth, u => {
       user = u || null; authKnown = true;
-      if (!user && acct.uid) { acct = {}; saveAcct(); } // woanders abgemeldet
+      if (!user && acct.uid) { acct = {}; saveAcct(); frClear(); } // woanders abgemeldet
       acctUi();
       if (user) acctSync();
     });
@@ -3114,9 +3192,10 @@ async function acctSyncRun() {
       await fb.F.setDoc(ref(), { seen: outSeen, saved: outSaved, ver, at: Date.now() });
     }
     if (!user || user.uid !== uid) throw 0; // inzwischen abgemeldet
-    acct = { uid, ver, dirty: gen !== g, base: { seen: outSeen, saved: outSaved }, name: nameOf(user), email: user.email || "", av: avOf(user) }; saveAcct();
+    acct = { uid, ver, dirty: gen !== g, base: { seen: outSeen, saved: outSaved }, name: nameOf(user), email: user.email || "", av: avOf(user), code: mine ? acct.code : undefined, prof: mine ? acct.prof : undefined }; saveAcct();
     syncSt = "ok"; syncAt = Date.now();
     if (gen !== g) again = true;
+    profPush(); // Profil für Freunde (Name, Bild, Gesehen) – ohne Freunde-Regeln schlägt das still fehl
   } catch (e) {
     if (e !== 0) { syncSt = "err"; retryT = setTimeout(() => { if (acct.dirty) acctSync(); }, 30000); }
   }
@@ -3236,6 +3315,7 @@ $("#peSave").addEventListener("click", () => lgRun(async ({ U }) => {
   if (peSel !== avOf(user)) upd.photoURL = url || ""; // leer = kein Bild
   if (Object.keys(upd).length) await U.updateProfile(user, upd);
   acct.name = nameOf(user); acct.email = user.email || ""; acct.av = avOf(user); saveAcct();
+  profPush();
   lgEditing = false; acctUi();
   if (peNew) closeAcct();
 }));
@@ -3311,11 +3391,206 @@ $("#lgForgot").addEventListener("click", () => { lgReset = true; lgSent = false;
 $("#lgLogout").addEventListener("click", () => lgRun(async ({ U, auth }) => {
   if (user) { await acctSync(); if (acct.dirty && user) await acctSync(); } // laufende Sicherung abwarten, dann Letztes sichern
   clearTimeout(pushT); clearTimeout(retryT);
-  await U.signOut(auth); acct = {}; saveAcct(); syncSt = ""; lgEditing = false; choice = null; firstPick = ""; acctUi();
+  await U.signOut(auth); acct = {}; saveAcct(); frClear(); syncSt = ""; lgEditing = false; choice = null; firstPick = ""; acctUi();
 }));
 // Beim Zurückkommen in die App kurz nach neuen Daten vom anderen Gerät schauen
-document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && user && (acct.dirty || Date.now() - lastPull > 60000)) { refreshUser(); acctSync(); } });
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && user && (acct.dirty || Date.now() - lastPull > 60000)) { refreshUser(); acctSync(); } if (document.visibilityState === "visible" && user && state.view === "seen") frLoad(); });
 window.addEventListener("online", () => { if (user && acct.dirty) acctSync(); });
+// ===== Freunde: per Code hinzufügen, Profil ansehen, vergleichen =====
+// Firestore: profiles/{uid} = Name, Bild, Gesehen (lesen dürfen nur Freunde) · codes/{CODE} = uid · friends/{uid}/list/{freund}
+const KEY_FR = "cr-top100-friends";
+let friends = acct.uid ? load(KEY_FR, []) : [];
+if (!Array.isArray(friends)) friends = [];
+let frAt = 0, frBusy = false, frErrSt = "", frCur = "", frAll = false, frSig = "";
+const frOv = $("#frOv"), frAddOv = $("#frAddOv");
+const CODE_AB = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"; // ohne 0/O und 1/I, damit man sich nicht vertippt
+const fmtCode = c => c ? c.slice(0, 4) + "-" + c.slice(4) : "";
+const profRef = uid => fb.F.doc(fb.db, "profiles", uid);
+function frClear() { friends = []; store(KEY_FR, []); frAt = 0; frErrSt = ""; frSig = ""; if (frOv) { frOv.hidden = true; frAddOv.hidden = true; } }
+// Eigenes Profil für Freunde sichern, nur wenn sich etwas geändert hat
+async function profPush() {
+  if (!user || !fb) return;
+  const uid = user.uid, me = { name: nameOf(user).slice(0, 20), av: avOf(user), seen: [...seen].sort() };
+  const sig = JSON.stringify(me);
+  if (acct.uid === uid && acct.prof === sig) return;
+  try {
+    await fb.F.setDoc(profRef(uid), { ...me, at: Date.now() }, { merge: true });
+    if (user && user.uid === uid && acct.uid === uid) { acct.prof = sig; saveAcct(); }
+  } catch (e) { /* z. B. Regeln noch nicht eingerichtet */ }
+}
+// Eigener Code: einmal erzeugen (8 Zeichen, zufällig), im Konto und im Profil merken
+async function myCode() {
+  if (acct.code) return acct.code;
+  const uid = user.uid;
+  try { const s = await fb.F.getDoc(profRef(uid)); const c = s.exists() && s.data().code; if (typeof c === "string" && /^[0-9A-Z]{8}$/.test(c)) { acct.code = c; saveAcct(); return c; } } catch (e) { if (e && e.code === "permission-denied") throw e; }
+  for (let t = 0; t < 6; t++) {
+    const c = [...crypto.getRandomValues(new Uint8Array(8))].map(x => CODE_AB[x % 32]).join("");
+    try { await fb.F.setDoc(fb.F.doc(fb.db, "codes", c), { uid }); }
+    catch (e) { if (e && e.code === "permission-denied" && t < 5) continue; throw e; } // Code schon vergeben: neuen würfeln
+    await fb.F.setDoc(profRef(uid), { code: c }, { merge: true });
+    if (user && user.uid === uid) { acct.code = c; saveAcct(); }
+    return c;
+  }
+  throw new Error("code");
+}
+// Freunde und ihre Profile holen (höchstens alle 30 Sekunden, außer erzwungen)
+async function frLoad(force) {
+  if (!user || !fb || frBusy || (!force && Date.now() - frAt < 30000)) return;
+  frBusy = true; const uid = user.uid;
+  try {
+    const qs = await fb.F.getDocs(fb.F.collection(fb.db, "friends", uid, "list"));
+    const out = [];
+    await Promise.all(qs.docs.map(async d => {
+      try {
+        const s = await fb.F.getDoc(profRef(d.id)); if (!s.exists()) return;
+        const x = s.data();
+        out.push({ uid: d.id, name: String(x.name || "Freund").slice(0, 20), av: AV_IMG[x.av] ? x.av : "", seen: Array.isArray(x.seen) ? x.seen.filter(id => typeof id === "string").slice(0, 2000) : [] });
+      } catch (e) { /* Freund hat dich entfernt oder kein Profil */ }
+    }));
+    if (!user || user.uid !== uid) return;
+    out.sort((a, b) => a.name.localeCompare(b.name, "de"));
+    friends = out; store(KEY_FR, friends); frAt = Date.now(); frErrSt = "";
+  } catch (e) { frErrSt = e && e.code === "permission-denied" ? "rules" : "net"; }
+  finally { frBusy = false; }
+  frRender();
+  if (!frOv.hidden && frCur) frShow(frCur);
+}
+// Rang, Zahl und Liste eines Freundes – im Priscilla-Modus nur Romanzen
+function frStat(f) {
+  const s = new Set(f.seen), list = byMine.filter(it => s.has(it.id) && (!prisc || isRom(it)));
+  const R = ranks(), r = R[rankIdx(list.length)];
+  return { list, n: list.length, kj: r[1], rank: r[3], rt: r[4] };
+}
+const frFace = f => f.av ? avImg(f.av) : `<span class="avr fr-l">${esc(([...f.name][0] || "?").toUpperCase())}</span>`;
+function frTick(me) {
+  const sec = $("#frSec"), on = !!me && FB_HOST && state.view === "seen";
+  sec.hidden = !on;
+  if (!on) return;
+  frRender();
+  if (user) frLoad();
+}
+function frRender() {
+  const sig = JSON.stringify([prisc, frErrSt, friends.map(f => [f.uid, f.name, f.av, frStat(f).n])]);
+  if (sig === frSig) return;
+  frSig = sig;
+  $("#frN").textContent = friends.length ? String(friends.length) : "";
+  $("#frRow").innerHTML = friends.map(f => { const st = frStat(f);
+    return `<button type="button" class="fr-it frk rt${st.rt}" data-uid="${esc(f.uid)}" aria-label="${esc(f.name)}, ${esc(st.rank)}"><span class="fr-av">${frFace(f)}<span class="fr-kj" aria-hidden="true">${st.kj}</span></span><span class="fr-nm">${esc(f.name)}</span></button>`;
+  }).join("") + `<button type="button" class="fr-it fr-add" id="frAddBtn"><span class="fr-av" aria-hidden="true">+</span><span class="fr-nm">Hinzufügen</span></button>`;
+  const m = $("#frMsg");
+  m.textContent = frErrSt === "rules" ? "Freunde sind noch nicht eingerichtet: In Firebase fehlen die neuen Regeln."
+    : !friends.length ? "Füge Freunde hinzu und vergleicht, was ihr gesehen habt." : "";
+  m.hidden = !m.textContent;
+}
+// Profil eines Freundes
+function frShow(uid) {
+  const f = friends.find(x => x.uid === uid); if (!f) { frOv.hidden = true; frCur = ""; return; }
+  if (frCur !== uid) frAll = false;
+  frCur = uid;
+  const st = frStat(f), mineN = st.list.filter(it => seen.has(it.id)).length, forMe = st.list.filter(it => !seen.has(it.id));
+  const hrs = Math.round(st.list.reduce((a, it) => a + minutesOf(it), 0) / 60);
+  const cnt = {};
+  st.list.forEach(it => { let g = MAIN_G[it.key] || it.genres[0]; if (prisc && g === "Romance") g = it.genres.find(x => x !== "Romance"); if (g) cnt[g] = (cnt[g] || 0) + 1; });
+  const fav = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0];
+  const word = prisc ? "Romanzen" : "gesehen", show = frAll ? st.list : forMe;
+  $("#frCard").innerHTML = `
+    <button type="button" class="inst-x fp-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+    <div class="fp-top frk rt${st.rt}"><span class="fp-av">${frFace(f)}<span class="fr-kj" aria-hidden="true">${st.kj}</span></span>
+      <b class="fp-name" id="fpName">${esc(f.name)}</b><div class="fp-rank">${esc(st.rank)} <small>· ${st.n} ${word}</small></div></div>
+    <div class="fp-stats"><div><b>${st.n}</b><small>${prisc ? "Romanzen" : "Gesehen"}</small></div><div><b>${hrs}</b><small>Stunden</small></div><div><b>${fav ? esc(fav[0]) : "–"}</b><small>Lieblingsgenre</small></div></div>
+    <div class="fp-cmp"><span aria-hidden="true">🤝</span><span>${mineN ? `Ihr habt <b>${mineN} gleiche</b> gesehen` : "Ihr habt noch keine gleichen gesehen"}</span></div>
+    <div class="fp-sec">${frAll ? `Alles von ${esc(f.name)} · ${st.n}` : `Hat ${esc(f.name)} gesehen, du noch nicht · ${forMe.length}`}</div>
+    <p class="fp-none"${show.length ? " hidden" : ""}>${frAll ? `${esc(f.name)} hat noch nichts als gesehen markiert.` : st.n ? `Du hast schon alles gesehen, was ${esc(f.name)} gesehen hat 🎉` : `${esc(f.name)} hat noch nichts als gesehen markiert.`}</p>
+    <ul class="shelf fp-shelf" id="fpShelf"></ul>
+    <div class="ov-row"><button type="button" class="ov-btn" id="fpAll"${st.n ? "" : " hidden"}>${frAll ? "Nur neue für dich" : `Alle ${st.n} ansehen`}</button><button type="button" class="ov-btn main" data-close>Schließen</button></div>
+    <button type="button" class="lg-link fp-rm" id="fpRm">Als Freund entfernen</button>`;
+  if (!st.n) $("#frCard .ov-row").style.gridTemplateColumns = "1fr";
+  const box = $("#fpShelf");
+  show.forEach((it, i) => box.append(shelfLi(it, null, i < 9)));
+  frOv.hidden = false;
+}
+async function frRemove(uid) {
+  if (!user) return;
+  const me = user.uid;
+  try {
+    await fb.F.deleteDoc(fb.F.doc(fb.db, "friends", me, "list", uid));
+    await fb.F.deleteDoc(fb.F.doc(fb.db, "friends", uid, "list", me));
+    friends = friends.filter(f => f.uid !== uid); store(KEY_FR, friends);
+    frOv.hidden = true; frCur = ""; frRender(); toast("Freund entfernt.");
+  } catch (e) { toast("Das hat nicht geklappt. Versuch es nochmal."); }
+}
+$("#frRow").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.id === "frAddBtn") { frOpenAdd(); return; }
+  if (b.dataset.uid) frShow(b.dataset.uid);
+});
+let rmT = 0;
+frOv.addEventListener("click", e => {
+  if (e.target.closest("[data-close]")) { frOv.hidden = true; frCur = ""; return; }
+  const li = e.target.closest("li[data-id]"); if (li) { openShelf(li.dataset.id); return; }
+  if (e.target.closest("#fpAll")) { frAll = !frAll; frShow(frCur); $("#frCard").scrollTop = 0; return; }
+  const rm = e.target.closest("#fpRm");
+  if (rm) {
+    if (!rm.classList.contains("sure")) { rm.classList.add("sure"); rm.textContent = "Wirklich entfernen? Nochmal tippen"; clearTimeout(rmT); rmT = setTimeout(() => { rm.classList.remove("sure"); rm.textContent = "Als Freund entfernen"; }, 4000); return; }
+    clearTimeout(rmT); frRemove(frCur);
+  }
+});
+frOv.addEventListener("keydown", e => { const li = e.target.closest("li[data-id]"); if (li && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openShelf(li.dataset.id); } });
+frOv.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false });
+// Freund hinzufügen
+function frErr(t) { const m = $("#frErr"); m.hidden = !t; m.textContent = t || ""; }
+async function frOpenAdd() {
+  frErr(""); $("#frIn").value = ""; frAddOv.hidden = false;
+  const c = $("#frMyCode");
+  if (acct.code) { c.textContent = fmtCode(acct.code); return; }
+  c.textContent = "…";
+  try { await fbLoad(); if (!user) { c.textContent = "–"; return; } c.textContent = fmtCode(await myCode()); }
+  catch (e) { c.textContent = "–"; frErr(e && e.code === "permission-denied" ? "Freunde sind noch nicht eingerichtet: In Firebase fehlen die neuen Regeln." : "Keine Verbindung. Versuch es gleich nochmal."); }
+}
+frAddOv.addEventListener("click", e => { if (e.target.closest("[data-close]")) { frAddOv.hidden = true; document.activeElement && document.activeElement.blur && document.activeElement.blur(); } });
+frAddOv.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false });
+$("#frSend").addEventListener("click", () => {
+  if (!acct.code) return;
+  shareText(`Füg mich in der Anime-App als Freund hinzu 🤝\nProfil → Freunde → + → Code eingeben:\n*${fmtCode(acct.code)}*`, "Code kopiert. Jetzt in WhatsApp einfügen.");
+});
+// Code im Text finden: getippt („7k4q x2pm“) oder die ganze WhatsApp-Nachricht eingefügt
+const CODE_CH = "[2-9A-HJ-NP-Z]";
+function codeIn(t) {
+  t = String(t || "").toUpperCase();
+  const m = new RegExp(`(?:^|[^0-9A-Z])(${CODE_CH}{4})[-\\s]?(${CODE_CH}{4})(?![0-9A-Z])`).exec(t);
+  return m ? m[1] + m[2] : "";
+}
+$("#frIn").addEventListener("input", () => {
+  const i = $("#frIn"), c = codeIn(i.value);
+  if (c && i.value !== fmtCode(c) && i.value.replace(/[^0-9A-Z]/gi, "").length > 8) i.value = fmtCode(c); // ganze Nachricht eingefügt: nur der Code bleibt stehen
+  frErr("");
+});
+$("#frForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const c = codeIn($("#frIn").value);
+  if (!c) { frErr("Das ist kein Code. Ein Code sieht so aus: 7K4Q-X2PM."); return; }
+  $("#frIn").value = fmtCode(c);
+  if (c === acct.code) { frErr("Das ist dein eigener Code."); return; }
+  const go = $("#frGo"); go.disabled = true; frErr("");
+  try {
+    await fbLoad(); if (!user) throw { code: "auth" };
+    const me = user.uid, s = await fb.F.getDoc(fb.F.doc(fb.db, "codes", c));
+    if (!s.exists()) { frErr("Diesen Code gibt es nicht. Schau nochmal genau hin."); return; }
+    const fid = s.data().uid;
+    if (fid === me) { frErr("Das ist dein eigener Code."); return; }
+    if (friends.some(f => f.uid === fid)) { frErr("Ihr seid schon Freunde."); return; }
+    await fb.F.setDoc(fb.F.doc(fb.db, "friends", me, "list", fid), { at: Date.now() });
+    await fb.F.setDoc(fb.F.doc(fb.db, "friends", fid, "list", me), { at: Date.now() });
+    acct.prof = ""; await profPush(); // sicher sein, dass der Freund dein Profil sehen kann
+    await frLoad(true);
+    const f = friends.find(x => x.uid === fid);
+    frAddOv.hidden = true; document.activeElement && document.activeElement.blur && document.activeElement.blur();
+    toast(f ? `${f.name} ist jetzt dein Freund.` : "Freund hinzugefügt.");
+  } catch (err) {
+    frErr(err && err.code === "permission-denied" ? "Freunde sind noch nicht eingerichtet: In Firebase fehlen die neuen Regeln." : err && err.code === "auth" ? "Bitte melde dich zuerst an." : "Keine Verbindung. Versuch es gleich nochmal.");
+  } finally { go.disabled = false; }
+});
+document.addEventListener("keydown", e => { if (e.key !== "Escape") return; if (!frAddOv.hidden) frAddOv.hidden = true; else if (!frOv.hidden && shelfOv.hidden) { frOv.hidden = true; frCur = ""; } });
 acctUi();
 // Wer schon angemeldet war: Firebase erst kurz nach dem Start laden, damit die Seite nicht langsamer öffnet
 if (FB_HOST && acct.uid) setTimeout(() => fbLoad().catch(() => { syncSt = "err"; acctUi(); }), 1500);
