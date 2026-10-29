@@ -981,7 +981,7 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V230</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V231</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -2110,6 +2110,23 @@ if (SAFARI_PHONE) {
   document.addEventListener("touchend", e => { if (isField(e.target)) setTimeout(() => { if (!isField(document.activeElement)) kbLater(); }, 450); }, { passive: true, capture: true });
   document.addEventListener("focusin", e => { if (isField(e.target)) kbHold(true); });
 }
+// iPhone: Auch Felder in Fenstern (Anmelden, Freundescode, Name) schob iOS beim Antippen hoch und beim Verlassen wieder runter.
+// Deshalb wie beim Suchfeld: Fokus selbst setzen, ohne zu rollen. Nur bei einem echten Tipp und nur, wenn das Feld über der Tastatur liegt.
+if (SC) (() => {
+  const lim = document.documentElement.classList.contains("standalone") ? 0.5 : 0.6; let t0 = null;
+  document.addEventListener("touchstart", e => {
+    const t = e.touches[0], el = e.target;
+    t0 = t && isField(el) && el.closest(".ov") ? { x: t.clientX, y: t.clientY, el } : null;
+  }, { passive: true, capture: true });
+  document.addEventListener("touchend", e => {
+    const t = e.changedTouches[0], el = t0 && t0.el;
+    if (!el || !t || e.target !== el || document.activeElement === el) return;
+    if (Math.abs(t.clientX - t0.x) > 10 || Math.abs(t.clientY - t0.y) > 10) return;
+    if (el.getBoundingClientRect().bottom > innerHeight * lim) return;
+    e.preventDefault();
+    el.focus({ preventScroll: true });
+  }, { passive: false, capture: true });
+})();
 document.addEventListener("focusout", e => {
   if (!e.target.matches("input, textarea")) return;
   typing = false;
