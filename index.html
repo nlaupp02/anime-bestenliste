@@ -236,7 +236,12 @@ main { padding-block: 18px calc(max(16px, env(safe-area-inset-bottom, 0px)) + 76
 .foot { gap: 6px; container-type: inline-size; }
 @container (max-width: 312px) { .btn.cr .crl { display: none; } }
 @container (max-width: 324px) { .is-seen .btn.cr .crl { display: none; } }
+@container (max-width: 290px) { .card:not(.is-seen) .btn.cr .crv { display: none; } }
+@container (max-width: 242px) { .btn.cr .crv { display: none; } }
 @supports not (container-type: inline-size) { @media (max-width: 389px) { .btn.cr .crl { display: none; } } }
+/* Sicherheitsnetz: der Crunchyroll-Knopf bricht nie in zwei Zeilen um und schiebt nichts aus der Karte, im Notfall wird der Text gekürzt */
+.foot .btn.cr { min-width: 0; flex: 0 1 auto; white-space: nowrap; }
+.foot .btn.cr > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 /* Handy: alle Knöpfe gleichmäßig verteilt, gleiche Abstände. iPad und PC (viel breitere Karten): Crunchyroll und Teilen links, Gesehen und Merken rechts */
 @media (max-width: 500px) { .foot { justify-content: space-between; } .foot .btn.shr { margin-right: 0; } }
 /* Abgehakt: der Gesehen-Knopf zeigt „✓ Gesehen“ mit Text (das Lesezeichen ist dann ausgeblendet, Platz ist da) */
@@ -332,13 +337,7 @@ html.covers .cv { display: block; grid-column: 1; grid-row: 1 / span 4; align-se
 /* Große Ansicht aus dem Profil: nicht abgedunkelt wie in der Liste, und der Gesehen-Knopf mit Text */
 #shelfOne .card.is-seen { background: var(--sheet); }
 #shelfOne .card.is-seen h2, #shelfOne .card.is-seen .desc { color: inherit; }
-#shelfOne .foot .btn.seen { width: auto; padding: 0 12px; gap: 7px; font-weight: 700; }
-#shelfOne .btn.seen .bt { position: static; width: auto; height: auto; overflow: visible; clip: auto; }
-/* Ganz schmal auch im Fenster: „Gesehen“ nur als Haken */
-@container (max-width: 303px) {
-  #shelfOne .foot .btn.seen { width: 42px; padding: 0; }
-  #shelfOne .foot .btn.seen .bt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-}
+/* Knöpfe im Fenster genau wie in der Liste: noch nicht gesehen = nur Symbole, abgehakt = „✓ Gesehen“ */
 #shelfOne .card h2 .sub { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .empty::before { content: ""; display: block; width: 44px; height: 44px; margin: 0 auto 12px; background: currentColor; opacity: .45;
   -webkit-mask: var(--ic) center / contain no-repeat; mask: var(--ic) center / contain no-repeat; }
@@ -469,7 +468,7 @@ html:not(.prisc) .card.pick { outline-color: #F47521; } /* Orange wie „Crunchy
 }
 .totop svg { width: 18px; height: 18px; }
 /* Fortschritt im Reiter Gesehen */
-.prog { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 14px; align-items: center; max-width: 520px; background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 14px; }
+.prog { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 14px; align-items: center; max-width: 520px; background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 24px; }
 .prog .ring { position: relative; width: 84px; height: 84px; }
 .prog .ring svg { width: 84px; height: 84px; display: block; }
 .prog .ring circle:last-child { transition: stroke-dashoffset .6s ease; }
@@ -606,8 +605,8 @@ html.prisc .prog.rt4, html.prisc .ladder li.rt4, html.prisc .frk.rt4 { --rc: #F6
 .rankup.rt5 .ru-card { --rc: #7CB4F0; } .rankup.rt6 .ru-card { --rc: #FF3B3B; } .rankup.rt1 .ru-card { --rc: #5FD3A6; } .rankup.rt2 .ru-card { --rc: #F2C14E; } .rankup.rt3 .ru-card { --rc: #FF8A3D; } .rankup.rt4 .ru-card { --rc: #FF3B3B; }
 html.prisc .rankup.rt0 .ru-card { --rc: #A3A8C2; } html.prisc .rankup.rt5 .ru-card { --rc: #B9A7EB; } html.prisc .rankup.rt1 .ru-card { --rc: #FF9CC8; } html.prisc .rankup.rt2 .ru-card { --rc: #FF8B6E; }
 html.prisc .rankup.rt3 .ru-card { --rc: #FF4D6D; } html.prisc .rankup.rt4 .ru-card { --rc: #F6C453; }
-/* „Entfernen“ (nicht mehr gesehen): Gold wie „Speichern“ */
-html:not(.prisc) #seenAskOk { background: linear-gradient(100deg, #F05A50, #F47521); border-color: transparent; color: var(--on-hanko); }
+/* „Entfernen“ (nicht mehr gesehen, Freund entfernen): gleiche Farbe */
+html:not(.prisc) #seenAskOk, html:not(.prisc) #frAskOk { background: linear-gradient(100deg, #F05A50, #F47521); border-color: transparent; color: var(--on-hanko); }
 /* Ränge-Fenster: „OK“ ruhig grau wie „Schließen“ im Regal */
 #rankSheet .ov-btn.main, #ruOk, #instSheet .ov-btn.main, #whySheet .ov-btn.main { background: var(--chip); border-color: var(--line); color: var(--ink); }
 /* Abstände (App und Safari): keine Trennlinie über der Liste, schmale Priscilla-Leiste, etwas mehr Luft zwischen den Karten */
@@ -868,14 +867,12 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
 .fp-seg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .fp-seg button { display: grid; gap: 1px; justify-items: center; font: inherit; color: var(--muted); background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 8px 4px 7px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .fp-seg button b { font-size: 19px; font-weight: 800; color: var(--ink); line-height: 1.1; }
-.fp-seg button span { font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+.fp-seg button span { max-width: 100%; font-size: 12.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fp-seg button[aria-selected="true"] { border-color: var(--gold); background: rgba(242, 193, 78, .1); }
 html.prisc .fp-seg button[aria-selected="true"] { background: rgba(255, 156, 200, .1); }
 .fp-seg button[aria-selected="true"] b, .fp-seg button[aria-selected="true"] span { color: var(--gold); }
-.fp-exp { margin: -4px 2px -8px; font-size: 13px; color: var(--muted); }
-.fp-exp[hidden] { display: none; }
 /* Cover in einer Reihe zum Wischen statt einer langen Liste */
-.shelf.fp-row { display: flex; gap: 10px; overflow-x: auto; overscroll-behavior-x: contain; padding: 8px 6px 2px 0; margin: -6px 0 0; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.shelf.fp-row { display: flex; gap: 10px; overflow-x: auto; overscroll-behavior-x: contain; padding: 6px 6px 2px 0; margin: 0; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 .shelf.fp-row::-webkit-scrollbar { display: none; }
 .shelf.fp-row[hidden] { display: none; }
 .shelf.fp-row li { flex: none; width: 92px; }
@@ -883,7 +880,6 @@ html.prisc .fp-seg button[aria-selected="true"] { background: rgba(255, 156, 200
 .fp-none { margin: 4px 0; font-size: 14px; color: var(--muted); text-align: center; }
 .fp-none[hidden] { display: none; }
 .fp-rm { justify-self: center; margin-top: -4px; }
-.fp-rm.sure { color: var(--hanko); font-weight: 700; }
 .lg-av.pic, html.prisc .lg-av.pic, .acct.pic, html.prisc .acct.pic, html.prisc .acct.on.pic { background: none; border-color: transparent; }
 .pe-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px 8px; }
 #peBox { gap: 10px; }
@@ -940,7 +936,7 @@ html.prisc .fp-seg button[aria-selected="true"] { background: rgba(255, 156, 200
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V223</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V224</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1084,6 +1080,14 @@ html.prisc .fp-seg button[aria-selected="true"] { background: rgba(255, 156, 200
     <b id="seenAskTitle">Nicht mehr als gesehen markieren?</b>
     <p id="seenAskText"></p>
     <div class="ov-row"><button type="button" class="ov-btn" data-close>Abbrechen</button><button type="button" class="ov-btn danger" id="seenAskOk">Entfernen</button></div>
+  </div>
+</div>
+<div class="ov" id="frAsk" hidden>
+  <div class="ov-bg" data-close></div>
+  <div class="ov-card ask" role="alertdialog" aria-modal="true" aria-labelledby="frAskTitle" aria-describedby="frAskText">
+    <b id="frAskTitle">Als Freund entfernen?</b>
+    <p id="frAskText">Ihr seht dann nicht mehr, was der andere gesehen hat. Mit dem Code könnt ihr euch jederzeit wieder hinzufügen.</p>
+    <div class="ov-row"><button type="button" class="ov-btn" data-close>Abbrechen</button><button type="button" class="ov-btn danger" id="frAskOk">Entfernen</button></div>
   </div>
 </div>
 <div class="ov" id="rankSheet" hidden>
@@ -2098,7 +2102,7 @@ function card(it) {
       ${it.note ? `<p class="note"><b>Tipp:</b> ${esc(it.note)}</p>` : ""}
       </div>
       <div class="foot">
-        <a class="btn cr" href="${crUrl(it)}" target="_blank" rel="noopener">${ICON.out}<span><span class="crl">Auf </span>Crunchyroll ${crLinkOf(it) ? "öffnen" : "suchen"}</span></a>
+        <a class="btn cr" href="${crUrl(it)}" target="_blank" rel="noopener">${ICON.out}<span><span class="crl">Auf </span>Crunchyroll<span class="crv"> ${crLinkOf(it) ? "öffnen" : "suchen"}</span></span></a>
         <button type="button" class="btn shr" data-id="${it.id}" data-act="share" aria-label="Teilen">${ICON.share}</button>
         <button type="button" class="btn seen" id="v-${it.id}" data-id="${it.id}" data-act="seen" aria-pressed="${isSeen}">${ICON.seen}<span class="bt">${isSeen ? "Gesehen" : "Schon gesehen"}</span></button>
         <button type="button" class="btn save" id="s-${it.id}" data-id="${it.id}" data-act="save" aria-pressed="${isSaved}"${isSeen ? " hidden" : ""}>${ICON.save}<span class="bt">${isSaved ? "Gemerkt" : "Merken"}</span></button>
@@ -3523,7 +3527,7 @@ function frRender() {
 function frShow(uid) {
   const f = friends.find(x => x.uid === uid); if (!f) { frOv.hidden = true; frCur = ""; return; }
   const st = frStat(f), both = st.list.filter(it => seen.has(it.id)), forMe = st.list.filter(it => !seen.has(it.id));
-  // Neuer Freund geöffnet: mit „Für dich“ starten (oder der ersten Liste, in der etwas steht)
+  // Neuer Freund geöffnet: mit „Nur … gesehen“ starten (oder der ersten Liste, in der etwas steht)
   if (frCur !== uid || !frTab) frTab = forMe.length || !both.length ? "new" : "both";
   frCur = uid;
   const hrs = Math.round(st.list.reduce((a, it) => a + minutesOf(it), 0) / 60);
@@ -3532,15 +3536,14 @@ function frShow(uid) {
   const fav = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0];
   const lists = { new: forMe, both }, show = lists[frTab], nm = esc(f.name);
   const none = { new: st.n ? `Du hast schon alles gesehen, was ${nm} gesehen hat 🎉` : `${nm} hat noch nichts als gesehen markiert.`, both: "Ihr habt noch nichts Gleiches gesehen." }[frTab];
-  const says = { new: `Hat ${nm} gesehen, du noch nicht`, both: "Habt ihr beide gesehen" }[frTab];
+  const sn = esc(f.name.length > 11 ? f.name.slice(0, 10).trim() + "…" : f.name); // lange Namen kürzen, „gesehen“ bleibt immer sichtbar
   const tab = (k, t) => `<button type="button" role="tab" data-tab="${k}" aria-selected="${frTab === k}"><b>${lists[k].length}</b><span>${t}</span></button>`;
   $("#frCard").innerHTML = `
     <button type="button" class="inst-x fp-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     <div class="fp-head frk rt${st.rt}"><span class="fp-av">${frFace(f)}<span class="fr-kj" aria-hidden="true">${st.kj}</span></span>
       <div class="fp-who"><b class="fp-name" id="fpName">${nm}</b><div class="fp-rank">${esc(st.rank)} <small>· ${st.n} ${prisc ? "Romanzen" : "gesehen"}</small></div></div></div>
     <div class="fp-stats"><div><b>${st.n}</b><small>${prisc ? "Romanzen" : "Gesehen"}</small></div><div><b>${hrs}</b><small>Stunden</small></div><div><b>${fav ? esc(fav[0]) : "–"}</b><small>Lieblingsgenre</small></div></div>
-    <div class="fp-seg" role="tablist" aria-label="Listen">${tab("new", "Neu für dich")}${tab("both", "Ihr beide")}</div>
-    <p class="fp-exp"${show.length ? "" : " hidden"}>${says}</p>
+    <div class="fp-seg" role="tablist" aria-label="Listen">${tab("new", `Nur ${sn} gesehen`)}${tab("both", "Beide gesehen")}</div>
     <p class="fp-none"${show.length ? " hidden" : ""}>${none}</p>
     <ul class="shelf fp-row" id="fpShelf"${show.length ? "" : " hidden"}></ul>
     <button type="button" class="lg-link fp-rm" id="fpRm">Als Freund entfernen</button>`;
@@ -3565,18 +3568,23 @@ frListOv.addEventListener("click", e => {
   const b = e.target.closest("[data-uid]"); if (b) frShow(b.dataset.uid);
 });
 frListOv.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false });
-let rmT = 0;
+let rmUid = "";
+const frAsk = $("#frAsk");
 frOv.addEventListener("click", e => {
   if (e.target.closest("[data-close]")) { frOv.hidden = true; frCur = ""; return; }
   const li = e.target.closest("li[data-id]"); if (li) { openShelf(li.dataset.id); return; }
   const tb = e.target.closest("[data-tab]");
   if (tb) { frTab = tb.dataset.tab; frShow(frCur); const r = $("#fpShelf"); if (r) r.scrollLeft = 0; return; }
-  const rm = e.target.closest("#fpRm");
-  if (rm) {
-    if (!rm.classList.contains("sure")) { rm.classList.add("sure"); rm.textContent = "Wirklich entfernen? Nochmal tippen"; clearTimeout(rmT); rmT = setTimeout(() => { rm.classList.remove("sure"); rm.textContent = "Als Freund entfernen"; }, 4000); return; }
-    clearTimeout(rmT); frRemove(frCur);
+  if (e.target.closest("#fpRm")) {
+    const f = friends.find(x => x.uid === frCur); rmUid = frCur;
+    $("#frAskTitle").textContent = `${f ? f.name : "Freund"} als Freund entfernen?`;
+    frAsk.hidden = false; $("#frAskOk").focus({ preventScroll: true });
   }
 });
+const closeFrAsk = () => { frAsk.hidden = true; rmUid = ""; };
+frAsk.addEventListener("click", e => { if (e.target.closest("[data-close]")) closeFrAsk(); });
+frAsk.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false });
+$("#frAskOk").addEventListener("click", () => { const u = rmUid; closeFrAsk(); if (u) frRemove(u); });
 frOv.addEventListener("keydown", e => { const li = e.target.closest("li[data-id]"); if (li && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openShelf(li.dataset.id); } });
 frOv.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false });
 // Freund hinzufügen
@@ -3645,7 +3653,7 @@ $("#frForm").addEventListener("submit", async e => {
     frErr(err && err.code === "permission-denied" ? "Freunde sind noch nicht eingerichtet: In Firebase fehlen die neuen Regeln." : err && err.code === "auth" ? "Bitte melde dich zuerst an." : "Keine Verbindung. Versuch es gleich nochmal.");
   } finally { go.disabled = false; }
 });
-document.addEventListener("keydown", e => { if (e.key !== "Escape") return; if (!frAddOv.hidden) frAddOv.hidden = true; else if (!frOv.hidden && shelfOv.hidden) { frOv.hidden = true; frCur = ""; } else if (!frListOv.hidden) frListOv.hidden = true; });
+document.addEventListener("keydown", e => { if (e.key !== "Escape") return; if (!frAsk.hidden) closeFrAsk(); else if (!frAddOv.hidden) frAddOv.hidden = true; else if (!frOv.hidden && shelfOv.hidden) { frOv.hidden = true; frCur = ""; } else if (!frListOv.hidden) frListOv.hidden = true; });
 acctUi();
 // Wer schon angemeldet war: Firebase erst kurz nach dem Start laden, damit die Seite nicht langsamer öffnet
 if (FB_HOST && acct.uid) setTimeout(() => fbLoad().catch(() => { syncSt = "err"; acctUi(); }), 1500);
