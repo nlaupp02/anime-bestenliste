@@ -616,7 +616,7 @@ html.prisc .prog.rt4, html.prisc .ladder li.rt4, html.prisc .frk.rt4 { --rc: #F6
 html.prisc .rankup.rt0 .ru-card { --rc: #A3A8C2; } html.prisc .rankup.rt5 .ru-card { --rc: #B9A7EB; } html.prisc .rankup.rt1 .ru-card { --rc: #FF9CC8; } html.prisc .rankup.rt2 .ru-card { --rc: #FF8B6E; }
 html.prisc .rankup.rt3 .ru-card { --rc: #FF4D6D; } html.prisc .rankup.rt4 .ru-card { --rc: #F6C453; }
 /* „Entfernen“ (nicht mehr gesehen, Freund entfernen): gleiche Farbe */
-html:not(.prisc) #seenAskOk, html:not(.prisc) #frAskOk { background: linear-gradient(100deg, #F05A50, #F47521); border-color: transparent; color: var(--on-hanko); }
+html:not(.prisc) #seenAskOk, html:not(.prisc) #frAskOk, html:not(.prisc) #outAskOk { background: linear-gradient(100deg, #F05A50, #F47521); border-color: transparent; color: var(--on-hanko); }
 /* Ränge-Fenster: „OK“ ruhig grau wie „Schließen“ im Regal */
 #rankSheet .ov-btn.main, #ruOk, #instSheet .ov-btn.main, #whySheet .ov-btn.main { background: var(--chip); border-color: var(--line); color: var(--ink); }
 /* Abstände (App und Safari): keine Trennlinie über der Liste, schmale Priscilla-Leiste, etwas mehr Luft zwischen den Karten */
@@ -768,9 +768,8 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
 .app:not(.standalone) #sc > .wrap { padding-top: 200px; padding-bottom: 200px; }
 /* Safari beim Tippen: genau wie in der App aufgebaut (oben kein Platz, Seite bei 0), sieht gleich aus. So kann Safari
    die Seite für die Tastatur nicht hoch- und runterschieben (siehe kbHold im Skript) */
-html.kb.app:not(.standalone) #sc { bottom: -200px; }
-html.kb.app:not(.standalone) #sc > .wrap { padding-top: 0; }
-html.kb.app:not(.standalone) .ov { bottom: -200px; padding: 16px 16px 216px; }
+.app:not(.standalone) #sc.kb > .wrap { padding-top: 0; }
+.app:not(.standalone) .ov.kb { padding: 16px 16px 416px; }
 /* App: Auch unter dem Home-Balken unten zeigt das iPhone die Seite. Der Scrollbereich reicht deshalb dort hinunter. */
 .standalone #sc { bottom: -200px; }
 .standalone #sc > .wrap { padding-bottom: 200px; }
@@ -887,14 +886,16 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
 .fp-stats b { display: block; font-size: 17px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fp-stats small { font-size: 12px; font-weight: 600; color: var(--muted); }
 /* Zwei Kacheln mit großer Zahl: neu für dich, ihr beide – darunter ein Satz, was gerade zu sehen ist */
-.fp-seg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-.fp-seg button { display: grid; gap: 1px; justify-items: center; font: inherit; color: var(--muted); background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 8px 4px 7px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.fp-seg button b { font-size: 19px; font-weight: 800; color: var(--ink); line-height: 1.1; }
-.fp-seg button span { display: flex; justify-content: center; max-width: 100%; font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+/* Umschalter wie bei iPhone-Apps: „Gesehen von“ darüber, dann „Nur Max“ | „Euch beiden“, die Zahl als kleines Abzeichen */
+.fp-sw { display: grid; gap: 6px; min-width: 0; }
+.fp-lb { padding-left: 2px; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.fp-seg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); min-width: 0; padding: 3px; border-radius: 12px; background: var(--paper); border: 1px solid var(--line); }
+.fp-seg button { min-width: 0; display: flex; justify-content: center; align-items: center; gap: 6px; font: inherit; font-size: 13.5px; font-weight: 700; color: var(--muted); background: none; border: 0; border-radius: 9px; padding: 8px 6px; white-space: nowrap; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.fp-seg button span { min-width: 0; display: flex; }
 .fp-seg button span i { min-width: 0; font-style: normal; overflow: hidden; text-overflow: ellipsis; }
-.fp-seg button[aria-selected="true"] { border-color: var(--gold); background: rgba(242, 193, 78, .1); }
-html.prisc .fp-seg button[aria-selected="true"] { background: rgba(255, 156, 200, .1); }
-.fp-seg button[aria-selected="true"] b, .fp-seg button[aria-selected="true"] span { color: var(--gold); }
+.fp-seg button em { flex: none; font-style: normal; font-size: 12px; font-weight: 800; line-height: 1.5; padding: 0 7px; border-radius: 999px; background: var(--chip); color: var(--muted); }
+.fp-seg button[aria-selected="true"] { background: var(--chip); color: var(--ink); box-shadow: 0 1px 4px rgba(0, 0, 0, .35); }
+.fp-seg button[aria-selected="true"] em { background: var(--gold); color: #1C1503; }
 /* Cover in einer Reihe zum Wischen statt einer langen Liste */
 .shelf.fp-row { display: flex; gap: 10px; overflow-x: auto; overscroll-behavior-x: contain; padding: 6px 6px 2px 0; margin: 0; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 .shelf.fp-row::-webkit-scrollbar { display: none; }
@@ -960,7 +961,7 @@ html.prisc .fp-seg button[aria-selected="true"] { background: rgba(255, 156, 200
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V225</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V226</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1054,7 +1055,7 @@ html.prisc .fp-seg button[aria-selected="true"] { background: rgba(255, 156, 200
       <div class="lg-sync" id="lgSync"></div>
     </div>
     <div id="peBox" class="lg-form" hidden>
-      <input class="lg-in" id="peName" aria-label="Name" type="text" maxlength="20" autocomplete="nickname" placeholder="Dein Name">
+      <input class="lg-in" id="peName" aria-label="Name" type="text" maxlength="11" autocomplete="nickname" placeholder="Dein Name">
       <div class="pe-grid" id="peGrid"></div>
       <div class="lg-links" style="justify-content:center"><button type="button" class="lg-link" id="peNone" aria-pressed="false">Ohne Bild</button></div>
       <div class="ov-row"><button type="button" class="ov-btn" id="peCancel">Abbrechen</button><button type="button" class="ov-btn main" id="peSave">Speichern</button></div>
@@ -1112,6 +1113,14 @@ html.prisc .fp-seg button[aria-selected="true"] { background: rgba(255, 156, 200
     <b id="frAskTitle">Als Freund entfernen?</b>
     <p id="frAskText">Ihr seht dann nicht mehr, was der andere gesehen hat. Mit dem Code könnt ihr euch jederzeit wieder hinzufügen.</p>
     <div class="ov-row"><button type="button" class="ov-btn" data-close>Abbrechen</button><button type="button" class="ov-btn danger" id="frAskOk">Entfernen</button></div>
+  </div>
+</div>
+<div class="ov" id="outAsk" hidden>
+  <div class="ov-bg" data-close></div>
+  <div class="ov-card ask" role="alertdialog" aria-modal="true" aria-labelledby="outAskTitle" aria-describedby="outAskText">
+    <b id="outAskTitle">Abmelden?</b>
+    <p id="outAskText">Deine Listen und Freunde bleiben in deinem Konto gespeichert. Meldest du dich wieder an, ist alles wieder da.</p>
+    <div class="ov-row"><button type="button" class="ov-btn" data-close>Abbrechen</button><button type="button" class="ov-btn danger" id="outAskOk">Abmelden</button></div>
   </div>
 </div>
 <div class="ov" id="rankSheet" hidden>
@@ -1998,15 +2007,16 @@ $("#prisBar").hidden = !prisc;
 document.addEventListener("focusin", e => { if (e.target.matches("input, textarea")) typing = true; });
 // iPhone: Beim Antippen des Suchfelds schiebt iOS die Seite sonst kurz nach unten, obwohl das Feld oben schon sichtbar ist.
 // Deshalb den Fokus selbst setzen, ohne zu rollen (nur bei einem echten Tipp, nicht beim Wischen, und nur wenn das Feld oben steht).
-// Nur als Home-Bildschirm-App: In Safari würde die Seite sonst nach oben springen.
-if (document.documentElement.classList.contains("standalone")) (() => {
-  const q = $("#q"); let t0 = null;
+// App und Safari: In Safari ist die Seite beim Antippen schon wie in der App aufgebaut (siehe kbHold), deshalb springt dort nichts mehr nach oben.
+// In Safari ist über der Tastatur weniger Platz, darum gilt dort auch ein Feld bis 60 % der Höhe als „oben“.
+if (SC) (() => {
+  const q = $("#q"), lim = document.documentElement.classList.contains("standalone") ? 0.45 : 0.6; let t0 = null;
   q.addEventListener("touchstart", e => { const t = e.touches[0]; t0 = t ? { x: t.clientX, y: t.clientY } : null; }, { passive: true });
   q.addEventListener("touchend", e => {
     const t = e.changedTouches[0];
     if (!t0 || !t || document.activeElement === q) return;
     if (Math.abs(t.clientX - t0.x) > 10 || Math.abs(t.clientY - t0.y) > 10) return;
-    if (q.getBoundingClientRect().bottom > innerHeight * 0.45) return;
+    if (q.getBoundingClientRect().bottom > innerHeight * lim) return;
     e.preventDefault();
     q.focus({ preventScroll: true });
   }, { passive: false });
@@ -2017,25 +2027,30 @@ if (document.documentElement.classList.contains("standalone")) (() => {
 const SAFARI_PHONE = SC && !document.documentElement.classList.contains("standalone");
 const KB_ALT = /[?&]tipp=alt\b/.test(location.search);
 const isField = el => !!(el && el.matches && el.matches("input:not([type=checkbox]):not([type=radio]):not([type=button]), textarea"));
+// Umgebaut wird nur der Scrollbereich und die Fenster (nicht die ganze Seite), das ist leichter für das iPhone.
+// Zurück erst, wenn die Tastatur ganz zu ist: Während sie zuklappt, ruckelten sonst die Cover unten am Bildschirm.
+let kbBack = 0;
 function kbHold(on) {
+  clearTimeout(kbBack);
   if (!SAFARI_PHONE || on === kbOn) return;
   kbOn = on;
   document.documentElement.style.scrollSnapType = on ? "none" : "y mandatory";
   if (KB_ALT) return;
   const y = SC.scrollTop;
-  document.documentElement.classList.toggle("kb", on);
+  SC.classList.toggle("kb", on); document.querySelectorAll(".ov").forEach(o => o.classList.toggle("kb", on));
   window.scrollTo(0, on ? 0 : OFF); SC.scrollTop = y;
 }
+const kbLater = () => { clearTimeout(kbBack); kbBack = setTimeout(() => { if (!isField(document.activeElement)) requestAnimationFrame(() => { kbHold(false); keepDoc(); }); }, 400); };
 if (SAFARI_PHONE) {
   // Schon beim Berühren umbauen: Bekommt das Feld dann den Fokus, hat Safari oben keinen Platz mehr zum Schieben
   document.addEventListener("touchstart", e => { if (isField(e.target)) kbHold(true); }, { passive: true, capture: true });
-  document.addEventListener("touchend", e => { if (isField(e.target)) setTimeout(() => { if (!isField(document.activeElement)) kbHold(false); }, 450); }, { passive: true, capture: true });
+  document.addEventListener("touchend", e => { if (isField(e.target)) setTimeout(() => { if (!isField(document.activeElement)) kbLater(); }, 450); }, { passive: true, capture: true });
   document.addEventListener("focusin", e => { if (isField(e.target)) kbHold(true); });
 }
 document.addEventListener("focusout", e => {
   if (!e.target.matches("input, textarea")) return;
   typing = false;
-  setTimeout(() => { if (!isField(document.activeElement)) kbHold(false); }, 0); // von Feld zu Feld: bleibt so
+  setTimeout(() => { if (!isField(document.activeElement)) kbLater(); }, 0); // von Feld zu Feld: bleibt so; sonst zurück, wenn die Tastatur zu ist
   setTimeout(keepDoc, 100);
 });
 if (SC) {
@@ -2947,7 +2962,7 @@ totop.addEventListener("touchend", e => {
 // Für WhatsApp: *fett*, ⭐ Wertung, (Film) bei Filmen und darunter der kurze Crunchyroll-Link (ohne Namensteil, öffnet trotzdem die Serie).
 // Bild und Titel der Vorschau baut WhatsApp selbst aus dem Crunchyroll-Link, die Adresse der App steht nirgends drin.
 const shortCr = u => { const m = /crunchyroll\.com\/(?:[a-z]{2}\/)?(series|watch)\/([A-Z0-9]+)/.exec(u); return m ? `https://www.crunchyroll.com/de/${m[1]}/${m[2]}` : u; };
-const shareLine = it => `⭐ ${fmt(it.mine)} · *${it.title.split(" – ")[0]}*${it.type === "F" ? " (Film)" : ""}\n${shortCr(crUrl(it))}`;
+const shareLine = it => `${prisc ? "💘" : "⭐"} ${fmt(it.mine)} · *${it.title.split(" – ")[0]}*${it.type === "F" ? " (Film)" : ""}\n${shortCr(crUrl(it))}`;
 let sharing = false;
 async function shareText(text, copied) {
   if (sharing) return; // Menü ist schon offen (doppelt getippt)
@@ -2964,8 +2979,8 @@ async function shareText(text, copied) {
 // Eine Serie teilen (Knopf auf der Karte): mit dem vollen Link samt Namen – nur dann zeigt WhatsApp das Cover (am iPhone getestet)
 function shareOne(id) {
   const it = items.find(x => x.id === id); if (!it) return;
-  const ton = { de: "auf Deutsch", sub: "mit Untertiteln" }[it.dub]; // unsicher oder unbekannt: lieber nichts dazu schreiben
-  const info = [`${prisc ? "💘" : "⭐"} ${fmt(it.mine)}/10`, it.type === "F" ? "Film" : "", MAIN_G[it.key] || it.genres[0], ton].filter(Boolean).join(" · ");
+  const ton = { de: "Deutsch", sub: "Untertitel" }[it.dub]; // unsicher oder unbekannt: lieber nichts dazu schreiben. Kurz, damit die Zeile auch auf kleinen iPhones in WhatsApp nicht umbricht
+  const info = [`${prisc ? "💘" : "⭐"} ${fmt(it.mine)}`, it.type === "F" ? "Film" : "", MAIN_G[it.key] || it.genres[0], ton].filter(Boolean).join(" · ");
   shareText(`Schau dir das an: *${it.title.split(" – ")[0]}*\n${info}\n${crUrl(it)}`, "Link kopiert. Jetzt in WhatsApp einfügen.");
 }
 // Merkliste teilen
@@ -3392,7 +3407,7 @@ $("#peGrid").addEventListener("click", e => { const b = e.target.closest(".pe-it
 $("#peNone").addEventListener("click", () => { peSel = ""; peMark(); });
 $("#peCancel").addEventListener("click", () => { lgEditing = false; lgMsg(""); acctUi(); if (peNew) closeAcct(); });
 $("#peSave").addEventListener("click", () => lgRun(async ({ U }) => {
-  const nm = $("#peName").value.trim().slice(0, 20), url = peSel ? avUrl(peSel) : null, upd = {};
+  const nm = [...$("#peName").value.trim()].slice(0, 11).join("").trim(), url = peSel ? avUrl(peSel) : null, upd = {};
   if (nm && nm !== (user.displayName || "")) upd.displayName = nm;
   if (peSel !== avOf(user)) upd.photoURL = url || ""; // leer = kein Bild
   if (Object.keys(upd).length) await U.updateProfile(user, upd);
@@ -3469,17 +3484,23 @@ $("#lgForm").addEventListener("submit", e => {
 });
 $("#lgMode").addEventListener("click", () => { if (lgReset) lgReset = lgSent = false; else lgCreate = !lgCreate; lgMsg(""); acctUi(); });
 $("#lgForgot").addEventListener("click", () => { lgReset = true; lgSent = false; lgCreate = false; lgMsg(""); acctUi(); });
-$("#lgLogout").addEventListener("click", () => lgRun(async ({ U, auth }) => {
+// Abmelden erst nach Rückfrage (sonst zu leicht aus Versehen)
+const outAsk = $("#outAsk");
+$("#lgLogout").addEventListener("click", () => { outAsk.hidden = false; $("#outAskOk").focus({ preventScroll: true }); });
+outAsk.addEventListener("click", e => { if (e.target.closest("[data-close]")) outAsk.hidden = true; });
+$("#outAskOk").addEventListener("click", () => { outAsk.hidden = true; lgRun(async ({ U, auth }) => {
   if (user) { await acctSync(); if (acct.dirty && user) await acctSync(); } // laufende Sicherung abwarten, dann Letztes sichern
   clearTimeout(pushT); clearTimeout(retryT);
   await U.signOut(auth); acct = {}; saveAcct(); frClear(); syncSt = ""; lgEditing = false; choice = null; firstPick = ""; acctUi();
-}));
+}); });
 // Beim Zurückkommen in die App kurz nach neuen Daten vom anderen Gerät schauen
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && user && (acct.dirty || Date.now() - lastPull > 60000)) { refreshUser(); acctSync(); } if (document.visibilityState === "visible" && user && state.view === "seen") frLoad(); });
 window.addEventListener("online", () => { if (user && acct.dirty) acctSync(); });
 // ===== Freunde: per Code hinzufügen, Profil ansehen, vergleichen =====
 // Firestore: profiles/{uid} = Name, Bild, Gesehen (lesen dürfen nur Freunde) · codes/{CODE} = uid · friends/{uid}/list/{freund}
 const KEY_FR = "cr-top100-friends";
+const KEY_FRK = "cr-top100-friends-known"; // wen die App schon als Freund kennt: Neue (vom anderen hinzugefügt) bekommen einen Hinweis
+let frSelfAdd = ""; // gerade selbst per Code hinzugefügt: dafür kommt schon „… ist jetzt dein Freund“
 let friends = acct.uid ? load(KEY_FR, []) : [];
 if (!Array.isArray(friends)) friends = [];
 let frAt = 0, frBusy = false, frErrSt = "", frCur = "", frTab = "", frSig = "";
@@ -3487,11 +3508,11 @@ const frOv = $("#frOv"), frAddOv = $("#frAddOv"), frListOv = $("#frListOv");
 const CODE_AB = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"; // ohne 0/O und 1/I, damit man sich nicht vertippt
 const fmtCode = c => c ? c.slice(0, 4) + "-" + c.slice(4) : "";
 const profRef = uid => fb.F.doc(fb.db, "profiles", uid);
-function frClear() { friends = []; store(KEY_FR, []); frAt = 0; frErrSt = ""; frSig = ""; if (frOv) { frOv.hidden = true; frAddOv.hidden = true; frListOv.hidden = true; document.getElementById("frAsk").hidden = true; } frCards(); }
+function frClear() { friends = []; store(KEY_FR, []); store(KEY_FRK, null); frAt = 0; frErrSt = ""; frSig = ""; if (frOv) { frOv.hidden = true; frAddOv.hidden = true; frListOv.hidden = true; document.getElementById("frAsk").hidden = true; } frCards(); }
 // Eigenes Profil für Freunde sichern, nur wenn sich etwas geändert hat
 async function profPush() {
   if (!user || !fb) return;
-  const uid = user.uid, me = { name: nameOf(user).slice(0, 20), av: avOf(user), seen: [...seen].sort() };
+  const uid = user.uid, me = { name: [...nameOf(user)].slice(0, 11).join("").trim(), av: avOf(user), seen: [...seen].sort() };
   const sig = JSON.stringify(me);
   if (acct.uid === uid && acct.prof === sig) return;
   try {
@@ -3532,6 +3553,10 @@ async function frLoad(force) {
     if (!user || user.uid !== uid) return;
     out.sort((a, b) => a.name.localeCompare(b.name, "de"));
     friends = out; store(KEY_FR, friends); frAt = Date.now(); frErrSt = "";
+    // Hat dich jemand mit deinem Code hinzugefügt? Kurz Bescheid sagen (beim allerersten Laden auf diesem Gerät nicht)
+    const known = load(KEY_FRK, null), nw = Array.isArray(known) ? out.filter(f => !known.includes(f.uid) && f.uid !== frSelfAdd) : [];
+    store(KEY_FRK, out.map(f => f.uid)); frSelfAdd = "";
+    if (nw.length) { const nm = nw.map(f => f.name); toast(nw.length === 1 ? `${nm[0]} hat dich als Freund hinzugefügt` : nw.length === 2 ? `${nm[0]} und ${nm[1]} haben dich als Freund hinzugefügt` : `${nm[0]}, ${nm[1]} und ${nw.length - 2} weitere haben dich als Freund hinzugefügt`, null, 4500); }
   } catch (e) { frErrSt = e && e.code === "permission-denied" ? "rules" : "net"; frAt = Date.now() - 20000; } // ohne Netz: erst in 10 Sekunden wieder
   finally { frBusy = false; done(); }
   frRender();
@@ -3596,6 +3621,7 @@ function frCards() {
 function frShow(uid) {
   const f = friends.find(x => x.uid === uid); if (!f) { frOv.hidden = true; frCur = ""; return; }
   const oldRow = !frOv.hidden && frCur === uid && $("#fpShelf"), keepX = oldRow ? oldRow.scrollLeft : 0; // gleiche Ansicht neu gezeichnet: Reihe bleibt, wo sie war
+  const keepLi = new Map(oldRow ? [...oldRow.children].map(li => [li.dataset.id, li]) : []); // vorhandene Cover weiterverwenden: nichts lädt neu, nichts blitzt
   const st = frStat(f), both = st.list.filter(it => seen.has(it.id)), forMe = st.list.filter(it => !seen.has(it.id));
   // Neuer Freund geöffnet: mit „Nur … gesehen“ starten (oder der ersten Liste, in der etwas steht)
   if (frCur !== uid || !frTab) frTab = forMe.length || !both.length ? "new" : "both";
@@ -3606,18 +3632,18 @@ function frShow(uid) {
   const fav = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0];
   const lists = { new: forMe, both }, show = lists[frTab], nm = esc(f.name);
   const none = { new: st.n ? `Du hast schon alles gesehen, was ${nm} gesehen hat 🎉` : `${nm} hat noch nichts als gesehen markiert.`, both: "Ihr habt noch nichts Gleiches gesehen." }[frTab];
-  const tab = (k, t) => `<button type="button" role="tab" data-tab="${k}" aria-selected="${frTab === k}"><b>${lists[k].length}</b><span>${t}</span></button>`;
+  const tab = (k, t, al) => `<button type="button" role="tab" data-tab="${k}" aria-selected="${frTab === k}" aria-label="${al}: ${lists[k].length}"><span>${t}</span><em>${lists[k].length}</em></button>`;
   $("#frCard").innerHTML = `
     <button type="button" class="inst-x fp-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     <div class="fp-head frk rt${st.rt}"><span class="fp-av">${frFace(f)}<span class="fr-kj" aria-hidden="true">${st.kj}</span></span>
       <div class="fp-who"><b class="fp-name" id="fpName">${nm}</b><div class="fp-rank">${esc(st.rank)} <small>· ${st.n} ${prisc ? "Romanzen" : "gesehen"}</small></div></div></div>
     <div class="fp-stats"><div><b>${st.n}</b><small>${prisc ? "Romanzen" : "Gesehen"}</small></div><div><b>${hrs}</b><small>Stunden</small></div><div><b>${fav ? esc(fav[0]) : "–"}</b><small>Lieblingsgenre</small></div></div>
-    <div class="fp-seg" role="tablist" aria-label="Listen">${tab("new", `<i>Nur ${nm}</i>&nbsp;gesehen`)}${tab("both", "Beide gesehen")}</div>
+    <div class="fp-sw"><small class="fp-lb" aria-hidden="true">Gesehen von</small><div class="fp-seg" role="tablist" aria-label="Gesehen von">${tab("new", `<i>Nur ${nm}</i>`, `Nur ${nm} gesehen`)}${tab("both", "Euch beiden", "Von euch beiden gesehen")}</div></div>
     <p class="fp-none"${show.length ? " hidden" : ""}>${none}</p>
     <ul class="shelf fp-row" id="fpShelf"${show.length ? "" : " hidden"}></ul>
     <button type="button" class="lg-link fp-rm" id="fpRm">Als Freund entfernen</button>`;
   const box = $("#fpShelf");
-  show.forEach((it, i) => box.append(shelfLi(it, null, i < 6)));
+  show.forEach((it, i) => box.append(shelfLi(it, keepLi.get(it.id), i < 6)));
   frOv.hidden = false;
   if (keepX) box.scrollLeft = keepX;
 }
@@ -3662,9 +3688,9 @@ function frErr(t) { const m = $("#frErr"); m.hidden = !t; m.textContent = t || "
 async function frOpenAdd() {
   frErr(""); $("#frIn").value = ""; frAddOv.hidden = false;
   const c = $("#frMyCode");
-  if (acct.code) { c.textContent = fmtCode(acct.code); return; }
+  if (acct.code) { c.textContent = fmtCode(acct.code); prepCodeCard(); return; }
   c.textContent = "…";
-  try { if (!(await fbUser())) { c.textContent = "–"; return; } c.textContent = fmtCode(await myCode()); }
+  try { if (!(await fbUser())) { c.textContent = "–"; return; } c.textContent = fmtCode(await myCode()); prepCodeCard(); }
   catch (e) { c.textContent = "–"; frErr(e && e.code === "permission-denied" ? "Freunde sind noch nicht eingerichtet: In Firebase fehlen die neuen Regeln." : "Keine Verbindung. Versuch es gleich nochmal."); }
 }
 frAddOv.addEventListener("click", e => { if (e.target.closest("[data-close]")) { frAddOv.hidden = true; document.activeElement && document.activeElement.blur && document.activeElement.blur(); } });
@@ -3680,9 +3706,79 @@ $("#frCopy").addEventListener("click", async () => {
   }
   catch (e) { toast("Kopieren ging hier nicht. Tippe auf „Schicken“."); }
 });
-$("#frSend").addEventListener("click", () => {
-  if (!acct.code) return;
-  shareText(fmtCode(acct.code), "Code kopiert. Jetzt in WhatsApp einfügen.");
+// Freundes-Code als Bild: Profil-Kachel mit Bild, Name, Rang und Code, damit der Freund sofort sieht, worum es geht.
+// Wird beim Öffnen von „Freund hinzufügen“ frisch gemalt (immer der aktuelle Stand) und liegt beim Tippen auf „Schicken“ schon bereit:
+// Das iPhone erlaubt Teilen nur direkt nach dem Tippen, für langes Malen wäre es dann zu spät.
+// Im Priscilla-Modus rosa mit Liebes-Rang und Romanzen. Geht Teilen mit Bild nicht, wird wie bisher nur der Code geschickt.
+const RT_COL = { 0: "#A3A8C2", 5: "#7CB4F0", 1: "#5FD3A6", 2: "#F2C14E", 3: "#FF8A3D", 4: "#FF3B3B", 6: "#FF3B3B" };
+const RT_COL_P = { 0: "#A3A8C2", 5: "#B9A7EB", 1: "#FF9CC8", 2: "#FF8B6E", 3: "#FF4D6D", 4: "#F6C453" };
+let codeFile = null, codeTok = 0;
+async function codeCard() {
+  if (!acct.code) return null;
+  const me = meNow() || { name: acct.name || "", av: acct.av || "" };
+  const name = [...String(me.name || "")].slice(0, 11).join("").trim() || "Ich";
+  const mine = items.filter(it => seen.has(it.id) && (!prisc || isRom(it))), n = mine.length;
+  const R = prisc ? LOVE : RANKS, r = R[R.reduce((a, x, i) => n >= x[0] ? i : a, 0)], rc = (prisc ? RT_COL_P : RT_COL)[r[4]] || "#A3A8C2";
+  const acc = prisc ? "#FF9CC8" : "#F2C14E", king = !prisc && r === RANKS[RANKS.length - 1]; // Dämonenkönig: dunkles Banner, rotes Zeichen (sonst gleich rot wie Dämon)
+  const cnt = {};
+  mine.forEach(it => { let g = MAIN_G[it.key] || it.genres[0]; if (prisc && g === "Romance") g = it.genres.find(x => x !== "Romance"); if (g) cnt[g] = (cnt[g] || 0) + 1; });
+  const fav = (Object.entries(cnt).sort((a, b) => b[1] - a[1])[0] || [""])[0];
+  const sub = " · " + (prisc ? `${n} ${n === 1 ? "Romanze" : "Romanzen"}` : `${n} gesehen` + (fav ? " · " + fav : "")); // im Priscilla-Modus kein Genre: es sind ja alles Romanzen
+  const BODY = 'Murecho, "Helvetica Neue", Arial, sans-serif', KJ = '"Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif', MONO = '"SF Mono", Menlo, Consolas, monospace';
+  try { await Promise.all(["700 40px Murecho", "500 40px Murecho"].map(f => document.fonts.load(f))); } catch (e) {}
+  const S = 1080, c = document.createElement("canvas"); c.width = c.height = S;
+  const x = c.getContext("2d"), rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)).join(",");
+  const rr = (l, t, w, h, rad) => { x.beginPath(); x.moveTo(l + rad, t); x.arcTo(l + w, t, l + w, t + h, rad); x.arcTo(l + w, t + h, l, t + h, rad); x.arcTo(l, t + h, l, t, rad); x.arcTo(l, t, l + w, t, rad); x.closePath(); };
+  const circ = (cx, cy, rad) => { x.beginPath(); x.arc(cx, cy, rad, 0, Math.PI * 2); x.fill(); };
+  const spaced = (t, px, y, sp, center) => { const ch = [...t], w = ch.reduce((a, k) => a + x.measureText(k).width, 0) + sp * (ch.length - 1); let p = center ? px - w / 2 : px; x.textAlign = "left"; ch.forEach(k => { x.fillText(k, p, y); p += x.measureText(k).width + sp; }); };
+  const parts = (list, y) => { const w = list.reduce((a, [t, f]) => { x.font = f; return a + x.measureText(t).width; }, 0); let p = S / 2 - w / 2; x.textAlign = "left"; list.forEach(([t, f, col]) => { x.font = f; x.fillStyle = col; x.fillText(t, p, y); p += x.measureText(t).width; }); };
+  x.textBaseline = "top";
+  // Grund und Banner in der Rangfarbe, dahinter groß das Rang-Zeichen
+  x.fillStyle = "#0F1120"; x.fillRect(0, 0, S, S);
+  const g = x.createLinearGradient(0, 0, S, 520);
+  g.addColorStop(0, `rgba(${rgb(rc)},.6)`); g.addColorStop(.55, `rgba(${rgb(rc)},.16)`); g.addColorStop(1, `rgba(${rgb(rc)},.05)`);
+  const ring = rc, kjCol = king ? "rgba(255,59,59,.3)" : "rgba(255,255,255,.1)";
+  if (king) { const k = x.createLinearGradient(0, 0, S, 520); k.addColorStop(0, "#3A0610"); k.addColorStop(.6, "#1A060C"); k.addColorStop(1, "#12070D"); x.fillStyle = k; } else x.fillStyle = g;
+  x.fillRect(0, 0, S, 356);
+  x.fillStyle = kjCol; x.font = `400 500px ${KJ}`; x.textAlign = "right"; x.fillText(r[1], S + 36, -92);
+  x.fillStyle = "rgba(236,238,248,.85)"; x.font = `700 28px ${BODY}`; spaced("LASS UNS FREUNDE SEIN!", 56, 48, 3.4, false);
+  // Profilbild mit Ring und Rang-Zeichen
+  x.fillStyle = ring; circ(540, 344, 154); x.fillStyle = "#0F1120"; circ(540, 344, 146);
+  x.save(); x.beginPath(); x.arc(540, 344, 136, 0, Math.PI * 2); x.clip();
+  let drawn = false;
+  if (me.av && AV_IMG[me.av]) { try { const im = new Image(); im.src = AV_IMG[me.av]; await im.decode(); x.drawImage(im, 404, 208, 272, 272); drawn = true; } catch (e) {} }
+  if (!drawn) { x.fillStyle = "#F47521"; x.fillRect(404, 208, 272, 272); x.fillStyle = "#fff"; x.font = `700 130px ${BODY}`; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(([...name][0] || "?").toUpperCase(), 540, 350); x.textBaseline = "top"; }
+  x.restore();
+  rr(608, 412, 80, 80, 24); x.fillStyle = "#0F1120"; x.fill(); x.lineWidth = 5; x.strokeStyle = ring; x.stroke();
+  x.fillStyle = ring; x.font = `700 46px ${KJ}`; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(r[1], 648, 454); x.textBaseline = "top";
+  // Name, Rang
+  let fs = 72; x.font = `700 ${fs}px ${BODY}`; while (x.measureText(name).width > 940 && fs > 40) { fs -= 4; x.font = `700 ${fs}px ${BODY}`; }
+  x.fillStyle = "#ECEEF8"; x.textAlign = "center"; x.fillText(name, 540, 524 + (72 - fs) / 2);
+  parts([[r[3], `700 36px ${BODY}`, rc], [sub, `700 36px ${BODY}`, "#A9AECB"]], 622);
+  // Code im Kasten
+  const box = acc; // Code-Kasten immer gleich (gold)
+  rr(88, 712, 904, 208, 40); x.fillStyle = `rgba(${rgb(box)},.08)`; x.fill(); x.lineWidth = 4; x.strokeStyle = box; x.stroke();
+  x.fillStyle = "#A9AECB"; x.font = `700 26px ${BODY}`; spaced("MEIN CODE FÜR DIE ANIME-APP", 540, 744, 3.6, true);
+  x.fillStyle = acc; x.font = `700 100px ${MONO}`; spaced(fmtCode(acct.code), 540, 790, 5, true);
+  parts([["In der App: ", `500 32px ${BODY}`, "#A9AECB"], ["Profil → Freunde → +", `700 32px ${BODY}`, "#ECEEF8"]], 962);
+  const blob = await new Promise(res => c.toBlob(res, "image/png"));
+  return blob ? new File([blob], "anime-freundes-code.png", { type: "image/png" }) : null;
+}
+function prepCodeCard() {
+  const t = ++codeTok; codeFile = null;
+  codeCard().then(f => { if (t === codeTok) codeFile = f; }).catch(() => {});
+}
+$("#frSend").addEventListener("click", async () => {
+  if (!acct.code || sharing) return;
+  const text = fmtCode(acct.code), f = codeFile;
+  let done = false;
+  if (f && navigator.share && navigator.canShare && navigator.canShare({ files: [f] })) {
+    sharing = true;
+    try { await navigator.share({ files: [f], text }); done = true; }
+    catch (e) { done = !!(e && e.name === "AbortError"); } // abgebrochen: nichts weiter tun
+    finally { sharing = false; }
+  }
+  if (!done) shareText(text, "Code kopiert. Jetzt in WhatsApp einfügen.");
 });
 // Code im Text finden: getippt („7k4q x2pm“) oder die ganze WhatsApp-Nachricht eingefügt
 const CODE_CH = "[2-9A-HJ-NP-Z]";
@@ -3712,7 +3808,7 @@ $("#frForm").addEventListener("submit", async e => {
     if (friends.some(f => f.uid === fid)) { frErr("Ihr seid schon Freunde."); return; }
     await fb.F.setDoc(fb.F.doc(fb.db, "friends", me, "list", fid), { at: Date.now() });
     await fb.F.setDoc(fb.F.doc(fb.db, "friends", fid, "list", me), { at: Date.now() });
-    acct.prof = ""; await profPush(); // sicher sein, dass der Freund dein Profil sehen kann
+    frSelfAdd = fid; acct.prof = ""; await profPush(); // sicher sein, dass der Freund dein Profil sehen kann
     await frLoad(true);
     const f = friends.find(x => x.uid === fid);
     frAddOv.hidden = true; document.activeElement && document.activeElement.blur && document.activeElement.blur();
