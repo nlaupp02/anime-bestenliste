@@ -182,6 +182,12 @@ main { padding-block: 18px calc(max(16px, env(safe-area-inset-bottom, 0px)) + 76
 @media (hover: hover) and (pointer: fine) { .grid { grid-auto-rows: 1fr; } }
 /* Verschwindet eine Karte (z. B. „Gesehene ausblenden“), rückt die nächste an ihre Stelle, statt dass die Seite mitspringt */
 .grid { overflow-anchor: none; }
+.grid > .nvday { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; margin: 10px 2px -2px; font-size: 12.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--hanko); }
+.grid > .nvday[hidden] { display: none; }
+.grid > .nvday span { color: var(--muted); font-weight: 700; letter-spacing: .05em; }
+.grid > .nvday::after { content: ""; flex: 1; height: 1px; margin-left: 4px; background: var(--line); }
+/* Neu-Ansicht am PC: die Trennzeile ist niedrig, nicht so hoch wie eine Karte */
+@media (hover: hover) and (pointer: fine) { #list.nv { grid-auto-rows: auto; } }
 .card {
   background: var(--sheet); border: 1px solid var(--line); border-radius: 10px;
   padding: 16px 16px 14px;
@@ -191,7 +197,8 @@ main { padding-block: 18px calc(max(16px, env(safe-area-inset-bottom, 0px)) + 76
 .cbody { flex: 1 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 14px; align-content: start; }
 .meta { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; font-size: 12px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; font-weight: 700; }
 .rank { font-variant-numeric: tabular-nums; color: var(--ink); }
-.card h2 { grid-column: 1; margin: 2px 0 2px; font-size: 18px; line-height: 1.25; font-weight: 700; text-wrap: balance; -webkit-hyphens: auto; hyphens: auto; overflow-wrap: break-word; }
+.card h2 { grid-column: 1; margin: 2px 0 2px; font-size: 18px; line-height: 1.25; font-weight: 700; text-wrap: balance; -webkit-hyphens: auto; hyphens: auto; overflow-wrap: break-word;
+  /* nur lange Wörter trennen („Tearmoon“ nicht als „Tear-moon“) */ hyphenate-limit-chars: 10 5 5; -webkit-hyphenate-limit-before: 5; -webkit-hyphenate-limit-after: 5; }
 .card h2 .sub { display: block; margin-top: 2px; font-size: 13.5px; line-height: 1.3; font-weight: 600; color: var(--muted); }
 .tags { grid-column: 1; display: flex; flex-wrap: wrap; gap: 5px; align-items: flex-start; align-self: start; }
 .tag { font-size: 12px; padding: 1px 8px; border-radius: 4px; background: var(--chip); color: var(--ink); }
@@ -968,7 +975,7 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V228</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V229</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1800,6 +1807,10 @@ const freshKeys = (() => {
   return out;
 })();
 const isFresh = it => freshKeys.has(it.key);
+const addedDay = {};
+Object.entries(ADDED).forEach(([d, keys]) => keys.forEach(k => { if (!addedDay[k] || d > addedDay[k]) addedDay[k] = d; }));
+// Neu in der Liste: zuletzt eingetragene zuerst, innerhalb eines Tages wie unter „Sortieren“ eingestellt
+const byAddedOf = list => [...list].sort((a, b) => (addedDay[b.key] || "").localeCompare(addedDay[a.key] || ""));
 // Hauptgenre für „Deine Lieblingsgenres“: meist das erste Genre, bei diesen Titeln passt ein anderes besser
 const MAIN_G = {"Yatagarasu": "Fantasy", "Raven of the Inner Palace": "Mystery", "Though I Am an Inept Villainess": "Romance", "Saga of Tanya the Evil": "Isekai", "Mobile Suit Gundam": "Sci-Fi", "Mobile Suit Gundam Wing": "Sci-Fi"};
 let neuView = false; // eigene Ansicht „Neu in der Liste“ (nur im Reiter Alle, wird nicht gespeichert)
@@ -2194,7 +2205,7 @@ function card(it) {
 
 function filtered() {
   const inGenre = state.view === "genres";
-  return sorted().filter(it =>
+  return (neuView ? byAddedOf(sorted()) : sorted()).filter(it =>
     (neuView || effSort() !== "neu" || isNeu(it)) &&
     (!neuView || isFresh(it)) &&
     (!inGenre || inSel(it)) &&
@@ -2604,7 +2615,8 @@ function render() {
     status(-1); return;
   }
   if (state.view === "genres") { $("#gtitle").textContent = state.g2; $("#gback").textContent = prisc ? "← Alle Themen" : "← Alle Genres"; }
-  if (state.view !== "seen" && domSort !== state.sort) { domSort = state.sort; const L = $("#list"); sorted().forEach(it => L.append(cardEls.get(it.id))); }
+  const ord = (neuView && state.view === "all" ? "tag:" : "") + state.sort;
+  if (state.view !== "seen" && domSort !== ord) { domSort = ord; const L = $("#list"); (ord.startsWith("tag:") ? byAddedOf(sorted()) : sorted()).forEach(it => L.append(cardEls.get(it.id))); }
   if (neuView && state.view !== "all") neuView = false;
   $("#list").classList.toggle("nv", neuView);
   const list = filtered(), show = new Set(list.map(it => it.id)), gName = state.view === "genres" ? state.g2 : "";
@@ -2622,12 +2634,36 @@ function render() {
     : prisc && state.view === "seen" && !romOf(seen) ? "Noch keine Romanze als gesehen markiert. Tippe bei einer Romanze auf den Haken\u00A0✓."
     : "Kein Titel passt zu diesen Filtern. Setz einzelne Filter zurück oder leere die Suche.";
   e.dataset.ic = /gemerkt/.test(e.textContent) ? "saved" : /gesehen markiert/.test(e.textContent) ? "seen" : "find";
+  nvDays(list);
   renderShelf(list);
   status(list.length);
   // Sobald die Liste einmal sichtbar gezeichnet wurde, kennt das iPhone alle Kartenhöhen: ab dann nur noch sichtbare Karten zeichnen
   if (!$("#list").hidden) cvRewarm(); // nur Karten, die ihre Höhe noch nicht kennen (z. B. beim Start ausgeblendet)
   // Das Cover-Fenster im Profil zeigt einen Titel, der gerade weggefallen ist (z. B. vom anderen Gerät): Fenster schließen
   if (shelfEl && shelfEl.hidden && !shelfOv.hidden) closeShelf();
+}
+// Neu in der Liste: Trennzeile pro Tag („Heute · 3 neu“) über dem ersten Titel des Tages
+const nvSeps = new Map();
+const isoDay = x => x.getFullYear() + "-" + String(x.getMonth() + 1).padStart(2, "0") + "-" + String(x.getDate()).padStart(2, "0");
+function dayName(d) {
+  const t = new Date(), y = new Date(t.getTime() - 864e5);
+  if (d === isoDay(t)) return "Heute";
+  if (d === isoDay(y)) return "Gestern";
+  const x = new Date(d + "T12:00:00");
+  return x.toLocaleDateString("de-DE", { weekday: "short", day: "numeric", month: "long" });
+}
+function nvDays(list) {
+  const on = neuView && state.view === "all", first = {}, cnt = {};
+  if (on) list.forEach(it => { const d = addedDay[it.key]; if (!d) return; cnt[d] = (cnt[d] || 0) + 1; if (!first[d]) first[d] = it; });
+  nvSeps.forEach((el, d) => { if (!first[d]) el.hidden = true; });
+  Object.keys(first).forEach(d => {
+    let el = nvSeps.get(d);
+    if (!el) { el = document.createElement("li"); el.className = "nvday"; nvSeps.set(d, el); }
+    const html = `<b>${dayName(d)}</b><span>${cnt[d]} neu</span>`;
+    if (el.innerHTML !== html) el.innerHTML = html;
+    el.hidden = false;
+    const c = cardEls.get(first[d].id); if (c.previousElementSibling !== el) c.before(el);
+  });
 }
 // Gesehen als Regal: Cover zu dritt, sortiert wie die Liste. Darüber die Lieblingsgenres.
 let shelfList = [];
