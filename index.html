@@ -539,6 +539,16 @@ html.prisc .prog.max .ring svg { filter: drop-shadow(0 0 4px rgba(246, 196, 83, 
 .pf-stack .avr { width: 24px; height: 24px; box-shadow: 0 0 0 2px #1A1D2E; margin-left: -8px; display: grid; }
 .pf-stack .avr:first-child { margin-left: 0; }
 .pf-stack .avr.fr-l { font-size: 12px; }
+/* Kacheln: welche Freunde den Titel gesehen haben */
+.frw { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; min-width: 0; margin-top: 9px; font-size: 12.5px; color: var(--muted); }
+.frw .pf-stack { flex: none; }
+.frw .pf-stack .avr { width: 22px; height: 22px; margin-left: -7px; box-shadow: 0 0 0 2px var(--sheet); }
+.frw .pf-stack .avr:first-child { margin-left: 0; }
+.frw .pf-stack .avr.fr-l { font-size: 11px; }
+.card.is-seen .frw .pf-stack .avr { box-shadow: 0 0 0 2px var(--paper); }
+#shelfOne .card.is-seen .frw .pf-stack .avr { box-shadow: 0 0 0 2px var(--sheet); }
+.frw-t { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.frw b { color: var(--ink); font-weight: 700; }
 /* Liste der Freunde */
 .fl { display: grid; margin-top: -4px; }
 .fl-it { display: grid; grid-template-columns: 46px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 9px 4px; border: 0; border-bottom: 1px solid var(--line); background: none; font: inherit; color: inherit; text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent; }
@@ -694,6 +704,12 @@ html:not(.inst) .ibanner { display: none; }
 .ov-btn.danger { color: var(--on-hanko); background: var(--hanko); border-color: var(--hanko); }
 .ov-btn:active { filter: brightness(.9); }
 @keyframes ovIn { from { opacity: 0; } }
+/* Freund aus der Liste öffnen: Liste sofort weg und kein zweites Abdunkeln (vorher lagen beide kurz halb durchsichtig übereinander) */
+.ov.under > .ov-card { visibility: hidden; }
+#frOv.from-list { animation: none; }
+#frOv.from-list > .ov-bg { background: transparent; }
+#frOv.from-list > .ov-card { animation: cardSwap .16s ease-out; } /* sofort deckend, nur kleines Hineingleiten: nichts scheint durch */
+@keyframes cardSwap { from { transform: translateY(8px) scale(.985); } }
 @keyframes cardIn { from { opacity: 0; transform: translateY(10px) scale(.97); } }
 /* Handy: Die Fenster sind nicht „fest“ (fixed). Feste Flächen am Bildschirmrand färbt das iPhone oben und unten als Balken ein.
    Sie liegen deshalb wie der Scrollbereich (#sc) auf der Seite und reichen über Uhr und Safari-Leiste hinaus.
@@ -750,6 +766,11 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
    (siehe OFF im Skript). Der Innenabstand gleicht das aus, man sieht davon nichts. */
 .app:not(.standalone) #sc { bottom: -400px; }
 .app:not(.standalone) #sc > .wrap { padding-top: 200px; padding-bottom: 200px; }
+/* Safari beim Tippen: genau wie in der App aufgebaut (oben kein Platz, Seite bei 0), sieht gleich aus. So kann Safari
+   die Seite für die Tastatur nicht hoch- und runterschieben (siehe kbHold im Skript) */
+html.kb.app:not(.standalone) #sc { bottom: -200px; }
+html.kb.app:not(.standalone) #sc > .wrap { padding-top: 0; }
+html.kb.app:not(.standalone) .ov { bottom: -200px; padding: 16px 16px 216px; }
 /* App: Auch unter dem Home-Balken unten zeigt das iPhone die Seite. Der Scrollbereich reicht deshalb dort hinunter. */
 .standalone #sc { bottom: -200px; }
 .standalone #sc > .wrap { padding-bottom: 200px; }
@@ -841,6 +862,8 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
 .fr-cp.ok b, .fr-cp.ok svg { color: var(--ok); }
 .fr-cp b { color: var(--ink); font-family: ui-monospace, "SF Mono", Menlo, monospace; letter-spacing: .08em; font-size: 15px; }
 .fr-cp svg { width: 15px; height: 15px; flex: none; }
+.fr-cp { white-space: nowrap; }
+@media (max-width: 359px) { .fr-cp .fr-dc { display: none; } }
 .fr-shr { display: inline-flex; align-items: center; gap: 6px; flex: none; font: inherit; font-size: 14px; font-weight: 700; color: var(--ink); background: var(--chip); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .fr-shr:active { filter: brightness(.9); }
 .fr-shr svg { width: 15px; height: 15px; }
@@ -867,7 +890,8 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
 .fp-seg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .fp-seg button { display: grid; gap: 1px; justify-items: center; font: inherit; color: var(--muted); background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 8px 4px 7px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .fp-seg button b { font-size: 19px; font-weight: 800; color: var(--ink); line-height: 1.1; }
-.fp-seg button span { max-width: 100%; font-size: 12.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fp-seg button span { display: flex; justify-content: center; max-width: 100%; font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+.fp-seg button span i { min-width: 0; font-style: normal; overflow: hidden; text-overflow: ellipsis; }
 .fp-seg button[aria-selected="true"] { border-color: var(--gold); background: rgba(242, 193, 78, .1); }
 html.prisc .fp-seg button[aria-selected="true"] { background: rgba(255, 156, 200, .1); }
 .fp-seg button[aria-selected="true"] b, .fp-seg button[aria-selected="true"] span { color: var(--gold); }
@@ -936,7 +960,7 @@ html.prisc .fp-seg button[aria-selected="true"] { background: rgba(255, 156, 200
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V224</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V225</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1063,7 +1087,7 @@ html.prisc .fp-seg button[aria-selected="true"] { background: rgba(255, 156, 200
     <div class="ov-head"><b class="fr-title" id="frAddTitle">Freund hinzufügen</b><button type="button" class="inst-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
     <form class="fr-form" id="frForm" autocomplete="off"><input class="lg-in fr-in" id="frIn" type="text" inputmode="text" autocapitalize="characters" autocorrect="off" spellcheck="false" placeholder="Code deines Freundes" aria-label="Code deines Freundes"><button type="submit" class="ov-btn main" id="frGo">Hinzufügen</button></form>
     <p class="fr-err" id="frErr" role="alert" hidden></p>
-    <div class="fr-mine"><button type="button" class="fr-cp" id="frCopy" aria-label="Code kopieren">Dein Code <b id="frMyCode">…</b><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 3.5V3a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button><button type="button" class="fr-shr" id="frSend"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10V1.8M5.2 4.4L8 1.6l2.8 2.8M4.6 6.8H3.5v7.2h9V6.8h-1.1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Schicken</button></div>
+    <div class="fr-mine"><button type="button" class="fr-cp" id="frCopy" aria-label="Code kopieren"><span class="fr-dc">Dein Code</span><b id="frMyCode">…</b><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 3.5V3a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button><button type="button" class="fr-shr" id="frSend"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10V1.8M5.2 4.4L8 1.6l2.8 2.8M4.6 6.8H3.5v7.2h9V6.8h-1.1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Schicken</button></div>
   </div>
 </div>
 <div class="ov" id="frOv" hidden>
@@ -1139,8 +1163,8 @@ const scrollStyle = () => (SC || document.documentElement).style;
 // In Safari steht sie intern 200px weit „gerollt“: So liegt der Anfang des Scrollbereichs oberhalb des sichtbaren Teils,
 // und Safari zeigt oben unter der Uhr die Liste statt eines blauen Balkens.
 const OFF = SC && !document.documentElement.classList.contains("standalone") ? 200 : 0;
-let typing = false;
-const keepDoc = () => { if (SC && !typing && Math.abs(window.scrollY - OFF) > 1) window.scrollTo(0, OFF); };
+let typing = false, kbOn = false;
+const keepDoc = () => { if (SC && !typing && !kbOn && Math.abs(window.scrollY - OFF) > 1) window.scrollTo(0, OFF); };
 if (SC) {
   // Einrastpunkt: Das iPhone hält die Seite dann selbst an dieser Stelle, auch wenn es sie beim Öffnen verschiebt
   const snap = document.createElement("div");
@@ -1964,7 +1988,6 @@ function petals() {
 const prisAsk = $("#prisAsk");
 function askPrisc() { prisAsk.hidden = false; $("#prisAskOk").focus({ preventScroll: true }); }
 prisAsk.addEventListener("click", e => { if (e.target.closest("[data-close]")) prisAsk.hidden = true; });
-prisAsk.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !prisAsk.hidden) prisAsk.hidden = true; });
 $("#prisAskOk").addEventListener("click", () => { prisAsk.hidden = true; setPrisc(false, true); render(); });
 $("#prisOff").addEventListener("click", askPrisc);
@@ -1988,14 +2011,31 @@ if (document.documentElement.classList.contains("standalone")) (() => {
     q.focus({ preventScroll: true });
   }, { passive: false });
 })();
-// Safari: Beim Tippen ins Suchfeld schiebt Safari die Seite für die Tastatur. Das Einrasten zog sie sofort zurück
-// (doppeltes Springen). Solange getippt wird, ist das Einrasten deshalb aus; beim Schließen der Tastatur wieder an.
+// Safari: Für die Tastatur hat Safari die Seite hoch- und runtergeschoben, weil sie intern 200px „gerollt“ steht (OFF) und oben Platz hat.
+// Deshalb ist die Seite beim Tippen (Suche, Freundes-Code, Anmeldung) genau wie in der App aufgebaut: oben kein Platz, Seite bei 0.
+// Das sieht gleich aus, nur kann Safari nichts mehr schieben. Zum Vergleichen: Mit ?tipp=alt in der Adresse gilt das alte Verhalten.
 const SAFARI_PHONE = SC && !document.documentElement.classList.contains("standalone");
-if (SAFARI_PHONE) $("#q").addEventListener("focus", () => { document.documentElement.style.scrollSnapType = "none"; });
+const KB_ALT = /[?&]tipp=alt\b/.test(location.search);
+const isField = el => !!(el && el.matches && el.matches("input:not([type=checkbox]):not([type=radio]):not([type=button]), textarea"));
+function kbHold(on) {
+  if (!SAFARI_PHONE || on === kbOn) return;
+  kbOn = on;
+  document.documentElement.style.scrollSnapType = on ? "none" : "y mandatory";
+  if (KB_ALT) return;
+  const y = SC.scrollTop;
+  document.documentElement.classList.toggle("kb", on);
+  window.scrollTo(0, on ? 0 : OFF); SC.scrollTop = y;
+}
+if (SAFARI_PHONE) {
+  // Schon beim Berühren umbauen: Bekommt das Feld dann den Fokus, hat Safari oben keinen Platz mehr zum Schieben
+  document.addEventListener("touchstart", e => { if (isField(e.target)) kbHold(true); }, { passive: true, capture: true });
+  document.addEventListener("touchend", e => { if (isField(e.target)) setTimeout(() => { if (!isField(document.activeElement)) kbHold(false); }, 450); }, { passive: true, capture: true });
+  document.addEventListener("focusin", e => { if (isField(e.target)) kbHold(true); });
+}
 document.addEventListener("focusout", e => {
   if (!e.target.matches("input, textarea")) return;
   typing = false;
-  if (SAFARI_PHONE) document.documentElement.style.scrollSnapType = "y mandatory";
+  setTimeout(() => { if (!isField(document.activeElement)) kbHold(false); }, 0); // von Feld zu Feld: bleibt so
   setTimeout(keepDoc, 100);
 });
 if (SC) {
@@ -2505,7 +2545,7 @@ function render() {
   renderProg();
   arrowOff = (state.view === "genres" && !state.g2) || ((state.view === "saved" || state.view === "seen") && !filtered().length);
   requestAnimationFrame(onScroll);
-  if (!cardEls) { buildCards(); applyCovers(); setTimeout(loadCovers, 1200); }
+  if (!cardEls) { buildCards(); applyCovers(); setTimeout(loadCovers, 1200); setTimeout(frCards, 0); } // Freunde in den Kacheln (aus dem Speicher, sofort)
   requestAnimationFrame(() => { if (window.fitAll) window.fitAll(); });
   const tilesView = state.view === "genres" && !state.g2;
   $("#tiles").hidden = !tilesView;
@@ -2618,6 +2658,7 @@ setTimeout(() => prewarmTabs(0), 2500);
 const shelfOv = $("#shelfOv");
 let shelfPh = null, shelfEl = null;
 function openShelf(id) {
+  if (shelfEl) return; // schon offen (z. B. Leertaste nochmal gedrückt): sonst landet die Karte nicht mehr in der Liste
   const el = cardEls.get(id); if (!el) return;
   shelfPh = document.createComment(""); el.before(shelfPh); shelfEl = el;
   el.hidden = false; $("#shelfOne").append(el); shelfOv.hidden = false;
@@ -2644,7 +2685,6 @@ shelfOv.addEventListener("click", e => {
   if (act === "save" && seen.has(id)) return;
   setMark(id, act, !(act === "seen" ? seen : saved).has(id));
 });
-shelfOv.addEventListener("touchmove", e => { if (!e.target.closest(".shelf-one")) e.preventDefault(); }, { passive: false });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !shelfOv.hidden) closeShelf(); });
 
 // Rang-Aufstieg feiern: nur wenn durch „gesehen“ ein neuer Rang erreicht wird
@@ -2689,6 +2729,7 @@ function setMark(id, act, on) {
   if (act === "seen" && !on) { rankAck.n = Math.min(rankAck.n, rankOf(false)); rankAck.p = Math.min(rankAck.p, rankOf(true)); store(KEY_RACK, rankAck); }
   // Speichern, Zähler und ggf. Liste neu filtern erst im nächsten Bild, damit der Knopf nicht hängt
   requestAnimationFrame(() => setTimeout(() => {
+    if (act === "seen" && !frOv.hidden && frCur && shelfOv.hidden) frShow(frCur); // offenes Freundes-Profil gleich mitziehen
     store(act === "seen" ? KEY.seen : KEY.saved, [...set]);
     if (unsave) store(KEY.saved, [...saved]);
     if (!b) return;
@@ -2712,7 +2753,6 @@ const whySheet = $("#whySheet");
 $("#whyBody").innerHTML = document.querySelector(".why .why-body").innerHTML;
 $("#whyBtn").addEventListener("click", () => { whySheet.hidden = false; whySheet.querySelector(".ov-btn.main").focus({ preventScroll: true }); });
 whySheet.addEventListener("click", e => { if (e.target.closest("[data-close]")) whySheet.hidden = true; });
-whySheet.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !whySheet.hidden) whySheet.hidden = true; });
 // Fenster mit allen Rängen (Info-Knopf neben „gesehen“)
 const rankSheet = $("#rankSheet");
@@ -2728,7 +2768,6 @@ $("#rankInfo").addEventListener("click", () => {
 });
 const closeRanks = () => { rankSheet.hidden = true; };
 rankSheet.addEventListener("click", e => { if (e.target.closest("[data-close]")) closeRanks(); });
-rankSheet.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !rankSheet.hidden) closeRanks(); });
 
 const seenAsk = $("#seenAsk");
@@ -2741,7 +2780,6 @@ function askUnseen(id) {
 }
 const closeSeenAsk = () => { seenAsk.hidden = true; seenAskId = null; };
 seenAsk.addEventListener("click", e => { if (e.target.closest("[data-close]")) closeSeenAsk(); });
-seenAsk.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !seenAsk.hidden) closeSeenAsk(); });
 $("#seenAskOk").addEventListener("click", () => { const id = seenAskId; closeSeenAsk(); if (id) setMark(id, "seen", false); });
 
@@ -2926,7 +2964,9 @@ async function shareText(text, copied) {
 // Eine Serie teilen (Knopf auf der Karte): mit dem vollen Link samt Namen – nur dann zeigt WhatsApp das Cover (am iPhone getestet)
 function shareOne(id) {
   const it = items.find(x => x.id === id); if (!it) return;
-  shareText(`⭐ ${fmt(it.mine)} · *${it.title.split(" – ")[0]}*${it.type === "F" ? " (Film)" : ""}\n${crUrl(it)}`, "Link kopiert. Jetzt in WhatsApp einfügen.");
+  const ton = { de: "auf Deutsch", sub: "mit Untertiteln" }[it.dub]; // unsicher oder unbekannt: lieber nichts dazu schreiben
+  const info = [`${prisc ? "💘" : "⭐"} ${fmt(it.mine)}/10`, it.type === "F" ? "Film" : "", MAIN_G[it.key] || it.genres[0], ton].filter(Boolean).join(" · ");
+  shareText(`Schau dir das an: *${it.title.split(" – ")[0]}*\n${info}\n${crUrl(it)}`, "Link kopiert. Jetzt in WhatsApp einfügen.");
 }
 // Merkliste teilen
 $("#share").addEventListener("click", () => {
@@ -3028,6 +3068,9 @@ document.addEventListener("click", e => {
   if (bad) { e.preventDefault(); e.stopImmediatePropagation(); }
 }, true);
 
+// Wischen auf dem dunklen Hintergrund eines Fensters bewegt nichts. Der Wächter sitzt nur auf dem Hintergrund selbst:
+// Lag er auf dem ganzen Fenster, musste das iPhone bei jedem Wischen im Fenster (z. B. durch die Cover beim Freund) erst auf die App warten – das ruckelte.
+document.querySelectorAll(".ov > .ov-bg").forEach(bg => bg.addEventListener("touchmove", e => { if (e.cancelable) e.preventDefault(); }, { passive: false }));
 // Zoomen mit zwei Fingern verhindern (iPhone)
 ["gesturestart", "gesturechange", "gestureend"].forEach(t => document.addEventListener(t, e => e.preventDefault(), { passive: false }));
 // Zwei-Finger-Zoom sperrt jetzt das CSS (touch-action). Früher fingen hier Touch-Listener jede Berührung ab –
@@ -3071,7 +3114,6 @@ document.addEventListener("click", e => {
   const close = el => { el.hidden = true; };
   [sheet, ask].forEach(el => el.addEventListener("click", e => { if (e.target.closest("[data-close]")) close(el); }));
   // Wischen auf dem abgedunkelten Hintergrund soll die Liste dahinter nicht bewegen
-  [sheet, ask].forEach(el => el.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false }));
   document.addEventListener("keydown", e => { if (e.key === "Escape") { close(sheet); close(ask); } });
   $("#ibSave").addEventListener("click", () => open(sheet));
   $("#ibClose").addEventListener("click", () => open(ask));
@@ -3148,6 +3190,8 @@ function fbLoad() {
   return fbWait;
 }
 const ref = () => fb.F.doc(fb.db, "users", user.uid);
+// Nach dem Start kennt Firebase den Nutzer erst nach einem Moment: darauf warten (höchstens 5 Sekunden)
+async function fbUser() { await fbLoad(); for (let i = 0; !authKnown && i < 50; i++) await new Promise(r => setTimeout(r, 100)); return user; }
 // Profilbilder: Demon-Slayer-Charaktere, einheitlich zugeschnitten und direkt in der Seite (laden sofort, auch ohne Internet)
 const AVATARS = [
   ["tanjiro", "Tanjiro", "Helden", "linear-gradient(135deg,#3BA776,#14301F)"],
@@ -3233,6 +3277,7 @@ async function acctSyncRun() {
     syncSt = "ok"; syncAt = Date.now();
     if (gen !== g) again = true;
     profPush(); // Profil für Freunde (Name, Bild, Gesehen) – ohne Freunde-Regeln schlägt das still fehl
+    frLoad(); // Freunde im Hintergrund auffrischen (für die Zeile in den Kacheln), höchstens alle 30 Sekunden
   } catch (e) {
     if (e !== 0) { syncSt = "err"; retryT = setTimeout(() => { if (acct.dirty) acctSync(); }, 30000); }
   }
@@ -3393,7 +3438,6 @@ acctBtn.addEventListener("click", openAcct);
 $("#pfEdit").addEventListener("click", openAcct);
 $("#pfLoginBtn").addEventListener("click", openAcct);
 acctOv.addEventListener("click", e => { if (e.target.closest("[data-close]")) closeAcct(); });
-acctOv.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !acctOv.hidden) closeAcct(); });
 async function lgRun(fn) {
   lgMsg(""); lgBusy(true);
@@ -3443,7 +3487,7 @@ const frOv = $("#frOv"), frAddOv = $("#frAddOv"), frListOv = $("#frListOv");
 const CODE_AB = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"; // ohne 0/O und 1/I, damit man sich nicht vertippt
 const fmtCode = c => c ? c.slice(0, 4) + "-" + c.slice(4) : "";
 const profRef = uid => fb.F.doc(fb.db, "profiles", uid);
-function frClear() { friends = []; store(KEY_FR, []); frAt = 0; frErrSt = ""; frSig = ""; if (frOv) { frOv.hidden = true; frAddOv.hidden = true; frListOv.hidden = true; } }
+function frClear() { friends = []; store(KEY_FR, []); frAt = 0; frErrSt = ""; frSig = ""; if (frOv) { frOv.hidden = true; frAddOv.hidden = true; frListOv.hidden = true; document.getElementById("frAsk").hidden = true; } frCards(); }
 // Eigenes Profil für Freunde sichern, nur wenn sich etwas geändert hat
 async function profPush() {
   if (!user || !fb) return;
@@ -3472,8 +3516,9 @@ async function myCode() {
 }
 // Freunde und ihre Profile holen (höchstens alle 30 Sekunden, außer erzwungen)
 async function frLoad(force) {
-  if (!user || !fb || frBusy || (!force && Date.now() - frAt < 30000)) return;
-  frBusy = true; const uid = user.uid;
+  if (frBusy) { if (force) { await frBusy; return frLoad(true); } return; }
+  if (!user || !fb || (!force && Date.now() - frAt < 30000)) return;
+  let done; frBusy = new Promise(r => { done = r; }); const uid = user.uid;
   try {
     const qs = await fb.F.getDocs(fb.F.collection(fb.db, "friends", uid, "list"));
     const out = [];
@@ -3487,8 +3532,8 @@ async function frLoad(force) {
     if (!user || user.uid !== uid) return;
     out.sort((a, b) => a.name.localeCompare(b.name, "de"));
     friends = out; store(KEY_FR, friends); frAt = Date.now(); frErrSt = "";
-  } catch (e) { frErrSt = e && e.code === "permission-denied" ? "rules" : "net"; }
-  finally { frBusy = false; }
+  } catch (e) { frErrSt = e && e.code === "permission-denied" ? "rules" : "net"; frAt = Date.now() - 20000; } // ohne Netz: erst in 10 Sekunden wieder
+  finally { frBusy = false; done(); }
   frRender();
   if (!frOv.hidden && frCur) frShow(frCur);
 }
@@ -3522,10 +3567,35 @@ function frRender() {
   m.textContent = frErrSt === "rules" ? "Freunde sind noch nicht eingerichtet: In Firebase fehlen die neuen Regeln."
     : !n ? "Noch keine Freunde. Füg welche hinzu und vergleicht, was ihr gesehen habt." : "";
   m.hidden = !m.textContent;
+  frCards();
+}
+// In den Kacheln zeigen, welche Freunde den Titel gesehen haben (nur wenn mindestens einer)
+let frCardSig = "";
+function frCards() {
+  if (!cardEls) return;
+  const sig = JSON.stringify(friends.map(f => [f.uid, f.name, f.av, f.seen.length]));
+  if (sig === frCardSig) return;
+  frCardSig = sig;
+  const by = new Map();
+  friends.forEach(f => f.seen.forEach(id => { const l = by.get(id); if (l) l.push(f); else by.set(id, [f]); }));
+  // Die Seite soll dabei nicht springen: die Karte oben im Bild bleibt, wo sie ist
+  const a = document.elementFromPoint(innerWidth / 2, 90), anchor = a && a.closest("#list .card"), top0 = anchor ? anchor.getBoundingClientRect().top : 0;
+  cardEls.forEach((el, id) => {
+    const l = by.get(id) || [], old = el.querySelector(".frw");
+    if (!l.length) { if (old) old.remove(); return; }
+    const nm = l.map(f => `<b>${esc(f.name)}</b>`);
+    const txt = l.length === 1 ? `${nm[0]} hat’s gesehen` : l.length === 2 ? `${nm[0]} und ${nm[1]} haben’s gesehen`
+      : l.length === 3 ? `${nm[0]}, ${nm[1]} und ${nm[2]} haben’s gesehen` : `${nm[0]}, ${nm[1]} und ${l.length - 2} weitere haben’s gesehen`;
+    const d = old || document.createElement("div");
+    d.className = "frw"; d.innerHTML = `<span class="pf-stack" aria-hidden="true">${l.slice(0, 3).map(frFace).join("")}</span><span class="frw-t">${txt}</span>`;
+    if (!old) el.querySelector(".facts").after(d);
+  });
+  if (anchor) { const dy = anchor.getBoundingClientRect().top - top0; if (Math.abs(dy) > 1) setY(getY() + dy); }
 }
 // Profil eines Freundes
 function frShow(uid) {
   const f = friends.find(x => x.uid === uid); if (!f) { frOv.hidden = true; frCur = ""; return; }
+  const oldRow = !frOv.hidden && frCur === uid && $("#fpShelf"), keepX = oldRow ? oldRow.scrollLeft : 0; // gleiche Ansicht neu gezeichnet: Reihe bleibt, wo sie war
   const st = frStat(f), both = st.list.filter(it => seen.has(it.id)), forMe = st.list.filter(it => !seen.has(it.id));
   // Neuer Freund geöffnet: mit „Nur … gesehen“ starten (oder der ersten Liste, in der etwas steht)
   if (frCur !== uid || !frTab) frTab = forMe.length || !both.length ? "new" : "both";
@@ -3536,20 +3606,20 @@ function frShow(uid) {
   const fav = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0];
   const lists = { new: forMe, both }, show = lists[frTab], nm = esc(f.name);
   const none = { new: st.n ? `Du hast schon alles gesehen, was ${nm} gesehen hat 🎉` : `${nm} hat noch nichts als gesehen markiert.`, both: "Ihr habt noch nichts Gleiches gesehen." }[frTab];
-  const sn = esc(f.name.length > 11 ? f.name.slice(0, 10).trim() + "…" : f.name); // lange Namen kürzen, „gesehen“ bleibt immer sichtbar
   const tab = (k, t) => `<button type="button" role="tab" data-tab="${k}" aria-selected="${frTab === k}"><b>${lists[k].length}</b><span>${t}</span></button>`;
   $("#frCard").innerHTML = `
     <button type="button" class="inst-x fp-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     <div class="fp-head frk rt${st.rt}"><span class="fp-av">${frFace(f)}<span class="fr-kj" aria-hidden="true">${st.kj}</span></span>
       <div class="fp-who"><b class="fp-name" id="fpName">${nm}</b><div class="fp-rank">${esc(st.rank)} <small>· ${st.n} ${prisc ? "Romanzen" : "gesehen"}</small></div></div></div>
     <div class="fp-stats"><div><b>${st.n}</b><small>${prisc ? "Romanzen" : "Gesehen"}</small></div><div><b>${hrs}</b><small>Stunden</small></div><div><b>${fav ? esc(fav[0]) : "–"}</b><small>Lieblingsgenre</small></div></div>
-    <div class="fp-seg" role="tablist" aria-label="Listen">${tab("new", `Nur ${sn} gesehen`)}${tab("both", "Beide gesehen")}</div>
+    <div class="fp-seg" role="tablist" aria-label="Listen">${tab("new", `<i>Nur ${nm}</i>&nbsp;gesehen`)}${tab("both", "Beide gesehen")}</div>
     <p class="fp-none"${show.length ? " hidden" : ""}>${none}</p>
     <ul class="shelf fp-row" id="fpShelf"${show.length ? "" : " hidden"}></ul>
     <button type="button" class="lg-link fp-rm" id="fpRm">Als Freund entfernen</button>`;
   const box = $("#fpShelf");
   show.forEach((it, i) => box.append(shelfLi(it, null, i < 6)));
   frOv.hidden = false;
+  if (keepX) box.scrollLeft = keepX;
 }
 async function frRemove(uid) {
   if (!user) return;
@@ -3565,9 +3635,11 @@ $("#pfFr").addEventListener("click", () => { if (friends.length) { frSig = ""; f
 frListOv.addEventListener("click", e => {
   if (e.target.closest("[data-close]")) { frListOv.hidden = true; return; }
   if (e.target.closest("#frListAdd")) { frOpenAdd(); return; }
-  const b = e.target.closest("[data-uid]"); if (b) frShow(b.dataset.uid);
+  const b = e.target.closest("[data-uid]");
+  if (b && friends.some(f => f.uid === b.dataset.uid)) { frListOv.classList.add("under"); frOv.classList.add("from-list"); frShow(b.dataset.uid); }
 });
-frListOv.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false });
+// Freund-Profil zu (egal wie): die Liste darunter ist wieder normal zu sehen
+new MutationObserver(() => { if (frOv.hidden) { frListOv.classList.remove("under"); frOv.classList.remove("from-list"); } }).observe(frOv, { attributes: true, attributeFilter: ["hidden"] });
 let rmUid = "";
 const frAsk = $("#frAsk");
 frOv.addEventListener("click", e => {
@@ -3583,10 +3655,8 @@ frOv.addEventListener("click", e => {
 });
 const closeFrAsk = () => { frAsk.hidden = true; rmUid = ""; };
 frAsk.addEventListener("click", e => { if (e.target.closest("[data-close]")) closeFrAsk(); });
-frAsk.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false });
 $("#frAskOk").addEventListener("click", () => { const u = rmUid; closeFrAsk(); if (u) frRemove(u); });
 frOv.addEventListener("keydown", e => { const li = e.target.closest("li[data-id]"); if (li && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openShelf(li.dataset.id); } });
-frOv.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false });
 // Freund hinzufügen
 function frErr(t) { const m = $("#frErr"); m.hidden = !t; m.textContent = t || ""; }
 async function frOpenAdd() {
@@ -3594,11 +3664,10 @@ async function frOpenAdd() {
   const c = $("#frMyCode");
   if (acct.code) { c.textContent = fmtCode(acct.code); return; }
   c.textContent = "…";
-  try { await fbLoad(); if (!user) { c.textContent = "–"; return; } c.textContent = fmtCode(await myCode()); }
+  try { if (!(await fbUser())) { c.textContent = "–"; return; } c.textContent = fmtCode(await myCode()); }
   catch (e) { c.textContent = "–"; frErr(e && e.code === "permission-denied" ? "Freunde sind noch nicht eingerichtet: In Firebase fehlen die neuen Regeln." : "Keine Verbindung. Versuch es gleich nochmal."); }
 }
 frAddOv.addEventListener("click", e => { if (e.target.closest("[data-close]")) { frAddOv.hidden = true; document.activeElement && document.activeElement.blur && document.activeElement.blur(); } });
-frAddOv.addEventListener("touchmove", e => { if (!e.target.closest(".ov-card")) e.preventDefault(); }, { passive: false });
 $("#frCopy").addEventListener("click", async () => {
   if (!acct.code) return;
   const b = $("#frCopy"), ic = b.querySelector("svg");
@@ -3613,7 +3682,7 @@ $("#frCopy").addEventListener("click", async () => {
 });
 $("#frSend").addEventListener("click", () => {
   if (!acct.code) return;
-  shareText(`🤝 *Lass uns in der Anime-App Freunde sein!*\n\nMein Code: *${fmtCode(acct.code)}*\n\n_Profil → Freunde → + → Code einfügen_`, "Code kopiert. Jetzt in WhatsApp einfügen.");
+  shareText(fmtCode(acct.code), "Code kopiert. Jetzt in WhatsApp einfügen.");
 });
 // Code im Text finden: getippt („7k4q x2pm“) oder die ganze WhatsApp-Nachricht eingefügt
 const CODE_CH = "[2-9A-HJ-NP-Z]";
@@ -3635,7 +3704,7 @@ $("#frForm").addEventListener("submit", async e => {
   if (c === acct.code) { frErr("Das ist dein eigener Code."); return; }
   const go = $("#frGo"); go.disabled = true; frErr("");
   try {
-    await fbLoad(); if (!user) throw { code: "auth" };
+    if (!(await fbUser())) throw { code: "auth" };
     const me = user.uid, s = await fb.F.getDoc(fb.F.doc(fb.db, "codes", c));
     if (!s.exists()) { frErr("Diesen Code gibt es nicht. Schau nochmal genau hin."); return; }
     const fid = s.data().uid;
@@ -3653,6 +3722,15 @@ $("#frForm").addEventListener("submit", async e => {
     frErr(err && err.code === "permission-denied" ? "Freunde sind noch nicht eingerichtet: In Firebase fehlen die neuen Regeln." : err && err.code === "auth" ? "Bitte melde dich zuerst an." : "Keine Verbindung. Versuch es gleich nochmal.");
   } finally { go.disabled = false; }
 });
+// Escape schließt immer nur das oberste Fenster (vorher gingen z. B. Titel und Freund zusammen zu)
+document.addEventListener("keydown", e => {
+  if (e.key !== "Escape") return;
+  if (!$("#rankUp").hidden) { e.stopImmediatePropagation(); return; } // die Rang-Meldung geht bewusst nur mit OK zu
+  const open = [...document.querySelectorAll(".ov")].filter(o => !o.hidden), top = open[open.length - 1];
+  const x = top && (top.querySelector(":scope > .ov-bg[data-close]") || top.querySelector("[data-close]"));
+  if (!x) return;
+  e.stopImmediatePropagation(); e.preventDefault(); x.click();
+}, true);
 document.addEventListener("keydown", e => { if (e.key !== "Escape") return; if (!frAsk.hidden) closeFrAsk(); else if (!frAddOv.hidden) frAddOv.hidden = true; else if (!frOv.hidden && shelfOv.hidden) { frOv.hidden = true; frCur = ""; } else if (!frListOv.hidden) frListOv.hidden = true; });
 acctUi();
 // Wer schon angemeldet war: Firebase erst kurz nach dem Start laden, damit die Seite nicht langsamer öffnet
