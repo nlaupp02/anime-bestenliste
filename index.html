@@ -536,7 +536,8 @@ html.prisc .prog.max .ring svg { filter: drop-shadow(0 0 4px rgba(246, 196, 83, 
 .pfh-stats b { font-size: 18px; color: var(--ink); }
 .pfh-stats small { font-size: 12px; font-weight: 600; color: var(--muted); }
 .pfh-stats > * { min-width: 0; padding: 0 4px; }
-#pfFav { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#pfFav { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 15.5px; }
+.pfh-stats b { line-height: 28px; }
 /* Freunde: kleiner Knopf oben links im Banner (Gesichter + Anzahl), öffnet die Liste */
 .pf-fr { position: absolute; top: 10px; left: 10px; z-index: 2; display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 12px 0 6px; border-radius: 18px;
   font: inherit; font-size: 13px; font-weight: 700; color: var(--ink); background: rgba(15, 17, 32, .55); border: 1px solid rgba(255, 255, 255, .14);
@@ -784,6 +785,10 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
 .standalone #frAddOv { padding-top: calc(env(safe-area-inset-top, 0px) + 28px); }
 .app:not(.standalone) #frAddOv { padding-top: calc(200px + env(safe-area-inset-top, 0px) + 28px); }
 .app:not(.standalone) #frAddOv.kb { padding-top: calc(env(safe-area-inset-top, 0px) + 28px); }
+.app #acctOv:has(#lgOutBox:not([hidden])) { align-items: start; }
+.standalone #acctOv:has(#lgOutBox:not([hidden])) { padding-top: calc(env(safe-area-inset-top, 0px) + 28px); }
+.app:not(.standalone) #acctOv:has(#lgOutBox:not([hidden])) { padding-top: calc(200px + env(safe-area-inset-top, 0px) + 28px); }
+.app:not(.standalone) #acctOv.kb:has(#lgOutBox:not([hidden])) { padding-top: calc(env(safe-area-inset-top, 0px) + 28px); }
 /* App: Auch unter dem Home-Balken unten zeigt das iPhone die Seite. Der Scrollbereich reicht deshalb dort hinunter. */
 .standalone #sc { bottom: -200px; }
 .standalone #sc > .wrap { padding-bottom: 200px; }
@@ -897,7 +902,8 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
 .fp-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)) minmax(0, 1.3fr); border-top: 1px solid var(--line); padding-top: 12px; text-align: center; }
 .fp-stats > div { min-width: 0; padding: 0 4px; }
 .fp-stats > div + div { border-left: 1px solid var(--line); }
-.fp-stats b { display: block; font-size: 17px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fp-stats b { display: block; font-size: 17px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 26px; }
+.fp-stats > div:last-child b { font-size: 14.5px; }
 .fp-stats small { font-size: 12px; font-weight: 600; color: var(--muted); }
 /* Zwei Kacheln mit großer Zahl: neu für dich, ihr beide – darunter ein Satz, was gerade zu sehen ist */
 /* Umschalter wie bei iPhone-Apps: „Gesehen von“ darüber, dann „Nur Max“ | „Euch beiden“, die Zahl als kleines Abzeichen */
@@ -975,7 +981,7 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V229</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V230</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1027,7 +1033,7 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
       <div class="pfh-rank" id="pfRank"><b id="progRank"></b><small id="pfNext"></small><button type="button" class="pfh-i" id="rankInfo" aria-label="Alle Ränge anzeigen"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".95" fill="currentColor"/></svg></button></div>
       <p class="pfh-hint" id="pfHint" hidden></p>
       <div class="pfh-login" id="pfLogin" hidden><p>Melde dich an, dann ist deine Liste auf allen Geräten.</p><button type="button" id="pfLoginBtn">Anmelden</button></div>
-      <div class="pfh-stats"><div><b id="pfSeen">0</b><small id="pfSeenL">Gesehen</small></div><div><b id="pfHrs">0</b><small id="pfHrsL">Stunden</small></div><div><b id="pfFav">–</b><small>Lieblingsgenre</small></div></div>
+      <div class="pfh-stats"><div><b id="pfSeen">0</b><small id="pfSeenL">Gesehen</small></div><div><b id="pfHrs">0</b><small id="pfHrsL">Stunden</small></div><div><b id="pfFav">–</b><small id="pfFavL">Lieblingsgenre</small></div></div>
       <button type="button" class="pf-fr" id="pfFr" hidden></button>
     </section>
     <p class="favg" id="favg" hidden></p>
@@ -1838,6 +1844,25 @@ const isTheme = k => !!k && Object.prototype.hasOwnProperty.call(THEMES, k);
 THEME_KEYS.forEach(k => byMine.filter(it => it.genres.includes("Romance") && THEMES[k](it)).forEach((it, i) => { (it.grR = it.grR || {})[k] = i + 1; }));
 // Gewähltes Genre oder Thema
 const inSel = it => isTheme(state.g2) ? THEMES[state.g2](it) : it.genres.includes(state.g2);
+// Lieblingsgenre (normal) bzw. Lieblingsthema (Priscilla-Modus). Ein Titel zählt in jedem Thema, in dem er steht.
+// Gleichstand: zuerst das Thema, das bei den Kacheln weiter vorne steht.
+const THEME_SHORT = { "Historisch & Fantasy": "Historisch", "Zum Lachen": "Lachen", "Zum Weinen": "Weinen", "Zum Wohlfühlen": "Wohlfühlen", "Zum Mitfiebern": "Mitfiebern" };
+function favTop(list) {
+  const cnt = {};
+  if (prisc) {
+    THEME_KEYS.forEach(k => { cnt[k] = 0; });
+    list.forEach(it => { if (it.genres.includes("Romance")) THEME_KEYS.forEach(k => { if (THEMES[k](it)) cnt[k]++; }); });
+  } else list.forEach(it => { const g = MAIN_G[it.key] || it.genres[0]; if (g) cnt[g] = (cnt[g] || 0) + 1; });
+  return Object.entries(cnt).filter(([, n]) => n > 0).sort((a, b) => b[1] - a[1]);
+}
+const favName = g => prisc ? THEME_SHORT[g] || g : g;
+const favWord = () => prisc ? "Lieblingsthema" : "Lieblingsgenre";
+function fitFav(e, base) {
+  if (!e) return;
+  e.style.fontSize = "";
+  const w = e.clientWidth, sw = e.scrollWidth;
+  if (w && sw > w) e.style.fontSize = Math.max(12, Math.floor(base * w / sw * 10) / 10) + "px";
+}
 
 // Gespeicherte Daten (nur in diesem Browser)
 const KEY = { saved: "cr-top100-saved", seen: "cr-top100-seen", filters: "cr-top100-filters", install: "cr-top100-install-closed" };
@@ -2696,19 +2721,14 @@ function renderShelf(list) {
     if (at !== li) box.insertBefore(li, at);
     prev = li;
   });
-  const mine = items.filter(it => seen.has(it.id) && (!prisc || isRom(it))), cnt = {};
-  // Lieblingsgenres: jeder Anime zählt nur einmal, bei seinem Hauptgenre (im Priscilla-Modus das erste außer Romance).
-  // Nur hier – im Genres-Reiter und in den Filtern steht ein Anime weiter in all seinen Genres.
-  mine.forEach(it => {
-    let g = MAIN_G[it.key] || it.genres[0];
-    if (prisc && g === "Romance") g = it.genres.find(x => x !== "Romance");
-    if (g) cnt[g] = (cnt[g] || 0) + 1;
-  });
-  // Nur das Lieblingsgenre (meiste Hauptgenres), bei Gleichstand alle gleich häufigen (höchstens drei)
-  const top = Object.entries(cnt).sort((a, b) => b[1] - a[1]);
-  const best = top.length ? top.filter(([, n]) => n === top[0][1]).slice(0, 3).map(([g]) => `<b>${g}</b>`) : [];
+  const mine = items.filter(it => seen.has(it.id) && (!prisc || isRom(it)));
+  // Lieblingsgenre: jeder Anime zählt nur einmal, bei seinem Hauptgenre. Im Priscilla-Modus: Lieblingsthema.
+  const top = favTop(mine);
+  const best = top.length ? top.filter(([, n]) => n === top[0][1]).slice(0, 3).map(([g]) => `<b>${favName(g)}</b>`) : [];
   $("#favg").hidden = true; // steht jetzt als Zahl in der Profil-Karte
-  $("#pfFav").textContent = top.length ? top[0][0] : "–";
+  $("#pfFav").textContent = top.length ? favName(top[0][0]) : "–";
+  $("#pfFavL").textContent = favWord();
+  fitFav($("#pfFav"), 15.5);
   $("#favg").innerHTML = best.length === 1 ? `Dein Lieblingsgenre: ${best[0]}` : `Deine Lieblingsgenres: ${best.slice(0, -1).join(", ")} & ${best[best.length - 1]}`;
 }
 // Nach dem Start im Hintergrund: Genre-Kacheln und Profil-Regal schon bauen und deren Bilder laden.
@@ -3695,9 +3715,7 @@ function frShow(uid) {
   if (frCur !== uid || !frTab) frTab = forMe.length || !both.length ? "new" : "both";
   frCur = uid;
   const hrs = Math.round(st.list.reduce((a, it) => a + minutesOf(it), 0) / 60);
-  const cnt = {};
-  st.list.forEach(it => { let g = MAIN_G[it.key] || it.genres[0]; if (prisc && g === "Romance") g = it.genres.find(x => x !== "Romance"); if (g) cnt[g] = (cnt[g] || 0) + 1; });
-  const fav = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0];
+  const fav = favTop(st.list)[0];
   const lists = { new: forMe, both }, show = lists[frTab], nm = esc(f.name);
   const none = { new: st.n ? `Du hast schon alles gesehen, was ${nm} gesehen hat 🎉` : `${nm} hat noch nichts als gesehen markiert.`, both: "Ihr habt noch nichts Gleiches gesehen." }[frTab];
   const tab = (k, t, al) => `<button type="button" role="tab" data-tab="${k}" aria-selected="${frTab === k}" aria-label="${al}: ${lists[k].length}"><span>${t}</span><em>${lists[k].length}</em></button>`;
@@ -3705,7 +3723,7 @@ function frShow(uid) {
     <button type="button" class="inst-x fp-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     <div class="fp-head frk rt${st.rt}"><span class="fp-av">${frFace(f)}<span class="fr-kj" aria-hidden="true">${st.kj}</span></span>
       <div class="fp-who"><b class="fp-name" id="fpName">${nm}</b><div class="fp-rank">${esc(st.rank)} <small>· ${st.n} ${prisc ? "Romanzen" : "gesehen"}</small></div></div></div>
-    <div class="fp-stats"><div><b>${st.n}</b><small>${prisc ? "Romanzen" : "Gesehen"}</small></div><div><b>${hrs}</b><small>Stunden</small></div><div><b>${fav ? esc(fav[0]) : "–"}</b><small>Lieblingsgenre</small></div></div>
+    <div class="fp-stats"><div><b>${st.n}</b><small>${prisc ? "Romanzen" : "Gesehen"}</small></div><div><b>${hrs}</b><small>Stunden</small></div><div><b>${fav ? esc(favName(fav[0])) : "–"}</b><small>${favWord()}</small></div></div>
     <div class="fp-sw"><small class="fp-lb" aria-hidden="true">Gesehen von</small><div class="fp-seg" role="tablist" aria-label="Gesehen von">${tab("new", `<i>Nur ${nm}</i>`, `Nur ${nm} gesehen`)}${tab("both", "Euch beiden", "Von euch beiden gesehen")}</div></div>
     <p class="fp-none"${show.length ? " hidden" : ""}>${none}</p>
     <ul class="shelf fp-row" id="fpShelf"${show.length ? "" : " hidden"}></ul>
@@ -3714,6 +3732,7 @@ function frShow(uid) {
   show.forEach((it, i) => box.append(shelfLi(it, keepLi.get(it.id), i < 6)));
   frOv.hidden = false;
   if (keepX) box.scrollLeft = keepX;
+  fitFav($("#frCard .fp-stats > div:last-child b"), 14.5);
 }
 async function frRemove(uid) {
   if (!user) return;
