@@ -850,7 +850,7 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
 .app:not(.standalone) #frAddOv { padding-top: calc(200px + max(calc(env(safe-area-inset-top, 0px) + 28px), calc(50svh - 150px))); }
 .app:not(.standalone) #frAddOv.kb { padding-top: max(calc(env(safe-area-inset-top, 0px) + 28px), calc(50svh - 150px)); }
 .app #acctOv:has(#lgOutBox:not([hidden])) { align-items: start; }
-.standalone #acctOv:has(#lgOutBox:not([hidden])) { padding-top: calc(env(safe-area-inset-top, 0px) + 28px); }
+.standalone #acctOv:has(#lgOutBox:not([hidden])) { padding-top: calc(env(safe-area-inset-top, 0px) + 36px); }
 .app:not(.standalone) #acctOv:has(#lgOutBox:not([hidden])) { padding-top: calc(200px + env(safe-area-inset-top, 0px) + 28px); }
 .app:not(.standalone) #acctOv.kb:has(#lgOutBox:not([hidden])) { padding-top: calc(env(safe-area-inset-top, 0px) + 28px); }
 /* App: Auch unter dem Home-Balken unten zeigt das iPhone die Seite. Der Scrollbereich reicht deshalb dort hinunter. */
@@ -986,6 +986,10 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
 .shelf.fp-row[hidden] { display: none; }
 .shelf.fp-row li { flex: none; width: 92px; }
 .shelf.fp-row .tt { font-size: 11.5px; }
+/* Freund: die 3 besten nebeneinander (ganze Cover), „Alle … zeigen“ darunter */
+.shelf.fp-grid { padding: 6px 4px 0 0; margin: 0; }
+.shelf.fp-grid[hidden] { display: none; }
+.fp-more { width: 100%; margin-top: -2px; }
 .fp-none { margin: 4px 0; font-size: 14px; color: var(--muted); text-align: center; }
 .fp-none[hidden] { display: none; }
 .fp-rm { justify-self: center; margin-top: -4px; }
@@ -1005,6 +1009,23 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
 #peNone::after { content: ""; position: absolute; inset: -10px -14px; }
 #peNone[aria-pressed="true"] { color: var(--ink); }
 .lg-sync { font-size: 13px; color: #5FD3A6; }
+/* Konto (angemeldet): Bild mit Ring in der Rangfarbe, Rang unter dem Namen, Karte „Alles gesichert“ */
+#lgInBox .lg-me { grid-template-columns: 56px minmax(0, 1fr) 36px; padding: 14px; }
+#lgInBox .lg-av { width: 56px; height: 56px; font-size: 22px; box-shadow: 0 0 0 2.5px var(--paper), 0 0 0 4.5px var(--lrc, var(--line)); }
+.lg-me .lg-rk { color: var(--lrc, var(--muted)); font-size: 13px; font-weight: 800; margin: 1px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; overflow-wrap: normal; }
+.lg-me .lg-rk[hidden] { display: none; }
+.lg-sy { display: grid; gap: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+.lg-sy-h { display: flex; align-items: center; gap: 11px; min-width: 0; }
+.lg-sy-i { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: rgba(95, 211, 166, .14); color: #5FD3A6; }
+.lg-sy-i svg { width: 19px; height: 19px; }
+.lg-sy-h b { display: block; font-size: 15px; }
+.lg-sy .lg-sync { display: block; color: var(--muted); font-size: 12.5px; }
+.lg-sy.busy .lg-sy-i { background: var(--chip); color: var(--muted); } .lg-sy.busy .ok { display: none; }
+.lg-sy.err .lg-sy-i { background: rgba(240, 192, 100, .14); color: #F0C064; } .lg-sy.err .ok { display: none; } .lg-sy.err .lg-sy-h b { color: #F0C064; }
+.lg-sy-n { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--line); padding-top: 11px; text-align: center; }
+.lg-sy-n div + div { border-left: 1px solid var(--line); }
+.lg-sy-n b { display: block; font-size: 17px; line-height: 1.2; }
+.lg-sy-n small { color: var(--muted); font-size: 11.5px; font-weight: 600; }
 .lg-sync.busy { color: var(--muted); } .lg-sync.err { color: #F0C064; }
 .lg-card button:disabled { opacity: .5; cursor: default; }
 /* Antippen spürbar wie in iOS-Apps: Knöpfe und Kacheln geben kurz nach und federn beim Loslassen weich zurück.
@@ -1053,7 +1074,7 @@ html.prisc .ach-strip { background: #3A1A2C; }
 .ach-strip b { font-size: 14px; }
 .ach-strip small { margin-left: auto; color: var(--muted); font-weight: 700; font-size: 13px; white-space: nowrap; }
 .fp-ach { width: auto; margin: 0; }
-.fp-ttl { display: block; width: fit-content; margin: 6px 0 0; cursor: default; }
+.fp-ttl { display: flex; width: fit-content; margin: 6px 0 0; cursor: default; }
 /* Fenster von unten */
 .ach-ov { place-items: end center; padding: 0; z-index: 45; }
 .ach-sh { position: relative; width: 100%; max-width: 560px; max-height: 88%; overflow-y: auto; overscroll-behavior: contain; background: var(--sheet); border: 1px solid var(--line); border-bottom: 0;
@@ -1173,17 +1194,18 @@ html.app .ach-sh { max-height: calc(88svh + 200px); padding-bottom: calc(222px +
 .ach-sh { padding-top: 22px; }
 /* Liste im Fenster: kein Gummiband-Dehnen oben und unten */
 .ach-sh { overscroll-behavior: none; }
-/* Titel-Schild: Wort genau mittig, der Stift sitzt als kleines rundes Abzeichen oben rechts an der Ecke */
-.ach-ttl:not(.add) { position: relative; padding: 4px 16px; }
-.ach-ttl:not(.add) .pen { position: absolute; top: -9px; right: -9px; width: 20px; height: 20px; padding: 4px; box-sizing: border-box; border-radius: 50%;
-  background: #2A2D45; border: 1px solid rgba(242, 193, 78, .45); stroke-width: 2.4; opacity: 1; }
-html.prisc .ach-ttl:not(.add) .pen { background: #3A1A2C; border-color: rgba(255, 143, 196, .5); }
+/* Titel-Schild: Münze vom Erfolg vorne, Name, kleiner Pfeil hinten (kein schwebender Stift mehr) */
+.ach-ttl:not(.add) { padding: 3px 11px 3px 3px; gap: 7px; }
+.ach-ttl .ttl-c { flex: none; display: block; width: 22px; height: 22px; }
+.ach-ttl .ttl-c svg { display: block; width: 22px; height: 22px; }
+.ach-ttl .chev { flex: none; width: 11px; height: 11px; margin-left: -1px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; opacity: .8; }
+.fp-ttl:not(.add) { padding-right: 12px; }
 /* Fortschritt im Kopf des Erfolge-Fensters */
 .ach-pb { height: 6px; border-radius: 6px; background: rgba(255, 255, 255, .08); margin: 12px 0 2px; overflow: hidden; }
 .ach-pb i { display: block; height: 100%; border-radius: 6px; background: linear-gradient(90deg, #E8B07E, #F2C14E); }
 html.prisc .ach-pb i { background: linear-gradient(90deg, #FFB3D6, #FF6FA8); }
 /* App: Erfolge und Titel gehen bis direkt unter die Uhr (vorher schaute die „Profil“-Überschrift halb heraus) */
-html.standalone .ach-sh { max-height: calc(100svh - env(safe-area-inset-top, 0px) - 12px + 200px); }
+html.standalone .ach-sh { max-height: calc(100svh - env(safe-area-inset-top, 0px) - 36px + 200px); }
 /* Antippen einer Münze: kleine Karte in der Mitte */
 .ach-dov { z-index: 50; }
 .ach-det { max-width: 300px; justify-items: center; text-align: center; gap: 6px; padding: 26px 18px 20px; }
@@ -1213,7 +1235,6 @@ html.prisc .ach-top::after { background: linear-gradient(#24121F, transparent); 
 @supports (background: color-mix(in srgb, red 10%, transparent)) {
   .prog .ach-ttl:not(.add), html.prisc .prog .ach-ttl:not(.add), .frk .ach-ttl, html.prisc .frk .ach-ttl {
     color: var(--rc, var(--gold)); background: color-mix(in srgb, var(--rc, var(--gold)) 14%, transparent); border-color: color-mix(in srgb, var(--rc, var(--gold)) 45%, transparent); }
-  .prog .ach-ttl:not(.add) .pen, html.prisc .prog .ach-ttl:not(.add) .pen { border-color: color-mix(in srgb, var(--rc, var(--gold)) 55%, transparent); }
 }
 /* „Kein Titel“ als letzte Zeile, etwas abgesetzt */
 .ttl-r.kt { margin-top: 8px; }
@@ -1240,7 +1261,7 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V255</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V256</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1334,8 +1355,8 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
       <div class="lg-links"><button type="button" class="lg-link" id="lgMode">Neues Konto erstellen</button><button type="button" class="lg-link" id="lgForgot">Passwort vergessen?</button></div>
     </div>
     <div id="lgInBox" class="lg-form" hidden>
-      <div class="lg-me"><span class="lg-av" id="lgAv">?</span><span><b id="lgName"></b><small id="lgEmail"></small></span><button type="button" class="lg-pen" id="lgEdit" aria-label="Profil bearbeiten"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 2.5l2.5 2.5L6 12.5H3.5V10z"/></svg></button></div>
-      <div class="lg-sync" id="lgSync"></div>
+      <div class="lg-me"><span class="lg-av" id="lgAv">?</span><span><b id="lgName"></b><small class="lg-rk" id="lgRk" hidden></small><small id="lgEmail"></small></span><button type="button" class="lg-pen" id="lgEdit" aria-label="Profil bearbeiten"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 2.5l2.5 2.5L6 12.5H3.5V10z"/></svg></button></div>
+      <div class="lg-sy" id="lgSy"><div class="lg-sy-h"><span class="lg-sy-i" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H8a6 6 0 1 1 5.7-7.9A4.5 4.5 0 1 1 17.5 19z"/><path class="ok" d="m9.5 14 2 2 3.5-3.5"/></svg></span><span><b id="lgSyT"></b><small class="lg-sync" id="lgSync"></small></span></div><div class="lg-sy-n"><div><b id="lgNS">0</b><small>Gesehen</small></div><div><b id="lgNM">0</b><small>Gemerkt</small></div><div><b id="lgNE">0</b><small>Erfolge</small></div></div></div>
     </div>
     <div id="peBox" class="lg-form" hidden>
       <input class="lg-in" id="peName" aria-label="Name" type="text" maxlength="11" autocomplete="nickname" placeholder="Dein Name">
@@ -2338,24 +2359,32 @@ function setPrisc(on, fx) {
 // Herzen und Kirschblüten fallen einmal über den Bildschirm (nur transform/opacity, bei „Bewegung reduzieren“ nicht)
 function petals() {
   if (reduce || !document.body.animate) return;
-  const d = document.documentElement, box = document.createElement("div");
+  const d = document.documentElement, box = document.createElement("div"), ps = [];
   box.className = "petals"; box.setAttribute("aria-hidden", "true");
-  const H = innerHeight + (d.classList.contains("app") && !d.classList.contains("standalone") ? 260 : 60);
+  const app = d.classList.contains("app"), sa = d.classList.contains("standalone");
+  // App vom Homescreen: Die Seite ist kürzer als der Bildschirm (ohne Statusleiste). Mit der Bildschirmhöhe rechnen, sonst hörten die Blüten über dem unteren Rand auf
+  const H = (sa ? Math.max(innerHeight, screen.height || 0) : innerHeight) + (app && !sa ? 260 : 70);
   const icons = ["🌸", "💗", "🌸", "💕", "🌸", "💖"];
   for (let i = 0; i < 28; i++) {
     const p = document.createElement("span"); p.className = "petal"; p.textContent = icons[i % icons.length];
-    p.style.left = (Math.random() * 96) + "%"; p.style.fontSize = (16 + Math.random() * 14) + "px";
-    box.append(p);
-    const sw = Math.random() * 70 - 35, rot = Math.random() * 300 - 150;
-    p.animate([
-      { transform: "translate(0, 0) rotate(0deg)", opacity: 0 },
-      { opacity: 1, offset: .08 },
-      { transform: `translate(${sw}px, ${H * .5}px) rotate(${rot / 2}deg)`, offset: .5 },
-      { transform: `translate(${-sw / 2}px, ${H}px) rotate(${rot}deg)`, opacity: .85 }
-    ], { duration: 2300 + Math.random() * 1300, delay: Math.random() * 900, easing: "linear", fill: "backwards" });
+    p.style.left = (Math.random() * 96) + "%"; p.style.fontSize = (16 + Math.random() * 14) + "px"; p.style.opacity = "0";
+    box.append(p); ps.push(p);
   }
   document.body.append(box);
-  setTimeout(() => box.remove(), 4700);
+  // Erst loslegen, wenn die Liste fertig umgebaut und gezeichnet ist (zwei Bilder später), sonst ruckeln die ersten Blüten
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    ps.forEach(p => {
+      const sw = Math.random() * 70 - 35, rot = Math.random() * 300 - 150;
+      p.animate([
+        { transform: "translate(0, 0) rotate(0deg)", opacity: 0 },
+        { opacity: 1, offset: .08 },
+        { transform: `translate(${sw}px, ${H * .5}px) rotate(${rot / 2}deg)`, offset: .5 },
+        { opacity: .9, offset: .8 },
+        { transform: `translate(${-sw / 2}px, ${H}px) rotate(${rot}deg)`, opacity: 0 }
+      ], { duration: 2300 + Math.random() * 1300, delay: Math.random() * 900, easing: "linear", fill: "backwards" });
+    });
+    setTimeout(() => box.remove(), 4700);
+  }));
 }
 // Beenden nur mit Nachfrage (Knopf in der Leiste oder „Priscilla“ noch einmal eintippen)
 const prisAsk = $("#prisAsk");
@@ -3827,7 +3856,15 @@ function acctUi() {
     if ($("#lgAv").dataset.face !== faceKey) { $("#lgAv").innerHTML = face(); $("#lgAv").dataset.face = faceKey; }
     $("#lgAv").classList.toggle("pic", !!me.av);
     $("#lgName").textContent = me.name; $("#lgEmail").textContent = me.email;
-    const t = $("#lgSync"); t.textContent = user ? syncText() : "Wird verbunden …"; t.className = "lg-sync" + (!user || syncSt === "busy" ? " busy" : syncSt === "err" ? " err" : "");
+    const st = !user || !syncSt ? "busy" : syncSt, sec = (Date.now() - syncAt) / 1000;
+    $("#lgSy").className = "lg-sy" + (st === "busy" ? " busy" : st === "err" ? " err" : "");
+    $("#lgSyT").textContent = !user ? "Wird verbunden …" : st === "busy" ? "Wird gesichert …" : st === "err" ? "Gerade nicht gesichert" : "Alles gesichert";
+    $("#lgSync").textContent = st === "busy" ? "Gesehen, Gemerkt, Rang und Erfolge" : st === "err" ? "Keine Verbindung · wird automatisch nachgeholt"
+      : (sec < 60 ? "gerade eben" : "um " + new Date(syncAt).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }) + " Uhr") + " · auf Handy und PC gleich";
+    $("#lgNS").textContent = seen.size; $("#lgNM").textContent = saved.size; $("#lgNE").textContent = typeof ACHM !== "undefined" && ACHM ? ACHM.cnt() : 0;
+    const rk = $("#progRank"), rkT = rk ? rk.textContent.trim() : "";
+    $("#lgRk").textContent = rkT; $("#lgRk").hidden = !rkT;
+    if (rk && rkT) $("#lgInBox").style.setProperty("--lrc", getComputedStyle(rk).color);
   }
   $("#lgGo").textContent = rs ? (lgSent ? "Zur Anmeldung" : "Link zum Zurücksetzen schicken") : lgCreate ? "Konto erstellen" : "Anmelden";
   $("#lgMode").textContent = rs ? "← Zurück zur Anmeldung" : lgCreate ? "Ich habe schon ein Konto" : "Neues Konto erstellen";
@@ -3859,7 +3896,15 @@ function refreshUser() {
   return Promise.race([fb.U.reload(user).then(() => { if (fb.auth.currentUser) user = fb.auth.currentUser; acct.name = nameOf(user); acct.av = avOf(user); saveAcct(); acctUi(); }),
     new Promise(r => setTimeout(r, 1500))]).catch(() => {});
 }
-$("#lgEdit").addEventListener("click", () => refreshUser().then(() => openEdit(false)));
+$("#lgEdit").addEventListener("click", () => {
+  openEdit(false);
+  const n0 = $("#peName").value, a0 = peSel;
+  refreshUser().then(() => {
+    if (!lgEditing || !user) return; // nur übernehmen, was noch nicht angefasst wurde
+    if ($("#peName").value === n0) $("#peName").value = nameOf(user);
+    if (peSel === a0) { peSel = avOf(user); peMark(); }
+  });
+});
 $("#peGrid").addEventListener("click", e => { const b = e.target.closest(".pe-it"); if (b) { peSel = b.dataset.av; peMark(); } });
 $("#peNone").addEventListener("click", () => { peSel = ""; peMark(); });
 $("#peCancel").addEventListener("click", () => { lgEditing = false; lgMsg(""); acctUi(); if (peNew) closeAcct(); });
@@ -3965,7 +4010,7 @@ const KEY_TIPS = "cr-top100-tips", KEY_SENT = "cr-top100-tips-sent", KEY_TIPK = 
 var tipsIn = acct.uid ? load(KEY_TIPS, []) : [], tipsOut = acct.uid ? load(KEY_SENT, []) : [];
 if (!Array.isArray(tipsIn)) tipsIn = [];
 if (!Array.isArray(tipsOut)) tipsOut = [];
-let frAt = 0, frBusy = false, frErrSt = "", frCur = "", frTab = "", frSig = "";
+let frAt = 0, frBusy = false, frErrSt = "", frCur = "", frTab = "", frSig = "", frAll = false;
 const frOv = $("#frOv"), frAddOv = $("#frAddOv"), frListOv = $("#frListOv");
 const CODE_AB = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"; // ohne 0/O und 1/I, damit man sich nicht vertippt
 const fmtCode = c => c ? c.slice(0, 4) + "-" + c.slice(4) : "";
@@ -4287,7 +4332,7 @@ function frShow(uid) {
   const keepLi = new Map(oldRow ? [...oldRow.children].map(li => [li.dataset.id, li]) : []); // vorhandene Cover weiterverwenden: nichts lädt neu, nichts blitzt
   const st = frStat(f), both = st.list.filter(it => seen.has(it.id)), forMe = st.list.filter(it => !seen.has(it.id));
   // Neuer Freund geöffnet: mit „Nur … gesehen“ starten (oder der ersten Liste, in der etwas steht)
-  if (frCur !== uid || !frTab) frTab = forMe.length || !both.length ? "new" : "both";
+  if (frCur !== uid || !frTab) { frTab = forMe.length || !both.length ? "new" : "both"; frAll = false; }
   frCur = uid;
   const hrs = Math.round(st.list.reduce((a, it) => a + minutesOf(it), 0) / 60);
   const fav = favTop(st.list)[0];
@@ -4299,12 +4344,12 @@ function frShow(uid) {
     <div class="fp-head frk rt${st.rt}"><span class="fp-av">${frFace(f)}<span class="fr-kj" aria-hidden="true">${st.kj}</span></span>
       <div class="fp-who"><b class="fp-name" id="fpName">${nm}</b><div class="fp-rank">${esc(st.rank)} <small>· ${st.n} ${prisc ? "Romanzen" : "gesehen"}</small></div></div></div>
     <div class="fp-stats"><div><b>${st.n}</b><small>${prisc ? "Romanzen" : "Gesehen"}</small></div><div><b>${hrs}</b><small>Stunden</small></div><div><b>${fav ? esc(favName(fav[0])) : "–"}</b><small>${favWord()}</small></div></div>
-    <div class="fp-sw"><small class="fp-lb" aria-hidden="true">Gesehen von</small><div class="fp-seg" role="tablist" aria-label="Gesehen von">${tab("new", `<i>Nur ${nm}</i>`, `Nur ${nm} gesehen`)}${tab("both", "Euch beiden", "Von euch beiden gesehen")}</div></div>
+    <div class="fp-sw"><small class="fp-lb" aria-hidden="true">Von ${esc(f.name.trim().split(/\s+/)[0])}</small><div class="fp-seg" role="tablist" aria-label="Gesehen von ${nm}">${tab("new", "<i>Für dich neu</i>", `Von ${nm} gesehen, von dir noch nicht`)}${tab("both", "<i>Gemeinsam</i>", "Von euch beiden gesehen")}</div></div>
     <p class="fp-none"${show.length ? " hidden" : ""}>${none}</p>
-    <ul class="shelf fp-row" id="fpShelf"${show.length ? "" : " hidden"}></ul>
+    <ul class="shelf fp-grid" id="fpShelf"${show.length ? "" : " hidden"}></ul>${show.length > 3 ? `<button type="button" class="ov-btn fp-more" id="fpMore">${frAll ? "Weniger zeigen" : `Alle ${show.length} zeigen`}</button>` : ""}
     <button type="button" class="lg-link fp-rm" id="fpRm">Als Freund entfernen</button>`;
   const box = $("#fpShelf");
-  show.forEach((it, i) => box.append(shelfLi(it, keepLi.get(it.id), i < 6)));
+  (frAll ? show : show.slice(0, 3)).forEach((it, i) => box.append(shelfLi(it, keepLi.get(it.id), i < 9)));
   ACHM && ACHM.friend(f);
   frOv.hidden = false;
   if (keepX) box.scrollLeft = keepX;
@@ -4335,7 +4380,8 @@ frOv.addEventListener("click", e => {
   if (e.target.closest("[data-close]")) { frOv.hidden = true; frCur = ""; return; }
   const li = e.target.closest("li[data-id]"); if (li) { openShelf(li.dataset.id); return; }
   const tb = e.target.closest("[data-tab]");
-  if (tb) { frTab = tb.dataset.tab; frShow(frCur); const r = $("#fpShelf"); if (r) r.scrollLeft = 0; return; }
+  if (e.target.closest("#fpMore")) { frAll = !frAll; frShow(frCur); return; }
+  if (tb) { frTab = tb.dataset.tab; frAll = false; frShow(frCur); return; }
   if (e.target.closest("#fpRm")) {
     const f = friends.find(x => x.uid === frCur); rmUid = frCur;
     $("#frAskTitle").textContent = `${f ? f.name : "Freund"} als Freund entfernen?`;
@@ -4501,7 +4547,7 @@ if (FB_HOST && acct.uid) setTimeout(() => fbLoad().catch(() => { syncSt = "err";
 // (Würfel-Tipp, nachts, neu in der Liste, Priscilla entdeckt), stehen in cr-top100-ach-ev.
 // Var statt const: Die Haken oben im Skript rufen ACHM?.… auf, bevor dieser Teil geladen ist – dann passiert einfach nichts.
 var ACHM = (() => {
-  const KEY_A = "cr-top100-ach", KEY_EV = "cr-top100-ach-ev", KEY_TTL = "cr-top100-title", KEY_TH = "cr-top100-design", KEY_RW = "cr-top100-ach-rw", KEY_PUSH = "cr-top100-ach-push", KEY_INFO = "cr-top100-ach-info", KEY_RE = "cr-top100-ach-re1";
+  const KEY_A = "cr-top100-ach", KEY_EV = "cr-top100-ach-ev", KEY_TTL = "cr-top100-title", KEY_TH = "cr-top100-design", KEY_RW = "cr-top100-ach-rw", KEY_PUSH = "cr-top100-ach-push", KEY_INFO = "cr-top100-ach-info", KEY_RE = "cr-top100-ach-re2";
   // Romanzen, in denen ein Hund eine wichtige Rolle spielt (für den geheimen Liebes-Erfolg „Daemon“, 2 davon)
   const DOG = new Set(["Inuyasha", "Fruits Basket", "The Ancient Magus' Bride"]);
   const MOOD = new Map([...DATA, ...EXTRA].map(d => [d[0], String(d[11] || "")]));
@@ -4618,7 +4664,8 @@ var ACHM = (() => {
     const L = set(), d = doneOf(L), t = myTtl();
     tb.hidden = !d.length;
     tb.className = "ach-ttl" + (t ? "" : " add");
-    tb.innerHTML = t ? `${esc(t.ti)}<svg class="pen" viewBox="0 0 24 24" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>` : "+ Titel wählen";
+    // Titel-Schild: Münze vom Erfolg vorne, Name, kleiner Pfeil (= antippen zum Wechseln)
+    tb.innerHTML = t ? `<span class="ttl-c" aria-hidden="true">${pic(t)}</span>${esc(t.ti)}<svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3"/></svg>` : "+ Titel wählen";
     tb.setAttribute("aria-label", t ? `Titel: ${t.ti}. Ändern` : "Titel wählen");
     const last = d.slice().sort((a, b) => got[b.id][0] - got[a.id][0]).slice(0, 4);
     sb.hidden = false;
@@ -4669,7 +4716,7 @@ var ACHM = (() => {
     const bottom = o.getBoundingClientRect().top + sh.offsetTop + sh.offsetHeight;
     if (!(vb > 0 && bottom > 0)) return;
     sh.style.paddingBottom = Math.max(22, Math.round(bottom - (vb - sab - 16))) + "px";
-    sh.style.maxHeight = Math.round(bottom - (Math.max(sat, 20) + 12)) + "px"; // mindestens unter die Statusleiste
+    sh.style.maxHeight = Math.round(bottom - (Math.max(sat, 20) + 36)) + "px"; // unter der Uhr legt das iPhone selbst eine Unschärfe (ca. 30px), das Fenster beginnt darunter
   }
   function open(fv) { frV = fv && fv.ids ? fv : null; sheet(); ov.hidden = false; fit(ov); ov.querySelector(".ach-sh").scrollTop = 0; }
   ov.addEventListener("click", e => {
@@ -4739,8 +4786,8 @@ var ACHM = (() => {
         else if (Math.abs(d) > 6) { y0 = null; return; }
         else return;
       }
-      dy = Math.max(0, d); sh.style.transform = `translateY(${dy}px)`; e.preventDefault();
-    }, { passive: false });
+      dy = Math.max(0, d); sh.style.transform = `translateY(${dy}px)`;
+    }, { passive: true }); // passiv: Das iPhone muss beim Scrollen nie auf die App warten (sonst hängt die Liste manchmal). Ganz oben bewegt sich die Liste nicht weiter (overscroll-behavior: none)
     const end = () => {
       if (y0 == null) return; y0 = null;
       if (!drag) return; drag = false;
@@ -4888,7 +4935,7 @@ var ACHM = (() => {
     const L = prisc ? P : N, ids = new Set((prisc ? f.achP : f.ach) || []), his = L.filter(a => ids.has(a.id));
     const tid = prisc ? f.ttlP : f.ttl, ta = tid && ids.has(tid) ? BYID.get(tid) : null;
     const rk = c.querySelector(".fp-rank");
-    if (rk && ta) rk.insertAdjacentHTML("afterend", `<span class="ach-ttl fp-ttl">${esc(ta.ti)}</span>`);
+    if (rk && ta) rk.insertAdjacentHTML("afterend", `<span class="ach-ttl fp-ttl"><span class="ttl-c" aria-hidden="true">${pic(ta)}</span>${esc(ta.ti)}</span>`);
     const st = c.querySelector(".fp-stats");
     if (st && his.length) {
       st.insertAdjacentHTML("afterend", `<button type="button" class="ach-strip fp-ach"><span class="ach-mm">${his.slice(-5).reverse().map(a => pic(a)).join("")}</span><b>${prisc ? "Liebes-Erfolge" : "Erfolge"}</b><small>${his.length} von ${L.length} ›</small></button>`);
@@ -4921,12 +4968,12 @@ var ACHM = (() => {
   }
   store(KEY_INFO, 1);
   // V244: Die Banner waren oben unscharf. Einmal alle schon geschafften Erfolge nochmal im Schnelldurchlauf zeigen
-  if (!firstRun && !load(KEY_RE, 0)) { Object.values(got).forEach(v => { if (Array.isArray(v) && v[1] === 1) v[1] = 2; }); store(KEY_A, got); }
+  if (!firstRun && !load(KEY_RE, 0)) { Object.values(got).forEach(v => { if (Array.isArray(v) && v[1] >= 1) v[1] = 2; }); store(KEY_A, got); } // V256: alle Banner noch einmal zeigen
   store(KEY_RE, 1);
   if (!firstRun && !Array.isArray(rwSeen)) { rwSeen = [...RW, ...RWP].filter(r => rwOn(r[1])).map(r => r[1]); store(KEY_RW, rwSeen); }
   prof();
   setTimeout(() => { check(); applyTheme(); }, 1200);
-  return { prof, check, evt, dice, priscOn, friend, open, push };
+  return { prof, check, evt, dice, priscOn, friend, open, push, cnt: () => doneOf(set()).length };
 })();
 </script>
 
