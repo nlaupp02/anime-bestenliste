@@ -1008,6 +1008,7 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
 .lg-av.pic, html.prisc .lg-av.pic, .acct.pic, html.prisc .acct.pic, html.prisc .acct.on.pic { background: none; border-color: transparent; }
 .pe-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px 8px; }
 #peBox { gap: 10px; }
+#peBox > .ov-row { position: sticky; bottom: -16px; z-index: 2; margin: 0 -16px -16px; padding: 4px 16px 16px; background: var(--sheet); border-radius: 0 0 18px 18px; box-shadow: 0 -12px 12px -4px var(--sheet); }
 #acctOv .ov-card { max-height: calc(100% - 8px); }
 #peName { padding: 10px 13px; }
 .pe-it { font: inherit; display: grid; justify-items: center; gap: 3px; font-size: 12px; color: var(--muted); font-weight: 600; background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
@@ -1030,7 +1031,7 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
 .pe-ok svg { width: 12px; height: 12px; }
 .pe-it[aria-pressed="true"] .pe-ok { display: grid; }
 /* Sehr wenig Höhe (Safari auf dem iPhone SE mit Leisten): Vorschau etwas kleiner, damit alles ohne Rollen passt */
-@media (max-height: 600px) { .pe-top { grid-template-columns: 54px minmax(0, 1fr); padding: 10px 12px; gap: 12px; } .pe-pv { width: 54px; height: 54px; } .pe-pv .avr.fr-l { font-size: 22px; } .pe-grp { margin: 2px 0 -4px; } .pe-grid { gap: 6px 8px; } }
+@media (max-height: 720px) { .pe-img { max-width: 54px; } .pe-top { grid-template-columns: 54px minmax(0, 1fr); padding: 10px 12px; gap: 12px; } .pe-pv { width: 54px; height: 54px; } .pe-pv .avr.fr-l { font-size: 22px; } .pe-grp { margin: 2px 0 -4px; } .pe-grid { gap: 6px 8px; } }
 .pe-it[aria-pressed="true"] .pe-img { box-shadow: 0 0 0 2px var(--sheet), 0 0 0 4px var(--gold); transform: scale(1.06); }
 /* „Ohne Bild“ als kleiner Text-Link mittig unter den Figuren, mit größerer unsichtbarer Tippfläche */
 #peNone { position: relative; }
@@ -1301,7 +1302,7 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V263</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V264</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -2396,8 +2397,12 @@ function setPrisc(on, fx) {
   setTimeout(() => ACHM && ACHM.check(), on ? 2600 : 1600);
 }
 // Herzen und Kirschblüten fallen einmal über den Bildschirm (nur transform/opacity, bei „Bewegung reduzieren“ nicht)
-function petals() {
+function petals(t0) {
   if (reduce || !document.body.animate) return;
+  // Safari: Kommt der Modus aus der Suche, klappt erst die Tastatur zu, und danach rückt die Seite 200px an ihren Platz zurück (kbHold).
+  // Erst danach starten, sonst sprangen die Blüten mittendrin nach oben und ruckelten
+  t0 = t0 || performance.now();
+  if (kbOn && performance.now() - t0 < 2500) { setTimeout(() => petals(t0), 60); return; }
   const d = document.documentElement, box = document.createElement("div"), ps = [];
   box.className = "petals"; box.setAttribute("aria-hidden", "true");
   const app = d.classList.contains("app"), sa = d.classList.contains("standalone");
@@ -4834,7 +4839,7 @@ var ACHM = (() => {
     if (e.target.closest("[data-close]")) { dov.hidden = true; return; }
     const b = e.target.closest(".ach-tt"); if (!b) return;
     const a = BYID.get(b.dataset.id); if (!a) return;
-    ttl[prisc ? "p" : "n"] = a.id; store(KEY_TTL, ttl); prof(); push();
+    ttl[prisc ? "p" : "n"] = a.id; ttl.d = 1; store(KEY_TTL, ttl); prof(); push(true);
     dov.hidden = true; toast(`Dein Titel: ${a.ti}`, null, 1800);
   });
   // ---- Titel wählen ----
@@ -4851,8 +4856,8 @@ var ACHM = (() => {
     if (e.target.closest("[data-close]")) { tov.hidden = true; return; }
     if (e.target.closest(".ttl-more")) { tov.hidden = true; open(); return; }
     const b = e.target.closest(".ttl-r:not(.lk)"); if (!b) return;
-    ttl[prisc ? "p" : "n"] = b.dataset.id || ""; store(KEY_TTL, ttl);
-    tsheet(); prof(); push();
+    ttl[prisc ? "p" : "n"] = b.dataset.id || ""; ttl.d = 1; store(KEY_TTL, ttl);
+    tsheet(); prof(); push(true);
     const a = BYID.get(b.dataset.id);
     setTimeout(() => { tov.hidden = true; }, 350);
     toast(a ? `Dein Titel: ${a.ti}` : "Kein Titel mehr", null, 1800);
@@ -5001,11 +5006,11 @@ var ACHM = (() => {
   // ---- Für Freunde: Titel und Erfolge ins Profil (eigener Schreibvorgang, damit ein Fehler sonst nichts stört) ----
   let pushT = 0, pulledUid = "";
   // Einmal pro Anmeldung: Erfolge und Titel aus dem Konto holen (z. B. auf dem anderen Gerät freigeschaltet)
-  async function pull() {
-    if (pulledUid === user.uid) return;
+  async function pull(force) {
+    if (pulledUid === user.uid && !force) return;
     const uid = user.uid, last = load(KEY_UID, "");
     // Anderes Konto auf diesem Gerät: Die lokalen Erfolge und Titel gehören dem vorigen Konto und dürfen nicht ins neue
-    if (last && last !== uid) {
+    if (last && last !== uid && pulledUid !== uid) {
       got = {}; ttl = {}; ev = {}; saveEv(); store(KEY_TTL, ttl);
       try { localStorage.removeItem(KEY_PUSH); } catch (e) {}
       const pg = prog(); [...N, ...P].forEach(a => { const [h, need] = pg[a.id]; if (need > 0 && h >= need) got[a.id] = [Date.now(), 1]; }); // aus den jetzigen Haken neu, ohne Banner
@@ -5021,21 +5026,36 @@ var ACHM = (() => {
       if (typeof id === "string" && BYID.has(id) && !got[id]) { got[id] = [Date.now(), 1]; ch = true; }
     });
     if (ch) store(KEY_A, got);
-    // Titel nur übernehmen, wenn auf diesem Gerät noch keiner gewählt wurde
-    if (!("n" in ttl) && typeof x.ttl === "string" && BYID.has(x.ttl)) { ttl.n = x.ttl; ch = true; }
-    if (!("p" in ttl) && typeof x.ttlP === "string" && BYID.has(x.ttlP)) { ttl.p = x.ttlP; ch = true; }
+    // Titel: Was im Konto steht, gilt auf allen Geräten (dort steht immer die zuletzt gewählte Wahl, egal von welchem Gerät).
+    // Nur eine Wahl von hier, die noch nicht im Konto angekommen ist (d), bleibt und wird gleich geschrieben
+    const ok = v => typeof v === "string" && (v === "" || BYID.has(v));
+    if (!ttl.d) {
+      if (ok(x.ttl) && x.ttl !== (ttl.n || "")) { ttl.n = x.ttl; ch = true; }
+      if (ok(x.ttlP) && x.ttlP !== (ttl.p || "")) { ttl.p = x.ttlP; ch = true; }
+    }
     if (ch) { store(KEY_TTL, ttl); prof(); }
   }
-  function push() {
+  // Zurück in der App (z. B. nach einer Wahl auf dem anderen Gerät): Titel aus dem Konto neu holen, höchstens alle 15 s
+  let pullAt = 0;
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden || !FB_HOST || !user || !fb || pulledUid !== user.uid || Date.now() - pullAt < 15000) return;
+    pullAt = Date.now(); pull(true).catch(() => {});
+  });
+  // Titel kommen nur nach einer Wahl ins Konto (sonst überschrieb ein Gerät mit altem Titel die neue Wahl vom anderen)
+  function push(now) {
     clearTimeout(pushT);
     pushT = setTimeout(async () => {
       if (!FB_HOST || !user || !fb) return;
       try { await pull(); } catch (e) { return; } // ohne Abgleich nichts überschreiben
-      const t = ttl || {}, d = { ttl: t.n && done(t.n) ? t.n : "", ttlP: t.p && done(t.p) ? t.p : "", ach: doneOf(N).map(a => a.id), achP: doneOf(P).map(a => a.id) };
+      const t = ttl || {}, sn = t.n, sp = t.p, d = { ach: doneOf(N).map(a => a.id), achP: doneOf(P).map(a => a.id) }, wt = !!t.d;
+      if (wt) { d.ttl = t.n && done(t.n) ? t.n : ""; d.ttlP = t.p && done(t.p) ? t.p : ""; }
       const sig = user.uid + JSON.stringify(d);
-      if (load(KEY_PUSH, "") === sig) return;
-      try { await fb.F.setDoc(profRef(user.uid), d, { merge: true }); store(KEY_PUSH, sig); } catch (e) { /* Regeln erlauben es noch nicht: nicht schlimm */ }
-    }, 1500);
+      if (!wt && load(KEY_PUSH, "") === sig) return;
+      try {
+        await fb.F.setDoc(profRef(user.uid), d, { merge: true }); store(KEY_PUSH, sig);
+        if (wt && ttl.n === sn && ttl.p === sp) { delete ttl.d; store(KEY_TTL, ttl); } // angekommen (inzwischen nicht neu gewählt)
+      } catch (e) { /* Regeln erlauben es noch nicht: nicht schlimm */ }
+    }, now ? 300 : 1500);
   }
   // ---- Freundes-Profil: Titel unter dem Rang und Leiste mit seinen Erfolgen (nur ansehen) ----
   function friend(f) {
