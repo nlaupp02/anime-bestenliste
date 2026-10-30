@@ -986,10 +986,6 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
 .shelf.fp-row[hidden] { display: none; }
 .shelf.fp-row li { flex: none; width: 92px; }
 .shelf.fp-row .tt { font-size: 11.5px; }
-/* Freund: die 3 besten nebeneinander (ganze Cover), „Alle … zeigen“ darunter */
-.shelf.fp-grid { padding: 6px 4px 0 0; margin: 0; }
-.shelf.fp-grid[hidden] { display: none; }
-.fp-more { width: 100%; margin-top: -2px; }
 .fp-none { margin: 4px 0; font-size: 14px; color: var(--muted); text-align: center; }
 .fp-none[hidden] { display: none; }
 .fp-rm { justify-self: center; margin-top: -4px; }
@@ -1261,7 +1257,7 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V256</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V257</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4010,7 +4006,7 @@ const KEY_TIPS = "cr-top100-tips", KEY_SENT = "cr-top100-tips-sent", KEY_TIPK = 
 var tipsIn = acct.uid ? load(KEY_TIPS, []) : [], tipsOut = acct.uid ? load(KEY_SENT, []) : [];
 if (!Array.isArray(tipsIn)) tipsIn = [];
 if (!Array.isArray(tipsOut)) tipsOut = [];
-let frAt = 0, frBusy = false, frErrSt = "", frCur = "", frTab = "", frSig = "", frAll = false;
+let frAt = 0, frBusy = false, frErrSt = "", frCur = "", frTab = "", frSig = "";
 const frOv = $("#frOv"), frAddOv = $("#frAddOv"), frListOv = $("#frListOv");
 const CODE_AB = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"; // ohne 0/O und 1/I, damit man sich nicht vertippt
 const fmtCode = c => c ? c.slice(0, 4) + "-" + c.slice(4) : "";
@@ -4332,7 +4328,7 @@ function frShow(uid) {
   const keepLi = new Map(oldRow ? [...oldRow.children].map(li => [li.dataset.id, li]) : []); // vorhandene Cover weiterverwenden: nichts lädt neu, nichts blitzt
   const st = frStat(f), both = st.list.filter(it => seen.has(it.id)), forMe = st.list.filter(it => !seen.has(it.id));
   // Neuer Freund geöffnet: mit „Nur … gesehen“ starten (oder der ersten Liste, in der etwas steht)
-  if (frCur !== uid || !frTab) { frTab = forMe.length || !both.length ? "new" : "both"; frAll = false; }
+  if (frCur !== uid || !frTab) frTab = forMe.length || !both.length ? "new" : "both";
   frCur = uid;
   const hrs = Math.round(st.list.reduce((a, it) => a + minutesOf(it), 0) / 60);
   const fav = favTop(st.list)[0];
@@ -4346,10 +4342,10 @@ function frShow(uid) {
     <div class="fp-stats"><div><b>${st.n}</b><small>${prisc ? "Romanzen" : "Gesehen"}</small></div><div><b>${hrs}</b><small>Stunden</small></div><div><b>${fav ? esc(favName(fav[0])) : "–"}</b><small>${favWord()}</small></div></div>
     <div class="fp-sw"><small class="fp-lb" aria-hidden="true">Von ${esc(f.name.trim().split(/\s+/)[0])}</small><div class="fp-seg" role="tablist" aria-label="Gesehen von ${nm}">${tab("new", "<i>Für dich neu</i>", `Von ${nm} gesehen, von dir noch nicht`)}${tab("both", "<i>Gemeinsam</i>", "Von euch beiden gesehen")}</div></div>
     <p class="fp-none"${show.length ? " hidden" : ""}>${none}</p>
-    <ul class="shelf fp-grid" id="fpShelf"${show.length ? "" : " hidden"}></ul>${show.length > 3 ? `<button type="button" class="ov-btn fp-more" id="fpMore">${frAll ? "Weniger zeigen" : `Alle ${show.length} zeigen`}</button>` : ""}
+    <ul class="shelf fp-row" id="fpShelf"${show.length ? "" : " hidden"}></ul>
     <button type="button" class="lg-link fp-rm" id="fpRm">Als Freund entfernen</button>`;
   const box = $("#fpShelf");
-  (frAll ? show : show.slice(0, 3)).forEach((it, i) => box.append(shelfLi(it, keepLi.get(it.id), i < 9)));
+  show.forEach((it, i) => box.append(shelfLi(it, keepLi.get(it.id), i < 6)));
   ACHM && ACHM.friend(f);
   frOv.hidden = false;
   if (keepX) box.scrollLeft = keepX;
@@ -4380,8 +4376,7 @@ frOv.addEventListener("click", e => {
   if (e.target.closest("[data-close]")) { frOv.hidden = true; frCur = ""; return; }
   const li = e.target.closest("li[data-id]"); if (li) { openShelf(li.dataset.id); return; }
   const tb = e.target.closest("[data-tab]");
-  if (e.target.closest("#fpMore")) { frAll = !frAll; frShow(frCur); return; }
-  if (tb) { frTab = tb.dataset.tab; frAll = false; frShow(frCur); return; }
+  if (tb) { frTab = tb.dataset.tab; frShow(frCur); const r = $("#fpShelf"); if (r) r.scrollLeft = 0; return; }
   if (e.target.closest("#fpRm")) {
     const f = friends.find(x => x.uid === frCur); rmUid = frCur;
     $("#frAskTitle").textContent = `${f ? f.name : "Freund"} als Freund entfernen?`;
