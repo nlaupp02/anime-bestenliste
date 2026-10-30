@@ -1279,7 +1279,7 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V259</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V260</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1334,7 +1334,7 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
       <div class="pfh-login" id="pfLogin" hidden><p>Melde dich an, dann ist deine Liste auf allen Geräten.</p><button type="button" id="pfLoginBtn">Anmelden</button></div>
       <div class="pfh-stats"><div><b id="pfSeen">0</b><small id="pfSeenL">Gesehen</small></div><div><b id="pfHrs">0</b><small id="pfHrsL">Stunden</small></div><div><b id="pfFav">–</b><small id="pfFavL">Lieblingsgenre</small></div></div>
       <button type="button" class="ach-strip" id="achStrip" hidden></button>
-      <div class="ach-test" id="achTest" hidden><small>🧪 Nur im Artifact: zum Ausprobieren</small><div><button type="button" data-t="ban">Erfolg-Banner</button><button type="button" data-t="info">Alte Erfolge</button><button type="button" data-t="rank">Rang-Fenster</button><button type="button" data-t="all">Alle freischalten</button><button type="button" data-t="friend">Freund (Beispiel)</button><button type="button" data-t="prisc">Priscilla an/aus</button><button type="button" data-t="reset">Zurücksetzen</button></div></div>
+      <div class="ach-test" id="achTest" hidden><small>🧪 Nur im Artifact: zum Ausprobieren</small><div><button type="button" data-t="ban">Erfolg-Banner</button><button type="button" data-t="info">Alte Erfolge</button><button type="button" data-t="rank">Rang-Fenster</button><button type="button" data-t="all">Alle freischalten</button><button type="button" data-t="friend">Freund (Beispiel)</button><button type="button" data-t="tip">Tipp (Beispiel)</button><button type="button" data-t="prisc">Priscilla an/aus</button><button type="button" data-t="reset">Zurücksetzen</button></div></div>
       <button type="button" class="pf-fr" id="pfFr" hidden></button>
     </section>
     <p class="favg" id="favg" hidden></p>
@@ -4935,6 +4935,19 @@ var ACHM = (() => {
       const demo = { uid: "demo", name: "Max", av: "", seen: items.filter((it, i) => i % 6 === 0).slice(0, 26).map(it => it.id), ttl: "films", ttlP: "p_first",
         ach: ["start", "films", "tears", "action", "comedy", "friend", "adventure", "mystery", "prisc"], achP: ["p_first", "p_five", "p_film", "p_laugh"] };
       friends.push(demo); frShow("demo"); friends = friends.filter(f => f.uid !== "demo");
+    } else if (t === "tip") {
+      // Beispiel: so kommt ein Tipp von einem Freund an (zwei Tipps, nichts davon wird gespeichert; nur „Merken“ merkt wirklich)
+      const fr = friends[0] || { uid: "demo", name: "Max Beispiel", av: "akaza", seen: [], ach: [], achP: [] };
+      const free = byMine.filter(it => !seen.has(it.id) && !saved.has(it.id) && (!prisc || isRom(it)));
+      if (!free.length) { toast("Kein ungesehener Titel für einen Tipp da"); return; }
+      const pick = [...new Set([free[Math.floor(Math.random() * Math.min(15, free.length))], free[Math.floor(Math.random() * free.length)]])];
+      const add = !friends.includes(fr), keep = tipsIn;
+      if (add) friends.push(fr);
+      tipsIn = pick.map((it, i) => ({ id: it.id, from: fr.uid, at: Date.now() - (i ? 2 * 3600e3 : 4 * 60e3), k: "test" + i }));
+      const tipEl = document.getElementById("tipOv");
+      const end = new MutationObserver(() => { if (tipEl.hidden && !tipQ.length) { end.disconnect(); tipsIn = keep; if (add) friends = friends.filter(f => f !== fr); tipRow(true); } });
+      end.observe(tipEl, { attributes: true, attributeFilter: ["hidden"] });
+      tipShow(tipsIn); // im Test sofort (sonst wartet er, bis z. B. ein Erfolg-Banner durch ist)
     } else if (t === "prisc") { setPrisc(!prisc, true); render(); }
     else if (t === "reset") { [KEY_A, KEY_EV, KEY_TTL, KEY_RW, KEY_PUSH, KEY_INFO, KEY_RE].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} }); location.reload(); }
   });
