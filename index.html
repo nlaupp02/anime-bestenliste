@@ -1081,37 +1081,47 @@ html.prisc .ach-rb i { background: linear-gradient(90deg, #FF8FC4, #FF4F9A); }
 .ach-d.on { border-color: var(--gold); }
 .ach-d:disabled { opacity: .45; cursor: default; }
 .ach-gl { font-size: 11.5px; font-weight: 800; letter-spacing: .14em; color: var(--muted); margin: 18px 2px 10px; }
-.ach-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px 6px; }
-.ach-b { display: grid; justify-items: center; align-content: start; text-align: center; gap: 3px; }
-.ach-b svg { width: 80px; height: 80px; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .45)); }
+.ach-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px 4px; }
+.ach-b { display: grid; justify-items: center; align-content: start; text-align: center; gap: 3px; min-width: 0; }
+/* Lange Namen (z. B. „Herzensbrecherin“) mit Trennstrich umbrechen statt in die Nachbar-Spalte zu laufen */
+.ach-b b, .ach-b small { max-width: 100%; overflow-wrap: anywhere; }
+.ach-b b { -webkit-hyphens: manual; hyphens: manual; }
+.ach-b small { -webkit-hyphens: auto; hyphens: auto; hyphenate-limit-chars: 8 4 4; }
+.ach-b svg { width: 60px; height: 60px; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .4)); }
 .ach-b.off svg { filter: grayscale(.85) brightness(.7); }
 /* Normaler Modus: Silber sieht sonst fast gleich aus wie ausgegraut. Offene Münzen deshalb ganz grau, dunkel und blasser */
 html:not(.prisc) .ach-b.off svg { filter: grayscale(1) brightness(.5); opacity: .6; }
 .ach-b .tr { font-size: 9.5px; font-weight: 800; letter-spacing: .12em; }
-.ach-b b { font-size: 12.5px; line-height: 1.2; }
-.ach-b small { font-size: 11px; color: var(--muted); line-height: 1.25; }
+.ach-b b { font-size: 11px; line-height: 1.2; margin-top: 2px; }
+.ach-b small { font-size: 10px; color: var(--muted); line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 html.prisc .ach-b small { color: #C99AB2; }
-.ach-pg { font: 400 11px/1 var(--f-display); background: var(--chip); border-radius: 7px; padding: 3px 6px; }
-html.prisc .ach-pg { background: #3A1A2C; }
+/* Stand bei offenen Erfolgen: kleine graue Zahl unter dem Namen, ohne Kasten */
+.ach-pg { font-size: 10.5px; font-weight: 800; line-height: 1.1; color: var(--muted); font-variant-numeric: tabular-nums; }
+html.prisc .ach-pg { color: #C99AB2; }
 .ach-x { position: absolute; top: 12px; right: 12px; }
 /* Titel wählen: Liste, eine Zeile pro Titel */
-.ttl-list { display: grid; gap: 2px; }
-.ttl-r { display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px 8px; border: 0; border-radius: 12px; background: none; font: inherit; color: var(--ink); text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.ttl-list { display: grid; gap: 4px; margin-top: 12px; }
+.ttl-r { display: flex; align-items: center; gap: 12px; width: 100%; padding: 9px 10px; border: 0; border-radius: 14px; background: none; font: inherit; color: var(--ink); text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .ttl-r:active { background: rgba(255, 255, 255, .05); }
-.ttl-r svg, .ttl-no { width: 30px; height: 30px; flex: none; }
-.ttl-no { display: grid; place-items: center; color: var(--muted); font-size: 14px; }
-.ttl-r b { flex: 1; min-width: 0; font-size: 14.5px; line-height: 1.25; }
-.ttl-r small { flex: none; max-width: 46%; color: var(--muted); font-size: 11.5px; line-height: 1.25; text-align: right; }
-html.prisc .ttl-r small { color: #C99AB2; }
-.ttl-rd { width: 20px; height: 20px; flex: none; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; font-size: 12px; font-weight: 900; line-height: 1; }
-.ttl-r.on { background: rgba(242, 193, 78, .08); }
+.ttl-r svg, .ttl-no { width: 38px; height: 38px; flex: none; }
+.ttl-no { box-sizing: border-box; border: 1.5px dashed rgba(232, 234, 243, .3); border-radius: 50%; }
+.ttl-tx { flex: 1; min-width: 0; display: grid; gap: 1px; }
+.ttl-tx b { font-size: 15px; line-height: 1.25; }
+.ttl-tx small { color: var(--muted); font-size: 12px; line-height: 1.3; }
+html.prisc .ttl-tx small { color: #C99AB2; }
+.ttl-rd { width: 22px; height: 22px; flex: none; box-sizing: border-box; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; font-size: 12px; font-weight: 900; line-height: 1; }
+.ttl-r.on { background: rgba(242, 193, 78, .09); box-shadow: inset 0 0 0 1px rgba(242, 193, 78, .35); }
 .ttl-r.on b { color: var(--gold); }
 .ttl-r.on .ttl-rd { background: var(--gold); border-color: var(--gold); color: var(--on-gold); }
-html.prisc .ttl-r.on { background: rgba(255, 143, 196, .08); }
+html.prisc .ttl-r.on { background: rgba(255, 143, 196, .09); box-shadow: inset 0 0 0 1px rgba(255, 143, 196, .4); }
 html.prisc .ttl-r.on b { color: #FF8FC4; }
 html.prisc .ttl-r.on .ttl-rd { background: #FF8FC4; border-color: #FF8FC4; color: #2A0A18; }
-.ttl-r.lk { opacity: .45; cursor: default; }
-.ttl-r.lk:active { background: none; }
+/* Unten: wie viele Titel noch fehlen, Antippen öffnet die Erfolge */
+.ttl-more { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 14px; padding: 12px 14px; border: 0; border-radius: 14px; background: var(--chip); font: inherit; color: var(--muted); text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+html.prisc .ttl-more { background: #3A1A2C; }
+.ttl-more:active { opacity: .7; }
+.ttl-more b { flex: 1; color: var(--ink); font-size: 13px; font-weight: 700; }
+.ttl-more i { font-style: normal; font-size: 18px; }
 /* Banner oben, wenn ein Erfolg freigeschaltet wird */
 .ach-ban { position: fixed; z-index: 60; left: 12px; right: 12px; top: calc(env(safe-area-inset-top, 0px) + 10px); max-width: 480px; margin: 0 auto; display: flex; align-items: center; gap: 12px;
   padding: 10px 14px 10px 10px; border-radius: 20px; background: var(--sheet); border: 1px solid var(--line); box-shadow: 0 10px 26px rgba(0, 0, 0, .45);
@@ -1146,6 +1156,14 @@ html.prisc .toast .toast-act { color: #D9367A; }
 /* Steht gerade ein Erfolg-Banner oben, kommt der Hinweis darunter (Klasse per Skript: „body:has(…)“ ließ das iPhone bei jedem Tippen hängen) */
 .toast.low, .app .toast.low { top: calc(env(safe-area-inset-top, 0px) + 108px); }
 .app .ach-ban { position: absolute; }
+
+/* Handy: Das Fenster reicht 200px unter den Bildschirmrand (wie die Fenster-Fläche selbst). So geht es in der App und in Safari
+   bis ganz unten durch, auch hinter der Safari-Leiste, und die Liste rollt bis dorthin, statt mitten im Bild abgeschnitten zu enden.
+   Der Innenabstand unten sorgt dafür, dass der letzte Eintrag trotzdem über dem Rand bzw. über der Leiste stehen bleibt. */
+html.app .ov.ach-ov { padding-bottom: 0; }
+html.app .ach-sh { max-height: calc(88svh + 200px); padding-bottom: calc(222px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -18px 50px rgba(0, 0, 0, .45); }
+/* Kein Griff mehr oben im Fenster (es gibt das X, nach unten wischen geht trotzdem) */
+.ach-sh { padding-top: 22px; }
 </style>
 </head>
 <body>
@@ -1159,7 +1177,7 @@ html.prisc .toast .toast-act { color: #D9367A; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V243</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V244</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4419,7 +4437,7 @@ if (FB_HOST && acct.uid) setTimeout(() => fbLoad().catch(() => { syncSt = "err";
 // (Würfel-Tipp, nachts, neu in der Liste, Priscilla entdeckt), stehen in cr-top100-ach-ev.
 // Var statt const: Die Haken oben im Skript rufen ACHM?.… auf, bevor dieser Teil geladen ist – dann passiert einfach nichts.
 var ACHM = (() => {
-  const KEY_A = "cr-top100-ach", KEY_EV = "cr-top100-ach-ev", KEY_TTL = "cr-top100-title", KEY_TH = "cr-top100-design", KEY_RW = "cr-top100-ach-rw", KEY_PUSH = "cr-top100-ach-push", KEY_INFO = "cr-top100-ach-info";
+  const KEY_A = "cr-top100-ach", KEY_EV = "cr-top100-ach-ev", KEY_TTL = "cr-top100-title", KEY_TH = "cr-top100-design", KEY_RW = "cr-top100-ach-rw", KEY_PUSH = "cr-top100-ach-push", KEY_INFO = "cr-top100-ach-info", KEY_RE = "cr-top100-ach-re1";
   // Romanzen, in denen ein Hund eine wichtige Rolle spielt (für den geheimen Liebes-Erfolg „Daemon“, 2 davon)
   const DOG = new Set(["Inuyasha", "Fruits Basket", "The Ancient Magus' Bride"]);
   const MOOD = new Map([...DATA, ...EXTRA].map(d => [d[0], String(d[11] || "")]));
@@ -4476,6 +4494,10 @@ var ACHM = (() => {
     p_first: "Zuckerschnute", p_five: "Herzensbrecherin", p_tears: "Heulsuse", p_laugh: "Kichererbse", p_cozy: "Kuschelkönigin", p_fairy: "Cinderella",
     p_thrill: "Drama-Queen", p_film: "Couch Potato", p_villain: "Bösewicht", p_seal: "Liebes-Expertin" };
   [...N, ...P].forEach(a => { a.n = TI[a.id] || a.n; a.ti = a.n; }); // Erfolg und Titel heißen gleich
+  // Lange Namen dürfen im Erfolge-Fenster nur an sinnvoller Stelle umbrechen (unsichtbarer Trennstrich, sonst nichts)
+  const SHY = { Herzensbrecherin: "Herzens\u00ADbrecherin", Kuschelkönigin: "Kuschel\u00ADkönigin", Marathonläufer: "Marathon\u00ADläufer", Sportskanone: "Sports\u00ADkanone",
+    Klingenmeister: "Klingen\u00ADmeister", Weltenwanderer: "Welten\u00ADwanderer", Zuckerschnute: "Zucker\u00ADschnute", Perfektionist: "Perfektio\u00ADnist",
+    Goldsammler: "Gold\u00ADsammler", Allesfresser: "Alles\u00ADfresser", Kichererbse: "Kicher\u00ADerbse", Trendsetter: "Trend\u00ADsetter", Abenteurer: "Abenteu\u00ADrer", Kinogänger: "Kino\u00ADgänger" };
   const BYID = new Map([...N, ...P].map(a => [a.id, a]));
   // Belohnungen: Designs im normalen Modus, Herz-Ring im Priscilla-Modus
   const RW = []; // keine Farb-Designs
@@ -4550,40 +4572,32 @@ var ACHM = (() => {
     const L = set(), d = L.filter(a => has(a.id)), pg = fv ? {} : prog(), rws = prisc ? RWP : RW, nx = rws.find(r => d.length < r[0]);
     const cell = a => {
       const [h, need] = pg[a.id] || [0, 1], ok = has(a.id);
-      if (!ok && a.sec) return `<div class="ach-b">${seal(a.t === "pk")}${a.t === "pk" ? "" : `<span class="tr" style="color:#6B7194">GEHEIM</span>`}<b style="color:#6B7194">???</b><small>Versiegelt</small></div>`;
-      const tr = TIER[a.t] && !prisc ? `<span class="tr" style="color:${TIER[a.t][1]}">${TIER[a.t][0]}</span>` : "";
-      return `<div class="ach-b${ok ? "" : " off"}">${pic(a)}${tr}<b>${esc(a.n)}</b>${ok || fv ? `<small>${esc(a.d)}</small>` : `<span class="ach-pg">${Math.min(h, need)}/${need}</span><small>${esc(a.d)}</small>`}</div>`;
+      if (!ok && a.sec) return `<div class="ach-b">${seal(a.t === "pk")}<b style="color:#6B7194">???</b><small>Versiegelt</small></div>`;
+      return `<div class="ach-b${ok ? "" : " off"}">${pic(a)}<b>${esc(SHY[a.n] || a.n)}</b>${ok || fv ? "" : `<span class="ach-pg" aria-label="${Math.min(h, need)} von ${need}">${Math.min(h, need)}/${need}</span>`}<small>${esc(a.d)}</small></div>`;
     };
     const grp = (lbl, l) => `<div class="ach-gl">${lbl}</div><div class="ach-grid">${l.map(cell).join("")}</div>`;
     const body = prisc ? `<div class="ach-gl">LIEBES-ERFOLGE</div><div class="ach-grid">${P.map(cell).join("")}</div>`
-      : grp("EINSTIEG", N.filter(a => a.t === "br")) + grp("GENRES", N.filter(a => a.t === "sv")) + grp("BESONDERES", N.filter(a => a.t === "gd")) + grp("GEHEIM", N.filter(a => a.t === "gh"));
+      : grp("EINSTIEG · BRONZE", N.filter(a => a.t === "br")) + grp("GENRES · SILBER", N.filter(a => a.t === "sv")) + grp("BESONDERES · GOLD", N.filter(a => a.t === "gd")) + grp("GEHEIM", N.filter(a => a.t === "gh"));
     const rw = "";
     const ds = "";
-    ov.querySelector(".ach-sh").innerHTML = `<div class="ach-grab"></div><button type="button" class="inst-x ach-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>`
+    ov.querySelector(".ach-sh").innerHTML = `<button type="button" class="inst-x ach-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>`
       + `<div class="ach-hd"><div><h3>${(prisc ? "Liebes-Erfolge" : "Erfolge") + (fv ? " von " + esc(fv.name) : prisc ? " 💘" : "")}</h3><p>${d.length} von ${L.length} freigeschaltet</p></div></div>${rw}${ds}${body}`;
   }
-  // Fenster reicht bis ganz nach unten an den Bildschirmrand (vorher blieb in der App unten ein Streifen mit Kante)
-  function fitBottom(o) {
-    const sh = o.querySelector(".ach-sh"); sh.style.marginBottom = ""; sh.style.paddingBottom = "";
-    const vv = window.visualViewport, vh = vv ? vv.height + vv.offsetTop : innerHeight;
-    const gap = Math.round(vh - (o.getBoundingClientRect().top + sh.offsetTop + sh.offsetHeight));
-    if (gap > 0 && gap < 200) { sh.style.marginBottom = -gap + "px"; sh.style.paddingBottom = `calc(${gap + 22}px + env(safe-area-inset-bottom, 0px))`; }
-  }
-  function open(fv) { frV = fv && fv.ids ? fv : null; sheet(); ov.hidden = false; fitBottom(ov); ov.querySelector(".ach-sh").scrollTop = 0; }
+  function open(fv) { frV = fv && fv.ids ? fv : null; sheet(); ov.hidden = false; ov.querySelector(".ach-sh").scrollTop = 0; }
   ov.addEventListener("click", e => { if (e.target.closest("[data-close]")) ov.hidden = true; });
   // ---- Titel wählen ----
   function tsheet() {
     const L = set(), d = doneOf(L), t = myTtl(), pg = prog();
-    const row = (a, on) => `<button type="button" class="ttl-r${on ? " on" : ""}" data-id="${a ? a.id : ""}">${a ? pic(a) : '<span class="ttl-no">–</span>'}<b>${a ? esc(a.ti) : "Kein Titel"}</b><small>${a ? esc(a.d) : "Nur den Rang zeigen"}</small><span class="ttl-rd" aria-hidden="true">${on ? "✓" : ""}</span></button>`;
-    const lk = L.filter(a => !done(a.id) && !a.sec).map(a => [a, pg[a.id] || [0, 1]]).sort((x, y) => (y[1][0] / y[1][1]) - (x[1][0] / x[1][1]));
-    const sec = L.filter(a => !done(a.id) && a.sec).length;
-    tov.querySelector(".ach-sh").innerHTML = `<div class="ach-grab"></div><button type="button" class="inst-x ach-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>`
+    const row = (a, on) => `<button type="button" class="ttl-r${on ? " on" : ""}" data-id="${a ? a.id : ""}">${a ? pic(a) : '<span class="ttl-no" aria-hidden="true"></span>'}<span class="ttl-tx"><b>${a ? esc(a.ti) : "Kein Titel"}</b><small>${a ? esc(a.d) : "Nur den Rang zeigen"}</small></span><span class="ttl-rd" aria-hidden="true">${on ? "✓" : ""}</span></button>`;
+    const lk = L.length - d.length;
+    tov.querySelector(".ach-sh").innerHTML = `<button type="button" class="inst-x ach-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>`
       + `<div class="ach-hd"><div><h3>Titel wählen</h3><p>${d.length} von ${L.length} freigeschaltet</p></div></div>`
       + `<div class="ttl-list">${row(null, !t)}${d.map(a => row(a, t === a)).join("")}</div>`
-      + (lk.length || sec ? `<div class="ach-gl">NOCH GESPERRT · ${lk.length + sec}</div><div class="ttl-list">${lk.map(([a, [h, need]]) => `<div class="ttl-r lk"><span class="ttl-no">🔒</span><b>${esc(a.ti)}</b><small>noch ${Math.max(need - h, 1)} · ${esc(a.d)}</small></div>`).join("")}${sec ? `<div class="ttl-r lk"><span class="ttl-no">🔒</span><b>???</b><small>${sec} geheime${sec === 1 ? "r" : ""} Titel</small></div>` : ""}</div>` : "");
+      + (lk ? `<button type="button" class="ttl-more"><span aria-hidden="true">🔒</span><b>${lk} weitere${lk === 1 ? "r" : ""} Titel über ${prisc ? "Liebes-Erfolge" : "Erfolge"} freischalten</b><i aria-hidden="true">›</i></button>` : "");
   }
   tov.addEventListener("click", e => {
     if (e.target.closest("[data-close]")) { tov.hidden = true; return; }
+    if (e.target.closest(".ttl-more")) { tov.hidden = true; open(); return; }
     const b = e.target.closest(".ttl-r:not(.lk)"); if (!b) return;
     ttl[prisc ? "p" : "n"] = b.dataset.id || ""; store(KEY_TTL, ttl);
     tsheet(); prof(); push();
@@ -4591,7 +4605,7 @@ var ACHM = (() => {
     setTimeout(() => { tov.hidden = true; }, 350);
     toast(a ? `Dein Titel: ${a.ti}` : "Kein Titel mehr", null, 1800);
   });
-  $("#achTtl").addEventListener("click", () => { tsheet(); tov.hidden = false; fitBottom(tov); tov.querySelector(".ach-sh").scrollTop = 0; });
+  $("#achTtl").addEventListener("click", () => { tsheet(); tov.hidden = false; tov.querySelector(".ach-sh").scrollTop = 0; });
   // Fenster mit dem Griff oben nach unten wegwischen (wie bei iPhone-Apps). Geht nur, wenn die Liste ganz oben steht.
   function swipeClose(o) {
     const sh = o.querySelector(".ach-sh"); let y0 = null, dy = 0, t0 = 0, drag = false;
@@ -4600,7 +4614,8 @@ var ACHM = (() => {
       if (y0 == null) return;
       const d = e.touches[0].clientY - y0;
       if (!drag) {
-        if (d > 6 && sh.scrollTop <= 0) { drag = true; sh.style.transition = "none"; }
+        // Ganz oben und nach unten gezogen: sofort selbst übernehmen, sonst dehnt das iPhone erst die Liste im Fenster (Gummiband)
+        if (d > 0 && sh.scrollTop <= 0) { e.preventDefault(); if (d > 6) { drag = true; sh.style.transition = "none"; } else return; }
         else if (Math.abs(d) > 6) { y0 = null; return; }
         else return;
       }
@@ -4689,7 +4704,7 @@ var ACHM = (() => {
         ach: ["start", "films", "tears", "action", "comedy", "friend", "adventure", "mystery", "prisc"], achP: ["p_first", "p_five", "p_film", "p_laugh"] };
       friends.push(demo); frShow("demo"); friends = friends.filter(f => f.uid !== "demo");
     } else if (t === "prisc") { setPrisc(!prisc, true); render(); }
-    else if (t === "reset") { [KEY_A, KEY_EV, KEY_TTL, KEY_RW, KEY_PUSH, KEY_INFO].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} }); location.reload(); }
+    else if (t === "reset") { [KEY_A, KEY_EV, KEY_TTL, KEY_RW, KEY_PUSH, KEY_INFO, KEY_RE].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} }); location.reload(); }
   });
   // ---- Prüfen, ob etwas Neues freigeschaltet ist ----
   let rwSeen = load(KEY_RW, null);
@@ -4777,6 +4792,9 @@ var ACHM = (() => {
     store(KEY_A, got);
   }
   store(KEY_INFO, 1);
+  // V244: Die Banner waren oben unscharf. Einmal alle schon geschafften Erfolge nochmal im Schnelldurchlauf zeigen
+  if (!firstRun && !load(KEY_RE, 0)) { Object.values(got).forEach(v => { if (Array.isArray(v) && v[1] === 1) v[1] = 2; }); store(KEY_A, got); }
+  store(KEY_RE, 1);
   if (!firstRun && !Array.isArray(rwSeen)) { rwSeen = [...RW, ...RWP].filter(r => rwOn(r[1])).map(r => r[1]); store(KEY_RW, rwSeen); }
   prof();
   setTimeout(() => { check(); applyTheme(); }, 1200);
