@@ -1088,7 +1088,7 @@ html.prisc .ach-rb i { background: linear-gradient(90deg, #FF8FC4, #FF4F9A); }
 /* Lange Namen (z. B. „Herzensbrecherin“) mit Trennstrich umbrechen statt in die Nachbar-Spalte zu laufen */
 .ach-b b, .ach-b small { max-width: 100%; overflow-wrap: anywhere; }
 .ach-b b { -webkit-hyphens: manual; hyphens: manual; }
-.ach-b small { -webkit-hyphens: auto; hyphens: auto; hyphenate-limit-chars: 8 4 4; }
+.ach-b small { -webkit-hyphens: manual; hyphens: manual; overflow-wrap: break-word; } /* keine Trennstriche wie „ge-sehen“ */
 /* Schatten ohne Filter: runde Münzen bekommen einen runden Schatten (läuft auf dem iPhone flüssiger), nur Herzen brauchen den Filter */
 .ach-b svg { width: 60px; height: 60px; }
 .ach-b:not(.off) svg.cn { border-radius: 50%; box-shadow: 0 4px 9px rgba(0, 0, 0, .4); }
@@ -1202,6 +1202,13 @@ html.prisc .ach-det .pb i { background: #FF8FC4; }
 .ach-det .pn.on { color: var(--gold); font-weight: 700; margin-top: 6px; }
 html.prisc .ach-det .pn.on { color: #FF8FC4; }
 .ach-det .ach-tt { margin-top: 10px; width: 100%; max-width: 220px; }
+/* Kopf im Fenster (X, Überschrift, Zahl, Balken) bleibt beim Scrollen oben stehen, die Liste läuft darunter durch */
+.ach-top { position: sticky; top: -22px; z-index: 3; margin: -22px -16px 0; padding: 22px 16px 12px; background: var(--sheet); border-radius: 24px 24px 0 0; }
+html.prisc .ach-top { background: #24121F; }
+.ach-top .ach-x { top: 12px; right: 12px; }
+.ach-top .ach-pb { margin-bottom: 0; }
+.ach-top::after { content: ""; position: absolute; left: 0; right: 0; bottom: -14px; height: 14px; background: linear-gradient(var(--sheet), transparent); pointer-events: none; }
+html.prisc .ach-top::after { background: linear-gradient(#24121F, transparent); }
 </style>
 </head>
 <body>
@@ -1215,7 +1222,7 @@ html.prisc .ach-det .pn.on { color: #FF8FC4; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V250</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V251</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4628,8 +4635,8 @@ var ACHM = (() => {
       + (secL.length ? grp(`GEHEIM · ${secL.length}`, secL) : "");
     const rw = "";
     const ds = "";
-    ov.querySelector(".ach-sh").innerHTML = `<button type="button" class="inst-x ach-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>`
-      + `<div class="ach-hd"><div><h3>${(prisc ? "Liebes-Erfolge" : "Erfolge") + (fv ? " von " + esc(fv.name) : prisc ? " 💘" : "")}</h3><p>${d.length} von ${L.length} freigeschaltet</p></div></div><div class="ach-pb" aria-hidden="true"><i style="width:${Math.round(d.length / L.length * 100)}%"></i></div>${rw}${ds}${body}`;
+    ov.querySelector(".ach-sh").innerHTML = `<div class="ach-top"><button type="button" class="inst-x ach-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>`
+      + `<div class="ach-hd"><div><h3>${(prisc ? "Liebes-Erfolge" : "Erfolge") + (fv ? " von " + esc(fv.name) : prisc ? " 💘" : "")}</h3><p>${d.length} von ${L.length} freigeschaltet</p></div></div><div class="ach-pb" aria-hidden="true"><i style="width:${Math.round(d.length / L.length * 100)}%"></i></div></div>${rw}${ds}${body}`;
   }
   // App: Fenster genau einpassen. Oben bis knapp unter die Uhr, unten endet die Liste kurz über dem Home-Balken.
   // Das iPhone zeigt die Seite in der App unten weiter als ihre eigentliche Höhe, deshalb hier nachmessen statt raten
@@ -4684,8 +4691,8 @@ var ACHM = (() => {
     const L = set(), d = doneOf(L), t = myTtl(), pg = prog();
     const row = (a, on) => `<button type="button" class="ttl-r${on ? " on" : ""}" data-id="${a ? a.id : ""}">${a ? pic(a) : '<span class="ttl-no" aria-hidden="true"></span>'}<span class="ttl-tx"><b>${a ? esc(a.ti) : "Kein Titel"}</b><small>${a ? esc(a.d) : "Nur den Rang zeigen"}</small></span><span class="ttl-rd" aria-hidden="true">${on ? "✓" : ""}</span></button>`;
     const lk = L.length - d.length;
-    tov.querySelector(".ach-sh").innerHTML = `<button type="button" class="inst-x ach-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>`
-      + `<div class="ach-hd"><div><h3>Titel wählen</h3><p>${d.length} von ${L.length} freigeschaltet</p></div></div>`
+    tov.querySelector(".ach-sh").innerHTML = `<div class="ach-top"><button type="button" class="inst-x ach-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>`
+      + `<div class="ach-hd"><div><h3>Titel wählen</h3><p>${d.length} von ${L.length} freigeschaltet</p></div></div></div>`
       + `<div class="ttl-list">${row(null, !t)}${d.map(a => row(a, t === a)).join("")}</div>`
       + (lk ? `<button type="button" class="ttl-more"><span aria-hidden="true">🔒</span><b>${lk} weitere${lk === 1 ? "r" : ""} Titel über ${prisc ? "Liebes-Erfolge" : "Erfolge"} freischalten</b><i aria-hidden="true">›</i></button>` : "");
   }
