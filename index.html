@@ -1145,16 +1145,14 @@ html.prisc .ach-ban { background: #2A1424; border-color: #4A2238; }
 .ach-test div { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .ach-test button { font: inherit; font-size: 13px; font-weight: 700; color: var(--ink); background: var(--chip); border: 1px solid var(--line); border-radius: 10px; padding: 9px 6px; cursor: pointer; }
 
-/* Hinweise: oben, klein, weiß (statt unten über der Leiste) */
-.toast, .app .toast { top: calc(env(safe-area-inset-top, 0px) + 54px); bottom: auto; display: flex; align-items: center; gap: 8px; max-width: 88vw; padding: 9px 14px; border-radius: 999px;
+/* Hinweise: klein und weiß, unten über der Leiste (oben lagen sie auf der großen Überschrift) */
+.toast { z-index: 85; /* über den Blüten vom Priscilla-Modus */ display: flex; align-items: center; gap: 8px; max-width: 88vw; padding: 9px 14px; border-radius: 999px;
   background: #E8EAF3; color: #0F1120; font-size: 13.5px; font-weight: 600; line-height: 1.3; box-shadow: 0 8px 22px rgba(0, 0, 0, .4); animation: tstIn .28s cubic-bezier(.2,.8,.2,1); }
 .toast[hidden] { display: none; }
 .toast .toast-act { color: #D63F35; padding: 2px 0 2px 2px; }
 html.prisc .toast .toast-act { color: #D9367A; }
-@keyframes tstIn { from { opacity: 0; transform: translate(-50%, -10px); } to { opacity: 1; transform: translateX(-50%); } }
-@media (prefers-reduced-motion: reduce) { .toast, .app .toast { animation: none; } }
-/* Steht gerade ein Erfolg-Banner oben, kommt der Hinweis darunter (Klasse per Skript: „body:has(…)“ ließ das iPhone bei jedem Tippen hängen) */
-.toast.low, .app .toast.low { top: calc(env(safe-area-inset-top, 0px) + 108px); }
+@keyframes tstIn { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .toast { animation: none; } }
 .app .ach-ban { position: absolute; }
 
 /* Handy: Das Fenster reicht 200px unter den Bildschirmrand (wie die Fenster-Fläche selbst). So geht es in der App und in Safari
@@ -1177,7 +1175,7 @@ html.app .ach-sh { max-height: calc(88svh + 200px); padding-bottom: calc(222px +
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V244</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V245</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4649,7 +4647,7 @@ var ACHM = (() => {
   }
   function showNext() {
     if (banBusy) return;
-    if (!$("#rankUp").hidden || rankQ.length || !ov.hidden || !tov.hidden || !$("#toast").hidden) { clearTimeout(banT); banT = setTimeout(showNext, 700); return; }
+    if (!$("#rankUp").hidden || rankQ.length || !ov.hidden || !tov.hidden) { clearTimeout(banT); banT = setTimeout(showNext, 700); return; }
     const L = set();
     // 2 = schon vor dem Update geschafft: Banner bleibt oben und wechselt alle 2 Sekunden zum nächsten
     const olds = L.filter(x => got[x.id] && got[x.id][1] === 2);
@@ -4661,7 +4659,7 @@ var ACHM = (() => {
     if (oldQ) banFill(oldQ[oldI++], `1 / ${oldQ.length}`, 220); else banFill(a, "", 220);
     // Handy: Banner liegt auf der Seite statt „fest“ (fixed), sonst färbt Safari oben einen dunklen Balken ein (wie bei den Fenstern)
     if (document.documentElement.classList.contains("app")) ban.style.top = `calc(${Math.round(window.scrollY)}px + env(safe-area-inset-top, 0px) + 10px)`;
-    ban.hidden = false; $("#toast").classList.add("low"); // Hinweis rutscht unter das Banner
+    ban.hidden = false;
     if (!reduce && ban.animate) ban.animate([{ transform: "translateY(calc(-100% - 30px))", opacity: 0 }, { transform: "translateY(4px)", opacity: 1, offset: .72 }, { transform: "none", opacity: 1 }],
       { duration: 760, easing: "cubic-bezier(.22,.9,.3,1)" });
     clearTimeout(banT); banT = oldQ ? setTimeout(nextOld, 2600) : setTimeout(hideBan, 4200);
@@ -4672,7 +4670,7 @@ var ACHM = (() => {
     banFill(oldQ[oldI], `${oldI + 1} / ${oldQ.length}`, 0); oldI++;
     banT = setTimeout(nextOld, 2000);
   }
-  function banDone() { ban.hidden = true; $("#toast").classList.remove("low"); ban.getAnimations().forEach(x => x.cancel()); ban.style.transform = ""; banBusy = false; banHiding = false; oldQ = null; setTimeout(showNext, 600); }
+  function banDone() { ban.hidden = true; ban.getAnimations().forEach(x => x.cancel()); ban.style.transform = ""; banBusy = false; banHiding = false; oldQ = null; setTimeout(showNext, 600); }
   function hideBan() {
     if (banHiding || ban.hidden) return;
     banHiding = true; clearTimeout(banT);
