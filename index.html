@@ -1162,6 +1162,8 @@ html.app .ov.ach-ov { padding-bottom: 0; }
 html.app .ach-sh { max-height: calc(88svh + 200px); padding-bottom: calc(222px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -18px 50px rgba(0, 0, 0, .45); }
 /* Kein Griff mehr oben im Fenster (es gibt das X, nach unten wischen geht trotzdem) */
 .ach-sh { padding-top: 22px; }
+/* Liste im Fenster: kein Gummiband-Dehnen oben und unten */
+.ach-sh { overscroll-behavior: none; }
 </style>
 </head>
 <body>
@@ -1175,7 +1177,7 @@ html.app .ach-sh { max-height: calc(88svh + 200px); padding-bottom: calc(222px +
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V245</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V246</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4574,8 +4576,15 @@ var ACHM = (() => {
       return `<div class="ach-b${ok ? "" : " off"}">${pic(a)}<b>${esc(SHY[a.n] || a.n)}</b>${ok || fv ? "" : `<span class="ach-pg" aria-label="${Math.min(h, need)} von ${need}">${Math.min(h, need)}/${need}</span>`}<small>${esc(a.d)}</small></div>`;
     };
     const grp = (lbl, l) => `<div class="ach-gl">${lbl}</div><div class="ach-grid">${l.map(cell).join("")}</div>`;
-    const body = prisc ? `<div class="ach-gl">LIEBES-ERFOLGE</div><div class="ach-grid">${P.map(cell).join("")}</div>`
-      : grp("EINSTIEG · BRONZE", N.filter(a => a.t === "br")) + grp("GENRES · SILBER", N.filter(a => a.t === "sv")) + grp("BESONDERES · GOLD", N.filter(a => a.t === "gd")) + grp("GEHEIM", N.filter(a => a.t === "gh"));
+    // Oben alles Geschaffte, darunter was als Nächstes kommt (am nächsten dran zuerst), die geheimen ganz unten.
+    // Die Stufe (Bronze, Silber, Gold) zeigt die Farbe der Münze
+    const doneL = L.filter(a => has(a.id)), secL = L.filter(a => !has(a.id) && a.sec);
+    let openL = L.filter(a => !has(a.id) && !a.sec);
+    if (!fv) openL = openL.map((a, i) => { const [h, n] = pg[a.id] || [0, 1]; return [a, Math.min(h, n) / n, n - h, i]; })
+      .sort((x, y) => y[1] - x[1] || x[2] - y[2] || x[3] - y[3]).map(x => x[0]);
+    const body = (doneL.length ? grp(`GESCHAFFT · ${doneL.length}`, doneL) : "")
+      + (openL.length ? grp(`${fv ? "NOCH OFFEN" : "ALS NÄCHSTES"} · ${openL.length}`, openL) : "")
+      + (secL.length ? grp(`GEHEIM · ${secL.length}`, secL) : "");
     const rw = "";
     const ds = "";
     ov.querySelector(".ach-sh").innerHTML = `<button type="button" class="inst-x ach-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>`
@@ -4612,8 +4621,9 @@ var ACHM = (() => {
       if (y0 == null) return;
       const d = e.touches[0].clientY - y0;
       if (!drag) {
-        // Ganz oben und nach unten gezogen: sofort selbst übernehmen, sonst dehnt das iPhone erst die Liste im Fenster (Gummiband)
-        if (d > 0 && sh.scrollTop <= 0) { e.preventDefault(); if (d > 6) { drag = true; sh.style.transition = "none"; } else return; }
+        // Erst ab 6px übernehmen. Vorher nichts blockieren: Sonst lässt das iPhone die Liste für die ganze Bewegung nicht mehr rollen.
+        // Das Dehnen der Liste (Gummiband) ist per CSS aus (overscroll-behavior: none)
+        if (d > 6 && sh.scrollTop <= 0) { drag = true; sh.style.transition = "none"; }
         else if (Math.abs(d) > 6) { y0 = null; return; }
         else return;
       }
@@ -4658,7 +4668,7 @@ var ACHM = (() => {
     ban.style.transform = ""; banHiding = false;
     if (oldQ) banFill(oldQ[oldI++], `1 / ${oldQ.length}`, 220); else banFill(a, "", 220);
     // Handy: Banner liegt auf der Seite statt „fest“ (fixed), sonst färbt Safari oben einen dunklen Balken ein (wie bei den Fenstern)
-    if (document.documentElement.classList.contains("app")) ban.style.top = `calc(${Math.round(window.scrollY)}px + env(safe-area-inset-top, 0px) + 10px)`;
+    if (document.documentElement.classList.contains("app")) ban.style.top = `calc(${Math.round(window.scrollY)}px + env(safe-area-inset-top, 0px) + 24px)`;
     ban.hidden = false;
     if (!reduce && ban.animate) ban.animate([{ transform: "translateY(calc(-100% - 30px))", opacity: 0 }, { transform: "translateY(4px)", opacity: 1, offset: .72 }, { transform: "none", opacity: 1 }],
       { duration: 760, easing: "cubic-bezier(.22,.9,.3,1)" });
