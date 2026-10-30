@@ -584,6 +584,13 @@ html.prisc .prog.max .ring svg { filter: drop-shadow(0 0 4px rgba(246, 196, 83, 
 #tpsGo:disabled { opacity: .5; cursor: default; }
 /* Neuer Tipp beim Öffnen */
 .tp-pop { justify-items: center; text-align: center; gap: 6px; }
+.tp-pop .when { color: var(--muted); }
+.tp-btns { display: grid; gap: 8px; width: 100%; margin-top: 8px; }
+.tp-btns .two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tp-btns .two .ov-btn { display: flex; align-items: center; justify-content: center; gap: 7px; }
+.tp-btns .two .ov-btn:disabled { opacity: .55; }
+.tp-btns svg { width: 16px; height: 16px; flex: none; }
+.tp-hint { font-size: 12px; color: var(--muted); margin-top: 2px; }
 .tp-pop .lbl { font-size: 11.5px; font-weight: 800; letter-spacing: .12em; color: var(--gold); }
 .tp-pop .cvw { position: relative; width: 132px; margin: 6px 0 10px; }
 .tp-pop .cvw > img[hidden], .tp-pop .cvw > .ph[hidden] { display: none; }
@@ -998,6 +1005,22 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
 .pe-grp { grid-column: 1 / -1; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 6px 0 -2px; text-align: center; }
 /* Auswahl in der Akzentfarbe (Gold, im Priscilla-Modus Rosa) – passend zu „Speichern“ */
 .pe-it[aria-pressed="true"] { color: var(--gold); }
+/* Profil bearbeiten: oben gleich so, wie es im Profil aussieht */
+.pe-top { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 14px; align-items: center; background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 14px; }
+.pe-pv { width: 72px; height: 72px; border-radius: 50%; overflow: hidden; display: block; box-shadow: 0 0 0 3px var(--paper), 0 0 0 5.5px var(--rc, var(--line)); }
+.pe-pv .avr { width: 100%; height: 100%; }
+.pe-pv .avr.fr-l { font-size: 28px; }
+.pe-col { display: grid; gap: 6px; min-width: 0; }
+.pe-nm { position: relative; }
+.pe-top #peName { background: var(--sheet); padding-right: 52px; }
+.pe-cnt { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); font-size: 12.5px; font-weight: 700; color: var(--muted); pointer-events: none; font-variant-numeric: tabular-nums; }
+.pe-rk { font-size: 13px; font-weight: 800; color: var(--rc, var(--muted)); padding-left: 2px; }
+.pe-img { position: relative; }
+.pe-ok { position: absolute; right: -2px; bottom: -2px; width: 20px; height: 20px; border-radius: 50%; background: var(--gold); color: #1C1503; display: none; place-items: center; box-shadow: 0 0 0 2.5px var(--sheet); }
+.pe-ok svg { width: 12px; height: 12px; }
+.pe-it[aria-pressed="true"] .pe-ok { display: grid; }
+/* Sehr wenig Höhe (Safari auf dem iPhone SE mit Leisten): Vorschau etwas kleiner, damit alles ohne Rollen passt */
+@media (max-height: 600px) { .pe-top { grid-template-columns: 54px minmax(0, 1fr); padding: 10px 12px; gap: 12px; } .pe-pv { width: 54px; height: 54px; } .pe-pv .avr.fr-l { font-size: 22px; } .pe-grp { margin: 2px 0 -4px; } .pe-grid { gap: 6px 8px; } }
 .pe-it[aria-pressed="true"] .pe-img { box-shadow: 0 0 0 2px var(--sheet), 0 0 0 4px var(--gold); transform: scale(1.06); }
 /* „Ohne Bild“ als kleiner Text-Link mittig unter den Figuren, mit größerer unsichtbarer Tippfläche */
 #peNone { position: relative; }
@@ -1256,7 +1279,7 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V258</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V259</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1354,7 +1377,7 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
       <div class="lg-sy" id="lgSy"><div class="lg-sy-h"><span class="lg-sy-i" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H8a6 6 0 1 1 5.7-7.9A4.5 4.5 0 1 1 17.5 19z"/><path class="ok" d="m9.5 14 2 2 3.5-3.5"/></svg></span><span><b id="lgSyT"></b><small class="lg-sync" id="lgSync"></small></span></div><div class="lg-sy-n"><div><b id="lgNS">0</b><small>Gesehen</small></div><div><b id="lgNM">0</b><small>Gemerkt</small></div><div><b id="lgNE">0</b><small>Erfolge</small></div></div></div>
     </div>
     <div id="peBox" class="lg-form" hidden>
-      <input class="lg-in" id="peName" aria-label="Name" type="text" maxlength="11" autocomplete="nickname" placeholder="Dein Name">
+      <div class="pe-top frk" id="peTop"><span class="pe-pv" id="pePv" aria-hidden="true"></span><div class="pe-col"><div class="pe-nm"><input class="lg-in" id="peName" aria-label="Name" type="text" maxlength="11" autocomplete="nickname" placeholder="Dein Name"><span class="pe-cnt" id="peCnt" aria-hidden="true"></span></div><span class="pe-rk" id="peRk"></span></div></div>
       <div class="pe-grid" id="peGrid"></div>
       <div class="lg-links" style="justify-content:center"><button type="button" class="lg-link" id="peNone" aria-pressed="false">Ohne Bild</button></div>
       <div class="ov-row"><button type="button" class="ov-btn" id="peCancel">Abbrechen</button><button type="button" class="ov-btn main" id="peSave">Speichern</button></div>
@@ -1437,14 +1460,14 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
   </div>
 </div>
 <div class="ov" id="tipOv" hidden>
-  <div class="ov-bg" data-close></div>
+  <div class="ov-bg"></div>
   <div class="ov-card tp-pop" role="dialog" aria-modal="true" aria-labelledby="tpTitle">
     <div class="lbl" id="tpLbl">NEUER TIPP</div>
     <div class="cvw"><img id="tpCv" alt="" draggable="false"><span class="ph" id="tpPh" hidden></span><span class="av" id="tpAv"></span></div>
     <div class="who" id="tpWho"></div>
     <h4 id="tpTitle"></h4>
     <div class="facts2" id="tpFacts"></div>
-    <div class="ov-row"><button type="button" class="ov-btn" data-close>Später</button><button type="button" class="ov-btn main" id="tpOpen">Ansehen</button></div>
+    <div class="tp-btns"><button type="button" class="ov-btn main" id="tpOpen">Ansehen</button><div class="two"><button type="button" class="ov-btn" id="tpSave"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z"/></svg><span>Merken</span></button><button type="button" class="ov-btn" data-close>Später</button></div><div class="tp-hint">Später findest du ihn unter Gemerkt › Tipps von Freunden</div></div>
   </div>
 </div>
 <div class="ov" id="rankSheet" hidden>
@@ -3880,16 +3903,23 @@ let peNew = false;
 function peMark() {
   $("#peGrid").querySelectorAll(".pe-it").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.av === peSel)));
   $("#peNone").setAttribute("aria-pressed", String(!peSel));
+  // Vorschau oben: gewähltes Bild (ohne Bild: erster Buchstabe vom Namen) und Zähler für den Namen
+  const v = $("#peName").value, ch = ([...v.trim()][0] || "?").toUpperCase(), key = peSel || "L" + ch, pv = $("#pePv");
+  if (pv.dataset.k !== key) { pv.innerHTML = peSel ? avImg(peSel) : `<span class="avr fr-l">${esc(ch)}</span>`; pv.dataset.k = key; }
+  $("#peCnt").textContent = `${[...v].length}/11`;
 }
+$("#peName").addEventListener("input", () => peMark());
 function openEdit(isNew) {
   if (fb && fb.auth.currentUser) user = fb.auth.currentUser;
   if (!user) return;
   if (!$("#peGrid").children.length) $("#peGrid").innerHTML = AVATARS.map(([id, nm, grp], i) => (i && AVATARS[i - 1][2] === grp ? "" : `<div class="pe-grp">${grp}</div>`)
-    + `<button type="button" class="pe-it" data-av="${id}" aria-pressed="false"><span class="pe-img">${avImg(id)}</span><span>${nm}</span></button>`).join("");
+    + `<button type="button" class="pe-it" data-av="${id}" aria-pressed="false"><span class="pe-img">${avImg(id)}<span class="pe-ok" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M3 6.2l2 2 4-4.4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><span>${nm}</span></button>`).join("");
   peNew = !!isNew;
   // Neues Konto mit E-Mail: Name leer lassen (sonst stünde dort der Teil vor dem @), bei Google den Google-Namen vorschlagen
   $("#peName").value = isNew && !user.displayName ? "" : nameOf(user);
-  peSel = avOf(user); peMark();
+  peSel = avOf(user);
+  { const rk = ranks()[rankIdx(seenCount())]; $("#peTop").className = "pe-top frk rt" + rk[4]; $("#peRk").textContent = rk[3]; }
+  peMark();
   $("#peCancel").textContent = isNew ? "Später" : "Abbrechen";
   lgEditing = true; lgMsg(""); acctUi();
 }
@@ -4196,8 +4226,8 @@ function tipNews() {
   const fr = new Map(friends.map(f => [f.uid, f]));
   const known = load(KEY_TIPK, null), kn = new Set(Array.isArray(known) ? known : []);
   const fresh = tipsIn.filter(t => fr.has(t.from) && !kn.has(t.k) && !seen.has(t.id) && (Array.isArray(known) || Date.now() - t.at < 3 * 864e5));
+  if (fresh.length) { const ks = tipsIn.map(t => t.k); tipCalm(() => { store(KEY_TIPK, ks); tipShow(fresh); }); return; }
   store(KEY_TIPK, tipsIn.map(t => t.k));
-  if (fresh.length) { tipShow(fresh); return; }
   const told = load(KEY_TIPW, null), tw = new Set(Array.isArray(told) ? told : []);
   const watched = tipsOut.filter(t => { const f = fr.get(t.to); return f && f.seen.includes(t.id); });
   const nw = watched.filter(t => !tw.has(tipKey(t.to, t.id)));
@@ -4209,7 +4239,15 @@ function tipNews() {
 }
 // Mehrere neue Tipps kommen einzeln nacheinander (neuester zuerst, gleicher Titel von mehreren Freunden nur einmal).
 // „Später“ oder daneben tippen zeigt den nächsten; nach „Ansehen“ kommt der nächste, sobald der Titel wieder zu ist.
-var tipQ = [], tipI = 0, tipBack = false;
+var tipQ = [], tipI = 0, tipBack = false, tipWaitT = 0;
+function tipCalm(fn, n = 0) {
+  clearTimeout(tipWaitT);
+  const ban = document.getElementById("achBan");
+  const calm = document.visibilityState === "visible" && performance.now() > 2500 && !touching && !typing && Date.now() - lastScroll > 1200
+    && !document.querySelector(".ov:not([hidden])") && !rankQ.length && (!ban || ban.hidden);
+  if (calm) return fn();
+  if (n < 1500) tipWaitT = setTimeout(() => tipCalm(fn, n + 1), 400); // höchstens etwa 10 Minuten warten, sonst beim nächsten Mal
+}
 function tipShow(fresh) {
   const at = new Map();
   fresh.forEach(t => at.set(t.id, Math.max(at.get(t.id) || 0, t.at)));
@@ -4232,7 +4270,13 @@ function tipStep(anim) {
   img.hidden = !u; if (u) img.src = u;
   ph.hidden = !!u; ph.textContent = shortT(it.title);
   $("#tpAv").innerHTML = faceStack(from);
-  $("#tpWho").innerHTML = `${nmList(from)} ${from.length === 1 ? "empfiehlt" : "empfehlen"} dir`;
+  { // Vornamen und wann (der neueste Tipp zu diesem Titel)
+    const at = Math.max(...tipsIn.filter(x => x.id === id).map(x => x.at || 0)), m = Math.max(0, Math.round((Date.now() - at) / 6e4));
+    const when = !at ? "" : m < 2 ? "gerade eben" : m < 60 ? `vor ${m} Min.` : m < 1440 ? `vor ${Math.round(m / 60)} Std.` : m < 2880 ? "gestern" : `vor ${Math.round(m / 1440)} Tagen`;
+    $("#tpWho").innerHTML = `${nmList(from.map(f => ({ name: f.name.trim().split(/\s+/)[0] })))} ${from.length === 1 ? "empfiehlt" : "empfehlen"} dir${when ? ` <span class="when">· ${when}</span>` : ""}`;
+  }
+  { const sv = saved.has(id), b = $("#tpSave"); b.disabled = sv; b.querySelector("span").textContent = sv ? "Gemerkt" : "Merken"; }
+  tipOv.dataset.t0 = Date.now();
   $("#tpTitle").textContent = it.title.split(" – ")[0];
   $("#tpFacts").textContent = infoOf(it, true);
   $("#tpLbl").innerHTML = tipQ.length > 1 ? `NEUER TIPP <span class="n">· ${tipI + 1} VON ${tipQ.length}</span>` : "NEUER TIPP";
@@ -4249,8 +4293,18 @@ function tipResume(n) {
   if (document.querySelector(".ov:not([hidden])")) { if (n < 120) setTimeout(() => tipResume(n + 1), 500); return; }
   tipStep(false);
 }
-tipOv.addEventListener("click", e => { if (e.target.closest("[data-close]")) { tipI++; tipStep(true); } });
+const tipFresh = () => Date.now() - (+tipOv.dataset.t0 || 0) < 450;
+tipOv.addEventListener("click", e => {
+  if (tipFresh()) return;
+  if (e.target.closest("[data-close]")) { tipI++; tipStep(true); return; }
+  if (e.target.closest("#tpSave")) {
+    const id = tipOv.dataset.id; if (!id || saved.has(id)) return;
+    setMark(id, "save", true); tipI++; tipStep(true);
+    if (tipOv.hidden) toast("Gemerkt ✓", null, 1600); // kommt noch ein Tipp, läge die Meldung über seinen Knöpfen
+  }
+});
 $("#tpOpen").addEventListener("click", () => {
+  if (tipFresh()) return;
   const id = tipOv.dataset.id; tipOv.hidden = true; tipI++;
   if (id) openShelf(id);
   if (!shelfOv.hidden) tipBack = tipI < tipQ.length; else tipStep(false);
