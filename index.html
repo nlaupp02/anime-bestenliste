@@ -1153,7 +1153,11 @@ html.prisc .ach-ban { background: #2A1424; border-color: #4A2238; }
 html.prisc .toast .toast-act { color: #D9367A; }
 @keyframes tstIn { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { .toast { animation: none; } }
-.app .ach-ban { position: absolute; }
+/* Banner wieder fest am Bildschirm (auf der Seite liegend ruckelte es in Safari beim Scrollen mit).
+   Mit Glas-Unschärfe wie die Leiste unten: Dann färbt Safari oben keinen dunklen Balken ein */
+.app .ach-ban { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 24px); background: rgba(24, 27, 45, .9);
+  -webkit-backdrop-filter: blur(16px) saturate(150%); backdrop-filter: blur(16px) saturate(150%); }
+html.app.prisc .ach-ban { background: rgba(42, 20, 36, .92); }
 
 /* Handy: Das Fenster reicht 200px unter den Bildschirmrand (wie die Fenster-Fläche selbst). So geht es in der App und in Safari
    bis ganz unten durch, auch hinter der Safari-Leiste, und die Liste rollt bis dorthin, statt mitten im Bild abgeschnitten zu enden.
@@ -1164,6 +1168,11 @@ html.app .ach-sh { max-height: calc(88svh + 200px); padding-bottom: calc(222px +
 .ach-sh { padding-top: 22px; }
 /* Liste im Fenster: kein Gummiband-Dehnen oben und unten */
 .ach-sh { overscroll-behavior: none; }
+/* Titel-Schild: Wort genau mittig, der Stift sitzt als kleines rundes Abzeichen oben rechts an der Ecke */
+.ach-ttl:not(.add) { position: relative; padding: 4px 16px; }
+.ach-ttl:not(.add) .pen { position: absolute; top: -9px; right: -9px; width: 20px; height: 20px; padding: 4px; box-sizing: border-box; border-radius: 50%;
+  background: #2A2D45; border: 1px solid rgba(242, 193, 78, .45); stroke-width: 2.4; opacity: 1; }
+html.prisc .ach-ttl:not(.add) .pen { background: #3A1A2C; border-color: rgba(255, 143, 196, .5); }
 </style>
 </head>
 <body>
@@ -1177,7 +1186,7 @@ html.app .ach-sh { max-height: calc(88svh + 200px); padding-bottom: calc(222px +
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V246</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V247</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4552,7 +4561,7 @@ var ACHM = (() => {
     const L = set(), d = doneOf(L), t = myTtl();
     tb.hidden = !d.length;
     tb.className = "ach-ttl" + (t ? "" : " add");
-    tb.innerHTML = t ? `${esc(t.ti)} <svg class="pen" viewBox="0 0 24 24" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>` : "+ Titel wählen";
+    tb.innerHTML = t ? `${esc(t.ti)}<svg class="pen" viewBox="0 0 24 24" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>` : "+ Titel wählen";
     tb.setAttribute("aria-label", t ? `Titel: ${t.ti}. Ändern` : "Titel wählen");
     const last = d.slice().sort((a, b) => got[b.id][0] - got[a.id][0]).slice(0, 4);
     sb.hidden = false;
@@ -4667,8 +4676,6 @@ var ACHM = (() => {
     ban.getAnimations().forEach(x => x.cancel()); // Reste vom letzten Banner weg
     ban.style.transform = ""; banHiding = false;
     if (oldQ) banFill(oldQ[oldI++], `1 / ${oldQ.length}`, 220); else banFill(a, "", 220);
-    // Handy: Banner liegt auf der Seite statt „fest“ (fixed), sonst färbt Safari oben einen dunklen Balken ein (wie bei den Fenstern)
-    if (document.documentElement.classList.contains("app")) ban.style.top = `calc(${Math.round(window.scrollY)}px + env(safe-area-inset-top, 0px) + 24px)`;
     ban.hidden = false;
     if (!reduce && ban.animate) ban.animate([{ transform: "translateY(calc(-100% - 30px))", opacity: 0 }, { transform: "translateY(4px)", opacity: 1, offset: .72 }, { transform: "none", opacity: 1 }],
       { duration: 760, easing: "cubic-bezier(.22,.9,.3,1)" });
