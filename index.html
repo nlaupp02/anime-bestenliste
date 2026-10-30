@@ -1046,7 +1046,9 @@ html.prisc .ach-ttl:not(.add) { color: #FF8FC4; background: rgba(255, 143, 196, 
 .ach-strip:active { filter: brightness(.92); }
 html.prisc .ach-strip { background: #3A1A2C; }
 .ach-mm { display: flex; flex: none; }
-.ach-mm svg { width: 34px; height: 34px; margin-left: -9px; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .5)); }
+.ach-mm svg { width: 34px; height: 34px; margin-left: -9px; }
+.ach-mm svg.cn { border-radius: 50%; box-shadow: 0 2px 4px rgba(0, 0, 0, .5); }
+.ach-mm svg.ht { filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .5)); }
 .ach-mm svg:first-child { margin-left: 0; }
 .ach-strip b { font-size: 14px; }
 .ach-strip small { margin-left: auto; color: var(--muted); font-weight: 700; font-size: 13px; white-space: nowrap; }
@@ -1087,10 +1089,13 @@ html.prisc .ach-rb i { background: linear-gradient(90deg, #FF8FC4, #FF4F9A); }
 .ach-b b, .ach-b small { max-width: 100%; overflow-wrap: anywhere; }
 .ach-b b { -webkit-hyphens: manual; hyphens: manual; }
 .ach-b small { -webkit-hyphens: auto; hyphens: auto; hyphenate-limit-chars: 8 4 4; }
-.ach-b svg { width: 60px; height: 60px; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .4)); }
-.ach-b.off svg { filter: grayscale(.85) brightness(.7); }
+/* Schatten ohne Filter: runde Münzen bekommen einen runden Schatten (läuft auf dem iPhone flüssiger), nur Herzen brauchen den Filter */
+.ach-b svg { width: 60px; height: 60px; }
+.ach-b:not(.off) svg.cn { border-radius: 50%; box-shadow: 0 4px 9px rgba(0, 0, 0, .4); }
+.ach-b:not(.off) svg.ht { filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .4)); }
+.ach-b[data-id] { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.ach-b[data-id]:active svg { transform: scale(.94); }
 /* Normaler Modus: Silber sieht sonst fast gleich aus wie ausgegraut. Offene Münzen deshalb ganz grau, dunkel und blasser */
-html:not(.prisc) .ach-b.off svg { filter: grayscale(1) brightness(.5); opacity: .6; }
 .ach-b .tr { font-size: 9.5px; font-weight: 800; letter-spacing: .12em; }
 .ach-b b { font-size: 11px; line-height: 1.2; margin-top: 2px; }
 .ach-b small { font-size: 10px; color: var(--muted); line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -1173,6 +1178,30 @@ html.app .ach-sh { max-height: calc(88svh + 200px); padding-bottom: calc(222px +
 .ach-ttl:not(.add) .pen { position: absolute; top: -9px; right: -9px; width: 20px; height: 20px; padding: 4px; box-sizing: border-box; border-radius: 50%;
   background: #2A2D45; border: 1px solid rgba(242, 193, 78, .45); stroke-width: 2.4; opacity: 1; }
 html.prisc .ach-ttl:not(.add) .pen { background: #3A1A2C; border-color: rgba(255, 143, 196, .5); }
+/* Fortschritt im Kopf des Erfolge-Fensters */
+.ach-pb { height: 6px; border-radius: 6px; background: rgba(255, 255, 255, .08); margin: 12px 0 2px; overflow: hidden; }
+.ach-pb i { display: block; height: 100%; border-radius: 6px; background: linear-gradient(90deg, #E8B07E, #F2C14E); }
+html.prisc .ach-pb i { background: linear-gradient(90deg, #FFB3D6, #FF6FA8); }
+/* App: Erfolge und Titel gehen bis direkt unter die Uhr (vorher schaute die „Profil“-Überschrift halb heraus) */
+html.standalone .ach-sh { max-height: calc(100svh - env(safe-area-inset-top, 0px) - 12px + 200px); }
+/* Antippen einer Münze: kleine Karte in der Mitte */
+.ach-dov { z-index: 50; }
+.ach-det { max-width: 300px; justify-items: center; text-align: center; gap: 6px; padding: 26px 18px 20px; }
+.ach-det .ach-x { top: 10px; right: 10px; }
+.ach-det > svg { width: 112px; height: 112px; margin-bottom: 4px; }
+.ach-det > svg.cn { border-radius: 50%; box-shadow: 0 8px 18px rgba(0, 0, 0, .45); }
+.ach-det .tg { font-size: 10.5px; font-weight: 800; letter-spacing: .14em; color: var(--muted); margin-top: 2px; }
+.ach-det .tg.ok { color: var(--gold); }
+html.prisc .ach-det .tg.ok { color: #FF8FC4; }
+.ach-det b { font-size: 19px; line-height: 1.2; }
+.ach-det p { margin: 0; color: var(--muted); font-size: 13.5px; line-height: 1.4; }
+.ach-det .pb { width: 100%; max-width: 220px; height: 6px; border-radius: 6px; background: rgba(255, 255, 255, .08); margin-top: 8px; overflow: hidden; }
+.ach-det .pb i { display: block; height: 100%; border-radius: 6px; background: var(--gold); }
+html.prisc .ach-det .pb i { background: #FF8FC4; }
+.ach-det .pn { font-size: 12.5px; color: var(--muted); }
+.ach-det .pn.on { color: var(--gold); font-weight: 700; margin-top: 6px; }
+html.prisc .ach-det .pn.on { color: #FF8FC4; }
+.ach-det .ach-tt { margin-top: 10px; width: 100%; max-width: 220px; }
 </style>
 </head>
 <body>
@@ -1186,7 +1215,7 @@ html.prisc .ach-ttl:not(.add) .pen { background: #3A1A2C; border-color: rgba(255
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V248</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V249</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1301,6 +1330,7 @@ html.prisc .ach-ttl:not(.add) .pen { background: #3A1A2C; border-color: rgba(255
 </div>
 <div class="ov ach-ov" id="achOv" hidden><div class="ov-bg" data-close></div><div class="ach-sh" role="dialog" aria-modal="true" aria-label="Erfolge"></div></div>
 <div class="ov ach-ov" id="ttlOv" hidden><div class="ov-bg" data-close></div><div class="ach-sh" role="dialog" aria-modal="true" aria-label="Titel wählen"></div></div>
+<div class="ov ach-dov" id="achDet" hidden><div class="ov-bg" data-close></div><div class="ov-card ach-det" role="dialog" aria-modal="true" aria-label="Erfolg"></div></div>
 <div class="ach-ban" id="achBan" hidden role="status" aria-live="polite"></div>
 <div class="ov rankup" id="rankUp" hidden role="status" aria-live="polite">
   <div class="ru-card"><span class="ru-lbl" id="ruLbl">Neuer Rang</span><span class="ru-st" id="ruSt" aria-hidden="true"></span><b class="ru-name" id="ruName"></b><span class="ru-next" id="ruNext"></span><button type="button" class="ov-btn main" id="ruOk">OK</button></div>
@@ -4529,27 +4559,29 @@ var ACHM = (() => {
   const KJF = 'font-family="Hiragino Mincho ProN, Yu Mincho, Noto Serif CJK JP, Noto Serif CJK SC, serif" font-weight="700"';
   const MET = { br: ["#6B3E22", "#E8B07E", "#8C5A35", "#F6CFA6", "#5A3219"], sv: ["#5E657C", "#F4F6FC", "#8E95AD", "#FFFFFF", "#4E5468"], gd: ["#8A5E0E", "#FFE594", "#C9952F", "#FFF4C8", "#7A5208"] };
   const HP = "M50 88 C 18 66, 4 48, 8 30 C 12 14, 30 8, 42 16 C 46 19, 49 23, 50 26 C 51 23, 54 19, 58 16 C 70 8, 88 14, 92 30 C 96 48, 82 66, 50 88 Z";
-  function coin(t, k) {
-    const m = MET[t === "gh" ? "gd" : t], id = "am" + (++sid);
-    return `<svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${m[3]}"/><stop offset=".35" stop-color="${m[1]}"/><stop offset=".6" stop-color="${m[2]}"/><stop offset="1" stop-color="${m[4]}"/></linearGradient><radialGradient id="${id}i" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#262B48"/><stop offset="1" stop-color="#0E1022"/></radialGradient><clipPath id="${id}c"><circle cx="50" cy="50" r="47"/></clipPath></defs>`
+  // off = noch offen: graue Farben direkt in der Münze (vorher CSS-Filter, die das iPhone bei jedem Scrollen neu rechnet)
+  const GREY = ["#262A3C", "#4E5366", "#353A4E", "#5E6375", "#1E2132"];
+  function coin(t, k, off) {
+    const m = off ? GREY : MET[t === "gh" ? "gd" : t], id = "am" + (++sid);
+    return `<svg class="cn" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${m[3]}"/><stop offset=".35" stop-color="${m[1]}"/><stop offset=".6" stop-color="${m[2]}"/><stop offset="1" stop-color="${m[4]}"/></linearGradient><radialGradient id="${id}i" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="${off ? "#1B1E2F" : "#262B48"}"/><stop offset="1" stop-color="${off ? "#111321" : "#0E1022"}"/></radialGradient><clipPath id="${id}c"><circle cx="50" cy="50" r="47"/></clipPath></defs>`
       + `<circle cx="50" cy="50" r="47" fill="url(#${id})"/><circle cx="50" cy="50" r="44.5" fill="none" stroke="${m[0]}" stroke-width="3" stroke-dasharray="1.6 1.9" opacity=".7"/>`
       + `<circle cx="50" cy="50" r="37" fill="url(#${id}i)" stroke="url(#${id})" stroke-width="2.5"/><circle cx="50" cy="50" r="32" fill="none" stroke="${m[1]}" stroke-width=".8" opacity=".35"/>`
       + `<text x="50" y="51" text-anchor="middle" dominant-baseline="central" font-size="36" ${KJF} fill="url(#${id})">${k}</text>`
-      + (t === "gd" || t === "gh" ? `<g clip-path="url(#${id}c)"><rect x="-30" y="-10" width="18" height="140" fill="#fff" opacity=".28" transform="rotate(35 50 50)"/><rect x="-6" y="-10" width="6" height="140" fill="#fff" opacity=".2" transform="rotate(35 50 50)"/></g><path d="M80 14 l2.2 5.8 5.8 2.2 -5.8 2.2 -2.2 5.8 -2.2-5.8 -5.8-2.2 5.8-2.2z" fill="#FFF6D6"/>` : "")
+      + (!off && (t === "gd" || t === "gh") ? `<g clip-path="url(#${id}c)"><rect x="-30" y="-10" width="18" height="140" fill="#fff" opacity=".28" transform="rotate(35 50 50)"/><rect x="-6" y="-10" width="6" height="140" fill="#fff" opacity=".2" transform="rotate(35 50 50)"/></g><path d="M80 14 l2.2 5.8 5.8 2.2 -5.8 2.2 -2.2 5.8 -2.2-5.8 -5.8-2.2 5.8-2.2z" fill="#FFF6D6"/>` : "")
       + `</svg>`;
   }
-  function heart(k) {
-    const id = "ah" + (++sid);
-    return `<svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD3E7"/><stop offset=".4" stop-color="#FF8FC4"/><stop offset=".75" stop-color="#FF4F9A"/><stop offset="1" stop-color="#B0175E"/></linearGradient><radialGradient id="${id}i" cx=".4" cy=".3" r=".9"><stop offset="0" stop-color="#4A1834"/><stop offset="1" stop-color="#1E0A17"/></radialGradient><clipPath id="${id}c"><path d="${HP}"/></clipPath></defs>`
+  function heart(k, off) {
+    const id = "ah" + (++sid), g = off ? ["#8A7882", "#6C5A65", "#54444E", "#382A33"] : ["#FFD3E7", "#FF8FC4", "#FF4F9A", "#B0175E"], f = off ? ["#2E1E28", "#160D13"] : ["#4A1834", "#1E0A17"];
+    return `<svg class="ht" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${g[0]}"/><stop offset=".4" stop-color="${g[1]}"/><stop offset=".75" stop-color="${g[2]}"/><stop offset="1" stop-color="${g[3]}"/></linearGradient><radialGradient id="${id}i" cx=".4" cy=".3" r=".9"><stop offset="0" stop-color="${f[0]}"/><stop offset="1" stop-color="${f[1]}"/></radialGradient><clipPath id="${id}c"><path d="${HP}"/></clipPath></defs>`
       + `<path d="${HP}" fill="url(#${id})"/><g transform="translate(50 50) scale(.8) translate(-50 -50)"><path d="${HP}" fill="url(#${id}i)" stroke="url(#${id})" stroke-width="2.5"/></g>`
       + `<text x="50" y="47" text-anchor="middle" dominant-baseline="central" font-size="30" ${KJF} fill="url(#${id})">${k}</text>`
-      + `<g clip-path="url(#${id}c)"><rect x="-30" y="-10" width="14" height="140" fill="#fff" opacity=".25" transform="rotate(35 50 50)"/></g><path d="M84 12 l1.8 4.6 4.6 1.8 -4.6 1.8 -1.8 4.6 -1.8-4.6 -4.6-1.8 4.6-1.8z" fill="#FFF0F7"/></svg>`;
+      + `<g clip-path="url(#${id}c)"><rect x="-30" y="-10" width="14" height="140" fill="#fff" opacity=".25" transform="rotate(35 50 50)"/></g><path d="M84 12 l1.8 4.6 4.6 1.8 -4.6 1.8 -1.8 4.6 -1.8-4.6 -4.6-1.8 4.6-1.8z" fill="${off ? "#8A7882" : "#FFF0F7"}"/></svg>`;
   }
   function seal(pk) {
     if (pk) return `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="${HP}" fill="#3A1A2C"/><g transform="translate(50 50) scale(.8) translate(-50 -50)"><path d="${HP}" fill="#1E0E19" stroke="#5A2A44" stroke-width="2"/></g><text x="50" y="47" text-anchor="middle" dominant-baseline="central" font-size="28" ${KJF} fill="#5A2A44">？</text><g transform="rotate(-12 66 66)"><rect x="54" y="54" width="25" height="25" rx="4" fill="#FF4F9A"/><text x="66.5" y="66.5" text-anchor="middle" dominant-baseline="central" font-size="14" ${KJF} fill="#FFE6F1">封</text></g></svg>`;
     return `<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="47" fill="#22263C"/><circle cx="50" cy="50" r="44.5" fill="none" stroke="#3A3F5C" stroke-width="3" stroke-dasharray="1.6 1.9"/><circle cx="50" cy="50" r="37" fill="#14172A" stroke="#3A3F5C" stroke-width="2.5"/><text x="50" y="52" text-anchor="middle" dominant-baseline="central" font-size="34" ${KJF} fill="#3A3F5C">？</text><g transform="rotate(-12 64 66)"><rect x="50" y="52" width="28" height="28" rx="4" fill="#E2483F"/><rect x="53" y="55" width="22" height="22" rx="2" fill="none" stroke="#FFD9D4" stroke-width="1.2"/><text x="64" y="67" text-anchor="middle" dominant-baseline="central" font-size="15" ${KJF} fill="#FFE9E5">封</text></g></svg>`;
   }
-  const pic = a => a.t === "pk" ? heart(a.k) : coin(a.t, a.k);
+  const pic = (a, off) => a.t === "pk" ? heart(a.k, off) : coin(a.t, a.k, off);
   const TIER = { br: ["BRONZE", "#E2A877"], sv: ["SILBER", "#C8CEE6"], gd: ["GOLD", "#F2C14E"], gh: ["GEHEIM", "#F2C14E"] };
   // ---- Titel ----
   let ttl = load(KEY_TTL, {}) || {};
@@ -4581,8 +4613,8 @@ var ACHM = (() => {
     const L = set(), d = L.filter(a => has(a.id)), pg = fv ? {} : prog(), rws = prisc ? RWP : RW, nx = rws.find(r => d.length < r[0]);
     const cell = a => {
       const [h, need] = pg[a.id] || [0, 1], ok = has(a.id);
-      if (!ok && a.sec) return `<div class="ach-b">${seal(a.t === "pk")}<b style="color:#6B7194">???</b><small>Versiegelt</small></div>`;
-      return `<div class="ach-b${ok ? "" : " off"}">${pic(a)}<b>${esc(SHY[a.n] || a.n)}</b>${ok || fv ? "" : `<span class="ach-pg" aria-label="${Math.min(h, need)} von ${need}">${Math.min(h, need)}/${need}</span>`}<small>${esc(a.d)}</small></div>`;
+      if (!ok && a.sec) return `<div class="ach-b" data-id="${a.id}">${seal(a.t === "pk")}<b style="color:#6B7194">???</b><small>Versiegelt</small></div>`;
+      return `<div class="ach-b${ok ? "" : " off"}" data-id="${a.id}">${pic(a, !ok)}<b>${esc(SHY[a.n] || a.n)}</b>${ok || fv ? "" : `<span class="ach-pg" aria-label="${Math.min(h, need)} von ${need}">${Math.min(h, need)}/${need}</span>`}<small>${esc(a.d)}</small></div>`;
     };
     const grp = (lbl, l) => `<div class="ach-gl">${lbl}</div><div class="ach-grid">${l.map(cell).join("")}</div>`;
     // Oben alles Geschaffte, darunter was als Nächstes kommt (am nächsten dran zuerst), die geheimen ganz unten.
@@ -4597,10 +4629,41 @@ var ACHM = (() => {
     const rw = "";
     const ds = "";
     ov.querySelector(".ach-sh").innerHTML = `<button type="button" class="inst-x ach-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>`
-      + `<div class="ach-hd"><div><h3>${(prisc ? "Liebes-Erfolge" : "Erfolge") + (fv ? " von " + esc(fv.name) : prisc ? " 💘" : "")}</h3><p>${d.length} von ${L.length} freigeschaltet</p></div></div>${rw}${ds}${body}`;
+      + `<div class="ach-hd"><div><h3>${(prisc ? "Liebes-Erfolge" : "Erfolge") + (fv ? " von " + esc(fv.name) : prisc ? " 💘" : "")}</h3><p>${d.length} von ${L.length} freigeschaltet</p></div></div><div class="ach-pb" aria-hidden="true"><i style="width:${Math.round(d.length / L.length * 100)}%"></i></div>${rw}${ds}${body}`;
   }
   function open(fv) { frV = fv && fv.ids ? fv : null; sheet(); ov.hidden = false; ov.querySelector(".ach-sh").scrollTop = 0; }
-  ov.addEventListener("click", e => { if (e.target.closest("[data-close]")) ov.hidden = true; });
+  ov.addEventListener("click", e => {
+    if (e.target.closest("[data-close]")) { ov.hidden = true; return; }
+    const c = e.target.closest(".ach-b[data-id]"); if (c) det(c.dataset.id);
+  });
+  // ---- Antippen einer Münze: groß, wie weit, welcher Titel ----
+  const dov = $("#achDet");
+  function det(id) {
+    const a = BYID.get(id); if (!a || !dov) return;
+    const fv = frV, has = fv ? fv.ids.has(id) : done(id), pk = a.t === "pk";
+    const tier = pk ? "LIEBES-ERFOLG" : TIER[a.t] ? TIER[a.t][0] : "";
+    let h = "";
+    if (!has && a.sec) {
+      h = `${seal(pk)}<span class="tg">GEHEIM · VERSIEGELT</span><b>???</b><p>Was dahintersteckt, siehst du erst, wenn du ihn geschafft hast</p>`;
+    } else {
+      h = `${pic(a, !has)}<span class="tg${has ? " ok" : ""}">${tier} · ${has ? "GESCHAFFT" : "NOCH OFFEN"}</span><b>${esc(a.n)}</b><p>${esc(a.d)}</p>`;
+      if (!fv && !has) {
+        const [x, n] = prog()[id] || [0, 1], v = Math.min(x, n);
+        h += `<div class="pb"><i style="width:${Math.round(v / n * 100)}%"></i></div><span class="pn">${v} von ${n} · noch ${n - v}</span><span class="pn">Belohnung: Titel „${esc(a.ti)}“</span>`;
+      } else if (!fv && has) {
+        h += myTtl() === a ? `<span class="pn on">✓ Das ist dein Titel</span>` : `<button type="button" class="ov-btn ach-tt" data-id="${a.id}">Als Titel wählen</button>`;
+      }
+    }
+    dov.querySelector(".ach-det").innerHTML = `<button type="button" class="inst-x ach-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>${h}`;
+    dov.hidden = false;
+  }
+  dov && dov.addEventListener("click", e => {
+    if (e.target.closest("[data-close]")) { dov.hidden = true; return; }
+    const b = e.target.closest(".ach-tt"); if (!b) return;
+    const a = BYID.get(b.dataset.id); if (!a) return;
+    ttl[prisc ? "p" : "n"] = a.id; store(KEY_TTL, ttl); prof(); push();
+    dov.hidden = true; toast(`Dein Titel: ${a.ti}`, null, 1800);
+  });
   // ---- Titel wählen ----
   function tsheet() {
     const L = set(), d = doneOf(L), t = myTtl(), pg = prog();
