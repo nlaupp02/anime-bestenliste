@@ -846,9 +846,9 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
 /* „Freund hinzufügen“ auf dem Handy oben statt in der Mitte: So bleibt das Code-Feld über der Tastatur,
    und das iPhone muss beim Auf- und Zuklappen der Tastatur nichts hoch- und runterschieben */
 .app #frAddOv { align-items: start; }
-.standalone #frAddOv { padding-top: calc(env(safe-area-inset-top, 0px) + 28px); }
-.app:not(.standalone) #frAddOv { padding-top: calc(200px + env(safe-area-inset-top, 0px) + 28px); }
-.app:not(.standalone) #frAddOv.kb { padding-top: calc(env(safe-area-inset-top, 0px) + 28px); }
+.standalone #frAddOv { padding-top: max(calc(env(safe-area-inset-top, 0px) + 28px), calc(50svh - 150px)); }
+.app:not(.standalone) #frAddOv { padding-top: calc(200px + max(calc(env(safe-area-inset-top, 0px) + 28px), calc(50svh - 150px))); }
+.app:not(.standalone) #frAddOv.kb { padding-top: max(calc(env(safe-area-inset-top, 0px) + 28px), calc(50svh - 150px)); }
 .app #acctOv:has(#lgOutBox:not([hidden])) { align-items: start; }
 .standalone #acctOv:has(#lgOutBox:not([hidden])) { padding-top: calc(env(safe-area-inset-top, 0px) + 28px); }
 .app:not(.standalone) #acctOv:has(#lgOutBox:not([hidden])) { padding-top: calc(200px + env(safe-area-inset-top, 0px) + 28px); }
@@ -1037,7 +1037,7 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
 .ach-tw { text-align: center; }
 .ach-ttl { display: inline-flex; align-items: center; gap: 6px; margin: 6px auto 0; padding: 4px 11px; border-radius: 999px; font: inherit; font-size: 13px; font-weight: 800; line-height: 1.3;
   color: var(--gold); background: rgba(242, 193, 78, .12); border: 1px solid rgba(242, 193, 78, .35); cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.ach-ttl .pen { font-size: 12px; opacity: .8; }
+.ach-ttl .pen { width: 13px; height: 13px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; opacity: .75; }
 .ach-ttl.add { color: var(--muted); background: transparent; border: 1px dashed var(--line); font-weight: 700; }
 html.prisc .ach-ttl:not(.add) { color: #FF8FC4; background: rgba(255, 143, 196, .12); border-color: rgba(255, 143, 196, .4); }
 .ach-ttl[hidden], .ach-strip[hidden], .ach-ban[hidden] { display: none; }
@@ -1055,9 +1055,13 @@ html.prisc .ach-strip { background: #3A1A2C; }
 /* Fenster von unten */
 .ach-ov { place-items: end center; padding: 0; z-index: 45; }
 .ach-sh { position: relative; width: 100%; max-width: 560px; max-height: 88%; overflow-y: auto; overscroll-behavior: contain; background: var(--sheet); border: 1px solid var(--line); border-bottom: 0;
-  border-radius: 24px 24px 0 0; padding: 10px 16px calc(22px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -18px 50px rgba(0, 0, 0, .45); animation: achUp .26s cubic-bezier(.2, .8, .2, 1); }
+  border-radius: 24px 24px 0 0; padding: 10px 16px calc(22px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -18px 50px rgba(0, 0, 0, .45), 0 200px 0 0 var(--sheet); animation: achUp .26s cubic-bezier(.2, .8, .2, 1); }
+/* Der zweite Schatten (200px nach unten, gleiche Farbe) füllt in der App den Streifen unter dem Fenster, sonst sah man dort die Leiste unten */
 @keyframes achUp { from { transform: translateY(40px); opacity: 0; } }
-html.prisc .ach-sh { background: #24121F; border-color: #4A2238; }
+html.prisc .ach-sh { background: #24121F; border-color: #4A2238; box-shadow: 0 -18px 50px rgba(0, 0, 0, .45), 0 200px 0 0 #24121F; }
+/* Keine Scroll-Leiste rechts im Fenster */
+.ach-sh { scrollbar-width: none; }
+.ach-sh::-webkit-scrollbar { display: none; }
 .ach-grab { width: 40px; height: 5px; border-radius: 5px; background: var(--line); margin: 0 auto 12px; }
 .ach-hd { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 4px; padding-right: 46px; } /* Platz für das X */
 .ach-hd h3 { font: 400 23px/1.05 var(--f-display); margin: 0 0 5px; }
@@ -1111,14 +1115,14 @@ html.prisc .ttl-r.on .ttl-rd { background: #FF8FC4; border-color: #FF8FC4; color
 /* Banner oben, wenn ein Erfolg freigeschaltet wird */
 .ach-ban { position: fixed; z-index: 60; left: 12px; right: 12px; top: calc(env(safe-area-inset-top, 0px) + 10px); max-width: 480px; margin: 0 auto; display: flex; align-items: center; gap: 12px;
   padding: 10px 14px 10px 10px; border-radius: 20px; background: var(--sheet); border: 1px solid var(--line); box-shadow: 0 10px 26px rgba(0, 0, 0, .45);
-  color: var(--ink); font: inherit; text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  color: var(--ink); font: inherit; text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
 html.prisc .ach-ban { background: #2A1424; border-color: #4A2238; }
 .ach-ban svg { width: 52px; height: 52px; flex: none; }
 .ach-ban .t { flex: 1; min-width: 0; }
+.ach-ban .ct { flex: none; align-self: flex-start; margin-top: 2px; font-size: 11.5px; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
 .ach-ban small { display: block; font-size: 10.5px; font-weight: 800; letter-spacing: .14em; color: var(--bc, var(--gold)); }
 .ach-ban b { display: block; font-size: 16.5px; line-height: 1.2; }
 .ach-ban i { font-style: normal; color: var(--muted); font-size: 12.5px; }
-.ach-ban .ar { color: var(--muted); font-size: 20px; }
 /* Rang-Fenster: OK gut sichtbar in der Rangfarbe. In der ersten Sekunde füllt er sich, dann ist er drückbar */
 #ruOk { background: var(--rc); border-color: transparent; color: #14110A; font-size: 16px; font-weight: 800; padding: 13px; border-radius: 14px; }
 #ruOk:disabled { opacity: 1; color: rgba(20, 17, 10, .55); background: linear-gradient(90deg, var(--rc) 50%, color-mix(in srgb, var(--rc) 28%, var(--chip)) 50%);
@@ -1130,6 +1134,17 @@ html.prisc .ach-ban { background: #2A1424; border-color: #4A2238; }
 .ach-test small { display: block; color: var(--muted); font-size: 11.5px; font-weight: 700; margin-bottom: 8px; }
 .ach-test div { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .ach-test button { font: inherit; font-size: 13px; font-weight: 700; color: var(--ink); background: var(--chip); border: 1px solid var(--line); border-radius: 10px; padding: 9px 6px; cursor: pointer; }
+
+/* Hinweise: oben, klein, weiß (statt unten über der Leiste) */
+.toast, .app .toast { top: calc(env(safe-area-inset-top, 0px) + 54px); bottom: auto; display: flex; align-items: center; gap: 8px; max-width: 88vw; padding: 9px 14px; border-radius: 999px;
+  background: #E8EAF3; color: #0F1120; font-size: 13.5px; font-weight: 600; line-height: 1.3; box-shadow: 0 8px 22px rgba(0, 0, 0, .4); animation: tstIn .28s cubic-bezier(.2,.8,.2,1); }
+.toast[hidden] { display: none; }
+.toast .toast-act { color: #D63F35; padding: 2px 0 2px 2px; }
+html.prisc .toast .toast-act { color: #D9367A; }
+@keyframes tstIn { from { opacity: 0; transform: translate(-50%, -10px); } to { opacity: 1; transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .toast, .app .toast { animation: none; } }
+/* Steht gerade ein Erfolg-Banner oben, kommt der Hinweis darunter */
+body:has(#achBan:not([hidden])) .toast { top: calc(env(safe-area-inset-top, 0px) + 108px); }
 </style>
 </head>
 <body>
@@ -1143,7 +1158,7 @@ html.prisc .ach-ban { background: #2A1424; border-color: #4A2238; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V241</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V242</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1198,7 +1213,7 @@ html.prisc .ach-ban { background: #2A1424; border-color: #4A2238; }
       <div class="pfh-login" id="pfLogin" hidden><p>Melde dich an, dann ist deine Liste auf allen Geräten.</p><button type="button" id="pfLoginBtn">Anmelden</button></div>
       <div class="pfh-stats"><div><b id="pfSeen">0</b><small id="pfSeenL">Gesehen</small></div><div><b id="pfHrs">0</b><small id="pfHrsL">Stunden</small></div><div><b id="pfFav">–</b><small id="pfFavL">Lieblingsgenre</small></div></div>
       <button type="button" class="ach-strip" id="achStrip" hidden></button>
-      <div class="ach-test" id="achTest" hidden><small>🧪 Nur im Artifact: zum Ausprobieren</small><div><button type="button" data-t="ban">Erfolg-Banner</button><button type="button" data-t="rank">Rang-Fenster</button><button type="button" data-t="all">Alle freischalten</button><button type="button" data-t="friend">Freund (Beispiel)</button><button type="button" data-t="prisc">Priscilla an/aus</button><button type="button" data-t="reset">Zurücksetzen</button></div></div>
+      <div class="ach-test" id="achTest" hidden><small>🧪 Nur im Artifact: zum Ausprobieren</small><div><button type="button" data-t="ban">Erfolg-Banner</button><button type="button" data-t="info">Alte Erfolge</button><button type="button" data-t="rank">Rang-Fenster</button><button type="button" data-t="all">Alle freischalten</button><button type="button" data-t="friend">Freund (Beispiel)</button><button type="button" data-t="prisc">Priscilla an/aus</button><button type="button" data-t="reset">Zurücksetzen</button></div></div>
       <button type="button" class="pf-fr" id="pfFr" hidden></button>
     </section>
     <p class="favg" id="favg" hidden></p>
@@ -1258,7 +1273,7 @@ html.prisc .ach-ban { background: #2A1424; border-color: #4A2238; }
 </div>
 <div class="ov ach-ov" id="achOv" hidden><div class="ov-bg" data-close></div><div class="ach-sh" role="dialog" aria-modal="true" aria-label="Erfolge"></div></div>
 <div class="ov ach-ov" id="ttlOv" hidden><div class="ov-bg" data-close></div><div class="ach-sh" role="dialog" aria-modal="true" aria-label="Titel wählen"></div></div>
-<button type="button" class="ach-ban" id="achBan" hidden role="status" aria-live="polite"></button>
+<div class="ach-ban" id="achBan" hidden role="status" aria-live="polite"></div>
 <div class="ov rankup" id="rankUp" hidden role="status" aria-live="polite">
   <div class="ru-card"><span class="ru-lbl" id="ruLbl">Neuer Rang</span><span class="ru-st" id="ruSt" aria-hidden="true"></span><b class="ru-name" id="ruName"></b><span class="ru-next" id="ruNext"></span><button type="button" class="ov-btn main" id="ruOk">OK</button></div>
 </div>
@@ -4403,7 +4418,7 @@ if (FB_HOST && acct.uid) setTimeout(() => fbLoad().catch(() => { syncSt = "err";
 // (Würfel-Tipp, nachts, neu in der Liste, Priscilla entdeckt), stehen in cr-top100-ach-ev.
 // Var statt const: Die Haken oben im Skript rufen ACHM?.… auf, bevor dieser Teil geladen ist – dann passiert einfach nichts.
 var ACHM = (() => {
-  const KEY_A = "cr-top100-ach", KEY_EV = "cr-top100-ach-ev", KEY_TTL = "cr-top100-title", KEY_TH = "cr-top100-design", KEY_RW = "cr-top100-ach-rw", KEY_PUSH = "cr-top100-ach-push";
+  const KEY_A = "cr-top100-ach", KEY_EV = "cr-top100-ach-ev", KEY_TTL = "cr-top100-title", KEY_TH = "cr-top100-design", KEY_RW = "cr-top100-ach-rw", KEY_PUSH = "cr-top100-ach-push", KEY_INFO = "cr-top100-ach-info";
   // Romanzen, in denen ein Hund eine wichtige Rolle spielt (für den geheimen Liebes-Erfolg „Daemon“, 2 davon)
   const DOG = new Set(["Inuyasha", "Fruits Basket", "The Ancient Magus' Bride"]);
   const MOOD = new Map([...DATA, ...EXTRA].map(d => [d[0], String(d[11] || "")]));
@@ -4514,7 +4529,7 @@ var ACHM = (() => {
     const L = set(), d = doneOf(L), t = myTtl();
     tb.hidden = !d.length;
     tb.className = "ach-ttl" + (t ? "" : " add");
-    tb.innerHTML = t ? `${esc(t.ti)} <span class="pen" aria-hidden="true">✎</span>` : "+ Titel wählen";
+    tb.innerHTML = t ? `${esc(t.ti)} <svg class="pen" viewBox="0 0 24 24" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>` : "+ Titel wählen";
     tb.setAttribute("aria-label", t ? `Titel: ${t.ti}. Ändern` : "Titel wählen");
     const last = d.slice().sort((a, b) => got[b.id][0] - got[a.id][0]).slice(0, 4);
     sb.hidden = false;
@@ -4568,38 +4583,83 @@ var ACHM = (() => {
     setTimeout(() => { tov.hidden = true; }, 350);
     toast(a ? `Dein Titel: ${a.ti}` : "Kein Titel mehr", null, 1800);
   });
-  $("#achTtl").addEventListener("click", () => { tsheet(); tov.hidden = false; });
+  $("#achTtl").addEventListener("click", () => { tsheet(); tov.hidden = false; tov.querySelector(".ach-sh").scrollTop = 0; });
+  // Fenster mit dem Griff oben nach unten wegwischen (wie bei iPhone-Apps). Geht nur, wenn die Liste ganz oben steht.
+  function swipeClose(o) {
+    const sh = o.querySelector(".ach-sh"); let y0 = null, dy = 0, t0 = 0, drag = false;
+    sh.addEventListener("touchstart", e => { if (e.touches.length !== 1) { y0 = null; return; } y0 = e.touches[0].clientY; dy = 0; t0 = Date.now(); drag = false; }, { passive: true });
+    sh.addEventListener("touchmove", e => {
+      if (y0 == null) return;
+      const d = e.touches[0].clientY - y0;
+      if (!drag) {
+        if (d > 6 && sh.scrollTop <= 0) { drag = true; sh.style.transition = "none"; }
+        else if (Math.abs(d) > 6) { y0 = null; return; }
+        else return;
+      }
+      dy = Math.max(0, d); sh.style.transform = `translateY(${dy}px)`; e.preventDefault();
+    }, { passive: false });
+    const end = () => {
+      if (y0 == null) return; y0 = null;
+      if (!drag) return; drag = false;
+      const fast = dy > 40 && dy / Math.max(1, Date.now() - t0) > .5;
+      sh.style.transition = "transform .26s cubic-bezier(.2,.8,.2,1)";
+      if (dy > 110 || fast) { sh.style.transform = "translateY(105%)"; setTimeout(() => { o.hidden = true; sh.style.transform = ""; sh.style.transition = ""; }, 240); }
+      else { sh.style.transform = ""; setTimeout(() => { sh.style.transition = ""; }, 280); }
+    };
+    sh.addEventListener("touchend", end); sh.addEventListener("touchcancel", end);
+  }
+  swipeClose(ov); swipeClose(tov);
   $("#achStrip").addEventListener("click", () => open());
   // ---- Banner oben ----
   const ban = $("#achBan");
-  let banBusy = false, banT = 0;
+  let banBusy = false, banT = 0, banHiding = false, oldQ = null, oldI = 0;
+  // Inhalt setzen; Münze dreht sich rein, Text kommt kurz danach
+  function banFill(a, ct, d0) {
+    ban.style.setProperty("--bc", a.t === "pk" ? "#FF8FC4" : TIER[a.t][1]);
+    ban.innerHTML = `${pic(a)}<span class="t"><small>${a.t === "pk" ? "LIEBES-ERFOLG FREIGESCHALTET" : "ERFOLG FREIGESCHALTET"}</small><b>${esc(a.n)}</b><i>${esc(a.d)}</i></span>${ct ? `<span class="ct">${ct}</span>` : ""}`;
+    got[a.id][1] = 1; store(KEY_A, got); prof();
+    if (reduce || !ban.animate) return;
+    const sv = ban.querySelector("svg"), tx = ban.querySelectorAll(".t > *");
+    if (sv) sv.animate([{ transform: "rotate(-150deg)", opacity: 0 }, { transform: "rotate(10deg)", opacity: 1, offset: .75 }, { transform: "none", opacity: 1 }],
+      { duration: 700, delay: d0, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" }).onfinish = () => { if (sv.isConnected) sv.replaceWith(sv.cloneNode(true)); };
+    tx.forEach((el, i) => el.animate([{ transform: "translateX(-8px)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 380, delay: d0 + 110 + i * 90, easing: "ease-out", fill: "backwards" }));
+  }
   function showNext() {
     if (banBusy) return;
-    if (!$("#rankUp").hidden || rankQ.length || !ov.hidden || !tov.hidden) { clearTimeout(banT); banT = setTimeout(showNext, 700); return; }
-    const L = set(), a = L.filter(x => got[x.id] && !got[x.id][1]).sort((x, y) => got[x.id][0] - got[y.id][0])[0];
-    if (!a) return;
-    got[a.id][1] = 1; store(KEY_A, got);
-    banBusy = true;
-    ban.style.setProperty("--bc", a.t === "pk" ? "#FF8FC4" : TIER[a.t][1]);
-    ban.innerHTML = `${pic(a)}<span class="t"><small>${a.t === "pk" ? "LIEBES-ERFOLG FREIGESCHALTET" : "ERFOLG FREIGESCHALTET"}</small><b>${esc(a.n)}</b><i>${esc(a.d)}</i></span><span class="ar" aria-hidden="true">›</span>`;
+    if (!$("#rankUp").hidden || rankQ.length || !ov.hidden || !tov.hidden || !$("#toast").hidden) { clearTimeout(banT); banT = setTimeout(showNext, 700); return; }
+    const L = set();
+    // 2 = schon vor dem Update geschafft: Banner bleibt oben und wechselt alle 2 Sekunden zum nächsten
+    const olds = L.filter(x => got[x.id] && got[x.id][1] === 2);
+    const a = olds.length > 1 ? null : L.filter(x => got[x.id] && (!got[x.id][1] || got[x.id][1] === 2)).sort((x, y) => got[x.id][0] - got[y.id][0])[0];
+    if (!a && olds.length < 2) return;
+    banBusy = true; oldQ = a ? null : olds; oldI = 0;
+    ban.getAnimations().forEach(x => x.cancel()); // Reste vom letzten Banner weg
+    ban.style.transform = ""; banHiding = false;
+    if (oldQ) banFill(oldQ[oldI++], `1 / ${oldQ.length}`, 220); else banFill(a, "", 220);
     ban.hidden = false;
-    if (!reduce && ban.animate) {
-      ban.animate([{ transform: "translateY(calc(-100% - 30px))", opacity: 0 }, { transform: "translateY(4px)", opacity: 1, offset: .72 }, { transform: "none", opacity: 1 }],
-        { duration: 760, easing: "cubic-bezier(.22,.9,.3,1)" });
-      const sv = ban.querySelector("svg"), tx = ban.querySelectorAll(".t > *");
-      if (sv) sv.animate([{ transform: "scale(.5) rotate(-120deg)", opacity: 0 }, { transform: "scale(1.06) rotate(8deg)", opacity: 1, offset: .75 }, { transform: "none", opacity: 1 }],
-        { duration: 700, delay: 220, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" });
-      tx.forEach((e, i) => e.animate([{ transform: "translateX(-8px)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 380, delay: 330 + i * 90, easing: "ease-out", fill: "backwards" }));
-    }
-    prof();
-    clearTimeout(banT); banT = setTimeout(hideBan, 4200);
+    if (!reduce && ban.animate) ban.animate([{ transform: "translateY(calc(-100% - 30px))", opacity: 0 }, { transform: "translateY(4px)", opacity: 1, offset: .72 }, { transform: "none", opacity: 1 }],
+      { duration: 760, easing: "cubic-bezier(.22,.9,.3,1)" });
+    clearTimeout(banT); banT = oldQ ? setTimeout(nextOld, 2600) : setTimeout(hideBan, 4200);
   }
+  function nextOld() {
+    clearTimeout(banT);
+    if (!oldQ || oldI >= oldQ.length) return hideBan();
+    banFill(oldQ[oldI], `${oldI + 1} / ${oldQ.length}`, 0); oldI++;
+    banT = setTimeout(nextOld, 2000);
+  }
+  function banDone() { ban.hidden = true; ban.getAnimations().forEach(x => x.cancel()); ban.style.transform = ""; banBusy = false; banHiding = false; oldQ = null; setTimeout(showNext, 600); }
   function hideBan() {
-    const done = () => { ban.hidden = true; banBusy = false; setTimeout(showNext, 300); };
-    if (reduce || !ban.animate) return done();
-    ban.animate([{ transform: "none", opacity: 1 }, { transform: "translateY(calc(-100% - 30px))", opacity: 0 }], { duration: 480, easing: "cubic-bezier(.5,0,.75,0)", fill: "forwards" }).onfinish = done;
+    if (banHiding || ban.hidden) return;
+    banHiding = true; clearTimeout(banT);
+    ban.getAnimations().forEach(x => x.cancel());
+    if (reduce || !ban.animate) return banDone();
+    ban.animate([{ transform: "none", opacity: 1 }, { transform: "translateY(calc(-100% - 30px))", opacity: 0 }], { duration: 480, easing: "cubic-bezier(.5,0,.75,0)", fill: "forwards" }).onfinish = banDone;
   }
-  ban.addEventListener("click", () => { clearTimeout(banT); ban.getAnimations().forEach(a => a.cancel()); ban.hidden = true; banBusy = false; open(); banT = setTimeout(showNext, 700); });
+  // Antippen = weiter: zum nächsten alten Erfolg, sonst Banner weg (es öffnet sich nichts)
+  ban.addEventListener("click", () => {
+    if (ban.hidden || banHiding) return;
+    if (oldQ && oldI < oldQ.length) nextOld(); else hideBan();
+  });
   // ---- Test-Knöpfe: nur im Artifact, damit man Banner, Rang-Fenster usw. ansehen kann ----
   $("#achTest") && $("#achTest").addEventListener("click", e => {
     const b = e.target.closest("button[data-t]"); if (!b) return;
@@ -4607,6 +4667,10 @@ var ACHM = (() => {
     if (t === "ban") {
       const a = L.find(x => !got[x.id]) || L[Math.floor(Math.random() * L.length)];
       got[a.id] = [Date.now(), 0]; store(KEY_A, got); showNext();
+    } else if (t === "info") {
+      let n = 0; L.forEach(a => { if (n < 5 && got[a.id]) { got[a.id][1] = 2; n++; } });
+      L.forEach(a => { if (n < 3 && !got[a.id]) { got[a.id] = [Date.now(), 2]; n++; } });
+      store(KEY_A, got); prof(); showNext();
     } else if (t === "rank") rankUp(Math.max(1, rankIdx(seenCount())));
     else if (t === "all") { L.forEach(a => { if (!got[a.id]) got[a.id] = [Date.now(), 1]; }); store(KEY_A, got); prof(); open(); }
     else if (t === "friend") {
@@ -4615,7 +4679,7 @@ var ACHM = (() => {
         ach: ["start", "films", "tears", "action", "comedy", "friend", "adventure", "mystery", "prisc"], achP: ["p_first", "p_five", "p_film", "p_laugh"] };
       friends.push(demo); frShow("demo"); friends = friends.filter(f => f.uid !== "demo");
     } else if (t === "prisc") { setPrisc(!prisc, true); render(); }
-    else if (t === "reset") { [KEY_A, KEY_EV, KEY_TTL, KEY_RW, KEY_PUSH].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} }); location.reload(); }
+    else if (t === "reset") { [KEY_A, KEY_EV, KEY_TTL, KEY_RW, KEY_PUSH, KEY_INFO].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} }); location.reload(); }
   });
   // ---- Prüfen, ob etwas Neues freigeschaltet ist ----
   let rwSeen = load(KEY_RW, null);
@@ -4692,11 +4756,18 @@ var ACHM = (() => {
   applyTheme();
   if (firstRun) {
     // Erstes Mal: Was schon geschafft ist, gilt als gezeigt, statt 10 Banner hintereinander
-    const pg = prog(); [...N, ...P].forEach(a => { const [h, need] = pg[a.id]; if (need > 0 && h >= need) got[a.id] = [Date.now(), 1]; });
-    const pg2 = prog(); [...N, ...P].forEach(a => { const [h, need] = pg2[a.id]; if (!got[a.id] && need > 0 && h >= need) got[a.id] = [Date.now(), 1]; });
+    const pg = prog(); [...N, ...P].forEach(a => { const [h, need] = pg[a.id]; if (need > 0 && h >= need) got[a.id] = [Date.now(), 2]; });
+    const pg2 = prog(); [...N, ...P].forEach(a => { const [h, need] = pg2[a.id]; if (!got[a.id] && need > 0 && h >= need) got[a.id] = [Date.now(), 2]; });
     store(KEY_A, got);
     rwSeen = [...RW, ...RWP].filter(r => rwOn(r[1])).map(r => r[1]); store(KEY_RW, rwSeen);
-  } else if (!Array.isArray(rwSeen)) { rwSeen = [...RW, ...RWP].filter(r => rwOn(r[1])).map(r => r[1]); store(KEY_RW, rwSeen); }
+  } else if (!load(KEY_INFO, 0)) {
+    // V241 hat alte Erfolge still freigeschaltet: die vom ersten Start (gleicher Zeitpunkt) einmal als Info zeigen
+    const ts = Object.values(got).map(v => Array.isArray(v) ? v[0] : 0).filter(Boolean), t0 = Math.min(...ts);
+    if (ts.length) Object.keys(got).forEach(id => { const v = got[id]; if (Array.isArray(v) && v[1] === 1 && v[0] - t0 < 400) v[1] = 2; });
+    store(KEY_A, got);
+  }
+  store(KEY_INFO, 1);
+  if (!firstRun && !Array.isArray(rwSeen)) { rwSeen = [...RW, ...RWP].filter(r => rwOn(r[1])).map(r => r[1]); store(KEY_RW, rwSeen); }
   prof();
   setTimeout(() => { check(); applyTheme(); }, 1200);
   return { prof, check, evt, dice, priscOn, friend, open, push };
