@@ -1143,8 +1143,9 @@ html.prisc .ach-ban { background: #2A1424; border-color: #4A2238; }
 html.prisc .toast .toast-act { color: #D9367A; }
 @keyframes tstIn { from { opacity: 0; transform: translate(-50%, -10px); } to { opacity: 1; transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { .toast, .app .toast { animation: none; } }
-/* Steht gerade ein Erfolg-Banner oben, kommt der Hinweis darunter */
-body:has(#achBan:not([hidden])) .toast { top: calc(env(safe-area-inset-top, 0px) + 108px); }
+/* Steht gerade ein Erfolg-Banner oben, kommt der Hinweis darunter (Klasse per Skript: „body:has(…)“ ließ das iPhone bei jedem Tippen hängen) */
+.toast.low, .app .toast.low { top: calc(env(safe-area-inset-top, 0px) + 108px); }
+.app .ach-ban { position: absolute; }
 </style>
 </head>
 <body>
@@ -1158,7 +1159,7 @@ body:has(#achBan:not([hidden])) .toast { top: calc(env(safe-area-inset-top, 0px)
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V242</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V243</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4561,7 +4562,14 @@ var ACHM = (() => {
     ov.querySelector(".ach-sh").innerHTML = `<div class="ach-grab"></div><button type="button" class="inst-x ach-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>`
       + `<div class="ach-hd"><div><h3>${(prisc ? "Liebes-Erfolge" : "Erfolge") + (fv ? " von " + esc(fv.name) : prisc ? " 💘" : "")}</h3><p>${d.length} von ${L.length} freigeschaltet</p></div></div>${rw}${ds}${body}`;
   }
-  function open(fv) { frV = fv && fv.ids ? fv : null; sheet(); ov.hidden = false; ov.querySelector(".ach-sh").scrollTop = 0; }
+  // Fenster reicht bis ganz nach unten an den Bildschirmrand (vorher blieb in der App unten ein Streifen mit Kante)
+  function fitBottom(o) {
+    const sh = o.querySelector(".ach-sh"); sh.style.marginBottom = ""; sh.style.paddingBottom = "";
+    const vv = window.visualViewport, vh = vv ? vv.height + vv.offsetTop : innerHeight;
+    const gap = Math.round(vh - (o.getBoundingClientRect().top + sh.offsetTop + sh.offsetHeight));
+    if (gap > 0 && gap < 200) { sh.style.marginBottom = -gap + "px"; sh.style.paddingBottom = `calc(${gap + 22}px + env(safe-area-inset-bottom, 0px))`; }
+  }
+  function open(fv) { frV = fv && fv.ids ? fv : null; sheet(); ov.hidden = false; fitBottom(ov); ov.querySelector(".ach-sh").scrollTop = 0; }
   ov.addEventListener("click", e => { if (e.target.closest("[data-close]")) ov.hidden = true; });
   // ---- Titel wählen ----
   function tsheet() {
@@ -4583,7 +4591,7 @@ var ACHM = (() => {
     setTimeout(() => { tov.hidden = true; }, 350);
     toast(a ? `Dein Titel: ${a.ti}` : "Kein Titel mehr", null, 1800);
   });
-  $("#achTtl").addEventListener("click", () => { tsheet(); tov.hidden = false; tov.querySelector(".ach-sh").scrollTop = 0; });
+  $("#achTtl").addEventListener("click", () => { tsheet(); tov.hidden = false; fitBottom(tov); tov.querySelector(".ach-sh").scrollTop = 0; });
   // Fenster mit dem Griff oben nach unten wegwischen (wie bei iPhone-Apps). Geht nur, wenn die Liste ganz oben steht.
   function swipeClose(o) {
     const sh = o.querySelector(".ach-sh"); let y0 = null, dy = 0, t0 = 0, drag = false;
@@ -4636,7 +4644,9 @@ var ACHM = (() => {
     ban.getAnimations().forEach(x => x.cancel()); // Reste vom letzten Banner weg
     ban.style.transform = ""; banHiding = false;
     if (oldQ) banFill(oldQ[oldI++], `1 / ${oldQ.length}`, 220); else banFill(a, "", 220);
-    ban.hidden = false;
+    // Handy: Banner liegt auf der Seite statt „fest“ (fixed), sonst färbt Safari oben einen dunklen Balken ein (wie bei den Fenstern)
+    if (document.documentElement.classList.contains("app")) ban.style.top = `calc(${Math.round(window.scrollY)}px + env(safe-area-inset-top, 0px) + 10px)`;
+    ban.hidden = false; $("#toast").classList.add("low"); // Hinweis rutscht unter das Banner
     if (!reduce && ban.animate) ban.animate([{ transform: "translateY(calc(-100% - 30px))", opacity: 0 }, { transform: "translateY(4px)", opacity: 1, offset: .72 }, { transform: "none", opacity: 1 }],
       { duration: 760, easing: "cubic-bezier(.22,.9,.3,1)" });
     clearTimeout(banT); banT = oldQ ? setTimeout(nextOld, 2600) : setTimeout(hideBan, 4200);
@@ -4647,7 +4657,7 @@ var ACHM = (() => {
     banFill(oldQ[oldI], `${oldI + 1} / ${oldQ.length}`, 0); oldI++;
     banT = setTimeout(nextOld, 2000);
   }
-  function banDone() { ban.hidden = true; ban.getAnimations().forEach(x => x.cancel()); ban.style.transform = ""; banBusy = false; banHiding = false; oldQ = null; setTimeout(showNext, 600); }
+  function banDone() { ban.hidden = true; $("#toast").classList.remove("low"); ban.getAnimations().forEach(x => x.cancel()); ban.style.transform = ""; banBusy = false; banHiding = false; oldQ = null; setTimeout(showNext, 600); }
   function hideBan() {
     if (banHiding || ban.hidden) return;
     banHiding = true; clearTimeout(banT);
