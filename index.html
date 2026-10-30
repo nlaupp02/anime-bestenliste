@@ -1228,7 +1228,7 @@ html.prisc .ach-top::after { background: linear-gradient(#24121F, transparent); 
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V252</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V253</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4610,7 +4610,7 @@ var ACHM = (() => {
     tb.setAttribute("aria-label", t ? `Titel: ${t.ti}. Ändern` : "Titel wählen");
     const last = d.slice().sort((a, b) => got[b.id][0] - got[a.id][0]).slice(0, 4);
     sb.hidden = false;
-    sb.innerHTML = `<span class="ach-mm">${last.map(pic).join("")}</span><b>${prisc ? "Liebes-Erfolge" : "Erfolge"}</b><small>${d.length} von ${L.length} ›</small>`;
+    sb.innerHTML = `<span class="ach-mm">${last.map(a => pic(a)).join("")}</span><b>${prisc ? "Liebes-Erfolge" : "Erfolge"}</b><small>${d.length} von ${L.length} ›</small>`;
     const tp = $("#achTest"); if (tp) tp.hidden = FB_HOST;
   }
   // ---- Belohnungen ----
@@ -4879,7 +4879,7 @@ var ACHM = (() => {
     if (rk && ta) rk.insertAdjacentHTML("afterend", `<span class="ach-ttl fp-ttl">${esc(ta.ti)}</span>`);
     const st = c.querySelector(".fp-stats");
     if (st && his.length) {
-      st.insertAdjacentHTML("afterend", `<button type="button" class="ach-strip fp-ach"><span class="ach-mm">${his.slice(-5).reverse().map(pic).join("")}</span><b>${prisc ? "Liebes-Erfolge" : "Erfolge"}</b><small>${his.length} von ${L.length} ›</small></button>`);
+      st.insertAdjacentHTML("afterend", `<button type="button" class="ach-strip fp-ach"><span class="ach-mm">${his.slice(-5).reverse().map(a => pic(a)).join("")}</span><b>${prisc ? "Liebes-Erfolge" : "Erfolge"}</b><small>${his.length} von ${L.length} ›</small></button>`);
       c.querySelector(".fp-ach").addEventListener("click", () => open({ name: f.name, ids }));
     }
   }
