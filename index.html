@@ -569,6 +569,7 @@ html.prisc .prog.max .ring svg { filter: drop-shadow(0 0 4px rgba(246, 196, 83, 
 .tp-f .av { width: 52px; height: 52px; display: block; }
 .tp-f .av .avr.fr-l, .tp-pop .av .avr.fr-l { display: grid; place-items: center; font-size: 21px; font-weight: 800; }
 .tp-f .nm { font-size: 13.5px; font-weight: 700; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 359px) { .tp-f .nm { font-size: 12px; } .tp-f .av { width: 46px; height: 46px; } }
 .tp-f small { font-size: 10.5px; color: var(--muted); line-height: 1.15; text-align: center; }
 .tp-f[aria-pressed="true"] { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }
 .tp-f[aria-pressed="true"]::after { content: "✓"; position: absolute; top: 6px; right: 8px; width: 20px; height: 20px; border-radius: 50%; background: var(--gold); color: var(--on-gold); font-size: 12px; font-weight: 800; display: grid; place-items: center; }
@@ -583,6 +584,8 @@ html.prisc .prog.max .ring svg { filter: drop-shadow(0 0 4px rgba(246, 196, 83, 
 .tp-pop { justify-items: center; text-align: center; gap: 6px; }
 .tp-pop .lbl { font-size: 11.5px; font-weight: 800; letter-spacing: .12em; color: var(--gold); }
 .tp-pop .cvw { position: relative; width: 132px; margin: 6px 0 10px; }
+.tp-pop .cvw > img[hidden], .tp-pop .cvw > .ph[hidden] { display: none; }
+.tp-pop .cvw > .ph { width: 132px; height: 188px; border-radius: 12px; background: var(--chip); display: grid; place-items: center; padding: 12px; font-size: 13px; color: var(--muted); }
 .tp-pop .cvw > img { width: 132px; height: 188px; object-fit: cover; border-radius: 12px; display: block; background: var(--chip); box-shadow: 0 10px 30px rgba(0, 0, 0, .45); }
 .tp-pop .cvw .av { position: absolute; right: -14px; bottom: -12px; width: 50px; height: 50px; }
 .tp-pop .cvw .av .avr { box-shadow: 0 0 0 3px var(--sheet), 0 0 0 5px var(--gold); }
@@ -1036,7 +1039,7 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V236</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V237</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1213,7 +1216,7 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
   <div class="ov-bg" data-close></div>
   <div class="ov-card tp-pop" role="dialog" aria-modal="true" aria-labelledby="tpTitle">
     <div class="lbl">NEUER TIPP</div>
-    <div class="cvw"><img id="tpCv" alt="" draggable="false"><span class="av" id="tpAv"></span></div>
+    <div class="cvw"><img id="tpCv" alt="" draggable="false"><span class="ph" id="tpPh" hidden></span><span class="av" id="tpAv"></span></div>
     <div class="who" id="tpWho"></div>
     <h4 id="tpTitle"></h4>
     <div class="facts2" id="tpFacts"></div>
@@ -2599,6 +2602,7 @@ async function loadCovers() {
     }
   }
 }
+const FIT_PROBE = "Die Elfenmagierin Frieren hat mit ihren Gefährten den Dämonenkönig besiegt.";
 function buildCards() {
   $("#list").innerHTML = byMine.map(card).join("");
   // „Mehr lesen“ nur, wenn wirklich mehr als eine Zeile fehlt: Passt der Text in 4 Zeilen, wird er ganz gezeigt.
@@ -2606,8 +2610,9 @@ function buildCards() {
   // das kostet beim Scrollen keine Leistung. Neu gerechnet wird nur, wenn sich die Breite ändert.
   const ctx2d = document.createElement("canvas").getContext("2d");
   // Jede Wortbreite wird nur einmal gemessen und dann zusammengezählt (vorher: jede Zeile immer wieder neu gemessen)
-  const ww = new Map(); let spW = 0;
-  const wOf = w => { let v = ww.get(w); if (v === undefined) { v = ctx2d.measureText(w).width; ww.set(w, v); } return v; };
+  // Jede Buchstabenbreite wird nur einmal gemessen und dann zusammengezählt. Knappe Fälle misst die Seite unten ohnehin genau.
+  const ww = new Map(); let spW = 0, fitFont = "", fitProbe = 0;
+  const wOf = w => { let x = 0; for (const c of w) { let v = ww.get(c); if (v === undefined) { v = ctx2d.measureText(c).width; ww.set(c, v); } x += v; } return x; };
   const lineCount = (text, width) => {
     let n = 1, cur = 0;
     for (const w of text.split(" ")) { const x = wOf(w); if (cur && cur + spW + x > width) { n++; cur = x; } else cur = cur ? cur + spW + x : x; }
@@ -2621,7 +2626,7 @@ function buildCards() {
     if (!w || w === fitW) return;
     fitW = w;
     const cs = getComputedStyle(d0); ctx2d.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
-    ww.clear(); spW = ctx2d.measureText(" ").width;
+    ww.clear(); spW = ctx2d.measureText(" ").width; fitFont = ctx2d.font; fitProbe = ctx2d.measureText(FIT_PROBE).width;
     // Eindeutige Fälle rechnet die Schrift-Berechnung, nur knappe Fälle (4–5 Zeilen) werden einmal gemeinsam gemessen
     const close = [], lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.45;
     const set = (el, m, fits) => { const d = el.querySelector(".desc"); if (d.classList.contains("clamp") === fits) d.classList.toggle("clamp", !fits); if (m.hidden !== fits) m.hidden = fits; };
@@ -2654,7 +2659,8 @@ function buildCards() {
   };
   window.fitAll = fitAll;
   addEventListener("resize", () => requestAnimationFrame(fitAll));
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fitW = 0; fitAll(); });
+  // Schrift erst jetzt fertig geladen? Nur dann neu rechnen, wenn sie die Breiten wirklich verändert hat
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (fitFont) { ctx2d.font = fitFont; if (ctx2d.measureText(FIT_PROBE).width === fitProbe) return; } fitW = 0; fitAll(); });
   $("#list").addEventListener("click", e => {
     const m = e.target.closest(".more"); if (!m) return;
     const d = m.previousElementSibling, open = d.classList.toggle("clamp") === false;
@@ -3931,8 +3937,9 @@ function tipShow(fresh) {
   const t = fresh[0], it = items.find(x => x.id === t.id); if (!it) return;
   const fr = new Map(friends.map(f => [f.uid, f]));
   const from = [...new Set(tipsIn.filter(x => x.id === t.id).sort((a, b) => a.at - b.at).map(x => x.from))].map(u => fr.get(u)).filter(Boolean);
-  const u = coverOf(it), img = $("#tpCv");
+  const u = coverOf(it), img = $("#tpCv"), ph = $("#tpPh");
   img.hidden = !u; if (u) img.src = u;
+  ph.hidden = !!u; ph.textContent = shortT(it.title);
   $("#tpAv").innerHTML = from.length ? frFace(from[0]) : "";
   $("#tpWho").innerHTML = `${nmList(from)} ${from.length === 1 ? "empfiehlt" : "empfehlen"} dir`;
   $("#tpTitle").textContent = it.title.split(" – ")[0];
