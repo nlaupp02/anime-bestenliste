@@ -522,6 +522,11 @@ html.prisc .prog.max .ring svg { filter: drop-shadow(0 0 4px rgba(246, 196, 83, 
 .prog .ring .face { position: absolute; inset: 10px; border-radius: 50%; overflow: hidden; background: var(--paper); box-shadow: 0 0 0 3px var(--sheet); }
 .prog .ring .kj { font-size: 26px; } .prog .ring .kj.k1 { font-size: 40px; } .prog .ring .kj.k3 { font-size: 19px; }
 .prog .ring .fimg { position: absolute; inset: 0; }
+.prog .ring .fimg .avr.fr-l { font-size: 46px; }
+.tabs .pfi .avr.fr-l { font-size: 13px; }
+.rk-hd { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.rk-x { flex: none; margin: -4px -4px 0 0; }
+.rk-x:focus { outline: none; } /* bekommt beim Öffnen den Fokus (wie vorher OK), ohne Ring */
 .pfh-badge { position: absolute; right: -1px; bottom: 2px; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--sheet); border: 1.8px solid var(--rc); color: var(--rc); font: 700 19px/1 "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif; }
 .prog.rt6 .pfh-badge { background: #0B0406; }
 .pfh-name { margin-top: 6px; font-size: 21px; font-weight: 800; line-height: 1.25; color: var(--ink); }
@@ -1296,7 +1301,7 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V262</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V263</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1490,9 +1495,8 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
 <div class="ov" id="rankSheet" hidden>
   <div class="ov-bg" data-close></div>
   <div class="ov-card rank-card" role="dialog" aria-modal="true" aria-labelledby="rankTitle">
-    <div><b id="rankTitle"></b><p class="sub" id="rankSub">Steigt mit jedem Anime, den du als gesehen markierst.</p></div>
+    <div class="rk-hd"><div><b id="rankTitle"></b><p class="sub" id="rankSub">Steigt mit jedem Anime, den du als gesehen markierst.</p></div><button type="button" class="inst-x rk-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
     <ol class="ladder" id="ladder"></ol>
-    <button type="button" class="ov-btn main" data-close>OK</button>
   </div>
 </div>
 <div class="ov" id="whySheet" hidden>
@@ -2966,8 +2970,8 @@ const minutesOf = it => {
   return (EP_FIX[it.key] ?? (m ? +m[1].replace(/\./g, "") : 24)) * 24;
 };
 // Ränge: ab wie vielen gesehenen Titeln, Kanji, Name, Bedeutung, Farbstufe (0 grau, 5 Einstieg, dann 1 bis 4, 6 Dämonenkönig)
-const RANKS = [[0, "初", "Shoshinsha", "Anfänger", 0], [1, "新", "Kōhai", "Neuling", 5], [5, "推", "Otaku", "Anime-Fan", 1],
-  [10, "熱", "Senpai", "Serienjunkie", 1], [20, "侍", "Samurai", "Krieger", 2], [45, "師", "Sensei", "Meister", 2], [70, "極", "Shōgun", "Großmeister", 3],
+const RANKS = [[0, "初", "Shoshinsha", "Anfänger", 0], [1, "新", "Kōhai", "Entdecker", 5], [5, "推", "Otaku", "Anime-Fan", 1],
+  [10, "熱", "Senpai", "Serienjunkie", 1], [20, "侍", "Samurai", "Samurai", 2], [45, "師", "Sensei", "Meister", 2], [70, "極", "Shōgun", "Großmeister", 3],
   [105, "伝", "Sennin", "Legende", 3], [155, "鬼", "Oni", "Dämon", 4], [205, "魔", "Maō", "Dämonenkönig", 6]];
 // Im Priscilla-Modus gibt es eigene Liebes-Ränge, die nur gesehene Romanzen zählen
 const LOVE = [[0, "独", "Hitori", "Single", 0], [1, "惚", "Horeru", "Verknallt", 5], [3, "鼓", "Kodō", "Herzklopfen", 1],
@@ -3027,10 +3031,11 @@ function renderProg() {
 function paintMe() {
   let me = null, fbOk = false, err = false;
   try { me = meNow(); fbOk = FB_HOST; err = !!me && syncSt === "err"; } catch (e) { return; } // Konto-Teil noch nicht geladen
-  const av = me && me.av ? me.av : "", img = $("#pfImg"), tf = $("#tabFace");
-  if (img.dataset.av !== av) { img.dataset.av = av; img.innerHTML = av ? avImg(av) : ""; tf.innerHTML = av ? avImg(av) : ""; }
-  img.hidden = !av; $("#progKj").hidden = !!av; $("#pfBadge").hidden = !av;
-  tf.hidden = !av; $("#tabUser").toggleAttribute("hidden", !!av); // SVG kennt .hidden nicht, darum das Attribut
+  // Ohne Profilbild steht (angemeldet) der Anfangsbuchstabe drin, wie im Konto und bei Freunden. Das Rang-Zeichen sitzt dann als Abzeichen unten rechts
+  const av = me && me.av ? me.av : "", ch = me ? ([...me.name][0] || "?").toUpperCase() : "", k = av || (ch && "L" + ch), img = $("#pfImg"), tf = $("#tabFace");
+  if (img.dataset.av !== k) { img.dataset.av = k; const h = av ? avImg(av) : ch ? `<span class="avr fr-l">${esc(ch)}</span>` : ""; img.innerHTML = h; tf.innerHTML = h; }
+  img.hidden = !k; $("#progKj").hidden = !!k; $("#pfBadge").hidden = !k;
+  tf.hidden = !k; $("#tabUser").toggleAttribute("hidden", !!k); // SVG kennt .hidden nicht, darum das Attribut
   $("#pfName").hidden = !me; if (me) $("#pfName").textContent = me.name;
   $("#pfEdit").hidden = !(fbOk && me); $("#pfEdit").classList.toggle("warn", err);
   $("#pfLogin").hidden = !(fbOk && !me);
@@ -3303,7 +3308,7 @@ $("#rankInfo").addEventListener("click", () => {
     `<li class="rt${t}${i === ri ? " cur" : i === ri + 1 ? " lock next" : i > ri ? " lock" : ""}"><span class="big k${kj.length}${i >= L - 2 ? " fill" : ""}${i === L - 1 ? " glow" : ""}" aria-hidden="true">${kj}</span>` +
     `<span class="nm"><b>${de}${i === ri ? '<span class="du">Du</span>' : ""}</b></span><span class="ab">ab ${from}</span></li>`).join("");
   rankSheet.hidden = false;
-  rankSheet.querySelector(".ov-btn.main").focus({ preventScroll: true });
+  rankSheet.querySelector(".rk-x").focus({ preventScroll: true });
 });
 const closeRanks = () => { rankSheet.hidden = true; };
 rankSheet.addEventListener("click", e => { if (e.target.closest("[data-close]")) closeRanks(); });
@@ -4659,7 +4664,7 @@ var ACHM = (() => {
     ["fresh", "新", "Frühaufsteher", "gd", "5 Titel, solange sie neu in der Liste waren", () => [(ev.fresh || []).filter(id => seen.has(id)).length, 5]],
     ["gold", "金", "Goldsammler", "gd", "Alle Titel mit 9+", () => { const g = items.filter(it => it.mine >= 9); return [cnt(g, it => seen.has(it.id)), g.length]; }],
     ["allg", "全", "Allesfresser", "gd", "Aus allen 15 Genres einen", c => [GENRES.filter(g => c.all.some(G(g))).length, GENRES.length]],
-    ["prisc", "姫", "Priscilla", "gh", "Den Priscilla-Modus entdeckt", () => [ev.prisc || prisc ? 1 : 0, 1], 1],
+    ["prisc", "姫", "Priscilla", "gh", "Ein Geheimnis der App entdeckt", () => [ev.prisc || prisc ? 1 : 0, 1], 1],
     ["night", "夜", "Nachteule", "gh", "Zwischen 2 und 5 Uhr nachts etwas gesehen", () => [ev.night ? 1 : 0, 1], 1],
     ["complete", "完", "Perfektionist", "gh", "Alle Titel eines Genres gesehen", () => [GENRES.some(g => { const l = items.filter(G(g)); return l.length && l.every(it => seen.has(it.id)); }) ? 1 : 0, 1], 1],
     ["demon", "魔", "Dämonenkönig", "gh", "Den höchsten Rang erreicht", () => [rankOf(false) >= RANKS.length - 1 ? 1 : 0, 1], 1],
@@ -4680,14 +4685,15 @@ var ACHM = (() => {
     ["p_dog", "犬", "Daemon", "2 Romanzen mit Hund gesehen", c => [cnt(c.rom, it => DOG.has(it.key)), 2], 1]
   ].map(a => ({ id: a[0], k: a[1], n: a[2], t: "pk", d: a[3], f: a[4], sec: !!a[5] }));
   // Titel fürs Profil: wo er anders heißt als der Erfolg (klingt wie eine Person, nie wie ein Rang)
-  const TI = { prisc: "Insider", fresh: "Trendsetter", start: "Frischling", merk: "Planer", dice: "Glückspilz", friend: "Kumpel", comedy: "Spaßvogel", sport: "Sportskanone", marathon: "Marathonläufer", demon: "Boss",
-    p_first: "Zuckerschnute", p_five: "Herzensbrecherin", p_tears: "Heulsuse", p_laugh: "Kichererbse", p_cozy: "Kuschelkönigin", p_fairy: "Rapunzel",
+  const TI = { prisc: "Insider", start: "Frischling", merk: "Sammler", dice: "Glückspilz", friend: "Kumpel", tips: "Influencer", action: "Dämonenjäger", comedy: "Clown",
+    romance: "Casanova", adventure: "Pirat", sport: "Sportskanone", marathon: "Marathonläufer", sub: "Untertitel-Fan", demon: "Muzan", god: "Hokage",
+    p_first: "Zuckerschnute", p_five: "Herzensbrecherin", p_tears: "Heulsuse", p_laugh: "Kichererbse", p_cozy: "Kuschelmonster", p_fairy: "Rapunzel",
     p_thrill: "Drama-Queen", p_film: "Couch Potato", p_villain: "Bösewicht", p_seal: "Liebes-Expertin" };
   [...N, ...P].forEach(a => { a.n = TI[a.id] || a.n; a.ti = a.n; }); // Erfolg und Titel heißen gleich
   // Lange Namen dürfen im Erfolge-Fenster nur an sinnvoller Stelle umbrechen (unsichtbarer Trennstrich, sonst nichts)
-  const SHY = { Herzensbrecherin: "Herzens\u00ADbrecherin", Kuschelkönigin: "Kuschel\u00ADkönigin", Marathonläufer: "Marathon\u00ADläufer", Sportskanone: "Sports\u00ADkanone",
-    Klingenmeister: "Klingen\u00ADmeister", Weltenwanderer: "Welten\u00ADwanderer", Zuckerschnute: "Zucker\u00ADschnute", Perfektionist: "Perfektio\u00ADnist",
-    Goldsammler: "Gold\u00ADsammler", Allesfresser: "Alles\u00ADfresser", Kichererbse: "Kicher\u00ADerbse", Trendsetter: "Trend\u00ADsetter", Abenteurer: "Abenteu\u00ADrer", Kinogänger: "Kino\u00ADgänger" };
+  const SHY = { Herzensbrecherin: "Herzens\u00ADbrecherin", Kuschelmonster: "Kuschel\u00ADmonster", Marathonläufer: "Marathon\u00ADläufer", Sportskanone: "Sports\u00ADkanone",
+    Dämonenjäger: "Dämonen\u00ADjäger", Weltenwanderer: "Welten\u00ADwanderer", Zuckerschnute: "Zucker\u00ADschnute", Perfektionist: "Perfektio\u00ADnist",
+    Goldsammler: "Gold\u00ADsammler", Allesfresser: "Alles\u00ADfresser", Kichererbse: "Kicher\u00ADerbse", Frühaufsteher: "Früh\u00ADaufsteher", Influencer: "Influen\u00ADcer", Kinogänger: "Kino\u00ADgänger" };
   const BYID = new Map([...N, ...P].map(a => [a.id, a]));
   // Belohnungen: Designs im normalen Modus, Herz-Ring im Priscilla-Modus
   const RW = []; // keine Farb-Designs
@@ -4980,7 +4986,7 @@ var ACHM = (() => {
     const before = { n: doneOf(N).length, p: doneOf(P).length };
     let pg = prog();
     const scan = () => [...N, ...P].forEach(a => { const [h, need] = pg[a.id]; if (!got[a.id] && need > 0 && h >= need) got[a.id] = [Date.now(), 0]; });
-    scan(); pg = prog(); scan(); // zweiter Durchgang für „Anime-Gott“
+    scan(); pg = prog(); scan(); // zweiter Durchgang für „Hokage“ (alle anderen Erfolge)
     store(KEY_A, got);
     // Neue Belohnung? (nicht beim allerersten Mal)
     const now = [...RW.filter(r => rwOn(r[1])), ...RWP.filter(r => rwOn(r[1]))].map(r => r[1]);
