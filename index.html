@@ -1032,7 +1032,105 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 
-<style>body{margin:0}</style>
+<style>body{margin:0}
+/* Erfolge: Titel unter dem Rang, Leiste in der Rang-Karte, Fenster mit allen Erfolgen, Titel wählen, Banner oben */
+.ach-tw { text-align: center; }
+.ach-ttl { display: inline-flex; align-items: center; gap: 6px; margin: 6px auto 0; padding: 4px 11px; border-radius: 999px; font: inherit; font-size: 13px; font-weight: 800; line-height: 1.3;
+  color: var(--gold); background: rgba(242, 193, 78, .12); border: 1px solid rgba(242, 193, 78, .35); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.ach-ttl .pen { font-size: 12px; opacity: .8; }
+.ach-ttl.add { color: var(--muted); background: transparent; border: 1px dashed var(--line); font-weight: 700; }
+html.prisc .ach-ttl:not(.add) { color: #FF8FC4; background: rgba(255, 143, 196, .12); border-color: rgba(255, 143, 196, .4); }
+.ach-ttl[hidden], .ach-strip[hidden], .ach-ban[hidden] { display: none; }
+.ach-strip { display: flex; align-items: center; gap: 10px; width: calc(100% - 28px); margin: 14px 14px 0; padding: 9px 12px; border-radius: 16px; background: var(--chip); border: 0;
+  font: inherit; color: var(--ink); cursor: pointer; text-align: left; -webkit-tap-highlight-color: transparent; }
+.ach-strip:active { filter: brightness(.92); }
+html.prisc .ach-strip { background: #3A1A2C; }
+.ach-mm { display: flex; flex: none; }
+.ach-mm svg { width: 34px; height: 34px; margin-left: -9px; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .5)); }
+.ach-mm svg:first-child { margin-left: 0; }
+.ach-strip b { font-size: 14px; }
+.ach-strip small { margin-left: auto; color: var(--muted); font-weight: 700; font-size: 13px; white-space: nowrap; }
+.fp-ach { width: auto; margin: 0; }
+.fp-ttl { display: block; width: fit-content; margin: 6px 0 0; cursor: default; }
+/* Fenster von unten */
+.ach-ov { place-items: end center; padding: 0; z-index: 45; }
+.ach-sh { position: relative; width: 100%; max-width: 560px; max-height: 88%; overflow-y: auto; overscroll-behavior: contain; background: var(--sheet); border: 1px solid var(--line); border-bottom: 0;
+  border-radius: 24px 24px 0 0; padding: 10px 16px calc(22px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -18px 50px rgba(0, 0, 0, .45); animation: achUp .26s cubic-bezier(.2, .8, .2, 1); }
+@keyframes achUp { from { transform: translateY(40px); opacity: 0; } }
+html.prisc .ach-sh { background: #24121F; border-color: #4A2238; }
+.ach-grab { width: 40px; height: 5px; border-radius: 5px; background: var(--line); margin: 0 auto 12px; }
+.ach-hd { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 4px; padding-right: 46px; } /* Platz für das X */
+.ach-hd h3 { font: 400 23px/1.05 var(--f-display); margin: 0 0 5px; }
+.ach-hd p { margin: 0; color: var(--muted); font-weight: 700; font-size: 14px; }
+html.prisc .ach-hd p { color: #D9A3BE; }
+.ach-rw { display: flex; gap: 12px; align-items: center; border-radius: 16px; padding: 12px; margin: 14px 0 6px; background: linear-gradient(100deg, #3A2E14, #22263C); border: 1px solid #5A4720; }
+html.prisc .ach-rw { background: linear-gradient(100deg, #4A1630, #2A1424); border-color: #7A2A52; }
+.ach-sw { width: 42px; height: 42px; border-radius: 12px; flex: none; display: grid; place-items: center; font-size: 22px; }
+.ach-rw b { display: block; font-size: 14px; line-height: 1.3; }
+.ach-rw small { color: var(--muted); font-size: 12.5px; }
+.ach-rb { height: 6px; border-radius: 6px; background: rgba(255, 255, 255, .12); margin-top: 6px; overflow: hidden; }
+.ach-rb i { display: block; height: 100%; background: var(--gold); border-radius: 6px; }
+html.prisc .ach-rb i { background: linear-gradient(90deg, #FF8FC4, #FF4F9A); }
+.ach-ds { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 2px; }
+.ach-d { display: inline-flex; align-items: center; gap: 7px; padding: 6px 11px 6px 7px; border-radius: 999px; background: var(--chip); border: 2px solid transparent; font: inherit; font-size: 13px; font-weight: 700; color: var(--ink); cursor: pointer; }
+.ach-d i { width: 18px; height: 18px; border-radius: 50%; flex: none; }
+.ach-d.on { border-color: var(--gold); }
+.ach-d:disabled { opacity: .45; cursor: default; }
+.ach-gl { font-size: 11.5px; font-weight: 800; letter-spacing: .14em; color: var(--muted); margin: 18px 2px 10px; }
+.ach-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px 6px; }
+.ach-b { display: grid; justify-items: center; align-content: start; text-align: center; gap: 3px; }
+.ach-b svg { width: 80px; height: 80px; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .45)); }
+.ach-b.off svg { filter: grayscale(.85) brightness(.7); }
+/* Normaler Modus: Silber sieht sonst fast gleich aus wie ausgegraut. Offene Münzen deshalb ganz grau, dunkel und blasser */
+html:not(.prisc) .ach-b.off svg { filter: grayscale(1) brightness(.5); opacity: .6; }
+.ach-b .tr { font-size: 9.5px; font-weight: 800; letter-spacing: .12em; }
+.ach-b b { font-size: 12.5px; line-height: 1.2; }
+.ach-b small { font-size: 11px; color: var(--muted); line-height: 1.25; }
+html.prisc .ach-b small { color: #C99AB2; }
+.ach-pg { font: 400 11px/1 var(--f-display); background: var(--chip); border-radius: 7px; padding: 3px 6px; }
+html.prisc .ach-pg { background: #3A1A2C; }
+.ach-x { position: absolute; top: 12px; right: 12px; }
+/* Titel wählen: Liste, eine Zeile pro Titel */
+.ttl-list { display: grid; gap: 2px; }
+.ttl-r { display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px 8px; border: 0; border-radius: 12px; background: none; font: inherit; color: var(--ink); text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.ttl-r:active { background: rgba(255, 255, 255, .05); }
+.ttl-r svg, .ttl-no { width: 30px; height: 30px; flex: none; }
+.ttl-no { display: grid; place-items: center; color: var(--muted); font-size: 14px; }
+.ttl-r b { flex: 1; min-width: 0; font-size: 14.5px; line-height: 1.25; }
+.ttl-r small { flex: none; max-width: 46%; color: var(--muted); font-size: 11.5px; line-height: 1.25; text-align: right; }
+html.prisc .ttl-r small { color: #C99AB2; }
+.ttl-rd { width: 20px; height: 20px; flex: none; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; font-size: 12px; font-weight: 900; line-height: 1; }
+.ttl-r.on { background: rgba(242, 193, 78, .08); }
+.ttl-r.on b { color: var(--gold); }
+.ttl-r.on .ttl-rd { background: var(--gold); border-color: var(--gold); color: var(--on-gold); }
+html.prisc .ttl-r.on { background: rgba(255, 143, 196, .08); }
+html.prisc .ttl-r.on b { color: #FF8FC4; }
+html.prisc .ttl-r.on .ttl-rd { background: #FF8FC4; border-color: #FF8FC4; color: #2A0A18; }
+.ttl-r.lk { opacity: .45; cursor: default; }
+.ttl-r.lk:active { background: none; }
+/* Banner oben, wenn ein Erfolg freigeschaltet wird */
+.ach-ban { position: fixed; z-index: 60; left: 12px; right: 12px; top: calc(env(safe-area-inset-top, 0px) + 10px); max-width: 480px; margin: 0 auto; display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px 10px 10px; border-radius: 20px; background: var(--sheet); border: 1px solid var(--line); box-shadow: 0 10px 26px rgba(0, 0, 0, .45);
+  color: var(--ink); font: inherit; text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+html.prisc .ach-ban { background: #2A1424; border-color: #4A2238; }
+.ach-ban svg { width: 52px; height: 52px; flex: none; }
+.ach-ban .t { flex: 1; min-width: 0; }
+.ach-ban small { display: block; font-size: 10.5px; font-weight: 800; letter-spacing: .14em; color: var(--bc, var(--gold)); }
+.ach-ban b { display: block; font-size: 16.5px; line-height: 1.2; }
+.ach-ban i { font-style: normal; color: var(--muted); font-size: 12.5px; }
+.ach-ban .ar { color: var(--muted); font-size: 20px; }
+/* Rang-Fenster: OK gut sichtbar in der Rangfarbe. In der ersten Sekunde füllt er sich, dann ist er drückbar */
+#ruOk { background: var(--rc); border-color: transparent; color: #14110A; font-size: 16px; font-weight: 800; padding: 13px; border-radius: 14px; }
+#ruOk:disabled { opacity: 1; color: rgba(20, 17, 10, .55); background: linear-gradient(90deg, var(--rc) 50%, color-mix(in srgb, var(--rc) 28%, var(--chip)) 50%);
+  background-size: 200% 100%; background-position: 100% 0; animation: ruFill 1s linear forwards; }
+@keyframes ruFill { to { background-position: 0 0; } }
+/* Test-Knöpfe (nur im Artifact) */
+.ach-test { margin: 12px 14px 0; padding: 10px; border: 1px dashed var(--line); border-radius: 14px; text-align: center; }
+.ach-test[hidden] { display: none; }
+.ach-test small { display: block; color: var(--muted); font-size: 11.5px; font-weight: 700; margin-bottom: 8px; }
+.ach-test div { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ach-test button { font: inherit; font-size: 13px; font-weight: 700; color: var(--ink); background: var(--chip); border: 1px solid var(--line); border-radius: 10px; padding: 9px 6px; cursor: pointer; }
+</style>
 </head>
 <body>
 <div id="sc">
@@ -1045,7 +1143,7 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V240</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V241</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1095,9 +1193,12 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
       <div class="pfh-av"><span class="ring"><svg viewBox="0 0 104 104" aria-hidden="true"><circle cx="52" cy="52" r="46" fill="none" stroke="var(--line)" stroke-width="6"/><circle id="progArc" cx="52" cy="52" r="46" fill="none" stroke="var(--ok)" stroke-width="6" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="289" transform="rotate(-90 52 52)"/></svg><span class="face"><span class="kj" id="progKj" aria-hidden="true"></span><span class="fimg" id="pfImg" hidden></span></span></span><span class="pfh-badge" id="pfBadge" aria-hidden="true" hidden></span></div>
       <div class="pfh-name" id="pfName" hidden></div>
       <div class="pfh-rank" id="pfRank"><b id="progRank"></b><small id="pfNext"></small><button type="button" class="pfh-i" id="rankInfo" aria-label="Alle Ränge anzeigen"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".95" fill="currentColor"/></svg></button></div>
+      <div class="ach-tw"><button type="button" class="ach-ttl add" id="achTtl" hidden></button></div>
       <p class="pfh-hint" id="pfHint" hidden></p>
       <div class="pfh-login" id="pfLogin" hidden><p>Melde dich an, dann ist deine Liste auf allen Geräten.</p><button type="button" id="pfLoginBtn">Anmelden</button></div>
       <div class="pfh-stats"><div><b id="pfSeen">0</b><small id="pfSeenL">Gesehen</small></div><div><b id="pfHrs">0</b><small id="pfHrsL">Stunden</small></div><div><b id="pfFav">–</b><small id="pfFavL">Lieblingsgenre</small></div></div>
+      <button type="button" class="ach-strip" id="achStrip" hidden></button>
+      <div class="ach-test" id="achTest" hidden><small>🧪 Nur im Artifact: zum Ausprobieren</small><div><button type="button" data-t="ban">Erfolg-Banner</button><button type="button" data-t="rank">Rang-Fenster</button><button type="button" data-t="all">Alle freischalten</button><button type="button" data-t="friend">Freund (Beispiel)</button><button type="button" data-t="prisc">Priscilla an/aus</button><button type="button" data-t="reset">Zurücksetzen</button></div></div>
       <button type="button" class="pf-fr" id="pfFr" hidden></button>
     </section>
     <p class="favg" id="favg" hidden></p>
@@ -1155,6 +1256,9 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
     </div>
   </div>
 </div>
+<div class="ov ach-ov" id="achOv" hidden><div class="ov-bg" data-close></div><div class="ach-sh" role="dialog" aria-modal="true" aria-label="Erfolge"></div></div>
+<div class="ov ach-ov" id="ttlOv" hidden><div class="ov-bg" data-close></div><div class="ach-sh" role="dialog" aria-modal="true" aria-label="Titel wählen"></div></div>
+<button type="button" class="ach-ban" id="achBan" hidden role="status" aria-live="polite"></button>
 <div class="ov rankup" id="rankUp" hidden role="status" aria-live="polite">
   <div class="ru-card"><span class="ru-lbl" id="ruLbl">Neuer Rang</span><span class="ru-st" id="ruSt" aria-hidden="true"></span><b class="ru-name" id="ruName"></b><span class="ru-next" id="ruNext"></span><button type="button" class="ov-btn main" id="ruOk">OK</button></div>
 </div>
@@ -2120,7 +2224,7 @@ $("#q").addEventListener("input", e => {
   state.q = v; render();
 });
 function setPrisc(on, fx) {
-  prisc = on; store(KEY_PRISC, on);
+  prisc = on; store(KEY_PRISC, on); if (on && ACHM) ACHM.priscOn();
   state.g2 = "";
   // Romanzen-Stimmungen gibt es nur im Modus, die normalen nur außerhalb
   document.documentElement.classList.toggle("prisc", on);
@@ -2131,6 +2235,7 @@ function setPrisc(on, fx) {
   else toast("Priscilla-Modus beendet");
   // Im anderen Modus aufgestiegen? Dann jetzt die neuen Ränge zeigen
   setTimeout(checkRanks, on ? 1400 : 700);
+  setTimeout(() => ACHM && ACHM.check(), on ? 2600 : 1600);
 }
 // Herzen und Kirschblüten fallen einmal über den Bildschirm (nur transform/opacity, bei „Bewegung reduzieren“ nicht)
 function petals() {
@@ -2748,6 +2853,7 @@ function renderProg() {
   $("#pfSeen").textContent = n; $("#pfSeenL").textContent = prisc ? (n === 1 ? "Romanze" : "Romanzen") : "Gesehen";
   $("#pfHrs").textContent = h.toLocaleString("de-DE"); $("#pfHrsL").textContent = h === 1 ? "Stunde" : "Stunden";
   paintMe();
+  ACHM && ACHM.prof();
 }
 // Profil und Reiter-Symbol: angemeldet mit Profilbild und Name, sonst Rang-Zeichen und „Anmelden“
 function paintMe() {
@@ -2987,7 +3093,7 @@ function setMark(id, act, on) {
       if (s) { s.hidden = on; s.setAttribute("aria-pressed", "false"); s.innerHTML = ICON.save + '<span class="bt">Merken</span>'; }
     }
   }
-  if (act === "seen" && on) setTimeout(checkRanks, 350);
+  if (act === "seen" && on) { ACHM && ACHM.evt(id); setTimeout(() => { checkRanks(); ACHM && ACHM.check(); }, 350); } else if (on) setTimeout(() => ACHM && ACHM.check(), 350);
   // Haken weg: Rang sofort wieder runter, damit die Meldung beim erneuten Anhaken wieder kommt
   if (act === "seen" && !on) { rankAck.n = Math.min(rankAck.n, rankOf(false)); rankAck.p = Math.min(rankAck.p, rankOf(true)); store(KEY_RACK, rankAck); }
   // Speichern, Zähler und ggf. Liste neu filtern erst im nächsten Bild, damit der Knopf nicht hängt
@@ -3146,7 +3252,7 @@ $("#pick").addEventListener("click", () => {
   const w = pool.map(it => Math.pow(Math.max(it.mine - 6.8, 0.2), 2));
   let r = Math.random() * w.reduce((a, b) => a + b, 0), pick = pool[pool.length - 1];
   for (let i = 0; i < pool.length; i++) { r -= w[i]; if (r <= 0) { pick = pool[i]; break; } }
-  lastPick = pick.id;
+  lastPick = pick.id; ACHM && ACHM.dice(pick.id);
   const btn = document.getElementById("v-" + pick.id);
   if (!btn) return;
   const el = btn.closest(".card"), token = tabToken;
@@ -3451,7 +3557,7 @@ function fbLoad() {
       user = u || null; authKnown = true;
       if (!user && acct.uid) { acct = {}; saveAcct(); frClear(); } // woanders abgemeldet
       acctUi();
-      if (user) acctSync();
+      if (user) { acctSync(); setTimeout(() => ACHM && ACHM.push(), 4000); }
     });
     return fb;
   }).catch(e => { fbWait = null; throw e; });
@@ -3805,12 +3911,13 @@ async function frLoad(force) {
       try {
         const s = await fb.F.getDoc(profRef(d.id)); if (!s.exists()) return;
         const x = s.data();
-        out.push({ uid: d.id, name: String(x.name || "Freund").slice(0, 20), av: AV_IMG[x.av] ? x.av : "", seen: Array.isArray(x.seen) ? x.seen.filter(id => typeof id === "string").slice(0, 2000) : [] });
+        out.push({ uid: d.id, name: String(x.name || "Freund").slice(0, 20), av: AV_IMG[x.av] ? x.av : "", seen: Array.isArray(x.seen) ? x.seen.filter(id => typeof id === "string").slice(0, 2000) : [],
+          ttl: typeof x.ttl === "string" ? x.ttl : "", ttlP: typeof x.ttlP === "string" ? x.ttlP : "", ach: Array.isArray(x.ach) ? x.ach.filter(v => typeof v === "string").slice(0, 40) : [], achP: Array.isArray(x.achP) ? x.achP.filter(v => typeof v === "string").slice(0, 40) : [] });
       } catch (e) { /* Freund hat dich entfernt oder kein Profil */ }
     }));
     if (!user || user.uid !== uid) return;
     out.sort((a, b) => a.name.localeCompare(b.name, "de"));
-    friends = out; store(KEY_FR, friends); frAt = Date.now(); frErrSt = "";
+    friends = out; store(KEY_FR, friends); frAt = Date.now(); frErrSt = ""; ACHM && ACHM.check();
     // Hat dich jemand mit deinem Code hinzugefügt? Kurz Bescheid sagen (beim allerersten Laden auf diesem Gerät nicht)
     const known = load(KEY_FRK, null), nw = Array.isArray(known) ? out.filter(f => !known.includes(f.uid) && f.uid !== frSelfAdd) : [];
     store(KEY_FRK, out.map(f => f.uid)); frSelfAdd = "";
@@ -4069,7 +4176,7 @@ $("#tpsGo").addEventListener("click", async () => {
   }));
   if (!user || user.uid !== uid) return;
   ok.forEach(f => { tipsOut = tipsOut.filter(t => !(t.to === f.uid && t.id === id)); tipsOut.push({ to: f.uid, id, at }); });
-  store(KEY_SENT, tipsOut);
+  store(KEY_SENT, tipsOut); ACHM && ACHM.check();
   tipSendOv.hidden = true; tpsSel = new Set();
   if (ok.length) toast(`Tipp an ${ok.length === 1 ? ok[0].name : ok.length + " Freunde"} geschickt`);
   else toast(rules ? "Tipps gehen noch nicht: In Firebase fehlt die neue Regel." : "Der Tipp ging nicht raus. Prüf dein Internet.");
@@ -4100,6 +4207,7 @@ function frShow(uid) {
     <button type="button" class="lg-link fp-rm" id="fpRm">Als Freund entfernen</button>`;
   const box = $("#fpShelf");
   show.forEach((it, i) => box.append(shelfLi(it, keepLi.get(it.id), i < 6)));
+  ACHM && ACHM.friend(f);
   frOv.hidden = false;
   if (keepX) box.scrollLeft = keepX;
   requestAnimationFrame(() => fitFav($("#frCard .fp-stats > div:last-child b"), 14.5));
@@ -4288,6 +4396,311 @@ document.addEventListener("keydown", e => { if (e.key !== "Escape") return; if (
 acctUi();
 // Wer schon angemeldet war: Firebase erst kurz nach dem Start laden, damit die Seite nicht langsamer öffnet
 if (FB_HOST && acct.uid) setTimeout(() => fbLoad().catch(() => { syncSt = "err"; acctUi(); }), 1500);
+
+// ===== Erfolge =====
+// 24 Erfolge im normalen Modus, 12 Liebes-Erfolge im Priscilla-Modus. Freigeschaltet bleibt freigeschaltet (auch wenn ein Haken wieder weg ist).
+// Gespeichert: cr-top100-ach = { id: [Zeitpunkt, schon gezeigt 0/1] }. Ereignisse, die man nicht aus „Gesehen“ ablesen kann
+// (Würfel-Tipp, nachts, neu in der Liste, Priscilla entdeckt), stehen in cr-top100-ach-ev.
+// Var statt const: Die Haken oben im Skript rufen ACHM?.… auf, bevor dieser Teil geladen ist – dann passiert einfach nichts.
+var ACHM = (() => {
+  const KEY_A = "cr-top100-ach", KEY_EV = "cr-top100-ach-ev", KEY_TTL = "cr-top100-title", KEY_TH = "cr-top100-design", KEY_RW = "cr-top100-ach-rw", KEY_PUSH = "cr-top100-ach-push";
+  // Romanzen, in denen ein Hund eine wichtige Rolle spielt (für den geheimen Liebes-Erfolg „Daemon“, 2 davon)
+  const DOG = new Set(["Inuyasha", "Fruits Basket", "The Ancient Magus' Bride"]);
+  const MOOD = new Map([...DATA, ...EXTRA].map(d => [d[0], String(d[11] || "")]));
+  const eps = it => { const m = it.len.match(/([\d.]+)\s*Folgen/); return EP_FIX[it.key] ?? (m ? +m[1].replace(/\./g, "") : 0); };
+  let ev = load(KEY_EV, {}) || {};
+  if (typeof ev !== "object" || Array.isArray(ev)) ev = {};
+  const saveEv = () => store(KEY_EV, ev);
+  const cnt = (l, f) => l.reduce((a, it) => a + (f(it) ? 1 : 0), 0);
+  const G = g => it => it.genres.includes(g);
+  const mood = (it, m) => ("|" + (MOOD.get(it.key) || "") + "|").includes("|" + m + "|");
+  // id, Kanji, Name, Stufe (br/sv/gd, gh = geheim, pk = Priscilla), Beschreibung, Fortschritt [hat, braucht], geheim
+  const N = [
+    ["start", "初", "Erster Schritt", "br", "1 Titel gesehen", c => [c.all.length, 1]],
+    ["merk", "帳", "Merkzettel", "br", "10 Titel gemerkt", () => [saved.size, 10]],
+    ["dice", "賽", "Würfelglück", "br", "Einen Würfel-Tipp geschaut", () => [(ev.dice || []).some(id => seen.has(id)) ? 1 : 0, 1]],
+    ["friend", "友", "Verbündet", "br", "Ersten Freund hinzugefügt", () => [Math.min(friends.length, 1), 1]],
+    ["tips", "送", "Tippgeber", "br", "3 Tipps verschickt", () => [new Set(tipsOut.map(t => t.to + "|" + t.id)).size, 3]],
+    ["action", "剣", "Klingenmeister", "sv", "15 Action-Animes", c => [cnt(c.all, G("Action")), 15]],
+    ["comedy", "笑", "Lachkrampf", "sv", "15 Comedys", c => [cnt(c.all, G("Comedy")), 15]],
+    ["romance", "恋", "Romantiker", "sv", "15 Romanzen", c => [cnt(c.all, G("Romance")), 15]],
+    ["mystery", "謎", "Detektiv", "sv", "10 Mystery, Krimi oder Thriller", c => [cnt(c.all, it => it.genres.some(g => g === "Mystery" || g === "Krimi" || g === "Thriller")), 10]],
+    ["adventure", "冒", "Abenteurer", "sv", "10 Abenteuer", c => [cnt(c.all, G("Abenteuer")), 10]],
+    ["isekai", "異", "Weltenwanderer", "sv", "5 Isekai", c => [cnt(c.all, G("Isekai")), 5]],
+    ["sport", "球", "Teamgeist", "sv", "5 Sport-Animes", c => [cnt(c.all, G("Sport")), 5]],
+    ["tears", "涙", "Weichei", "gd", "10 Titel zum Weinen", c => [cnt(c.all, it => mood(it, "herz")), 10]],
+    ["films", "映", "Kinogänger", "gd", "10 Filme", c => [cnt(c.all, it => it.type === "F"), 10]],
+    ["marathon", "走", "Marathon", "gd", "Eine Serie mit über 100 Folgen", c => [c.all.some(it => it.type === "S" && eps(it) >= 100) ? 1 : 0, 1]],
+    ["sub", "字", "Echter Fan", "gd", "20 Titel nur mit Untertitel", c => [cnt(c.all, it => it.dub === "sub"), 20]],
+    ["fresh", "新", "Frühaufsteher", "gd", "5 Titel, solange sie neu in der Liste waren", () => [(ev.fresh || []).filter(id => seen.has(id)).length, 5]],
+    ["gold", "金", "Goldsammler", "gd", "Alle Titel mit 9+", () => { const g = items.filter(it => it.mine >= 9); return [cnt(g, it => seen.has(it.id)), g.length]; }],
+    ["allg", "全", "Allesfresser", "gd", "Aus allen 15 Genres einen", c => [GENRES.filter(g => c.all.some(G(g))).length, GENRES.length]],
+    ["prisc", "姫", "Priscilla", "gh", "Den Priscilla-Modus entdeckt", () => [ev.prisc || prisc ? 1 : 0, 1], 1],
+    ["night", "夜", "Nachteule", "gh", "Zwischen 2 und 5 Uhr nachts etwas gesehen", () => [ev.night ? 1 : 0, 1], 1],
+    ["complete", "完", "Perfektionist", "gh", "Alle Titel eines Genres gesehen", () => [GENRES.some(g => { const l = items.filter(G(g)); return l.length && l.every(it => seen.has(it.id)); }) ? 1 : 0, 1], 1],
+    ["demon", "魔", "Dämonenkönig", "gh", "Den höchsten Rang erreicht", () => [rankOf(false) >= RANKS.length - 1 ? 1 : 0, 1], 1],
+    ["god", "神", "Anime-Gott", "gh", "Alle anderen Erfolge", c => [c.doneN, 23], 1]
+  ].map(a => ({ id: a[0], k: a[1], n: a[2], t: a[3], d: a[4], f: a[5], sec: !!a[6] }));
+  const P = [
+    ["p_first", "恋", "Erste Liebe", "Erste Romanze gesehen", c => [c.rom.length, 1]],
+    ["p_five", "鼓", "Herzklopfen", "5 Romanzen gesehen", c => [c.rom.length, 5]],
+    ["p_tears", "涙", "Herzschmerz", "5 Romanzen zum Weinen", c => [cnt(c.rom, THEMES["Zum Weinen"]), 5]],
+    ["p_laugh", "笑", "Lachflash", "8 Romanzen zum Lachen", c => [cnt(c.rom, THEMES["Zum Lachen"]), 8]],
+    ["p_cozy", "和", "Kuschelabend", "8 Romanzen zum Wohlfühlen", c => [cnt(c.rom, THEMES["Zum Wohlfühlen"]), 8]],
+    ["p_fairy", "城", "Märchenprinzessin", "8 historische oder Fantasy-Romanzen", c => [cnt(c.rom, THEMES["Historisch & Fantasy"]), 8]],
+    ["p_thrill", "熱", "Gänsehaut", "5 Romanzen zum Mitfiebern", c => [cnt(c.rom, THEMES["Zum Mitfiebern"]), 5]],
+    ["p_film", "映", "Filmabend", "3 Liebesfilme", c => [cnt(c.rom, it => it.type === "F"), 3]],
+    ["p_villain", "悪", "Villainess-Fan", "3 Villainess-Geschichten", c => [cnt(c.rom, it => /villain/i.test(it.key + " " + it.sq)), 3]],
+    ["p_seal", "印", "Priscilla-geprüft", "5 Romanzen mit 💘-Siegel", c => [cnt(c.rom, it => it.mine >= 8.3), 5]],
+    ["p_bloom", "花", "Prinzessin Priscilla", "25 Romanzen gesehen", c => [c.rom.length, 25]],
+    ["p_dog", "犬", "Daemon", "2 Romanzen mit Hund gesehen", c => [cnt(c.rom, it => DOG.has(it.key)), 2], 1]
+  ].map(a => ({ id: a[0], k: a[1], n: a[2], t: "pk", d: a[3], f: a[4], sec: !!a[5] }));
+  // Titel fürs Profil: wo er anders heißt als der Erfolg (klingt wie eine Person, nie wie ein Rang)
+  const TI = { prisc: "Insider", fresh: "Trendsetter", start: "Frischling", merk: "Planer", dice: "Glückspilz", friend: "Kumpel", comedy: "Spaßvogel", sport: "Sportskanone", marathon: "Marathonläufer", demon: "Boss",
+    p_first: "Zuckerschnute", p_five: "Herzensbrecherin", p_tears: "Heulsuse", p_laugh: "Kichererbse", p_cozy: "Kuschelkönigin", p_fairy: "Cinderella",
+    p_thrill: "Drama-Queen", p_film: "Couch Potato", p_villain: "Bösewicht", p_seal: "Liebes-Expertin" };
+  [...N, ...P].forEach(a => { a.n = TI[a.id] || a.n; a.ti = a.n; }); // Erfolg und Titel heißen gleich
+  const BYID = new Map([...N, ...P].map(a => [a.id, a]));
+  // Belohnungen: Designs im normalen Modus, Herz-Ring im Priscilla-Modus
+  const RW = []; // keine Farb-Designs
+  const RWP = []; // keine Belohnungen außer den Titeln
+  const set = () => prisc ? P : N;
+  let got = load(KEY_A, null);
+  const firstRun = !got || typeof got !== "object" || Array.isArray(got);
+  if (firstRun) got = {};
+  const done = id => !!got[id];
+  const doneOf = L => L.filter(a => done(a.id));
+  // Fortschritt aller Erfolge
+  function prog() {
+    const all = items.filter(it => seen.has(it.id)), rom = all.filter(isRom);
+    const c = { all, rom, doneN: N.filter(a => a.id !== "god" && done(a.id)).length }, out = {};
+    [...N, ...P].forEach(a => { try { out[a.id] = a.f(c); } catch (e) { out[a.id] = [0, 1]; } });
+    return out;
+  }
+  // ---- Bilder: Münze (Bronze/Silber/Gold), Herz (Priscilla), Siegel (geheim) ----
+  let sid = 0;
+  const KJF = 'font-family="Hiragino Mincho ProN, Yu Mincho, Noto Serif CJK JP, Noto Serif CJK SC, serif" font-weight="700"';
+  const MET = { br: ["#6B3E22", "#E8B07E", "#8C5A35", "#F6CFA6", "#5A3219"], sv: ["#5E657C", "#F4F6FC", "#8E95AD", "#FFFFFF", "#4E5468"], gd: ["#8A5E0E", "#FFE594", "#C9952F", "#FFF4C8", "#7A5208"] };
+  const HP = "M50 88 C 18 66, 4 48, 8 30 C 12 14, 30 8, 42 16 C 46 19, 49 23, 50 26 C 51 23, 54 19, 58 16 C 70 8, 88 14, 92 30 C 96 48, 82 66, 50 88 Z";
+  function coin(t, k) {
+    const m = MET[t === "gh" ? "gd" : t], id = "am" + (++sid);
+    return `<svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${m[3]}"/><stop offset=".35" stop-color="${m[1]}"/><stop offset=".6" stop-color="${m[2]}"/><stop offset="1" stop-color="${m[4]}"/></linearGradient><radialGradient id="${id}i" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#262B48"/><stop offset="1" stop-color="#0E1022"/></radialGradient><clipPath id="${id}c"><circle cx="50" cy="50" r="47"/></clipPath></defs>`
+      + `<circle cx="50" cy="50" r="47" fill="url(#${id})"/><circle cx="50" cy="50" r="44.5" fill="none" stroke="${m[0]}" stroke-width="3" stroke-dasharray="1.6 1.9" opacity=".7"/>`
+      + `<circle cx="50" cy="50" r="37" fill="url(#${id}i)" stroke="url(#${id})" stroke-width="2.5"/><circle cx="50" cy="50" r="32" fill="none" stroke="${m[1]}" stroke-width=".8" opacity=".35"/>`
+      + `<text x="50" y="51" text-anchor="middle" dominant-baseline="central" font-size="36" ${KJF} fill="url(#${id})">${k}</text>`
+      + (t === "gd" || t === "gh" ? `<g clip-path="url(#${id}c)"><rect x="-30" y="-10" width="18" height="140" fill="#fff" opacity=".28" transform="rotate(35 50 50)"/><rect x="-6" y="-10" width="6" height="140" fill="#fff" opacity=".2" transform="rotate(35 50 50)"/></g><path d="M80 14 l2.2 5.8 5.8 2.2 -5.8 2.2 -2.2 5.8 -2.2-5.8 -5.8-2.2 5.8-2.2z" fill="#FFF6D6"/>` : "")
+      + `</svg>`;
+  }
+  function heart(k) {
+    const id = "ah" + (++sid);
+    return `<svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD3E7"/><stop offset=".4" stop-color="#FF8FC4"/><stop offset=".75" stop-color="#FF4F9A"/><stop offset="1" stop-color="#B0175E"/></linearGradient><radialGradient id="${id}i" cx=".4" cy=".3" r=".9"><stop offset="0" stop-color="#4A1834"/><stop offset="1" stop-color="#1E0A17"/></radialGradient><clipPath id="${id}c"><path d="${HP}"/></clipPath></defs>`
+      + `<path d="${HP}" fill="url(#${id})"/><g transform="translate(50 50) scale(.8) translate(-50 -50)"><path d="${HP}" fill="url(#${id}i)" stroke="url(#${id})" stroke-width="2.5"/></g>`
+      + `<text x="50" y="47" text-anchor="middle" dominant-baseline="central" font-size="30" ${KJF} fill="url(#${id})">${k}</text>`
+      + `<g clip-path="url(#${id}c)"><rect x="-30" y="-10" width="14" height="140" fill="#fff" opacity=".25" transform="rotate(35 50 50)"/></g><path d="M84 12 l1.8 4.6 4.6 1.8 -4.6 1.8 -1.8 4.6 -1.8-4.6 -4.6-1.8 4.6-1.8z" fill="#FFF0F7"/></svg>`;
+  }
+  function seal(pk) {
+    if (pk) return `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="${HP}" fill="#3A1A2C"/><g transform="translate(50 50) scale(.8) translate(-50 -50)"><path d="${HP}" fill="#1E0E19" stroke="#5A2A44" stroke-width="2"/></g><text x="50" y="47" text-anchor="middle" dominant-baseline="central" font-size="28" ${KJF} fill="#5A2A44">？</text><g transform="rotate(-12 66 66)"><rect x="54" y="54" width="25" height="25" rx="4" fill="#FF4F9A"/><text x="66.5" y="66.5" text-anchor="middle" dominant-baseline="central" font-size="14" ${KJF} fill="#FFE6F1">封</text></g></svg>`;
+    return `<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="47" fill="#22263C"/><circle cx="50" cy="50" r="44.5" fill="none" stroke="#3A3F5C" stroke-width="3" stroke-dasharray="1.6 1.9"/><circle cx="50" cy="50" r="37" fill="#14172A" stroke="#3A3F5C" stroke-width="2.5"/><text x="50" y="52" text-anchor="middle" dominant-baseline="central" font-size="34" ${KJF} fill="#3A3F5C">？</text><g transform="rotate(-12 64 66)"><rect x="50" y="52" width="28" height="28" rx="4" fill="#E2483F"/><rect x="53" y="55" width="22" height="22" rx="2" fill="none" stroke="#FFD9D4" stroke-width="1.2"/><text x="64" y="67" text-anchor="middle" dominant-baseline="central" font-size="15" ${KJF} fill="#FFE9E5">封</text></g></svg>`;
+  }
+  const pic = a => a.t === "pk" ? heart(a.k) : coin(a.t, a.k);
+  const TIER = { br: ["BRONZE", "#E2A877"], sv: ["SILBER", "#C8CEE6"], gd: ["GOLD", "#F2C14E"], gh: ["GEHEIM", "#F2C14E"] };
+  // ---- Titel ----
+  let ttl = load(KEY_TTL, {}) || {};
+  if (typeof ttl !== "object" || Array.isArray(ttl)) ttl = {};
+  const myTtl = () => { const id = prisc ? ttl.p : ttl.n, a = id && BYID.get(id); return a && done(a.id) && set().includes(a) ? a : null; };
+  // ---- Profil: Titel-Schild und Leiste ----
+  function prof() {
+    const tb = $("#achTtl"), sb = $("#achStrip"); if (!tb || !sb) return;
+    const L = set(), d = doneOf(L), t = myTtl();
+    tb.hidden = !d.length;
+    tb.className = "ach-ttl" + (t ? "" : " add");
+    tb.innerHTML = t ? `${esc(t.ti)} <span class="pen" aria-hidden="true">✎</span>` : "+ Titel wählen";
+    tb.setAttribute("aria-label", t ? `Titel: ${t.ti}. Ändern` : "Titel wählen");
+    const last = d.slice().sort((a, b) => got[b.id][0] - got[a.id][0]).slice(0, 4);
+    sb.hidden = false;
+    sb.innerHTML = `<span class="ach-mm">${last.map(pic).join("")}</span><b>${prisc ? "Liebes-Erfolge" : "Erfolge"}</b><small>${d.length} von ${L.length} ›</small>`;
+    const tp = $("#achTest"); if (tp) tp.hidden = FB_HOST;
+  }
+  // ---- Belohnungen ----
+  const rwOn = id => { const r = [...RW, ...RWP].find(x => x[1] === id); if (!r) return false; return (RWP.includes(r) ? doneOf(P) : doneOf(N)).length >= r[0]; };
+  // Farb-Designs gibt es nicht mehr: alte Auswahl aus dem Test entfernen
+  function applyTheme() { try { localStorage.removeItem(KEY_TH); } catch (e) {} delete document.documentElement.dataset.th; }
+  // ---- Fenster mit allen Erfolgen ----
+  const ov = $("#achOv"), tov = $("#ttlOv");
+  // frV: Wenn gesetzt, zeigt das Fenster die Erfolge eines Freundes ({ name, ids }) statt die eigenen
+  let frV = null;
+  function sheet() {
+    const fv = frV, has = id => fv ? fv.ids.has(id) : done(id);
+    const L = set(), d = L.filter(a => has(a.id)), pg = fv ? {} : prog(), rws = prisc ? RWP : RW, nx = rws.find(r => d.length < r[0]);
+    const cell = a => {
+      const [h, need] = pg[a.id] || [0, 1], ok = has(a.id);
+      if (!ok && a.sec) return `<div class="ach-b">${seal(a.t === "pk")}${a.t === "pk" ? "" : `<span class="tr" style="color:#6B7194">GEHEIM</span>`}<b style="color:#6B7194">???</b><small>Versiegelt</small></div>`;
+      const tr = TIER[a.t] && !prisc ? `<span class="tr" style="color:${TIER[a.t][1]}">${TIER[a.t][0]}</span>` : "";
+      return `<div class="ach-b${ok ? "" : " off"}">${pic(a)}${tr}<b>${esc(a.n)}</b>${ok || fv ? `<small>${esc(a.d)}</small>` : `<span class="ach-pg">${Math.min(h, need)}/${need}</span><small>${esc(a.d)}</small>`}</div>`;
+    };
+    const grp = (lbl, l) => `<div class="ach-gl">${lbl}</div><div class="ach-grid">${l.map(cell).join("")}</div>`;
+    const body = prisc ? `<div class="ach-gl">LIEBES-ERFOLGE</div><div class="ach-grid">${P.map(cell).join("")}</div>`
+      : grp("EINSTIEG", N.filter(a => a.t === "br")) + grp("GENRES", N.filter(a => a.t === "sv")) + grp("BESONDERES", N.filter(a => a.t === "gd")) + grp("GEHEIM", N.filter(a => a.t === "gh"));
+    const rw = "";
+    const ds = "";
+    ov.querySelector(".ach-sh").innerHTML = `<div class="ach-grab"></div><button type="button" class="inst-x ach-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>`
+      + `<div class="ach-hd"><div><h3>${(prisc ? "Liebes-Erfolge" : "Erfolge") + (fv ? " von " + esc(fv.name) : prisc ? " 💘" : "")}</h3><p>${d.length} von ${L.length} freigeschaltet</p></div></div>${rw}${ds}${body}`;
+  }
+  function open(fv) { frV = fv && fv.ids ? fv : null; sheet(); ov.hidden = false; ov.querySelector(".ach-sh").scrollTop = 0; }
+  ov.addEventListener("click", e => { if (e.target.closest("[data-close]")) ov.hidden = true; });
+  // ---- Titel wählen ----
+  function tsheet() {
+    const L = set(), d = doneOf(L), t = myTtl(), pg = prog();
+    const row = (a, on) => `<button type="button" class="ttl-r${on ? " on" : ""}" data-id="${a ? a.id : ""}">${a ? pic(a) : '<span class="ttl-no">–</span>'}<b>${a ? esc(a.ti) : "Kein Titel"}</b><small>${a ? esc(a.d) : "Nur den Rang zeigen"}</small><span class="ttl-rd" aria-hidden="true">${on ? "✓" : ""}</span></button>`;
+    const lk = L.filter(a => !done(a.id) && !a.sec).map(a => [a, pg[a.id] || [0, 1]]).sort((x, y) => (y[1][0] / y[1][1]) - (x[1][0] / x[1][1]));
+    const sec = L.filter(a => !done(a.id) && a.sec).length;
+    tov.querySelector(".ach-sh").innerHTML = `<div class="ach-grab"></div><button type="button" class="inst-x ach-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>`
+      + `<div class="ach-hd"><div><h3>Titel wählen</h3><p>${d.length} von ${L.length} freigeschaltet</p></div></div>`
+      + `<div class="ttl-list">${row(null, !t)}${d.map(a => row(a, t === a)).join("")}</div>`
+      + (lk.length || sec ? `<div class="ach-gl">NOCH GESPERRT · ${lk.length + sec}</div><div class="ttl-list">${lk.map(([a, [h, need]]) => `<div class="ttl-r lk"><span class="ttl-no">🔒</span><b>${esc(a.ti)}</b><small>noch ${Math.max(need - h, 1)} · ${esc(a.d)}</small></div>`).join("")}${sec ? `<div class="ttl-r lk"><span class="ttl-no">🔒</span><b>???</b><small>${sec} geheime${sec === 1 ? "r" : ""} Titel</small></div>` : ""}</div>` : "");
+  }
+  tov.addEventListener("click", e => {
+    if (e.target.closest("[data-close]")) { tov.hidden = true; return; }
+    const b = e.target.closest(".ttl-r:not(.lk)"); if (!b) return;
+    ttl[prisc ? "p" : "n"] = b.dataset.id || ""; store(KEY_TTL, ttl);
+    tsheet(); prof(); push();
+    const a = BYID.get(b.dataset.id);
+    setTimeout(() => { tov.hidden = true; }, 350);
+    toast(a ? `Dein Titel: ${a.ti}` : "Kein Titel mehr", null, 1800);
+  });
+  $("#achTtl").addEventListener("click", () => { tsheet(); tov.hidden = false; });
+  $("#achStrip").addEventListener("click", () => open());
+  // ---- Banner oben ----
+  const ban = $("#achBan");
+  let banBusy = false, banT = 0;
+  function showNext() {
+    if (banBusy) return;
+    if (!$("#rankUp").hidden || rankQ.length || !ov.hidden || !tov.hidden) { clearTimeout(banT); banT = setTimeout(showNext, 700); return; }
+    const L = set(), a = L.filter(x => got[x.id] && !got[x.id][1]).sort((x, y) => got[x.id][0] - got[y.id][0])[0];
+    if (!a) return;
+    got[a.id][1] = 1; store(KEY_A, got);
+    banBusy = true;
+    ban.style.setProperty("--bc", a.t === "pk" ? "#FF8FC4" : TIER[a.t][1]);
+    ban.innerHTML = `${pic(a)}<span class="t"><small>${a.t === "pk" ? "LIEBES-ERFOLG FREIGESCHALTET" : "ERFOLG FREIGESCHALTET"}</small><b>${esc(a.n)}</b><i>${esc(a.d)}</i></span><span class="ar" aria-hidden="true">›</span>`;
+    ban.hidden = false;
+    if (!reduce && ban.animate) {
+      ban.animate([{ transform: "translateY(calc(-100% - 30px))", opacity: 0 }, { transform: "translateY(4px)", opacity: 1, offset: .72 }, { transform: "none", opacity: 1 }],
+        { duration: 760, easing: "cubic-bezier(.22,.9,.3,1)" });
+      const sv = ban.querySelector("svg"), tx = ban.querySelectorAll(".t > *");
+      if (sv) sv.animate([{ transform: "scale(.5) rotate(-120deg)", opacity: 0 }, { transform: "scale(1.06) rotate(8deg)", opacity: 1, offset: .75 }, { transform: "none", opacity: 1 }],
+        { duration: 700, delay: 220, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" });
+      tx.forEach((e, i) => e.animate([{ transform: "translateX(-8px)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 380, delay: 330 + i * 90, easing: "ease-out", fill: "backwards" }));
+    }
+    prof();
+    clearTimeout(banT); banT = setTimeout(hideBan, 4200);
+  }
+  function hideBan() {
+    const done = () => { ban.hidden = true; banBusy = false; setTimeout(showNext, 300); };
+    if (reduce || !ban.animate) return done();
+    ban.animate([{ transform: "none", opacity: 1 }, { transform: "translateY(calc(-100% - 30px))", opacity: 0 }], { duration: 480, easing: "cubic-bezier(.5,0,.75,0)", fill: "forwards" }).onfinish = done;
+  }
+  ban.addEventListener("click", () => { clearTimeout(banT); ban.getAnimations().forEach(a => a.cancel()); ban.hidden = true; banBusy = false; open(); banT = setTimeout(showNext, 700); });
+  // ---- Test-Knöpfe: nur im Artifact, damit man Banner, Rang-Fenster usw. ansehen kann ----
+  $("#achTest") && $("#achTest").addEventListener("click", e => {
+    const b = e.target.closest("button[data-t]"); if (!b) return;
+    const L = set(), t = b.dataset.t;
+    if (t === "ban") {
+      const a = L.find(x => !got[x.id]) || L[Math.floor(Math.random() * L.length)];
+      got[a.id] = [Date.now(), 0]; store(KEY_A, got); showNext();
+    } else if (t === "rank") rankUp(Math.max(1, rankIdx(seenCount())));
+    else if (t === "all") { L.forEach(a => { if (!got[a.id]) got[a.id] = [Date.now(), 1]; }); store(KEY_A, got); prof(); open(); }
+    else if (t === "friend") {
+      // Beispiel-Freund nur für die Ansicht (wird nicht gespeichert)
+      const demo = { uid: "demo", name: "Max", av: "", seen: items.filter((it, i) => i % 6 === 0).slice(0, 26).map(it => it.id), ttl: "films", ttlP: "p_first",
+        ach: ["start", "films", "tears", "action", "comedy", "friend", "adventure", "mystery", "prisc"], achP: ["p_first", "p_five", "p_film", "p_laugh"] };
+      friends.push(demo); frShow("demo"); friends = friends.filter(f => f.uid !== "demo");
+    } else if (t === "prisc") { setPrisc(!prisc, true); render(); }
+    else if (t === "reset") { [KEY_A, KEY_EV, KEY_TTL, KEY_RW, KEY_PUSH].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} }); location.reload(); }
+  });
+  // ---- Prüfen, ob etwas Neues freigeschaltet ist ----
+  let rwSeen = load(KEY_RW, null);
+  function check() {
+    const before = { n: doneOf(N).length, p: doneOf(P).length };
+    let pg = prog();
+    const scan = () => [...N, ...P].forEach(a => { const [h, need] = pg[a.id]; if (!got[a.id] && need > 0 && h >= need) got[a.id] = [Date.now(), 0]; });
+    scan(); pg = prog(); scan(); // zweiter Durchgang für „Anime-Gott“
+    store(KEY_A, got);
+    // Neue Belohnung? (nicht beim allerersten Mal)
+    const now = [...RW.filter(r => rwOn(r[1])), ...RWP.filter(r => rwOn(r[1]))].map(r => r[1]);
+    if (Array.isArray(rwSeen)) {
+      const nw = [...RW, ...RWP].filter(r => now.includes(r[1]) && !rwSeen.includes(r[1]));
+      if (nw.length) setTimeout(() => toast("💗 Belohnung: Herz-Ring ums Profil ist an!", { label: "Ansehen", run: open }, 5000), 4800);
+    }
+    rwSeen = now; store(KEY_RW, now);
+    prof(); showNext(); push();
+    return doneOf(N).length + doneOf(P).length - before.n - before.p;
+  }
+  // ---- Für Freunde: Titel und Erfolge ins Profil (eigener Schreibvorgang, damit ein Fehler sonst nichts stört) ----
+  let pushT = 0, pulledUid = "";
+  // Einmal pro Anmeldung: Erfolge und Titel aus dem Konto holen (z. B. auf dem anderen Gerät freigeschaltet)
+  async function pull() {
+    if (pulledUid === user.uid) return;
+    const uid = user.uid, s = await fb.F.getDoc(profRef(uid));
+    if (!user || user.uid !== uid) throw 0;
+    pulledUid = uid;
+    if (!s.exists()) return;
+    const x = s.data(); let ch = false;
+    [...(Array.isArray(x.ach) ? x.ach : []), ...(Array.isArray(x.achP) ? x.achP : [])].forEach(id => {
+      if (typeof id === "string" && BYID.has(id) && !got[id]) { got[id] = [Date.now(), 1]; ch = true; }
+    });
+    if (ch) store(KEY_A, got);
+    // Titel nur übernehmen, wenn auf diesem Gerät noch keiner gewählt wurde
+    if (!("n" in ttl) && typeof x.ttl === "string" && BYID.has(x.ttl)) { ttl.n = x.ttl; ch = true; }
+    if (!("p" in ttl) && typeof x.ttlP === "string" && BYID.has(x.ttlP)) { ttl.p = x.ttlP; ch = true; }
+    if (ch) { store(KEY_TTL, ttl); prof(); }
+  }
+  function push() {
+    clearTimeout(pushT);
+    pushT = setTimeout(async () => {
+      if (!FB_HOST || !user || !fb) return;
+      try { await pull(); } catch (e) { return; } // ohne Abgleich nichts überschreiben
+      const t = ttl || {}, d = { ttl: t.n && done(t.n) ? t.n : "", ttlP: t.p && done(t.p) ? t.p : "", ach: doneOf(N).map(a => a.id), achP: doneOf(P).map(a => a.id) };
+      const sig = user.uid + JSON.stringify(d);
+      if (load(KEY_PUSH, "") === sig) return;
+      try { await fb.F.setDoc(profRef(user.uid), d, { merge: true }); store(KEY_PUSH, sig); } catch (e) { /* Regeln erlauben es noch nicht: nicht schlimm */ }
+    }, 1500);
+  }
+  // ---- Freundes-Profil: Titel unter dem Rang und Leiste mit seinen Erfolgen (nur ansehen) ----
+  function friend(f) {
+    const c = $("#frCard"); if (!c || !f) return;
+    const L = prisc ? P : N, ids = new Set((prisc ? f.achP : f.ach) || []), his = L.filter(a => ids.has(a.id));
+    const tid = prisc ? f.ttlP : f.ttl, ta = tid && ids.has(tid) ? BYID.get(tid) : null;
+    const rk = c.querySelector(".fp-rank");
+    if (rk && ta) rk.insertAdjacentHTML("afterend", `<span class="ach-ttl fp-ttl">${esc(ta.ti)}</span>`);
+    const st = c.querySelector(".fp-stats");
+    if (st && his.length) {
+      st.insertAdjacentHTML("afterend", `<button type="button" class="ach-strip fp-ach"><span class="ach-mm">${his.slice(-5).reverse().map(pic).join("")}</span><b>${prisc ? "Liebes-Erfolge" : "Erfolge"}</b><small>${his.length} von ${L.length} ›</small></button>`);
+      c.querySelector(".fp-ach").addEventListener("click", () => open({ name: f.name, ids }));
+    }
+  }
+  // ---- Ereignisse ----
+  function evt(id) {
+    const it = items.find(x => x.id === id); if (!it) return;
+    let ch = false;
+    if (isFresh(it)) { ev.fresh = [...new Set([...(ev.fresh || []), id])].slice(-60); ch = true; }
+    const h = new Date().getHours(); if (h >= 2 && h < 5 && !ev.night) { ev.night = 1; ch = true; }
+    if (ch) saveEv();
+  }
+  function dice(id) { ev.dice = [...new Set([...(ev.dice || []), id])].slice(-40); saveEv(); }
+  function priscOn() { if (!ev.prisc) { ev.prisc = 1; saveEv(); } }
+  // ---- Start ----
+  applyTheme();
+  if (firstRun) {
+    // Erstes Mal: Was schon geschafft ist, gilt als gezeigt, statt 10 Banner hintereinander
+    const pg = prog(); [...N, ...P].forEach(a => { const [h, need] = pg[a.id]; if (need > 0 && h >= need) got[a.id] = [Date.now(), 1]; });
+    const pg2 = prog(); [...N, ...P].forEach(a => { const [h, need] = pg2[a.id]; if (!got[a.id] && need > 0 && h >= need) got[a.id] = [Date.now(), 1]; });
+    store(KEY_A, got);
+    rwSeen = [...RW, ...RWP].filter(r => rwOn(r[1])).map(r => r[1]); store(KEY_RW, rwSeen);
+  } else if (!Array.isArray(rwSeen)) { rwSeen = [...RW, ...RWP].filter(r => rwOn(r[1])).map(r => r[1]); store(KEY_RW, rwSeen); }
+  prof();
+  setTimeout(() => { check(); applyTheme(); }, 1200);
+  return { prof, check, evt, dice, priscOn, friend, open, push };
+})();
 </script>
 
 </body>
