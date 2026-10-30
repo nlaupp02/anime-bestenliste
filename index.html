@@ -1186,7 +1186,7 @@ html.prisc .ach-ttl:not(.add) .pen { background: #3A1A2C; border-color: rgba(255
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V247</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V248</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4666,7 +4666,7 @@ var ACHM = (() => {
   }
   function showNext() {
     if (banBusy) return;
-    if (!$("#rankUp").hidden || rankQ.length || !ov.hidden || !tov.hidden) { clearTimeout(banT); banT = setTimeout(showNext, 700); return; }
+    if (!$("#rankUp").hidden || rankQ.length || document.querySelector(".ov:not([hidden])")) { clearTimeout(banT); banT = setTimeout(showNext, 700); return; }
     const L = set();
     // 2 = schon vor dem Update geschafft: Banner bleibt oben und wechselt alle 2 Sekunden zum nächsten
     const olds = L.filter(x => got[x.id] && got[x.id][1] === 2);
@@ -4687,6 +4687,16 @@ var ACHM = (() => {
     banFill(oldQ[oldI], `${oldI + 1} / ${oldQ.length}`, 0); oldI++;
     banT = setTimeout(nextOld, 2000);
   }
+  // Geht ein Fenster auf (Erfolge, Titel, Freund …), verschwindet das Banner sofort, sonst liegt es über dem X.
+  // Was noch nicht gezeigt wurde, kommt nach dem Schließen
+  function banPause() {
+    if (ban.hidden) return;
+    clearTimeout(banT); ban.getAnimations().forEach(x => x.cancel());
+    ban.hidden = true; banBusy = false; banHiding = false; oldQ = null;
+    banT = setTimeout(showNext, 700);
+  }
+  const ovWatch = new MutationObserver(ms => { if (ms.some(m => !m.target.hidden)) banPause(); });
+  document.querySelectorAll(".ov").forEach(o => ovWatch.observe(o, { attributes: true, attributeFilter: ["hidden"] }));
   function banDone() { ban.hidden = true; ban.getAnimations().forEach(x => x.cancel()); ban.style.transform = ""; banBusy = false; banHiding = false; oldQ = null; setTimeout(showNext, 600); }
   function hideBan() {
     if (banHiding || ban.hidden) return;
