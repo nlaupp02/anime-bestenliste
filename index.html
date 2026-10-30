@@ -553,6 +553,61 @@ html.prisc .prog.max .ring svg { filter: drop-shadow(0 0 4px rgba(246, 196, 83, 
 .frw .pf-stack { flex: none; }
 .frw .pf-stack .avr { width: 22px; height: 22px; margin-left: -7px; box-shadow: 0 0 0 2px var(--sheet); }
 .frw .pf-stack .avr:first-child { margin-left: 0; }
+/* Tipps von Freunden: Zeile auf der Karte (nur ein Bild, mit goldenem Ring) */
+.frw.tip { color: var(--gold); } .frw.tip b { color: var(--ink); }
+.frw .pf-stack .avr.ld { box-shadow: 0 0 0 2px var(--sheet), 0 0 0 3.5px var(--gold); }
+.card.is-seen .frw .pf-stack .avr.ld { box-shadow: 0 0 0 2px var(--paper), 0 0 0 3.5px var(--gold); }
+/* Tipp schicken */
+.tp-head { display: flex; gap: 12px; align-items: center; min-width: 0; }
+.tp-head img { width: 46px; height: 66px; border-radius: 8px; object-fit: cover; flex: none; background: var(--chip); }
+.tp-head img[hidden] { display: none; }
+.tp-head > div { min-width: 0; }
+.tp-head b { display: block; font-size: 17px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tp-head small { color: var(--muted); font-size: 13px; }
+.tp-fr { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-height: 300px; overflow-y: auto; overscroll-behavior: contain; }
+.tp-f { font: inherit; color: var(--ink); display: grid; justify-items: center; align-content: start; gap: 5px; padding: 12px 4px 10px; border-radius: 14px; border: 1px solid var(--line); background: var(--paper); position: relative; cursor: pointer; min-width: 0; -webkit-tap-highlight-color: transparent; }
+.tp-f .av { width: 52px; height: 52px; display: block; }
+.tp-f .av .avr.fr-l, .tp-pop .av .avr.fr-l { display: grid; place-items: center; font-size: 21px; font-weight: 800; }
+.tp-f .nm { font-size: 13.5px; font-weight: 700; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tp-f small { font-size: 10.5px; color: var(--muted); line-height: 1.15; text-align: center; }
+.tp-f[aria-pressed="true"] { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }
+.tp-f[aria-pressed="true"]::after { content: "✓"; position: absolute; top: 6px; right: 8px; width: 20px; height: 20px; border-radius: 50%; background: var(--gold); color: var(--on-gold); font-size: 12px; font-weight: 800; display: grid; place-items: center; }
+.tp-f:disabled { opacity: .45; cursor: default; }
+.tp-f.sent small { color: var(--gold); }
+.tp-or { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; }
+.tp-or::before, .tp-or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.tp-share { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.tp-share svg { width: 17px; height: 17px; flex: none; }
+#tpsGo:disabled { opacity: .5; cursor: default; }
+/* Neuer Tipp beim Öffnen */
+.tp-pop { justify-items: center; text-align: center; gap: 6px; }
+.tp-pop .lbl { font-size: 11.5px; font-weight: 800; letter-spacing: .12em; color: var(--gold); }
+.tp-pop .cvw { position: relative; width: 132px; margin: 6px 0 10px; }
+.tp-pop .cvw > img { width: 132px; height: 188px; object-fit: cover; border-radius: 12px; display: block; background: var(--chip); box-shadow: 0 10px 30px rgba(0, 0, 0, .45); }
+.tp-pop .cvw .av { position: absolute; right: -14px; bottom: -12px; width: 50px; height: 50px; }
+.tp-pop .cvw .av .avr { box-shadow: 0 0 0 3px var(--sheet), 0 0 0 5px var(--gold); }
+.tp-pop .who { color: var(--muted); font-size: 14px; } .tp-pop .who b { color: var(--ink); }
+.tp-pop h4 { margin: 0; font-size: 21px; line-height: 1.2; }
+.tp-pop .facts2 { color: var(--muted); font-size: 13px; }
+.tp-pop .tp-more { margin: 2px 0 0; color: var(--muted); font-size: 12.5px; }
+.tp-pop .ov-row { width: 100%; margin-top: 10px; }
+/* Gemerkt: Reihe „Tipps von Freunden“ */
+.tp-wrap[hidden] { display: none; }
+.tp-sec { display: flex; align-items: center; gap: 8px; margin: 2px 2px 10px; font-size: 12.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--gold); }
+.tp-sec span { color: var(--muted); }
+.tp-sec::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.tp-row { display: flex; gap: 10px; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; margin: 0 0 18px; padding: 0 0 2px; }
+.tp-row::-webkit-scrollbar { display: none; }
+.tp-it { width: 104px; flex: none; display: grid; gap: 6px; position: relative; }
+.tp-it .cvw { position: relative; display: block; padding: 0; border: 0; background: var(--chip); cursor: pointer; border-radius: 10px; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+.tp-it .cvw > img, .tp-it .ph { width: 104px; height: 148px; object-fit: cover; display: block; }
+.tp-it .ph { display: grid; place-items: center; padding: 8px; font: inherit; font-size: 12px; color: var(--muted); text-align: center; }
+.tp-it .avs { position: absolute; left: 6px; bottom: 6px; display: flex; }
+.tp-it .avs .avr { width: 30px; height: 30px; box-shadow: 0 0 0 2px var(--paper); margin-left: -9px; }
+.tp-it .avs .avr:first-child { margin-left: 0; }
+.tp-it .avs .avr.fr-l { display: grid; place-items: center; font-size: 13px; font-weight: 800; }
+.tp-it .x { position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; border-radius: 50%; border: 0; padding: 0; background: rgba(10, 12, 22, .72); color: var(--ink); display: grid; place-items: center; font: inherit; font-size: 13px; cursor: pointer; }
+.tp-it small { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .tp-it small b { color: var(--ink); }
 .frw .pf-stack .avr.fr-l { font-size: 11px; }
 .card.is-seen .frw .pf-stack .avr { box-shadow: 0 0 0 2px var(--paper); }
 #shelfOne .card.is-seen .frw .pf-stack .avr { box-shadow: 0 0 0 2px var(--sheet); }
@@ -981,7 +1036,7 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V235</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V236</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1039,6 +1094,7 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
     <p class="favg" id="favg" hidden></p>
     <div class="gbar" id="gbar" hidden><button type="button" class="gback" id="gback">← Alle Genres</button><h3 id="gtitle"></h3></div>
     <div class="tiles" id="tiles" hidden></div>
+    <section class="tp-wrap" id="tipRow" hidden aria-label="Tipps von Freunden"></section>
     <ol class="grid" id="list"></ol>
     <ul class="shelf" id="shelf" hidden></ul>
     <p class="empty" id="empty" hidden>Kein Titel passt zu diesen Filtern. Setz einzelne Filter zurück oder leere die Suche.</p>
@@ -1141,6 +1197,28 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
     <b id="outAskTitle">Abmelden?</b>
     <p id="outAskText">Deine Listen und Freunde bleiben in deinem Konto gespeichert. Meldest du dich wieder an, ist alles wieder da.</p>
     <div class="ov-row"><button type="button" class="ov-btn" data-close>Abbrechen</button><button type="button" class="ov-btn danger" id="outAskOk">Abmelden</button></div>
+  </div>
+</div>
+<div class="ov" id="tipSendOv" hidden>
+  <div class="ov-bg" data-close></div>
+  <div class="ov-card tp-card" role="dialog" aria-modal="true" aria-labelledby="tpsTitle">
+    <div class="tp-head"><img id="tpsCv" alt="" draggable="false"><div><b id="tpsTitle"></b><small>An wen soll der Tipp gehen?</small></div></div>
+    <div class="tp-fr" id="tpsFr"></div>
+    <button type="button" class="ov-btn main" id="tpsGo" disabled>Freund auswählen</button>
+    <div class="tp-or">oder</div>
+    <button type="button" class="ov-btn tp-share" id="tpsShare"><span>Link teilen</span></button>
+  </div>
+</div>
+<div class="ov" id="tipOv" hidden>
+  <div class="ov-bg" data-close></div>
+  <div class="ov-card tp-pop" role="dialog" aria-modal="true" aria-labelledby="tpTitle">
+    <div class="lbl">NEUER TIPP</div>
+    <div class="cvw"><img id="tpCv" alt="" draggable="false"><span class="av" id="tpAv"></span></div>
+    <div class="who" id="tpWho"></div>
+    <h4 id="tpTitle"></h4>
+    <div class="facts2" id="tpFacts"></div>
+    <p class="tp-more" id="tpMore" hidden></p>
+    <div class="ov-row"><button type="button" class="ov-btn" data-close>Später</button><button type="button" class="ov-btn main" id="tpOpen">Ansehen</button></div>
   </div>
 </div>
 <div class="ov" id="rankSheet" hidden>
@@ -2479,6 +2557,7 @@ function warmCovers() {
 function applyCovers() {
   const any = items.some(coverOf);
   document.documentElement.classList.toggle("covers", any);
+  tipRow();
   if (any && $("#tiles").childElementCount) renderTiles();
   if (any && state.view === "seen" && shelfList.length) renderShelf(shelfList);
   else if (any) prewarmShelf(); // Cover-Adressen kamen erst nach dem Vorbereiten: im versteckten Regal nachtragen
@@ -2668,7 +2747,7 @@ const relText = it => { const v = REL[it.key]; if (!v) return ""; const [y, m] =
 function placeCards(list) {
   const L = $("#list"), kids = L.children, pos = new Map();
   for (let i = 0; i < kids.length; i++) pos.set(kids[i], i);
-  const els = list.map(it => cardEls.get(it.id)), a = els.map(e => pos.get(e));
+  const els = list.map(it => cardEls.get(it.id)).filter(e => e && e.parentNode === L), a = els.map(e => pos.get(e)); // offenes Cover-Fenster: Karte bleibt dort
   const tails = [], prev = new Int32Array(a.length);
   for (let i = 0; i < a.length; i++) {
     let lo = 0, hi = tails.length;
@@ -2717,6 +2796,7 @@ function render() {
   e.dataset.ic = /gemerkt/.test(e.textContent) ? "saved" : /gesehen markiert/.test(e.textContent) ? "seen" : "find";
   nvDays(list);
   renderShelf(list);
+  tipRow();
   status(list.length);
   // Sobald die Liste einmal sichtbar gezeichnet wurde, kennt das iPhone alle Kartenhöhen: ab dann nur noch sichtbare Karten zeichnen
   if (!$("#list").hidden) cvRewarm(); // nur Karten, die ihre Höhe noch nicht kennen (z. B. beim Start ausgeblendet)
@@ -2827,6 +2907,7 @@ function closeShelf() {
   if (shelfEl) { const x = shelfEl.querySelector(".sclose"); if (x) x.remove(); }
   if (shelfEl && shelfPh) shelfPh.replaceWith(shelfEl);
   shelfEl = shelfPh = null; shelfOv.hidden = true;
+  if (state.view !== "seen") render(); // Karte aus Tipp-Reihe o. Ä. geöffnet: wieder richtig ein- oder ausblenden
   try { if (!frOv.hidden && frCur) frShow(frCur); } catch (e) {}
 }
 $("#shelf").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li) openShelf(li.dataset.id); });
@@ -2838,7 +2919,7 @@ shelfOv.addEventListener("click", e => {
     m.firstChild.textContent = open ? "Weniger" : "Mehr lesen"; m.setAttribute("aria-expanded", String(open)); return; }
   const b = e.target.closest("button[data-act]"); if (!b) return;
   const id = b.dataset.id, act = b.dataset.act;
-  if (act === "share") { shareOne(id); return; }
+  if (act === "share") { tipOrShare(id); return; }
   if (act === "seen" && seen.has(id)) { closeShelf(); askUnseen(id); return; }
   if (act === "save" && seen.has(id)) return;
   setMark(id, act, !(act === "seen" ? seen : saved).has(id));
@@ -2888,6 +2969,7 @@ function setMark(id, act, on) {
   // Speichern, Zähler und ggf. Liste neu filtern erst im nächsten Bild, damit der Knopf nicht hängt
   requestAnimationFrame(() => setTimeout(() => {
     if (act === "seen" && !frOv.hidden && frCur && shelfOv.hidden) frShow(frCur); // offenes Freundes-Profil gleich mitziehen
+    if (tipsIn && tipsIn.length) { frCardSig = ""; frCards(); tipRow(); } // Tipp gesehen oder gemerkt: Zeile und Reihe anpassen
     store(act === "seen" ? KEY.seen : KEY.saved, [...set]);
     if (unsave) store(KEY.saved, [...saved]);
     if (!b) return;
@@ -2899,7 +2981,7 @@ function setMark(id, act, on) {
 $("#list").addEventListener("click", e => {
   const b = e.target.closest("button[data-act]");
   if (!b) return;
-  if (b.dataset.act === "share") { shareOne(b.dataset.id); return; }
+  if (b.dataset.act === "share") { tipOrShare(b.dataset.id); return; }
   const id = b.dataset.id, act = b.dataset.act, on = !(act === "seen" ? seen : saved).has(id);
   // Gesehen wieder entfernen nur nach Nachfrage, weil es den Fortschritt verändert
   if (act === "seen" && !on) { askUnseen(id); return; }
@@ -3120,10 +3202,14 @@ async function shareText(text, copied) {
   } finally { sharing = false; }
 }
 // Eine Serie teilen (Knopf auf der Karte): mit dem vollen Link samt Namen – nur dann zeigt WhatsApp das Cover (am iPhone getestet)
+// „⭐ 9,4 · Film · Fantasy · Deutsch“: Ton nur, wenn sicher. Kurz, damit die Zeile auch auf kleinen iPhones in WhatsApp nicht umbricht
+function infoOf(it, serie) {
+  const ton = { de: "Deutsch", sub: "Untertitel" }[it.dub];
+  return [`${prisc ? "💘" : "⭐"} ${fmt(it.mine)}`, it.type === "F" ? "Film" : serie ? "Serie" : "", MAIN_G[it.key] || it.genres[0], ton].filter(Boolean).join(" · ");
+}
 function shareOne(id) {
   const it = items.find(x => x.id === id); if (!it) return;
-  const ton = { de: "Deutsch", sub: "Untertitel" }[it.dub]; // unsicher oder unbekannt: lieber nichts dazu schreiben. Kurz, damit die Zeile auch auf kleinen iPhones in WhatsApp nicht umbricht
-  const info = [`${prisc ? "💘" : "⭐"} ${fmt(it.mine)}`, it.type === "F" ? "Film" : "", MAIN_G[it.key] || it.genres[0], ton].filter(Boolean).join(" · ");
+  const info = infoOf(it);
   shareText(`Schau dir das an: *${it.title.split(" – ")[0]}*\n${info}\n${crUrl(it)}`, "Link kopiert. Jetzt in WhatsApp einfügen.");
 }
 // Merkliste teilen
@@ -3646,12 +3732,17 @@ const KEY_FRK = "cr-top100-friends-known"; // wen die App schon als Freund kennt
 let frSelfAdd = ""; // gerade selbst per Code hinzugefügt: dafür kommt schon „… ist jetzt dein Freund“
 let friends = acct.uid ? load(KEY_FR, []) : [];
 if (!Array.isArray(friends)) friends = [];
+// Tipps von Freunden. Firestore: tips/{empfänger}/list/{absender}_{titel} = { from, id, at }
+const KEY_TIPS = "cr-top100-tips", KEY_SENT = "cr-top100-tips-sent", KEY_TIPK = "cr-top100-tips-known", KEY_TIPW = "cr-top100-tips-watched", KEY_TIPD = "cr-top100-tips-gone";
+var tipsIn = acct.uid ? load(KEY_TIPS, []) : [], tipsOut = acct.uid ? load(KEY_SENT, []) : [];
+if (!Array.isArray(tipsIn)) tipsIn = [];
+if (!Array.isArray(tipsOut)) tipsOut = [];
 let frAt = 0, frBusy = false, frErrSt = "", frCur = "", frTab = "", frSig = "";
 const frOv = $("#frOv"), frAddOv = $("#frAddOv"), frListOv = $("#frListOv");
 const CODE_AB = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"; // ohne 0/O und 1/I, damit man sich nicht vertippt
 const fmtCode = c => c ? c.slice(0, 4) + "-" + c.slice(4) : "";
 const profRef = uid => fb.F.doc(fb.db, "profiles", uid);
-function frClear() { friends = []; store(KEY_FR, []); store(KEY_FRK, null); frAt = 0; frErrSt = ""; frSig = ""; if (frOv) { frOv.hidden = true; frAddOv.hidden = true; frListOv.hidden = true; document.getElementById("frAsk").hidden = true; } frCards(); }
+function frClear() { tipClear(); friends = []; store(KEY_FR, []); store(KEY_FRK, null); frAt = 0; frErrSt = ""; frSig = ""; if (frOv) { frOv.hidden = true; frAddOv.hidden = true; frListOv.hidden = true; document.getElementById("frAsk").hidden = true; } frCards(); }
 // Eigenes Profil für Freunde sichern, nur wenn sich etwas geändert hat
 async function profPush() {
   if (!user || !fb) return;
@@ -3704,6 +3795,7 @@ async function frLoad(force) {
   finally { frBusy = false; done(); }
   frRender();
   if (!frOv.hidden && frCur) frShow(frCur);
+  tipLoad(force);
 }
 // Rang, Zahl und Liste eines Freundes – im Priscilla-Modus nur Romanzen
 function frStat(f) {
@@ -3741,7 +3833,13 @@ function frRender() {
 let frCardSig = "";
 function frCards() {
   if (!cardEls) return;
-  const sig = JSON.stringify(friends.map(f => [f.uid, f.name, f.av, f.seen.length]));
+  // Tipps an mich: ersetzen die Zeile „… hat's gesehen“, bis ich den Titel gesehen oder den Tipp weggeklickt habe
+  const fr = new Map(friends.map(f => [f.uid, f])), rec = new Map();
+  (tipsIn || []).slice().sort((a, b) => a.at - b.at).forEach(t => {
+    const f = fr.get(t.from); if (!f || seen.has(t.id)) return;
+    const l = rec.get(t.id); if (!l) rec.set(t.id, [f]); else if (!l.includes(f)) l.push(f);
+  });
+  const sig = JSON.stringify([friends.map(f => [f.uid, f.name, f.av, f.seen.length]), [...rec].map(([id, l]) => id + ":" + l.map(f => f.uid).join(","))]);
   if (sig === frCardSig) return;
   frCardSig = sig;
   const by = new Map();
@@ -3749,17 +3847,177 @@ function frCards() {
   // Die Seite soll dabei nicht springen: die Karte oben im Bild bleibt, wo sie ist
   const a = document.elementFromPoint(innerWidth / 2, 90), anchor = a && a.closest("#list .card"), top0 = anchor ? anchor.getBoundingClientRect().top : 0;
   cardEls.forEach((el, id) => {
-    const l = by.get(id) || [], old = el.querySelector(".frw");
-    if (!l.length) { if (old) old.remove(); return; }
-    const nm = l.map(f => `<b>${esc(f.name)}</b>`);
-    const txt = l.length === 1 ? `${nm[0]} hat’s gesehen` : l.length === 2 ? `${nm[0]} und ${nm[1]} haben’s gesehen`
-      : l.length === 3 ? `${nm[0]}, ${nm[1]} und ${nm[2]} haben’s gesehen` : `${nm[0]}, ${nm[1]} und ${l.length - 2} weitere haben’s gesehen`;
-    const d = old || document.createElement("div");
-    d.className = "frw"; d.innerHTML = `<span class="pf-stack" aria-hidden="true">${l.slice(0, 3).map(frFace).join("")}</span><span class="frw-t">${txt}</span>`;
+    const r = rec.get(id) || [], l = by.get(id) || [], old = el.querySelector(".frw");
+    if (!r.length && !l.length) { if (old) old.remove(); return; }
+    let html;
+    if (r.length) {
+      const nm = r.map(f => `<b>${esc(f.name)}</b>`);
+      const who = r.length === 1 ? nm[0] : r.length === 2 ? `${nm[0]} und ${nm[1]}` : `${nm[0]}, ${nm[1]} und ${r.length - 2} weitere`;
+      html = `<span class="pf-stack" aria-hidden="true">${frFace(r[0]).replace('class="avr', 'class="avr ld')}</span><span class="frw-t">${who} ${r.length === 1 ? "empfiehlt" : "empfehlen"} dir das</span>`;
+    } else {
+      const nm = l.map(f => `<b>${esc(f.name)}</b>`);
+      const txt = l.length === 1 ? `${nm[0]} hat’s gesehen` : l.length === 2 ? `${nm[0]} und ${nm[1]} haben’s gesehen`
+        : l.length === 3 ? `${nm[0]}, ${nm[1]} und ${nm[2]} haben’s gesehen` : `${nm[0]}, ${nm[1]} und ${l.length - 2} weitere haben’s gesehen`;
+      html = `<span class="pf-stack" aria-hidden="true">${l.slice(0, 3).map(frFace).join("")}</span><span class="frw-t">${txt}</span>`;
+    }
+    const d = old || document.createElement("div"), cls = r.length ? "frw tip" : "frw";
+    if (d.className !== cls) d.className = cls;
+    d.innerHTML = html;
     if (!old) el.querySelector(".facts").after(d);
   });
   if (anchor) { const dy = anchor.getBoundingClientRect().top - top0; if (Math.abs(dy) > 1) setY(getY() + dy); }
 }
+// ===== Tipps an Freunde =====
+const nmList = l => l.length === 1 ? `<b>${esc(l[0].name)}</b>` : l.length === 2 ? `<b>${esc(l[0].name)}</b> und <b>${esc(l[1].name)}</b>` : `<b>${esc(l[0].name)}</b>, <b>${esc(l[1].name)}</b> und ${l.length - 2} weitere`;
+const tipKey = (from, id) => from + "_" + id;
+var tipAt = 0, tipBusy = false, tipRowSig = "", tpsId = "", tpsSel = new Set(); // var: wird ggf. schon vor dieser Stelle aufgerufen
+var tipSendOv = $("#tipSendOv"), tipOv = $("#tipOv");
+$("#tpsShare").insertAdjacentHTML("afterbegin", ICON.share);
+function tipClear() {
+  tipsIn = []; tipsOut = []; tipAt = 0; tipRowSig = "";
+  [KEY_TIPS, KEY_SENT].forEach(k => store(k, [])); [KEY_TIPK, KEY_TIPW, KEY_TIPD].forEach(k => store(k, null));
+  if (tipSendOv) { tipSendOv.hidden = true; tipOv.hidden = true; }
+  tipRow(true);
+}
+// Erhaltene und selbst geschickte Tipps holen (höchstens alle 30 Sekunden, außer erzwungen)
+async function tipLoad(force) {
+  if (tipBusy || !user || !fb || (!force && Date.now() - tipAt < 30000)) return;
+  tipBusy = true; const uid = user.uid;
+  try {
+    const ok = new Set(items.map(it => it.id));
+    const qs = await fb.F.getDocs(fb.F.collection(fb.db, "tips", uid, "list"));
+    let list = qs.docs.map(d => { const x = d.data(); return { k: d.id, from: String(x.from || ""), id: String(x.id || ""), at: +x.at || 0 }; })
+      .filter(t => t.from && ok.has(t.id)).sort((a, b) => b.at - a.at);
+    // Weggeklickt, aber ohne Netz noch nicht gelöscht: jetzt löschen. Mehr als 50 alte Tipps: aufräumen.
+    const gone = new Set(load(KEY_TIPD, []) || []);
+    const drop = list.filter((t, i) => gone.has(t.k) || i >= 50);
+    drop.forEach(t => fb.F.deleteDoc(fb.F.doc(fb.db, "tips", uid, "list", t.k)).then(() => { const g = new Set(load(KEY_TIPD, []) || []); g.delete(t.k); store(KEY_TIPD, [...g]); }).catch(() => {}));
+    list = list.filter(t => !drop.includes(t));
+    // Selbst geschickte: bei jedem Freund nachsehen, was noch da ist (er kann ihn weggeklickt haben)
+    const out = [];
+    await Promise.all(friends.map(async f => {
+      try {
+        const q = await fb.F.getDocs(fb.F.query(fb.F.collection(fb.db, "tips", f.uid, "list"), fb.F.where("from", "==", uid)));
+        q.docs.forEach(d => { const x = d.data(); if (ok.has(x.id)) out.push({ to: f.uid, id: x.id, at: +x.at || 0 }); });
+      } catch (e) { tipsOut.filter(t => t.to === f.uid).forEach(t => out.push(t)); } // nicht erreichbar: was wir wissen, behalten
+    }));
+    if (!user || user.uid !== uid) return;
+    tipsIn = list; store(KEY_TIPS, tipsIn);
+    tipsOut = out; store(KEY_SENT, tipsOut);
+    tipAt = Date.now();
+  } catch (e) { tipAt = Date.now() - 20000; } // z. B. ohne Netz oder Regel fehlt: in 10 Sekunden wieder
+  finally { tipBusy = false; }
+  frCardSig = ""; frCards(); tipRow(); tipNews();
+}
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && user) tipLoad(); });
+// Neue Tipps zeigen (einmal), und Bescheid sagen, wenn ein Freund meinen Tipp geschaut hat (einmal)
+function tipNews() {
+  if (!user || document.querySelector(".ov:not([hidden])")) return; // nichts über ein offenes Fenster legen
+  const fr = new Map(friends.map(f => [f.uid, f]));
+  const known = load(KEY_TIPK, null), kn = new Set(Array.isArray(known) ? known : []);
+  const fresh = tipsIn.filter(t => fr.has(t.from) && !kn.has(t.k) && !seen.has(t.id) && (Array.isArray(known) || Date.now() - t.at < 3 * 864e5));
+  store(KEY_TIPK, tipsIn.map(t => t.k));
+  if (fresh.length) { tipShow(fresh); return; }
+  const told = load(KEY_TIPW, null), tw = new Set(Array.isArray(told) ? told : []);
+  const watched = tipsOut.filter(t => { const f = fr.get(t.to); return f && f.seen.includes(t.id); });
+  const nw = watched.filter(t => !tw.has(tipKey(t.to, t.id)));
+  store(KEY_TIPW, watched.map(t => tipKey(t.to, t.id)));
+  if (Array.isArray(told) && nw.length) {
+    const t = nw[0], f = fr.get(t.to), it = items.find(x => x.id === t.id);
+    toast(`${f.name} hat deinen Tipp „${it.title.split(" – ")[0]}“ geschaut ✓`, null, 4500);
+  }
+}
+function tipShow(fresh) {
+  const t = fresh[0], it = items.find(x => x.id === t.id); if (!it) return;
+  const fr = new Map(friends.map(f => [f.uid, f]));
+  const from = [...new Set(tipsIn.filter(x => x.id === t.id).sort((a, b) => a.at - b.at).map(x => x.from))].map(u => fr.get(u)).filter(Boolean);
+  const u = coverOf(it), img = $("#tpCv");
+  img.hidden = !u; if (u) img.src = u;
+  $("#tpAv").innerHTML = from.length ? frFace(from[0]) : "";
+  $("#tpWho").innerHTML = `${nmList(from)} ${from.length === 1 ? "empfiehlt" : "empfehlen"} dir`;
+  $("#tpTitle").textContent = it.title.split(" – ")[0];
+  $("#tpFacts").textContent = infoOf(it, true);
+  const more = new Set(fresh.map(x => x.id)).size - 1, m = $("#tpMore");
+  m.hidden = !more; m.textContent = more === 1 ? "+ 1 weiterer Tipp in Gemerkt" : `+ ${more} weitere Tipps in Gemerkt`;
+  tipOv.dataset.id = it.id; tipOv.hidden = false;
+  $("#tpOpen").focus({ preventScroll: true });
+}
+tipOv.addEventListener("click", e => { if (e.target.closest("[data-close]")) tipOv.hidden = true; });
+$("#tpOpen").addEventListener("click", () => { const id = tipOv.dataset.id; tipOv.hidden = true; if (id) openShelf(id); });
+// Gemerkt: Reihe „Tipps von Freunden“ (nicht gesehen, nicht selbst gemerkt, höchstens 20)
+function tipList() {
+  const fr = new Map(friends.map(f => [f.uid, f])), by = new Map();
+  (tipsIn || []).forEach(t => {
+    const f = fr.get(t.from); if (!f || seen.has(t.id) || saved.has(t.id)) return;
+    const e = by.get(t.id) || { at: 0, fs: [] }; e.at = Math.max(e.at, t.at); if (!e.fs.includes(f)) e.fs.push(f); by.set(t.id, e);
+  });
+  return [...by].map(([id, e]) => ({ it: items.find(x => x.id === id), ...e })).filter(x => x.it && (!prisc || isRom(x.it))).sort((a, b) => b.at - a.at).slice(0, 20);
+}
+function tipRow(force) {
+  const box = document.getElementById("tipRow"); if (!box || !tipsIn) return;
+  const L = state.view === "saved" && friends.length ? tipList() : [];
+  const sig = JSON.stringify(L.map(x => [x.it.id, coverOf(x.it), x.fs.map(f => f.uid + f.av)]));
+  if (!force && sig === tipRowSig) return;
+  tipRowSig = sig; box.hidden = !L.length;
+  box.innerHTML = !L.length ? "" : `<div class="tp-sec">Tipps von Freunden <span>${L.length}</span></div><div class="tp-row">` + L.map(({ it, fs }) => {
+    const u = coverOf(it);
+    return `<div class="tp-it"><button type="button" class="cvw" data-open="${it.id}" aria-label="${esc(it.title)} ansehen">${u ? `<img${coverAttrs(u, SHELF_SIZES)} alt="" loading="lazy" decoding="async" draggable="false">` : `<span class="ph">${esc(shortT(it.title))}</span>`}<span class="avs" aria-hidden="true">${fs.slice(0, 2).map(frFace).join("")}</span></button><button type="button" class="x" data-del="${it.id}" aria-label="Tipp ${esc(shortT(it.title))} entfernen">✕</button><small>von ${nmList(fs)}</small></div>`;
+  }).join("") + "</div>";
+}
+$("#tipRow").addEventListener("click", e => {
+  const o = e.target.closest("[data-open]"); if (o) { openShelf(o.dataset.open); return; }
+  const d = e.target.closest("[data-del]"); if (d) tipDismiss(d.dataset.del);
+});
+function tipDismiss(id) {
+  if (!user) return;
+  const uid = user.uid, gone = tipsIn.filter(t => t.id === id);
+  tipsIn = tipsIn.filter(t => t.id !== id); store(KEY_TIPS, tipsIn);
+  const g = new Set(load(KEY_TIPD, []) || []); gone.forEach(t => g.add(t.k)); store(KEY_TIPD, [...g]);
+  if (fb) gone.forEach(t => fb.F.deleteDoc(fb.F.doc(fb.db, "tips", uid, "list", t.k)).then(() => { const h = new Set(load(KEY_TIPD, []) || []); h.delete(t.k); store(KEY_TIPD, [...h]); }).catch(() => {}));
+  frCardSig = ""; frCards(); tipRow();
+}
+// Teilen-Knopf: mit Freunden erst „Empfehlen“, sonst gleich Link teilen
+function tipOrShare(id) {
+  if (!user || !fb || !FB_HOST || !friends.length) { shareOne(id); return; }
+  tpsId = id; tpsSel = new Set(); tpsRender(); tipSendOv.hidden = false;
+}
+function tpsRender() {
+  const it = items.find(x => x.id === tpsId); if (!it) return;
+  const u = coverOf(it), img = $("#tpsCv");
+  img.hidden = !u; if (u) img.src = u;
+  $("#tpsTitle").textContent = `${it.title.split(" – ")[0]} empfehlen`;
+  $("#tpsFr").innerHTML = friends.map(f => {
+    const sent = tipsOut.some(t => t.to === f.uid && t.id === tpsId), saw = f.seen.includes(tpsId), on = tpsSel.has(f.uid);
+    return `<button type="button" class="tp-f${sent ? " sent" : ""}" data-uid="${esc(f.uid)}" aria-pressed="${on}"${sent || saw ? " disabled" : ""}><span class="av">${frFace(f)}</span><span class="nm">${esc(f.name)}</span><small>${sent ? "schon empfohlen" : saw ? "hat’s schon gesehen" : "noch nicht gesehen"}</small></button>`;
+  }).join("");
+  const sel = friends.filter(f => tpsSel.has(f.uid)), go = $("#tpsGo");
+  go.disabled = !sel.length;
+  go.textContent = !sel.length ? "Freund auswählen" : sel.length === 1 ? `An ${sel[0].name} schicken` : `An ${sel.length} Freunde schicken`;
+}
+tipSendOv.addEventListener("click", e => {
+  if (e.target.closest("[data-close]")) { tipSendOv.hidden = true; return; }
+  const b = e.target.closest(".tp-f[data-uid]"); if (!b || b.disabled) return;
+  const u = b.dataset.uid; tpsSel.has(u) ? tpsSel.delete(u) : tpsSel.add(u); tpsRender();
+});
+$("#tpsShare").addEventListener("click", () => { const id = tpsId; tipSendOv.hidden = true; shareOne(id); });
+$("#tpsGo").addEventListener("click", async () => {
+  const sel = friends.filter(f => tpsSel.has(f.uid)), id = tpsId;
+  if (!sel.length || !user || !fb) return;
+  const uid = user.uid, at = Date.now(), go = $("#tpsGo");
+  go.disabled = true; go.textContent = "Wird geschickt …";
+  const ok = []; let rules = false;
+  await Promise.all(sel.map(async f => {
+    try { await fb.F.setDoc(fb.F.doc(fb.db, "tips", f.uid, "list", tipKey(uid, id)), { from: uid, id, at }); ok.push(f); }
+    catch (e) { if (e && e.code === "permission-denied") rules = true; }
+  }));
+  if (!user || user.uid !== uid) return;
+  ok.forEach(f => { tipsOut = tipsOut.filter(t => !(t.to === f.uid && t.id === id)); tipsOut.push({ to: f.uid, id, at }); });
+  store(KEY_SENT, tipsOut);
+  tipSendOv.hidden = true; tpsSel = new Set();
+  if (ok.length) toast(`Tipp an ${ok.length === 1 ? ok[0].name : ok.length + " Freunde"} geschickt`);
+  else toast(rules ? "Tipps gehen noch nicht: In Firebase fehlt die neue Regel." : "Der Tipp ging nicht raus. Prüf dein Internet.");
+  // Schickt der Freund mehrere auf einmal, hat ggf. einer nicht geklappt: das sagt der nächste Versuch
+});
 // Profil eines Freundes
 function frShow(uid) {
   const f = friends.find(x => x.uid === uid); if (!f) { frOv.hidden = true; frCur = ""; return; }
