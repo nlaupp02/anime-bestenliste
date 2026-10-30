@@ -554,6 +554,8 @@ html.prisc .prog.max .ring svg { filter: drop-shadow(0 0 4px rgba(246, 196, 83, 
 .frw .pf-stack .avr { width: 22px; height: 22px; margin-left: -7px; box-shadow: 0 0 0 2px var(--sheet); }
 .frw .pf-stack .avr:first-child { margin-left: 0; }
 /* Tipps von Freunden: Zeile auf der Karte (nur ein Bild, mit goldenem Ring) */
+.avr.pl { display: grid; place-items: center; background: var(--chip); color: var(--ink); font-weight: 800; letter-spacing: -.02em; }
+.frw .pf-stack .avr.pl { font-size: 9.5px; } .tp-it .avs .avr.pl { font-size: 12px; } .tp-pop .cvw .av .avr.pl { font-size: 16px; }
 .frw.tip { color: var(--gold); } .frw.tip b { color: var(--ink); }
 .frw .pf-stack .avr.ld { box-shadow: 0 0 0 2px var(--sheet), 0 0 0 3.5px var(--gold); }
 .card.is-seen .frw .pf-stack .avr.ld { box-shadow: 0 0 0 2px var(--paper), 0 0 0 3.5px var(--gold); }
@@ -587,12 +589,16 @@ html.prisc .prog.max .ring svg { filter: drop-shadow(0 0 4px rgba(246, 196, 83, 
 .tp-pop .cvw > img[hidden], .tp-pop .cvw > .ph[hidden] { display: none; }
 .tp-pop .cvw > .ph { width: 132px; height: 188px; border-radius: 12px; background: var(--chip); display: grid; place-items: center; padding: 12px; font-size: 13px; color: var(--muted); }
 .tp-pop .cvw > img { width: 132px; height: 188px; object-fit: cover; border-radius: 12px; display: block; background: var(--chip); box-shadow: 0 10px 30px rgba(0, 0, 0, .45); }
-.tp-pop .cvw .av { position: absolute; right: -14px; bottom: -12px; width: 50px; height: 50px; }
+.tp-pop .cvw .av { position: absolute; right: -14px; bottom: -12px; height: 50px; display: flex; }
+.tp-pop .cvw .av .avr { width: 50px; height: 50px; flex: none; }
+.tp-pop .cvw .av .avr + .avr { margin-left: -18px; }
 .tp-pop .cvw .av .avr { box-shadow: 0 0 0 3px var(--sheet), 0 0 0 5px var(--gold); }
 .tp-pop .who { color: var(--muted); font-size: 14px; } .tp-pop .who b { color: var(--ink); }
 .tp-pop h4 { margin: 0; font-size: 21px; line-height: 1.2; }
 .tp-pop .facts2 { color: var(--muted); font-size: 13px; }
-.tp-pop .tp-more { margin: 2px 0 0; color: var(--muted); font-size: 12.5px; }
+.tp-pop .lbl .n { color: var(--muted); }
+#tipOv.nx > .ov-card { animation: tpNext .2s ease-out; } /* nächster Tipp gleitet von rechts herein */
+@keyframes tpNext { from { opacity: 0; transform: translateX(26px); } }
 .tp-pop .ov-row { width: 100%; margin-top: 10px; }
 /* Gemerkt: Reihe „Tipps von Freunden“ */
 .tp-wrap[hidden] { display: none; }
@@ -1039,7 +1045,7 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V237</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V238</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1215,12 +1221,11 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
 <div class="ov" id="tipOv" hidden>
   <div class="ov-bg" data-close></div>
   <div class="ov-card tp-pop" role="dialog" aria-modal="true" aria-labelledby="tpTitle">
-    <div class="lbl">NEUER TIPP</div>
+    <div class="lbl" id="tpLbl">NEUER TIPP</div>
     <div class="cvw"><img id="tpCv" alt="" draggable="false"><span class="ph" id="tpPh" hidden></span><span class="av" id="tpAv"></span></div>
     <div class="who" id="tpWho"></div>
     <h4 id="tpTitle"></h4>
     <div class="facts2" id="tpFacts"></div>
-    <p class="tp-more" id="tpMore" hidden></p>
     <div class="ov-row"><button type="button" class="ov-btn" data-close>Später</button><button type="button" class="ov-btn main" id="tpOpen">Ansehen</button></div>
   </div>
 </div>
@@ -2915,6 +2920,7 @@ function closeShelf() {
   shelfEl = shelfPh = null; shelfOv.hidden = true;
   if (state.view !== "seen") render(); // Karte aus Tipp-Reihe o. Ä. geöffnet: wieder richtig ein- oder ausblenden
   try { if (!frOv.hidden && frCur) frShow(frCur); } catch (e) {}
+  if (tipBack) { tipBack = false; setTimeout(() => tipResume(0), 280); } // aus „Neuer Tipp“ geöffnet: nächster Tipp
 }
 $("#shelf").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li) openShelf(li.dataset.id); });
 $("#shelf").addEventListener("keydown", e => { const li = e.target.closest("li[data-id]"); if (li && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openShelf(li.dataset.id); } });
@@ -3857,9 +3863,7 @@ function frCards() {
     if (!r.length && !l.length) { if (old) old.remove(); return; }
     let html;
     if (r.length) {
-      const nm = r.map(f => `<b>${esc(f.name)}</b>`);
-      const who = r.length === 1 ? nm[0] : r.length === 2 ? `${nm[0]} und ${nm[1]}` : `${nm[0]}, ${nm[1]} und ${r.length - 2} weitere`;
-      html = `<span class="pf-stack" aria-hidden="true">${frFace(r[0]).replace('class="avr', 'class="avr ld')}</span><span class="frw-t">${who} ${r.length === 1 ? "empfiehlt" : "empfehlen"} dir das</span>`;
+      html = `<span class="pf-stack" aria-hidden="true">${faceStack(r, "ld")}</span><span class="frw-t">${nmList(r)} ${r.length === 1 ? "empfiehlt" : "empfehlen"} dir das</span>`;
     } else {
       const nm = l.map(f => `<b>${esc(f.name)}</b>`);
       const txt = l.length === 1 ? `${nm[0]} hat’s gesehen` : l.length === 2 ? `${nm[0]} und ${nm[1]} haben’s gesehen`
@@ -3874,13 +3878,17 @@ function frCards() {
   if (anchor) { const dy = anchor.getBoundingClientRect().top - top0; if (Math.abs(dy) > 1) setY(getY() + dy); }
 }
 // ===== Tipps an Freunde =====
-const nmList = l => l.length === 1 ? `<b>${esc(l[0].name)}</b>` : l.length === 2 ? `<b>${esc(l[0].name)}</b> und <b>${esc(l[1].name)}</b>` : `<b>${esc(l[0].name)}</b>, <b>${esc(l[1].name)}</b> und ${l.length - 2} weitere`;
+const nmList = l => { const b = l.map(f => `<b>${esc(f.name)}</b>`);
+  return l.length === 1 ? b[0] : l.length === 2 ? `${b[0]} und ${b[1]}` : l.length === 3 ? `${b[0]}, ${b[1]} und ${b[2]}` : `${b[0]}, ${b[1]} und ${l.length - 2} weitere`; };
+// Gesichter der Freunde: bis 3 nebeneinander, bei mehr zwei Gesichter und „+N“
+const faceStack = (l, cls) => { const fs = l.length > 3 ? l.slice(0, 2) : l, add = cls ? s => s.replace('class="avr', 'class="avr ' + cls) : s => s;
+  return fs.map(f => add(frFace(f))).join("") + (l.length > 3 ? add(`<span class="avr pl">+${l.length - 2}</span>`) : ""); };
 const tipKey = (from, id) => from + "_" + id;
 var tipAt = 0, tipBusy = false, tipRowSig = "", tpsId = "", tpsSel = new Set(); // var: wird ggf. schon vor dieser Stelle aufgerufen
 var tipSendOv = $("#tipSendOv"), tipOv = $("#tipOv");
 $("#tpsShare").insertAdjacentHTML("afterbegin", ICON.share);
 function tipClear() {
-  tipsIn = []; tipsOut = []; tipAt = 0; tipRowSig = "";
+  tipsIn = []; tipsOut = []; tipAt = 0; tipRowSig = ""; tipQ = []; tipI = 0; tipBack = false;
   [KEY_TIPS, KEY_SENT].forEach(k => store(k, [])); [KEY_TIPK, KEY_TIPW, KEY_TIPD].forEach(k => store(k, null));
   if (tipSendOv) { tipSendOv.hidden = true; tipOv.hidden = true; }
   tipRow(true);
@@ -3933,24 +3941,54 @@ function tipNews() {
     toast(`${f.name} hat deinen Tipp „${it.title.split(" – ")[0]}“ geschaut ✓`, null, 4500);
   }
 }
+// Mehrere neue Tipps kommen einzeln nacheinander (neuester zuerst, gleicher Titel von mehreren Freunden nur einmal).
+// „Später“ oder daneben tippen zeigt den nächsten; nach „Ansehen“ kommt der nächste, sobald der Titel wieder zu ist.
+var tipQ = [], tipI = 0, tipBack = false;
 function tipShow(fresh) {
-  const t = fresh[0], it = items.find(x => x.id === t.id); if (!it) return;
+  const at = new Map();
+  fresh.forEach(t => at.set(t.id, Math.max(at.get(t.id) || 0, t.at)));
+  tipQ = [...at].sort((a, b) => b[1] - a[1]).map(x => x[0]).filter(id => items.some(x => x.id === id)).slice(0, 20);
+  tipI = 0; tipBack = false; tipOv.classList.remove("nx"); tipStep(false);
+}
+function tipStep(anim) {
+  tipBack = false;
   const fr = new Map(friends.map(f => [f.uid, f]));
-  const from = [...new Set(tipsIn.filter(x => x.id === t.id).sort((a, b) => a.at - b.at).map(x => x.from))].map(u => fr.get(u)).filter(Boolean);
-  const u = coverOf(it), img = $("#tpCv"), ph = $("#tpPh");
+  let from = [];
+  while (tipI < tipQ.length) { // inzwischen gesehen oder Tipp weg: überspringen
+    const id = tipQ[tipI];
+    from = seen.has(id) ? [] : [...new Set(tipsIn.filter(x => x.id === id).sort((a, b) => a.at - b.at).map(x => x.from))].map(u => fr.get(u)).filter(Boolean);
+    if (from.length) break; tipQ.splice(tipI, 1);
+  }
+  if (tipI >= tipQ.length) { tipOv.hidden = true; tipQ = []; tipI = 0; return; }
+  const id = tipQ[tipI], it = items.find(x => x.id === id), u = coverOf(it), ph = $("#tpPh");
+  let img = $("#tpCv");
+  if (img.getAttribute("src") !== u) { const n = img.cloneNode(false); n.removeAttribute("src"); img.replaceWith(n); img = n; } // neues Bild-Element: das vorige Cover blitzt nicht kurz auf
   img.hidden = !u; if (u) img.src = u;
   ph.hidden = !!u; ph.textContent = shortT(it.title);
-  $("#tpAv").innerHTML = from.length ? frFace(from[0]) : "";
+  $("#tpAv").innerHTML = faceStack(from);
   $("#tpWho").innerHTML = `${nmList(from)} ${from.length === 1 ? "empfiehlt" : "empfehlen"} dir`;
   $("#tpTitle").textContent = it.title.split(" – ")[0];
   $("#tpFacts").textContent = infoOf(it, true);
-  const more = new Set(fresh.map(x => x.id)).size - 1, m = $("#tpMore");
-  m.hidden = !more; m.textContent = more === 1 ? "+ 1 weiterer Tipp in Gemerkt" : `+ ${more} weitere Tipps in Gemerkt`;
-  tipOv.dataset.id = it.id; tipOv.hidden = false;
+  $("#tpLbl").innerHTML = tipQ.length > 1 ? `NEUER TIPP <span class="n">· ${tipI + 1} VON ${tipQ.length}</span>` : "NEUER TIPP";
+  tipOv.dataset.id = id;
+  if (anim && !tipOv.hidden) { tipOv.classList.remove("nx"); void tipOv.offsetWidth; tipOv.classList.add("nx"); }
+  tipOv.hidden = false;
+  const nx = tipQ[tipI + 1] && items.find(x => x.id === tipQ[tipI + 1]), nu = nx && coverOf(nx);
+  if (nu) new Image().src = nu; // nächstes Cover schon mal laden
   $("#tpOpen").focus({ preventScroll: true });
 }
-tipOv.addEventListener("click", e => { if (e.target.closest("[data-close]")) tipOv.hidden = true; });
-$("#tpOpen").addEventListener("click", () => { const id = tipOv.dataset.id; tipOv.hidden = true; if (id) openShelf(id); });
+// Titel aus dem Tipp wieder geschlossen: nächsten Tipp zeigen, sobald kein anderes Fenster mehr offen ist (z. B. Rang-Meldung)
+function tipResume(n) {
+  if (!tipQ.length || !tipOv.hidden) return;
+  if (document.querySelector(".ov:not([hidden])")) { if (n < 120) setTimeout(() => tipResume(n + 1), 500); return; }
+  tipStep(false);
+}
+tipOv.addEventListener("click", e => { if (e.target.closest("[data-close]")) { tipI++; tipStep(true); } });
+$("#tpOpen").addEventListener("click", () => {
+  const id = tipOv.dataset.id; tipOv.hidden = true; tipI++;
+  if (id) openShelf(id);
+  if (!shelfOv.hidden) tipBack = tipI < tipQ.length; else tipStep(false);
+});
 // Gemerkt: Reihe „Tipps von Freunden“ (nicht gesehen, nicht selbst gemerkt, höchstens 20)
 function tipList() {
   const fr = new Map(friends.map(f => [f.uid, f])), by = new Map();
@@ -3968,7 +4006,7 @@ function tipRow(force) {
   tipRowSig = sig; box.hidden = !L.length;
   box.innerHTML = !L.length ? "" : `<div class="tp-sec">Tipps von Freunden <span>${L.length}</span></div><div class="tp-row">` + L.map(({ it, fs }) => {
     const u = coverOf(it);
-    return `<div class="tp-it"><button type="button" class="cvw" data-open="${it.id}" aria-label="${esc(it.title)} ansehen">${u ? `<img${coverAttrs(u, SHELF_SIZES)} alt="" loading="lazy" decoding="async" draggable="false">` : `<span class="ph">${esc(shortT(it.title))}</span>`}<span class="avs" aria-hidden="true">${fs.slice(0, 2).map(frFace).join("")}</span></button><button type="button" class="x" data-del="${it.id}" aria-label="Tipp ${esc(shortT(it.title))} entfernen">✕</button><small>von ${nmList(fs)}</small></div>`;
+    return `<div class="tp-it"><button type="button" class="cvw" data-open="${it.id}" aria-label="${esc(it.title)} ansehen">${u ? `<img${coverAttrs(u, SHELF_SIZES)} alt="" loading="lazy" decoding="async" draggable="false">` : `<span class="ph">${esc(shortT(it.title))}</span>`}<span class="avs" aria-hidden="true">${faceStack(fs)}</span></button><button type="button" class="x" data-del="${it.id}" aria-label="Tipp ${esc(shortT(it.title))} entfernen">✕</button><small>von ${fs.length > 2 ? `${fs.length} Freunden` : nmList(fs)}</small></div>`;
   }).join("") + "</div>";
 }
 $("#tipRow").addEventListener("click", e => {
