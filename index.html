@@ -388,18 +388,6 @@ html:not(.prisc) .pick-btn { background: linear-gradient(100deg, #F05A50, #F4752
 .app .pick-ico { width: 36px; height: 36px; border-radius: 10px; }
 .app .pick-ico svg { width: 21px; height: 21px; }
 .app .pick-txt small { display: none; }
-/* Halloween: Kürbis statt Würfel, Knopf von Orange nach Lila */
-.hw-pk { display: none; }
-.pick-btn.hw .pick-ico { position: relative; }
-.pick-btn.hw .pick-ico svg { position: absolute; opacity: 0; }
-.pick-btn.hw .hw-pk { display: block; position: absolute; left: 14px; width: 42px; text-align: center; font-size: 23px; line-height: 42px; pointer-events: none; }
-.app .pick-btn.hw .hw-pk { width: 36px; line-height: 36px; font-size: 21px; }
-html:not(.prisc) .pick-btn.hw { position: relative; background: linear-gradient(110deg, #FF8A1F 0%, #E8540C 58%, #7A2A9C 135%); box-shadow: 0 8px 22px rgba(232, 84, 12, .38); }
-.hw-wrap { min-width: 0; max-width: 100%; margin-top: 4px; }
-.hw-wrap .tp-sec { color: #FF8A1F; }
-.hw-wrap .tp-row { margin-bottom: 2px; }
-.hw-wrap .tp-it small { font-size: 12px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.hw-r { position: absolute; right: 6px; top: 6px; background: #FF8A1F; color: #1A0C02; font-weight: 800; font-size: 11.5px; line-height: 1; padding: 4px 6px; border-radius: 7px; font-variant-numeric: tabular-nums; }
 .pick-go { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--on-hanko) 18%, transparent); }
 .pick-go svg { width: 16px; height: 16px; }
 @keyframes nudge { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-14deg); } 40% { transform: rotate(12deg); } 60% { transform: rotate(-8deg); } 80% { transform: rotate(4deg); } }
@@ -901,7 +889,6 @@ html.app, html.app body { height: 100%; overflow: hidden; overscroll-behavior: n
 .app .top.sub .vtitle { display: block; margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 2.05rem; line-height: 1.05; letter-spacing: -.01em; }
 /* Zufallstipp in der App nur bei Alle. In Safari bleibt er auf jedem Reiter, damit die Liste nicht verrutscht */
 .app .top.nopick .pick-btn { display: none; }
-.top.nopick #hwRow { display: none; }
 /* ===== PC und große Bildschirme ===== */
 /* Regal: die Wertungs-Kreise ganz rechts bleiben innerhalb des Rands */
 .shelf { padding-right: 4px; }
@@ -1324,11 +1311,10 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V272</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V273</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
-    <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="hw-pk" aria-hidden="true">🎃</span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-    <section class="tp-wrap hw-wrap" id="hwRow" hidden aria-label="Für Halloween"></section>
+    <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
     <details class="why"><summary><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".95" fill="currentColor"/></svg>So entsteht die Wertung<svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="why-body"><p>Basiert auf <b>MyAnimeList</b> und <b>IMDb</b>. Eine KI prüft Story, Figuren, Animation und Ende sowie Füllerfolgen und Längen.</p><p class="scale-txt">Ab 9 herausragend · ab 8 sehr gut · ab 7 gut</p><div class="scale2"><span><i class="mini top">9</i>herausragend</span><span><i class="mini mid">8</i>sehr gut</span><span><i class="mini low">7</i>gut</span></div></div></details>
   </header>
 
@@ -1380,7 +1366,7 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
       <div class="pfh-login" id="pfLogin" hidden><p>Melde dich an, dann ist deine Liste auf allen Geräten.</p><button type="button" id="pfLoginBtn">Anmelden</button></div>
       <div class="pfh-stats"><div><b id="pfSeen">0</b><small id="pfSeenL">Gesehen</small></div><div><b id="pfHrs">0</b><small id="pfHrsL">Stunden</small></div><div><b id="pfFav">–</b><small id="pfFavL">Lieblingsgenre</small></div></div>
       <button type="button" class="ach-strip" id="achStrip" hidden></button>
-      <div class="ach-test" id="achTest" hidden><small>🧪 Nur im Artifact: zum Ausprobieren</small><div><button type="button" data-t="ban">Erfolg-Banner</button><button type="button" data-t="info">Alte Erfolge</button><button type="button" data-t="rank">Rang-Fenster</button><button type="button" data-t="all">Alle freischalten</button><button type="button" data-t="friend">Freund (Beispiel)</button><button type="button" data-t="tip">Tipp bekommen (Beispiel)</button><button type="button" data-t="tipSend">Tipp schicken (Beispiel)</button><button type="button" data-t="hw">Halloween an/aus</button><button type="button" data-t="prisc">Priscilla an/aus</button><button type="button" data-t="reset">Zurücksetzen</button></div></div>
+      <div class="ach-test" id="achTest" hidden><small>🧪 Nur im Artifact: zum Ausprobieren</small><div><button type="button" data-t="ban">Erfolg-Banner</button><button type="button" data-t="info">Alte Erfolge</button><button type="button" data-t="rank">Rang-Fenster</button><button type="button" data-t="all">Alle freischalten</button><button type="button" data-t="friend">Freund (Beispiel)</button><button type="button" data-t="tip">Tipp bekommen (Beispiel)</button><button type="button" data-t="tipSend">Tipp schicken (Beispiel)</button><button type="button" data-t="prisc">Priscilla an/aus</button><button type="button" data-t="reset">Zurücksetzen</button></div></div>
       <button type="button" class="pf-fr" id="pfFr" hidden></button>
     </section>
     <p class="favg" id="favg" hidden></p>
@@ -2913,7 +2899,7 @@ function warmCovers() {
 function applyCovers() {
   const any = items.some(coverOf);
   document.documentElement.classList.toggle("covers", any);
-  tipRow(); hwPaint();
+  tipRow();
   if (any && $("#tiles").childElementCount) renderTiles();
   if (any && state.view === "seen" && shelfList.length) renderShelf(shelfList);
   else if (any) prewarmShelf(); // Cover-Adressen kamen erst nach dem Vorbereiten: im versteckten Regal nachtragen
@@ -3158,7 +3144,7 @@ function render() {
   e.dataset.ic = /gemerkt/.test(e.textContent) ? "saved" : /gesehen markiert/.test(e.textContent) ? "seen" : "find";
   nvDays(list);
   renderShelf(list);
-  tipRow(); hwPaint();
+  tipRow();
   status(list.length);
   // Sobald die Liste einmal sichtbar gezeichnet wurde, kennt das iPhone alle Kartenhöhen: ab dann nur noch sichtbare Karten zeichnen
   if (!$("#list").hidden) cvRewarm(); // nur Karten, die ihre Höhe noch nicht kennen (z. B. beim Start ausgeblendet)
@@ -3470,27 +3456,6 @@ function pressStamp(el) {
   el.animate([{ transform: "scale(1)" }, { transform: "scale(1.015)", offset: .5 }, { transform: "scale(1)" }], { duration: 520, easing: "ease-out" });
 }
 
-// ===== Halloween 2026: nur am 31. Oktober und 1. November 2026 (einmalig, kommt nicht jedes Jahr wieder), nur im normalen Modus =====
-var hwForce = null; // nur zum Ausprobieren im Artifact: true/false erzwingt an/aus
-const hwDate = () => { const d = new Date(), m = d.getMonth(), t = d.getDate(); return d.getFullYear() === 2026 && ((m === 9 && t === 31) || (m === 10 && t === 1)); };
-const hwOn = () => !prisc && (hwForce === null ? hwDate() : hwForce);
-const isGrusel = it => it.genres.includes("Horror") || (it.genres.includes("Thriller") && it.genres.includes("Mystery"));
-var hwSig = "";
-function hwPaint() {
-  const on = hwOn(), pk = $("#pick"), row = $("#hwRow"); if (!pk || !row) return;
-  pk.classList.toggle("hw", on);
-  pk.querySelector(".pick-txt b").textContent = on ? "Gruseltipp für Halloween" : "Was soll ich schauen?";
-  const L = on ? byMine.filter(it => isGrusel(it) && !seen.has(it.id)).slice(0, 10) : [];
-  const sig = JSON.stringify(L.map(it => [it.id, coverOf(it)]));
-  if (sig === hwSig) return; hwSig = sig;
-  row.hidden = !L.length;
-  row.innerHTML = !L.length ? "" : `<div class="tp-sec">🎃 Für Halloween <span>${L.length}</span></div><div class="tp-row">` + L.map(it => {
-    const u = coverOf(it);
-    return `<div class="tp-it"><button type="button" class="cvw" data-open="${it.id}" aria-label="${esc(it.title)} ansehen">${u ? `<img${coverAttrs(u, SHELF_SIZES)} alt="" loading="lazy" decoding="async" draggable="false">` : `<span class="ph">${esc(shortT(it.title))}</span>`}<span class="hw-r">${String(it.mine.toFixed(1)).replace(".", ",")}</span></button><small>${esc(shortT(it.title))}</small></div>`;
-  }).join("") + "</div>";
-}
-$("#hwRow").addEventListener("click", e => { const o = e.target.closest("[data-open]"); if (o) openShelf(o.dataset.open); });
-
 // Zufallstipp: bevorzugt hoch bewertete Titel, die noch nicht gesehen sind
 let lastPick = null, pickT;
 $("#pick").addEventListener("click", () => {
@@ -3498,7 +3463,6 @@ $("#pick").addEventListener("click", () => {
   // Der Zufallstipp wählt immer aus allen Titeln: von einem anderen Reiter aus geht es dafür zu Alle
   if (state.view !== "all") { state.view = "all"; state.g2 = ""; sync(); render(); }
   let pool = filtered().filter(it => !seen.has(it.id));
-  if (hwOn()) { const g = pool.filter(isGrusel); if (g.length) pool = g; } // Halloween: nur Grusel, sonst wie immer
   if (!pool.length && byMine.some(it => !seen.has(it.id))) {
     Object.assign(state, DEFAULTS, { q: "" }); $("#q").value = ""; neuView = false; sync(); render();
     pool = filtered().filter(it => !seen.has(it.id));
@@ -3512,14 +3476,12 @@ $("#pick").addEventListener("click", () => {
   const btn = document.getElementById("v-" + pick.id);
   if (!btn) return;
   const el = btn.closest(".card"), token = tabToken;
-  const hw = hwOn(), pk = document.querySelector("#pick .hw-pk");
-  if (hw && pk && pk.animate && !reduce) pk.animate([{ transform: "rotate(0) scale(1)" }, { transform: "rotate(-18deg) scale(1.2)", offset: .3 }, { transform: "rotate(14deg) scale(1.08)", offset: .6 }, { transform: "rotate(-6deg)", offset: .82 }, { transform: "rotate(0) scale(1)" }], { duration: 750, easing: "ease-out" });
   rollDice(() => {
     if (token !== tabToken || state.view !== "all" || el.hidden) return; // inzwischen anderer Reiter oder Titel ausgeblendet
     document.querySelectorAll(".card.pick").forEach(c => c.classList.remove("pick"));
     el.classList.add("pick");
     glideTo(el, () => pressStamp(el));
-    toast(prisc ? "💘 Priscilla empfiehlt: " + pick.title : hw ? "🎃 Dein Gruseltipp: " + pick.title : "Wie wär's mit: " + pick.title + "?");
+    toast(prisc ? "💘 Priscilla empfiehlt: " + pick.title : "Wie wär's mit: " + pick.title + "?");
     clearTimeout(pickT); pickT = setTimeout(() => el.classList.remove("pick"), 6000);
   });
 });
@@ -5080,10 +5042,6 @@ var ACHM = (() => {
       ov.addEventListener("click", go, true);
       const end = new MutationObserver(() => { if (ov.hidden) { end.disconnect(); ov.removeEventListener("click", go, true); friends = keep; tpsSel = new Set(); } });
       end.observe(ov, { attributes: true, attributeFilter: ["hidden"] });
-    } else if (t === "hw") { // Halloween ausprobieren (sonst nur am 31.10. und 1.11.)
-      if (prisc) { toast("Halloween gibt es nur im normalen Modus"); return; }
-      hwForce = !hwOn(); hwSig = ""; render();
-      toast(hwForce ? "🎃 Halloween an (nur zum Ausprobieren)" : "Halloween aus");
     } else if (t === "prisc") { setPrisc(!prisc, true); render(); }
     else if (t === "reset") { [KEY_A, KEY_EV, KEY_TTL, KEY_RW, KEY_PUSH, KEY_INFO, KEY_RE].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} }); location.reload(); }
   });
