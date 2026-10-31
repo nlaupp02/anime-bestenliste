@@ -1315,7 +1315,7 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V285</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V286</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -3891,6 +3891,13 @@ async function avKeep(id) {
     if (typeof d === "string" && d.startsWith("data:image/")) { avCache[id] = d; store(KEY_AVC, avCache); }
   } catch (e) {} finally { avKeeping.delete(id); }
 }
+// Bearbeiten: Alle Profilbilder (zusammen ca. 140 KB) einmal ins Gerät holen und die Auswahl schon vorbereiten.
+// Sonst lädt jedes Bild beim Öffnen kurz nach. Nur wenn angemeldet, denn nur dann gibt es „Bearbeiten“
+function avAll() {
+  return Promise.all(AVATARS.map(a => avKeep(a[0]))).then(() => {
+    peBuild(); $("#peGrid").querySelectorAll("img").forEach(i => { if (i.decode) i.decode().catch(() => {}); });
+  }).catch(() => {});
+}
 // Im Konto wird nur ein Kennzeichen gespeichert (als Bild-Adresse, weil Firebase dort eine Adresse erwartet)
 const avUrl = id => AV_IMG[id] ? "https://nlaupp02.github.io/anime-bestenliste/#av-" + id : "";
 const avOf = u => { const m = u && u.photoURL ? /#av-([a-z]+)$/.exec(u.photoURL) : null; return m && AV_IMG[m[1]] ? m[1] : ""; };
@@ -4059,11 +4066,14 @@ function peMark() {
   $("#peCnt").textContent = `${[...v].length}/11`;
 }
 $("#peName").addEventListener("input", () => peMark());
+function peBuild() {
+  if (!$("#peGrid").children.length) $("#peGrid").innerHTML = AVATARS.map(([id, nm, grp], i) => (i && AVATARS[i - 1][2] === grp ? "" : `<div class="pe-grp">${grp}</div>`)
+    + `<button type="button" class="pe-it" data-av="${id}" aria-pressed="false"><span class="pe-img">${avImg(id)}<span class="pe-ok" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M3 6.2l2 2 4-4.4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><span>${nm}</span></button>`).join("");
+}
 function openEdit(isNew) {
   if (fb && fb.auth.currentUser) user = fb.auth.currentUser;
   if (!user) return;
-  if (!$("#peGrid").children.length) $("#peGrid").innerHTML = AVATARS.map(([id, nm, grp], i) => (i && AVATARS[i - 1][2] === grp ? "" : `<div class="pe-grp">${grp}</div>`)
-    + `<button type="button" class="pe-it" data-av="${id}" aria-pressed="false"><span class="pe-img">${avImg(id)}<span class="pe-ok" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M3 6.2l2 2 4-4.4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><span>${nm}</span></button>`).join("");
+  peBuild(); avAll();
   peNew = !!isNew;
   // Neues Konto mit E-Mail: Name leer lassen (sonst stünde dort der Teil vor dem @), bei Google den Google-Namen vorschlagen
   $("#peName").value = isNew && !user.displayName ? "" : nameOf(user);
@@ -4748,6 +4758,7 @@ document.addEventListener("keydown", e => { if (e.key !== "Escape") return; if (
 acctUi();
 // Wer schon angemeldet war: Firebase erst kurz nach dem Start laden, damit die Seite nicht langsamer öffnet
 // Konto: erst anmelden, wenn die Liste steht und das iPhone gerade nichts zu tun hat (spätestens nach 4 Sekunden)
+if (acct.uid) setTimeout(() => (window.requestIdleCallback || (f => f()))(avAll, { timeout: 4000 }), 3500);
 if (FB_HOST && acct.uid) setTimeout(() => (window.requestIdleCallback || (f => f()))(() => fbLoad().catch(() => { syncSt = "err"; acctUi(); }), { timeout: 2500 }), 1500);
 
 // ===== Erfolge =====
