@@ -1311,7 +1311,7 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V267</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V268</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -3289,7 +3289,7 @@ function setMark(id, act, on) {
   // Speichern, Zähler und ggf. Liste neu filtern erst im nächsten Bild, damit der Knopf nicht hängt
   requestAnimationFrame(() => setTimeout(() => {
     if (act === "seen" && !frOv.hidden && frCur && shelfOv.hidden) frShow(frCur); // offenes Freundes-Profil gleich mitziehen
-    if (tipsIn && tipsIn.length) { frCardSig = ""; frCards(); tipRow(); } // Tipp gesehen oder gemerkt: Zeile und Reihe anpassen
+    if ((tipsIn && tipsIn.length) || document.querySelector(".frw.tip")) { frCardSig = ""; frCards(); tipRow(); } // Tipp gesehen oder gemerkt: Zeile und Reihe anpassen
     store(act === "seen" ? KEY.seen : KEY.saved, [...set]);
     if (unsave) store(KEY.saved, [...saved]);
     if (!b) return;
@@ -4992,8 +4992,10 @@ var ACHM = (() => {
       if (add) friends.push(fr);
       tipsIn = pick.map((it, i) => ({ id: it.id, from: fr.uid, at: Date.now() - (i ? 2 * 3600e3 : 4 * 60e3), k: "test" + i }));
       const tipEl = document.getElementById("tipOv");
-      const end = new MutationObserver(() => { if (tipEl.hidden && !tipQ.length) { end.disconnect(); tipsIn = keep; if (add) friends = friends.filter(f => f !== fr); tipRow(true); } });
-      end.observe(tipEl, { attributes: true, attributeFilter: ["hidden"] });
+      // Ende des Beispiels: alle Tipps durch und kein Titel mehr offen. Dann die Beispiel-Tipps weg, auch die Zeilen „… empfiehlt dir das“ an den Karten
+      const shOv = document.getElementById("shelfOv");
+      const end = new MutationObserver(() => { if (tipEl.hidden && (!tipQ.length || tipI >= tipQ.length) && !tipBack && (!shOv || shOv.hidden)) { end.disconnect(); tipsIn = keep; if (add) friends = friends.filter(f => f !== fr); frCardSig = ""; frCards(); tipRow(true); } });
+      end.observe(tipEl, { attributes: true, attributeFilter: ["hidden"] }); if (shOv) end.observe(shOv, { attributes: true, attributeFilter: ["hidden"] });
       tipShow(tipsIn); // im Test sofort (sonst wartet er, bis z. B. ein Erfolg-Banner durch ist)
     } else if (t === "tipSend") {
       // Beispiel: Tipp an Freunde schicken (Beispiel-Freunde, es wird nichts verschickt)
