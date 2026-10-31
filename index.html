@@ -1311,7 +1311,7 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V269</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V270</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4357,7 +4357,7 @@ $("#tpOpen").addEventListener("click", () => {
 });
 // Gemerkt: Reihe „Tipps von Freunden“ (nicht gesehen, nicht selbst gemerkt, höchstens 20)
 function tipList() {
-  const fr = new Map(friends.map(f => [f.uid, f])), by = new Map();
+  const fr = new Map([...friends, ...tipFrX].map(f => [f.uid, f])), by = new Map();
   (tipsIn || []).forEach(t => {
     const f = fr.get(t.from); if (!f || seen.has(t.id) || saved.has(t.id)) return;
     const e = by.get(t.id) || { at: 0, fs: [] }; e.at = Math.max(e.at, t.at); if (!e.fs.includes(f)) e.fs.push(f); by.set(t.id, e);
@@ -4366,7 +4366,7 @@ function tipList() {
 }
 function tipRow(force) {
   const box = document.getElementById("tipRow"); if (!box || !tipsIn) return;
-  const L = state.view === "saved" && friends.length ? tipList() : [];
+  const L = state.view === "saved" && (friends.length || tipFrX.length) ? tipList() : [];
   const sig = JSON.stringify(L.map(x => [x.it.id, coverOf(x.it), x.fs.map(f => f.uid + f.av)]));
   if (!force && sig === tipRowSig) return;
   tipRowSig = sig; box.hidden = !L.length;
@@ -4380,7 +4380,7 @@ $("#tipRow").addEventListener("click", e => {
   const d = e.target.closest("[data-del]"); if (d) tipDismiss(d.dataset.del);
 });
 function tipDismiss(id) {
-  if (!user) return;
+  if (!user) { if (tipFrX.length) { tipsIn = tipsIn.filter(t => t.id !== id); frCardSig = ""; frCards(); tipRow(); } return; }
   const uid = user.uid, gone = tipsIn.filter(t => t.id === id);
   tipsIn = tipsIn.filter(t => t.id !== id); store(KEY_TIPS, tipsIn);
   const g = new Set(load(KEY_TIPD, []) || []); gone.forEach(t => g.add(t.k)); store(KEY_TIPD, [...g]);
@@ -4988,15 +4988,16 @@ var ACHM = (() => {
       const free = byMine.filter(it => !seen.has(it.id) && !saved.has(it.id) && (!prisc || isRom(it)));
       if (!free.length) { toast("Kein ungesehener Titel für einen Tipp da"); return; }
       const pick = [...new Set([free[Math.floor(Math.random() * Math.min(15, free.length))], free[Math.floor(Math.random() * free.length)]])];
-      const add = !friends.includes(fr), keep = tipsIn;
+      const add = !friends.includes(fr), keep = tipsIn.filter(t => !/^test/.test(t.k)), old = tipsIn.filter(t => /^test/.test(t.k)); // Beispiel-Tipps von vorher kommen danach wieder dazu
       if (add) friends.push(fr);
-      tipsIn = pick.map((it, i) => ({ id: it.id, from: fr.uid, at: Date.now() - (i ? 2 * 3600e3 : 4 * 60e3), k: "test" + i }));
+      const run = Date.now().toString(36); tipsIn = pick.map((it, i) => ({ id: it.id, from: fr.uid, at: Date.now() - (i ? 2 * 3600e3 : 4 * 60e3), k: "test" + run + i }));
       const tipEl = document.getElementById("tipOv");
       // Ende des Beispiels: alle Tipps durch und kein Titel mehr offen. Dann die Beispiel-Tipps weg, auch die Zeilen „… empfiehlt dir das“ an den Karten
       const shOv = document.getElementById("shelfOv");
       const end = new MutationObserver(() => { if (tipEl.hidden && (!tipQ.length || tipI >= tipQ.length) && !tipBack && (!shOv || shOv.hidden)) { end.disconnect();
-        const left = tipsIn.filter(t => /^test/.test(t.k) && saved.has(t.id) && !seen.has(t.id)); // gemerkt: Zeile bleibt wie bei echten Tipps
-        tipsIn = keep.concat(left); if (add) { friends = friends.filter(f => f !== fr); if (left.length) tipFrX = [fr]; }
+        const left = tipsIn.filter(t => /^test/.test(t.k) && !seen.has(t.id)); // wie echte Tipps: gemerkt = Zeile an der Karte, sonst oben in „Tipps von Freunden“ (bis zum Neuladen)
+        const all = old.filter(t => !seen.has(t.id) && !left.some(x => x.id === t.id)).concat(left);
+        tipsIn = keep.concat(all); if (add) { friends = friends.filter(f => f !== fr); if (all.length) tipFrX = [fr]; }
         frCardSig = ""; frCards(); tipRow(true); } });
       end.observe(tipEl, { attributes: true, attributeFilter: ["hidden"] }); if (shOv) end.observe(shOv, { attributes: true, attributeFilter: ["hidden"] });
       tipShow(tipsIn); // im Test sofort (sonst wartet er, bis z. B. ein Erfolg-Banner durch ist)
