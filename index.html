@@ -571,6 +571,15 @@ html.prisc .prog.max .ring svg { filter: drop-shadow(0 0 4px rgba(246, 196, 83, 
 .card.is-seen .frw .pf-stack .avr.ld { box-shadow: 0 0 0 2px var(--paper), 0 0 0 3.5px var(--gold); }
 /* Tipp schicken */
 .tp-head { display: flex; gap: 12px; align-items: center; min-width: 0; }
+.tp-x { position: absolute; top: 12px; right: 12px; z-index: 1; }
+.tp-x:focus { outline: none; }
+#tipSendOv .tp-head { padding-right: 36px; }
+#tipSendOv .tp-head b { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.25; }
+/* Neuer Tipp: Das Bild des Freundes ploppt kurz auf (auch beim nächsten Tipp) */
+#tipOv .cvw .av { animation: tpPop .5s cubic-bezier(.3, 1.5, .5, 1) .16s both; transform-origin: 50% 60%; }
+#tipOv.nx .cvw .av { animation-name: tpPop2; }
+@keyframes tpPop { from { opacity: 0; transform: scale(.4); } }
+@keyframes tpPop2 { from { opacity: 0; transform: scale(.4); } }
 .tp-head img { width: 46px; height: 66px; border-radius: 8px; object-fit: cover; flex: none; background: var(--chip); }
 .tp-head img[hidden] { display: none; }
 .tp-head > div { min-width: 0; }
@@ -1302,7 +1311,7 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V264</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V265</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1475,6 +1484,7 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
 <div class="ov" id="tipSendOv" hidden>
   <div class="ov-bg" data-close></div>
   <div class="ov-card tp-card" role="dialog" aria-modal="true" aria-labelledby="tpsTitle">
+    <button type="button" class="inst-x tp-x" data-close aria-label="Schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     <div class="tp-head"><img id="tpsCv" alt="" draggable="false"><div><b id="tpsTitle"></b><small>An wen soll der Tipp gehen?</small></div></div>
     <div class="tp-fr" id="tpsFr"></div>
     <button type="button" class="ov-btn main" id="tpsGo" disabled>Freund auswählen</button>
@@ -1485,12 +1495,13 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
 <div class="ov" id="tipOv" hidden>
   <div class="ov-bg"></div>
   <div class="ov-card tp-pop" role="dialog" aria-modal="true" aria-labelledby="tpTitle">
+    <button type="button" class="inst-x tp-x" data-close aria-label="Später"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     <div class="lbl" id="tpLbl">NEUER TIPP</div>
     <div class="cvw"><img id="tpCv" alt="" draggable="false"><span class="ph" id="tpPh" hidden></span><span class="av" id="tpAv"></span></div>
     <div class="who" id="tpWho"></div>
     <h4 id="tpTitle"></h4>
     <div class="facts2" id="tpFacts"></div>
-    <div class="tp-btns"><button type="button" class="ov-btn main" id="tpOpen">Ansehen</button><div class="two"><button type="button" class="ov-btn" id="tpSave"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z"/></svg><span>Merken</span></button><button type="button" class="ov-btn" data-close>Später</button></div><div class="tp-hint">Später findest du ihn unter Gemerkt › Tipps von Freunden</div></div>
+    <div class="tp-btns"><div class="two"><button type="button" class="ov-btn" id="tpSave"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z"/></svg><span>Merken</span></button><button type="button" class="ov-btn main" id="tpOpen">Ansehen</button></div><div class="tp-hint">Später findest du ihn unter Gemerkt › Tipps von Freunden</div></div>
   </div>
 </div>
 <div class="ov" id="rankSheet" hidden>
@@ -2556,6 +2567,7 @@ const memKey = () => state.view === "genres" ? "genres:" + (state.g2 || "") : st
 const isAppMode = () => document.documentElement.classList.contains("app");
 document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
   const v = b.dataset.view;
+  if (user && Date.now() - (tipAt || 0) > 60000) tipLoad();
   // Beim Reiterwechsel klappt das Filter-Feld zu, die Filter selbst bleiben aktiv
   if (v !== state.view) { $("#panel").hidden = true; $("#filterBtn").setAttribute("aria-expanded", "false"); }
   if (isAppMode()) {
@@ -4255,7 +4267,8 @@ async function tipLoad(force) {
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && user) tipLoad(); });
 // Neue Tipps zeigen (einmal), und Bescheid sagen, wenn ein Freund meinen Tipp geschaut hat (einmal)
 function tipNews() {
-  if (!user || document.querySelector(".ov:not([hidden])")) return; // nichts über ein offenes Fenster legen
+  if (!user) return;
+  if (document.querySelector(".ov:not([hidden])")) { tipCalm(tipNews); return; } // nichts über ein offenes Fenster legen: warten, bis es zu ist
   const fr = new Map(friends.map(f => [f.uid, f]));
   const known = load(KEY_TIPK, null), kn = new Set(Array.isArray(known) ? known : []);
   const fresh = tipsIn.filter(t => fr.has(t.from) && !kn.has(t.k) && !seen.has(t.id) && (Array.isArray(known) || Date.now() - t.at < 3 * 864e5));
@@ -4327,6 +4340,7 @@ function tipResume(n) {
   tipStep(false);
 }
 const tipFresh = () => Date.now() - (+tipOv.dataset.t0 || 0) < 450;
+tipOv.querySelector(".ov-bg").addEventListener("click", () => { if (Date.now() - (+tipOv.dataset.t0 || 0) < 700) return; tipI++; tipStep(true); });
 tipOv.addEventListener("click", e => {
   if (tipFresh()) return;
   if (e.target.closest("[data-close]")) { tipI++; tipStep(true); return; }
@@ -4386,7 +4400,7 @@ function tpsRender() {
   $("#tpsTitle").textContent = `${it.title.split(" – ")[0]} empfehlen`;
   $("#tpsFr").innerHTML = friends.map(f => {
     const sent = tipsOut.some(t => t.to === f.uid && t.id === tpsId), saw = f.seen.includes(tpsId), on = tpsSel.has(f.uid);
-    return `<button type="button" class="tp-f${sent ? " sent" : ""}" data-uid="${esc(f.uid)}" aria-pressed="${on}"${sent || saw ? " disabled" : ""}><span class="av">${frFace(f)}</span><span class="nm">${esc(f.name)}</span><small>${sent ? "schon empfohlen" : saw ? "hat’s schon gesehen" : "noch nicht gesehen"}</small></button>`;
+    return `<button type="button" class="tp-f${sent ? " sent" : ""}" data-uid="${esc(f.uid)}" aria-pressed="${on}"${sent || saw ? " disabled" : ""}><span class="av">${frFace(f)}</span><span class="nm">${esc(f.name)}</span>${sent || saw ? `<small>${sent ? "schon empfohlen" : "hat’s schon gesehen"}</small>` : ""}</button>`;
   }).join("");
   const sel = friends.filter(f => tpsSel.has(f.uid)), go = $("#tpsGo");
   go.disabled = !sel.length;
