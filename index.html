@@ -1277,6 +1277,8 @@ html.prisc .ach-det .pn.on { color: #FF8FC4; }
 /* Kopf im Fenster (X, Überschrift, Zahl, Balken) bleibt beim Scrollen oben stehen, die Liste läuft darunter durch */
 /* Kopf des Fensters ist der Griff zum Wegwischen: dort scrollt nichts, das Fenster folgt dem Finger direkt */
 .ach-top { touch-action: none; }
+/* Safari: Fenster beginnt bei gut einem Viertel der Höhe (in der App rechnet fit() das genau aus) */
+html.app:not(.standalone) .ach-sh { max-height: calc(74svh + 200px); }
 .ach-top { position: sticky; top: -22px; z-index: 3; margin: -22px -16px 0; padding: 22px 16px 12px; background: var(--sheet); border-radius: 24px 24px 0 0; }
 html.prisc .ach-top { background: #24121F; }
 .ach-top .ach-x { top: 12px; right: 12px; }
@@ -1313,7 +1315,7 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V274</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V275</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4851,7 +4853,9 @@ var ACHM = (() => {
     const bottom = o.getBoundingClientRect().top + sh.offsetTop + sh.offsetHeight;
     if (!(vb > 0 && bottom > 0)) return;
     sh.style.paddingBottom = Math.max(22, Math.round(bottom - (vb - sab - 16))) + "px";
-    sh.style.maxHeight = Math.round(bottom - (Math.max(sat, 20) + 36)) + "px"; // unter der Uhr legt das iPhone selbst eine Unschärfe (ca. 30px), das Fenster beginnt darunter
+    // Das Fenster beginnt erst bei gut einem Viertel des Bildschirms: So ist der Kopf (dort zieht man das Fenster weg) gut mit dem Daumen erreichbar.
+    // Nie höher als knapp unter der Uhr (dort legt das iPhone selbst eine Unschärfe, ca. 30px)
+    sh.style.maxHeight = Math.round(bottom - Math.max(Math.max(sat, 20) + 36, Math.round(vb * 0.26))) + "px";
   }
   function open(fv) { frV = fv && fv.ids ? fv : null; sheet(); ov.hidden = false; fit(ov); ov.querySelector(".ach-sh").scrollTop = 0; }
   ov.addEventListener("click", e => {
