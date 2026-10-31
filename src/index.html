@@ -1315,7 +1315,7 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V283</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V284</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4790,9 +4790,7 @@ var ACHM = (() => {
     ["allg", "全", "Allesfresser", "gd", "Aus allen 15 Genres einen", c => [GENRES.filter(g => c.all.some(G(g))).length, GENRES.length]],
     ["prisc", "姫", "Priscilla", "gh", "Ein Geheimnis der App entdeckt", () => [ev.prisc || prisc ? 1 : 0, 1], 1],
     ["night", "夜", "Nachteule", "gh", "Zwischen 2 und 5 Uhr nachts etwas gesehen", () => [ev.night ? 1 : 0, 1], 1],
-    ["complete", "完", "Perfektionist", "gh", "Alle Titel eines Genres gesehen", () => [GENRES.some(g => { const l = items.filter(G(g)); return l.length && l.every(it => seen.has(it.id)); }) ? 1 : 0, 1], 1],
     ["demon", "魔", "Dämonenkönig", "gh", "Den höchsten Rang erreicht", () => [rankOf(false) >= RANKS.length - 1 ? 1 : 0, 1], 1],
-    ["god", "神", "Anime-Gott", "gh", "Alle anderen Erfolge", c => [c.doneN, 23], 1]
   ].map(a => ({ id: a[0], k: a[1], n: a[2], t: a[3], d: a[4], f: a[5], sec: !!a[6] }));
   const P = [
     ["p_first", "恋", "Erste Liebe", "Erste Romanze gesehen", c => [c.rom.length, 1]],
@@ -4810,13 +4808,13 @@ var ACHM = (() => {
   ].map(a => ({ id: a[0], k: a[1], n: a[2], t: "pk", d: a[3], f: a[4], sec: !!a[5] }));
   // Titel fürs Profil: wo er anders heißt als der Erfolg (klingt wie eine Person, nie wie ein Rang)
   const TI = { prisc: "Insider", start: "Frischling", merk: "Sammler", dice: "Glückspilz", friend: "Kumpel", tips: "Influencer", action: "Dämonenjäger", comedy: "Clown",
-    romance: "Casanova", adventure: "Pirat", sport: "Sportskanone", marathon: "Marathonläufer", sub: "Untertitel-Fan", demon: "Muzan", god: "Hokage",
+    romance: "Casanova", adventure: "Pirat", sport: "Sportskanone", marathon: "Marathonläufer", sub: "Untertitel-Fan", demon: "Muzan",
     p_first: "Zuckerschnute", p_five: "Herzensbrecherin", p_tears: "Heulsuse", p_laugh: "Kichererbse", p_cozy: "Kuschelmonster", p_fairy: "Rapunzel",
     p_thrill: "Drama-Queen", p_film: "Couch Potato", p_villain: "Bösewicht", p_seal: "Liebes-Expertin" };
   [...N, ...P].forEach(a => { a.n = TI[a.id] || a.n; a.ti = a.n; }); // Erfolg und Titel heißen gleich
   // Lange Namen dürfen im Erfolge-Fenster nur an sinnvoller Stelle umbrechen (unsichtbarer Trennstrich, sonst nichts)
   const SHY = { Herzensbrecherin: "Herzens\u00ADbrecherin", Kuschelmonster: "Kuschel\u00ADmonster", Marathonläufer: "Marathon\u00ADläufer", Sportskanone: "Sports\u00ADkanone",
-    Dämonenjäger: "Dämonen\u00ADjäger", Weltenwanderer: "Welten\u00ADwanderer", Zuckerschnute: "Zucker\u00ADschnute", Perfektionist: "Perfektio\u00ADnist",
+    Dämonenjäger: "Dämonen\u00ADjäger", Weltenwanderer: "Welten\u00ADwanderer", Zuckerschnute: "Zucker\u00ADschnute",
     Goldsammler: "Gold\u00ADsammler", Allesfresser: "Alles\u00ADfresser", Kichererbse: "Kicher\u00ADerbse", Frühaufsteher: "Früh\u00ADaufsteher", Influencer: "Influen\u00ADcer", Kinogänger: "Kino\u00ADgänger" };
   const BYID = new Map([...N, ...P].map(a => [a.id, a]));
   // Belohnungen: Designs im normalen Modus, Herz-Ring im Priscilla-Modus
@@ -5142,7 +5140,7 @@ var ACHM = (() => {
     const before = { n: doneOf(N).length, p: doneOf(P).length };
     let pg = prog();
     const scan = () => [...N, ...P].forEach(a => { const [h, need] = pg[a.id]; if (!got[a.id] && need > 0 && h >= need) got[a.id] = [Date.now(), 0]; });
-    scan(); pg = prog(); scan(); // zweiter Durchgang für „Hokage“ (alle anderen Erfolge)
+    scan(); pg = prog(); scan(); // zweiter Durchgang: Erfolge, die von anderen abhängen
     store(KEY_A, got);
     // Neue Belohnung? (nicht beim allerersten Mal)
     const now = [...RW.filter(r => rwOn(r[1])), ...RWP.filter(r => rwOn(r[1]))].map(r => r[1]);
