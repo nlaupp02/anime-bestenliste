@@ -1,0 +1,6 @@
+{
+  "name": "anime-bestenliste-build",
+  "private": true,
+  "description": "Baut index.html (verdichtet) aus src/index.html (lesbar): cd tools && npm install && node build.js ../src/index.html ../index.html",
+  "devDependencies": { "terser": "^5", "csso": "^5" }
+}
