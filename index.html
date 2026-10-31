@@ -1275,6 +1275,8 @@ html.prisc .ach-det .pb i { background: #FF8FC4; }
 html.prisc .ach-det .pn.on { color: #FF8FC4; }
 .ach-det .ach-tt { margin-top: 10px; width: 100%; max-width: 220px; }
 /* Kopf im Fenster (X, Überschrift, Zahl, Balken) bleibt beim Scrollen oben stehen, die Liste läuft darunter durch */
+/* Kopf des Fensters ist der Griff zum Wegwischen: dort scrollt nichts, das Fenster folgt dem Finger direkt */
+.ach-top { touch-action: none; }
 .ach-top { position: sticky; top: -22px; z-index: 3; margin: -22px -16px 0; padding: 22px 16px 12px; background: var(--sheet); border-radius: 24px 24px 0 0; }
 html.prisc .ach-top { background: #24121F; }
 .ach-top .ach-x { top: 12px; right: 12px; }
@@ -1311,7 +1313,7 @@ html.prisc .ach-b .ach-pg { color: #D9A3BE; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V273</span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>Stand: Oktober 2026 <span class="ver">· V274</span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4905,31 +4907,43 @@ var ACHM = (() => {
     toast(a ? `Dein Titel: ${a.ti}` : "Kein Titel mehr", null, 1800);
   });
   $("#achTtl").addEventListener("click", () => { tsheet(); tov.hidden = false; fit(tov); tov.querySelector(".ach-sh").scrollTop = 0; });
-  // Fenster mit dem Griff oben nach unten wegwischen (wie bei iPhone-Apps). Geht nur, wenn die Liste ganz oben steht.
+  // Fenster nach unten wegwischen: nur oben am Kopf (Titel, X, Fortschritt). Dort scrollt nichts (touch-action: none im CSS),
+  // deshalb folgt das Fenster dem Finger flüssig und nichts hängt. In der Liste wird nur gescrollt, dort schließt Wischen nie
+  // (vorher schloss ein schneller Wisch nach unten das Fenster sofort, sobald die Liste oben war).
   function swipeClose(o) {
-    const sh = o.querySelector(".ach-sh"); let y0 = null, dy = 0, t0 = 0, drag = false;
-    sh.addEventListener("touchstart", e => { if (e.touches.length !== 1) { y0 = null; return; } y0 = e.touches[0].clientY; dy = 0; t0 = Date.now(); drag = false; }, { passive: true });
+    const sh = o.querySelector(".ach-sh"); let y0 = null, y1 = 0, dy = 0, drag = false, pts = [];
+    sh.addEventListener("touchstart", e => {
+      y0 = null;
+      if (e.touches.length !== 1 || !e.target.closest(".ach-top")) return;
+      y0 = y1 = e.touches[0].clientY; dy = 0; drag = false; pts = [[y0, performance.now()]];
+    }, { passive: true });
     sh.addEventListener("touchmove", e => {
       if (y0 == null) return;
-      const d = e.touches[0].clientY - y0;
+      if (e.touches.length !== 1) { end(true); return; }
+      y1 = e.touches[0].clientY; pts.push([y1, performance.now()]); if (pts.length > 8) pts.shift();
+      const d = y1 - y0;
       if (!drag) {
-        // Erst ab 6px übernehmen. Vorher nichts blockieren: Sonst lässt das iPhone die Liste für die ganze Bewegung nicht mehr rollen.
-        // Das Dehnen der Liste (Gummiband) ist per CSS aus (overscroll-behavior: none)
-        if (d > 6 && sh.scrollTop <= 0) { drag = true; sh.style.transition = "none"; }
-        else if (Math.abs(d) > 6) { y0 = null; return; }
-        else return;
+        if (Math.abs(d) < 4) return; // ein Tipp aufs X wackelt nicht
+        drag = true; sh.getAnimations().forEach(a => a.cancel()); sh.style.transition = "none"; sh.style.willChange = "transform";
       }
-      dy = Math.max(0, d); sh.style.transform = `translateY(${dy}px)`;
-    }, { passive: true }); // passiv: Das iPhone muss beim Scrollen nie auf die App warten (sonst hängt die Liste manchmal). Ganz oben bewegt sich die Liste nicht weiter (overscroll-behavior: none)
-    const end = () => {
+      dy = Math.max(0, d); sh.style.transform = dy ? `translateY(${dy}px)` : "";
+    }, { passive: true });
+    const end = cancel => {
       if (y0 == null) return; y0 = null;
       if (!drag) return; drag = false;
-      const fast = dy > 40 && dy / Math.max(1, Date.now() - t0) > .5;
-      sh.style.transition = "transform .26s cubic-bezier(.2,.8,.2,1)";
-      if (dy > 110 || fast) { sh.style.transform = "translateY(105%)"; setTimeout(() => { o.hidden = true; sh.style.transform = ""; sh.style.transition = ""; }, 240); }
-      else { sh.style.transform = ""; setTimeout(() => { sh.style.transition = ""; }, 280); }
+      // Tempo der letzten ~100 ms: Ein kräftiger Schwung schließt auch bei kurzem Weg
+      const now = performance.now(), i = pts.findIndex(q => now - q[1] < 110), p = pts[i >= 0 && i < pts.length - 1 ? i : Math.max(0, pts.length - 2)], v = (y1 - p[0]) / Math.max(16, now - p[1]);
+      const shut = !cancel && (dy > Math.min(150, sh.offsetHeight * 0.28) || (v > 0.55 && dy > 24));
+      if (shut) {
+        const dur = Math.round(Math.max(150, Math.min(280, (innerHeight - dy) / Math.max(v, 1.6))));
+        sh.style.transition = `transform ${dur}ms cubic-bezier(.3,.6,.4,1)`; sh.style.transform = "translateY(105%)";
+        setTimeout(() => { o.hidden = true; sh.style.transform = ""; sh.style.transition = ""; sh.style.willChange = ""; }, dur);
+      } else {
+        sh.style.transition = "transform .3s cubic-bezier(.2,.8,.2,1)"; sh.style.transform = "";
+        setTimeout(() => { if (!drag) { sh.style.transition = ""; sh.style.willChange = ""; } }, 320);
+      }
     };
-    sh.addEventListener("touchend", end); sh.addEventListener("touchcancel", end);
+    sh.addEventListener("touchend", () => end(false)); sh.addEventListener("touchcancel", () => end(true));
   }
   swipeClose(ov); swipeClose(tov);
   $("#achStrip").addEventListener("click", () => open());
