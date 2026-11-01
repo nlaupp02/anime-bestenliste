@@ -1381,7 +1381,7 @@ html:not(.app) .empty .eq-app { display: none; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V313</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V314</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -3316,7 +3316,7 @@ function render() {
   if (state.q && !list.length && (qOk(items[0]), qMode === "none")) {
     const raw = $("#q").value.trim();
     e.dataset.ic = "find";
-    e.innerHTML = `<b class="eq-t">„${esc(raw)}“ ist nicht in der Liste</b>Entweder unter 7 Punkten oder nicht auf Crunchyroll DE.<br><a class="eq-a eq-app" href="crunchyroll://">${ICON.out}<span>In der Crunchyroll-App öffnen</span></a><a class="eq-a eq-web" href="https://www.crunchyroll.com/de/search?q=${encodeURIComponent(raw)}" target="_blank" rel="noopener">${ICON.out}<span>Auf Crunchyroll suchen</span></a>`;
+    e.innerHTML = `<b class="eq-t">„${esc(raw)}“ ist nicht in der Liste</b>Entweder unter 7 Punkten oder nicht auf Crunchyroll DE.<br><a class="eq-a eq-app" href="crunchyroll://">${ICON.out}<span>In der Crunchyroll-App suchen</span></a><a class="eq-a eq-web" href="https://www.crunchyroll.com/de/search?q=${encodeURIComponent(raw)}" target="_blank" rel="noopener">${ICON.out}<span>Auf Crunchyroll suchen</span></a>`;
   }
   nvDays(list);
   renderShelf(list);
