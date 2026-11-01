@@ -1332,6 +1332,24 @@ html:not(.app) main { padding-top: 6px; }
 html:not(.app) .tabs .n { display: none; }
 /* Am PC immer Platz für die Scroll-Leiste: sonst ist eine kurze Seite (z. B. Genres) breiter als eine lange und alles springt seitlich */
 html:not(.app) { scrollbar-gutter: stable; }
+/* V298: Leiste unten wie in anderen iOS-Apps: 21 px vom Rand, knapp über dem Home-Balken, etwas flacher */
+.app .tabs {
+  left: 21px; right: 21px; padding: 4px;
+  bottom: max(8px, calc(env(safe-area-inset-bottom, 0px) - 12px));
+  /* mehr Glas: kräftigere Farben dahinter, Lichtkante rundum (oben hell, unten und seitlich zart) */
+  -webkit-backdrop-filter: blur(14px) saturate(190%); backdrop-filter: blur(14px) saturate(190%);
+  background: linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.02) 55%, rgba(255,255,255,.05)), rgba(20,22,38,.70);
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.38), inset 0 -1px 0 rgba(255,255,255,.12), inset 1px 0 0 rgba(255,255,255,.10), inset -1px 0 0 rgba(255,255,255,.10), inset 0 0 18px rgba(255,255,255,.05);
+}
+.app .tabs button { padding: 5px 2px 4px; }
+.app .tabs .lens {
+  top: 4px; bottom: 4px; left: 4px; width: calc((100% - 14px) / 4);
+  background: radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,.22), rgba(255,255,255,.10) 60%, rgba(255,255,255,.14));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), inset 0 -1px 0 rgba(255,255,255,.10);
+}
+/* Nach-oben-Knopf bleibt 11 px über der Leiste */
+.app .totop { bottom: calc(max(8px, calc(env(safe-area-inset-bottom, 0px) - 12px)) + 72px); }
 </style>
 </head>
 <body>
@@ -1345,7 +1363,7 @@ html:not(.app) { scrollbar-gutter: stable; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V297</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V298</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
