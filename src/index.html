@@ -1388,7 +1388,7 @@ html:not(.app) { scrollbar-gutter: stable; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V302</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V303</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4005,9 +4005,12 @@ function acctSync() {
   if (busy) { again = true; return syncRun; }
   syncRun = acctSyncRun(); return syncRun;
 }
+const KEY_GUEST = "cr-top100-guest"; // Stand von vor der Anmeldung (Gesehen, Gemerkt, Erfolge)
 async function acctSyncRun() {
   busy = true; again = false; clearTimeout(pushT); clearTimeout(retryT);
   const g = gen, uid = user.uid;
+  // Erste Anmeldung von hier aus: den Gast-Stand sichern, bevor das Konto ihn ersetzt (sofort, noch vor dem Laden; nur einmal bis zum Abmelden)
+  if (acct.uid !== uid && !load(KEY_GUEST, null)) store(KEY_GUEST, { seen: [...seen], saved: [...saved], ach: typeof ACHM !== "undefined" && ACHM ? ACHM.snap() : null, at: Date.now() });
   lastPull = Date.now(); syncSt = "busy"; acctUi();
   try {
     const snap = await fb.F.getDoc(ref()), r = snap.exists() ? snap.data() : null;
@@ -4278,7 +4281,10 @@ $("#outAskOk").addEventListener("click", () => { outAsk.hidden = true; lgRun(asy
   if (user) { await acctSync(); if (acct.dirty && user) await acctSync(); } // laufende Sicherung abwarten, dann Letztes sichern
   clearTimeout(pushT); clearTimeout(retryT);
   await U.signOut(auth); acct = {}; saveAcct(); frClear(); syncSt = ""; lgEditing = false; choice = null; firstPick = ""; acctUi();
-  applyMarks(new Set(), new Set()); if (ACHM) ACHM.reset(); paintMe(); render();
+  // Abgemeldet: wieder der Stand von vor der Anmeldung (Gast auf diesem Gerät) statt einer leeren Liste
+  const gst = load(KEY_GUEST, null); try { localStorage.removeItem(KEY_GUEST); } catch (e) {}
+  if (ACHM) { ACHM.reset(); if (gst && gst.ach) ACHM.restore(gst.ach); }
+  applyMarks(new Set(gst && Array.isArray(gst.seen) ? gst.seen : []), new Set(gst && Array.isArray(gst.saved) ? gst.saved : [])); paintMe(); render();
 }); });
 // Beim Zurückkommen in die App kurz nach neuen Daten vom anderen Gerät schauen
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && !user) fbLate(); if (document.visibilityState === "visible" && user && (acct.dirty || Date.now() - lastPull > 60000)) { refreshUser(); acctSync(); } if (document.visibilityState === "visible" && user && state.view === "seen") frLoad(); });
@@ -5425,13 +5431,26 @@ var ACHM = (() => {
     if (ev.rv) Object.keys(ev.rv).forEach(k => { if (now - ev.rv[k] > 6048e5) delete ev.rv[k]; });
     saveEv(); store(KEY_A, got); store(KEY_TTL, ttl); prof(); push(true);
   }
+  // Gast-Stand: Vor dem Anmelden wird gesichert, was hier ohne Konto erreicht war, nach dem Abmelden kommt genau das zurück
+  function snap() { return JSON.parse(JSON.stringify({ got, ev, ttl, rw: rwSeen })); }
+  function restore(o) {
+    if (!o || typeof o !== "object") return;
+    const obj = v => v && typeof v === "object" && !Array.isArray(v);
+    got = obj(o.got) ? o.got : {}; ev = obj(o.ev) ? o.ev : {}; ttl = obj(o.ttl) ? o.ttl : {}; delete ttl.d;
+    Object.values(got).forEach(g => { if (Array.isArray(g)) g[1] = 1; }); // kein Banner für Altes
+    rwSeen = Array.isArray(o.rw) ? o.rw : null;
+    store(KEY_A, got); saveEv(); store(KEY_TTL, ttl); store(KEY_RW, rwSeen); prof();
+  }
   // Abmelden: Erfolge, Titel und Ereignisse auf diesem Gerät löschen. Beim nächsten Anmelden kommen sie aus dem Konto
   function reset() {
     clearTimeout(pushT); got = {}; ttl = {}; ev = {}; rwSeen = null; pulledUid = "";
+    // Ein Banner vom Konto (z. B. gerade angemeldet freigeschaltet) verschwindet mit
+    clearTimeout(banT); banCur = null; oldQ = null; banBusy = false; banHiding = false;
+    if (!ban.hidden) { ban.getAnimations().forEach(x => x.cancel()); ban.hidden = true; ban.style.transform = ""; }
     [KEY_EV, KEY_TTL, KEY_RW, KEY_PUSH, KEY_UID].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
     store(KEY_A, got); prof();
   }
-  return { prof, check, evt, dice, priscOn, friend, open, push, reset, quiet, undo, cnt: () => doneOf(N).length + doneOf(P).length };
+  return { prof, check, evt, dice, priscOn, friend, open, push, reset, quiet, undo, snap, restore, cnt: () => doneOf(N).length + doneOf(P).length };
 })();
 </script>
 
