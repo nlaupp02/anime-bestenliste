@@ -1365,13 +1365,9 @@ html:not(.app) { scrollbar-gutter: stable; }
 .empty .eq-t { display: block; margin-bottom: 6px; font-size: 17px; font-weight: 800; color: var(--ink); }
 .empty .eq-a { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 10px 16px; border: 1.5px solid var(--ink); border-radius: 12px; color: var(--ink); font-weight: 700; text-decoration: none; }
 .empty .eq-a svg { width: 16px; height: 16px; flex: none; }
-/* V312: zwei Knöpfe ohne Treffer (App und Browser) */
-.empty .eq-row { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 16px; }
-.empty .eq-row .eq-a { margin-top: 0; width: min(100%, 300px); box-sizing: border-box; justify-content: center; }
-.empty .eq-web { border-color: var(--line) !important; color: var(--muted) !important; }
-.empty .eq-n { display: block; margin-top: 10px; font-size: 12.5px; color: var(--muted); }
-html:not(.app) .empty .eq-app, html:not(.app) .empty .eq-n { display: none; }
-html:not(.app) .empty .eq-web { border-color: var(--ink) !important; color: var(--ink) !important; }
+/* V313: iPhone öffnet die Crunchyroll-App, am PC die Suche im Browser */
+html.app .empty .eq-web { display: none; }
+html:not(.app) .empty .eq-app { display: none; }
 </style>
 </head>
 <body>
@@ -1385,7 +1381,7 @@ html:not(.app) .empty .eq-web { border-color: var(--ink) !important; color: var(
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V312</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V313</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -3281,6 +3277,7 @@ function placeCards(list) {
 }
 function render() {
   if (state.view !== "seen") { $("#shelf").hidden = true; $("#favg").hidden = true; }
+  if (state.view !== "saved") $("#cmp").hidden = true;
   headFor();
   renderProg();
   arrowOff = (state.view === "genres" && !state.g2) || ((state.view === "saved" || state.view === "seen") && !filtered().length);
@@ -3319,7 +3316,7 @@ function render() {
   if (state.q && !list.length && (qOk(items[0]), qMode === "none")) {
     const raw = $("#q").value.trim();
     e.dataset.ic = "find";
-    e.innerHTML = `<b class="eq-t">„${esc(raw)}“ ist nicht in der Liste</b>Entweder unter 7 Punkten oder nicht auf Crunchyroll DE.<br><span class="eq-row"><a class="eq-a eq-app" href="crunchyroll://" data-q="${esc(raw)}">${ICON.out}<span>In der Crunchyroll-App suchen</span></a><a class="eq-a eq-web" href="https://www.crunchyroll.com/de/search?q=${encodeURIComponent(raw)}" target="_blank" rel="noopener"><span>Im Browser suchen</span></a></span><small class="eq-n">Der Suchbegriff wird kopiert, in der App einfach in die Suche einfügen.</small>`;
+    e.innerHTML = `<b class="eq-t">„${esc(raw)}“ ist nicht in der Liste</b>Entweder unter 7 Punkten oder nicht auf Crunchyroll DE.<br><a class="eq-a eq-app" href="crunchyroll://">${ICON.out}<span>In der Crunchyroll-App öffnen</span></a><a class="eq-a eq-web" href="https://www.crunchyroll.com/de/search?q=${encodeURIComponent(raw)}" target="_blank" rel="noopener">${ICON.out}<span>Auf Crunchyroll suchen</span></a>`;
   }
   nvDays(list);
   renderShelf(list);
@@ -3422,12 +3419,6 @@ function renderCmp(list) {
     prev = li;
   });
 }
-// Crunchyroll-App: Suchbegriff kopieren, dann startet der Link die App
-$("#empty").addEventListener("click", e => {
-  const a = e.target.closest(".eq-app"); if (!a) return;
-  const q = a.dataset.q || "";
-  try { navigator.clipboard.writeText(q).then(() => toast(`„${q}“ kopiert · in der App in die Suche einfügen`, null, 3500)).catch(() => {}); } catch (x) {}
-});
 $("#cmp").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li) openShelf(li.dataset.id); });
 $("#cmp").addEventListener("keydown", e => { const li = e.target.closest("li[data-id]"); if (li && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openShelf(li.dataset.id); } });
 // Nach dem Start im Hintergrund: Genre-Kacheln und Profil-Regal schon bauen und deren Bilder laden.
