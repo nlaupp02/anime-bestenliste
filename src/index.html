@@ -1363,7 +1363,7 @@ html:not(.app) { scrollbar-gutter: stable; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V298</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V299</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -5100,12 +5100,13 @@ var ACHM = (() => {
   $("#achStrip").addEventListener("click", () => open());
   // ---- Banner oben ----
   const ban = $("#achBan");
-  let banBusy = false, banT = 0, banHiding = false, oldQ = null, oldI = 0;
+  let banBusy = false, banT = 0, banHiding = false, oldQ = null, oldI = 0, banCur = null;
   // Inhalt setzen; Münze dreht sich rein, Text kommt kurz danach
   function banFill(a, ct, d0) {
     ban.style.setProperty("--bc", a.t === "pk" ? "#FF8FC4" : TIER[a.t][1]);
     ban.innerHTML = `${pic(a)}<span class="t"><small>${a.t === "pk" ? "LIEBES-ERFOLG FREIGESCHALTET" : "ERFOLG FREIGESCHALTET"}</small><b>${esc(a.n)}</b><i>${esc(a.d)}</i></span>${ct ? `<span class="ct">${ct}</span>` : ""}`;
-    got[a.id][1] = 1; store(KEY_A, got); prof();
+    // Als gesehen zählt er erst, wenn man ihn selbst wegtippt (alte Erfolge im Wechselbanner sofort)
+    if (ct) { got[a.id][1] = 1; store(KEY_A, got); prof(); } else banCur = a;
     if (reduce || !ban.animate) return;
     const sv = ban.querySelector("svg"), tx = ban.querySelectorAll(".t > *");
     if (sv) sv.animate([{ transform: "rotate(-150deg)", opacity: 0 }, { transform: "rotate(10deg)", opacity: 1, offset: .75 }, { transform: "none", opacity: 1 }],
@@ -5127,11 +5128,11 @@ var ACHM = (() => {
     ban.hidden = false;
     if (!reduce && ban.animate) ban.animate([{ transform: "translateY(calc(-100% - 30px))", opacity: 0 }, { transform: "translateY(4px)", opacity: 1, offset: .72 }, { transform: "none", opacity: 1 }],
       { duration: 760, easing: "cubic-bezier(.22,.9,.3,1)" });
-    clearTimeout(banT); banT = oldQ ? setTimeout(nextOld, 2600) : setTimeout(hideBan, 4200);
+    clearTimeout(banT); if (oldQ) banT = setTimeout(nextOld, 2600); // ein neuer Erfolg bleibt stehen, bis man ihn antippt
   }
   function nextOld() {
     clearTimeout(banT);
-    if (!oldQ || oldI >= oldQ.length) return hideBan();
+    if (!oldQ || oldI >= oldQ.length) return; // der letzte bleibt stehen, bis man ihn antippt
     banFill(oldQ[oldI], `${oldI + 1} / ${oldQ.length}`, 0); oldI++;
     banT = setTimeout(nextOld, 2000);
   }
@@ -5151,13 +5152,34 @@ var ACHM = (() => {
     banHiding = true; clearTimeout(banT);
     ban.getAnimations().forEach(x => x.cancel());
     if (reduce || !ban.animate) return banDone();
-    ban.animate([{ transform: "none", opacity: 1 }, { transform: "translateY(calc(-100% - 30px))", opacity: 0 }], { duration: 480, easing: "cubic-bezier(.5,0,.75,0)", fill: "forwards" }).onfinish = banDone;
+    ban.animate([{ transform: ban.style.transform || "none", opacity: 1 }, { transform: "translateY(calc(-100% - 30px))", opacity: 0 }], { duration: 480, easing: "cubic-bezier(.5,0,.75,0)", fill: "forwards" }).onfinish = banDone;
   }
   // Antippen = weiter: zum nächsten alten Erfolg, sonst Banner weg (es öffnet sich nichts)
+  // Weg nur durch den Nutzer selbst: Erst dann zählt der Erfolg als gesehen und kommt nicht wieder
+  function banGone() {
+    if (banCur && got[banCur.id]) { got[banCur.id][1] = 1; store(KEY_A, got); prof(); }
+    banCur = null; hideBan();
+  }
   ban.addEventListener("click", () => {
     if (ban.hidden || banHiding) return;
-    if (oldQ && oldI < oldQ.length) nextOld(); else hideBan();
+    if (oldQ && oldI < oldQ.length) nextOld(); else banGone();
   });
+  // Nach oben wischen = weg (wie Mitteilungen in iOS)
+  let banY = null;
+  ban.addEventListener("touchstart", e => { banY = e.touches.length === 1 && !banHiding ? e.touches[0].clientY : null; }, { passive: true });
+  ban.addEventListener("touchmove", e => {
+    if (banY == null) return;
+    if (e.cancelable) e.preventDefault();
+    const dy = Math.min(0, e.touches[0].clientY - banY); ban.style.transform = dy ? `translateY(${dy}px)` : "";
+  }, { passive: false });
+  const banUp = (e, cancel) => {
+    if (banY == null) return;
+    const dy = e.changedTouches[0].clientY - banY; banY = null;
+    if (!cancel && dy < -24) { if (e.cancelable) e.preventDefault(); oldQ = null; banGone(); }
+    else if (ban.style.transform) { if (!cancel && e.cancelable && dy < -6) e.preventDefault(); ban.style.transform = ""; }
+  };
+  ban.addEventListener("touchend", e => banUp(e, false));
+  ban.addEventListener("touchcancel", e => banUp(e, true));
   // ---- Test-Knöpfe: nur im Artifact, damit man Banner, Rang-Fenster usw. ansehen kann ----
   $("#achTest") && $("#achTest").addEventListener("click", e => {
     const b = e.target.closest("button[data-t]"); if (!b) return;
