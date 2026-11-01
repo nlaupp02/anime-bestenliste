@@ -1350,6 +1350,18 @@ html:not(.app) { scrollbar-gutter: stable; }
 }
 /* Nach-oben-Knopf bleibt 11 px über der Leiste */
 .app .totop { bottom: calc(max(8px, calc(env(safe-area-inset-bottom, 0px) - 12px)) + 72px); }
+/* V299: Glasblase wie in iOS – Optik im inneren Element (dehnt sich beim Gleiten), beim Berühren hebt sie sich an */
+.app .tabs .lens, .app .tabs.drag .lens { background: none; box-shadow: none; }
+.app .tabs .lens { transition: transform .42s cubic-bezier(.3, 1.3, .5, 1), scale .3s cubic-bezier(.3, 1.6, .5, 1); }
+.app .tabs.drag .lens { transition: scale .3s cubic-bezier(.3, 1.6, .5, 1); }
+.app .tabs .lens > i {
+  position: absolute; inset: 0; border-radius: inherit; will-change: transform;
+  background: radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,.22), rgba(255,255,255,.10) 60%, rgba(255,255,255,.14));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), inset 0 -1px 0 rgba(255,255,255,.10);
+}
+.app .tabs .lens > i::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: rgba(255,255,255,.10); box-shadow: inset 0 0 0 1px rgba(255,255,255,.2); opacity: 0; transition: opacity .2s ease; }
+.app .tabs.press .lens { scale: 1.1; }
+.app .tabs.press .lens > i::after { opacity: 1; }
 </style>
 </head>
 <body>
@@ -1363,7 +1375,7 @@ html:not(.app) { scrollbar-gutter: stable; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V299</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V300</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -3416,7 +3428,7 @@ function setMark(id, act, on) {
   }
   if (act === "seen" && on) { ACHM && ACHM.evt(id); setTimeout(() => { checkRanks(); ACHM && ACHM.check(); }, 350); } else if (on) setTimeout(() => ACHM && ACHM.check(), 350);
   // Haken weg: Rang sofort wieder runter, damit die Meldung beim erneuten Anhaken wieder kommt
-  if (act === "seen" && !on) { rankAck.n = Math.min(rankAck.n, rankOf(false)); rankAck.p = Math.min(rankAck.p, rankOf(true)); store(KEY_RACK, rankAck); }
+  if (act === "seen" && !on) { rankAck.n = Math.min(rankAck.n, rankOf(false)); rankAck.p = Math.min(rankAck.p, rankOf(true)); store(KEY_RACK, rankAck); if (typeof ACHM !== "undefined" && ACHM) ACHM.undo(); }
   // Speichern, Zähler und ggf. Liste neu filtern erst im nächsten Bild, damit der Knopf nicht hängt
   requestAnimationFrame(() => setTimeout(() => {
     if (act === "seen" && !frOv.hidden && frCur && shelfOv.hidden) frShow(frCur); // offenes Freundes-Profil gleich mitziehen
@@ -3702,16 +3714,22 @@ $("#shareclose").addEventListener("click", () => { $("#sharebox").hidden = true;
 const placeLens = (() => {
   const bar = document.querySelector(".tabs"), btns = [...bar.querySelectorAll("button")];
   const lens = document.createElement("span"); lens.className = "lens"; lens.setAttribute("aria-hidden", "true"); bar.prepend(lens);
+  // Die Optik der Blase liegt in einem inneren Element: So kann sie sich beim Gleiten dehnen, ohne die Position zu stören
+  const glass = document.createElement("i"); lens.append(glass);
+  const calm = matchMedia("(prefers-reduced-motion: reduce)");
+  let curI = -1, pressT = 0;
+  const squish = () => { if (!glass.animate || calm.matches) return; glass.animate([{ transform: "scale(1,1)" }, { transform: "scale(1.16,.9)", offset: .3 }, { transform: "scale(.98,1.02)", offset: .7 }, { transform: "scale(1,1)" }], { duration: 480, easing: "ease-out" }); };
+  const setI = i => { if (i !== curI) { if (curI >= 0) squish(); curI = i; } lens.style.setProperty("--i", i); };
   const isApp = () => document.documentElement.classList.contains("app");
   // In Ruhe sitzt der Kreis per Prozent-Rechnung auf dem aktiven Reiter, damit er nicht springt, wenn das iPhone den Ausschnitt kurz verschiebt
-  const toActive = () => { const i = Math.max(0, btns.findIndex(b => b.getAttribute("aria-selected") === "true")); lens.style.transform = ""; lens.style.setProperty("--i", i); };
+  const toActive = () => { clearTimeout(pressT); const i = Math.max(0, btns.findIndex(b => b.getAttribute("aria-selected") === "true")); lens.style.transform = ""; setI(i); };
   // Nur der eine Finger, der auf der Leiste aufsetzt, darf die Blase schieben.
   // Sobald ein zweiter Finger dazukommt, wird das Schieben abgebrochen und nichts gewechselt.
   let drag = null, raf = 0, nextX = 0, multi = false;
   const abort = () => {
     if (!drag) return;
     drag = null; if (raf) { cancelAnimationFrame(raf); raf = 0; }
-    bar.classList.remove("drag"); btns.forEach(b => b.classList.remove("hover"));
+    bar.classList.remove("drag", "press"); btns.forEach(b => b.classList.remove("hover"));
     toActive();
   };
   document.addEventListener("touchstart", e => {
@@ -3726,11 +3744,15 @@ const placeLens = (() => {
     const t = e.changedTouches[0], r = bar.getBoundingClientRect();
     const pos = btns.map(b => ({ l: b.offsetLeft, w: b.offsetWidth }));
     drag = { id: t.identifier, x0: t.clientX, y0: t.clientY, left: r.left + bar.clientLeft, pos, moved: false, i: -1 };
+    // Wie in iOS: Schon beim Berühren hebt sich die Blase an und gleitet unter den Finger.
+    // Das passiert, bevor die Liste umgebaut wird, deshalb wirkt der Wechsel sofort und nichts hängt.
+    const fx = t.clientX - drag.left; let i0 = 0; pos.forEach((q, k) => { if (fx >= q.l) i0 = k; });
+    bar.classList.add("press"); btns[i0].classList.add("hover"); drag.i = i0; setI(i0);
   }, { passive: true });
   const frame = () => {
     raf = 0; if (!drag) return;
     const { pos } = drag, w = pos[0].w, x = Math.max(pos[0].l, Math.min(nextX - drag.left - w / 2, pos[pos.length - 1].l));
-    lens.style.transform = `translate3d(${x - pos[0].l}px,0,0) scale(1.12)`;
+    lens.style.transform = `translate3d(${x - pos[0].l}px,0,0)`; // angehoben ist sie schon über „press“
     const c = x + w / 2; let i = 0; pos.forEach((q, k) => { if (c >= q.l) i = k; });
     if (i !== drag.i) { if (drag.i >= 0) btns[drag.i].classList.remove("hover"); btns[i].classList.add("hover"); drag.i = i; }
   };
@@ -3753,8 +3775,10 @@ const placeLens = (() => {
     if (multi && e.cancelable) e.preventDefault(); // nach Zwei-Finger-Geste kein Tippen auslösen
     if (!drag) return;
     const d = drag; drag = null; if (raf) { cancelAnimationFrame(raf); raf = 0; }
-    bar.classList.remove("drag"); btns.forEach(b => b.classList.remove("hover"));
+    bar.classList.remove("drag", "press"); btns.forEach(b => b.classList.remove("hover"));
     if (d.moved && !cancel && !multi) { if (e.cancelable) e.preventDefault(); if (d.i >= 0 && btns[d.i].getAttribute("aria-selected") !== "true") btns[d.i].click(); }
+    // Kurz getippt: Der Klick gleich danach wechselt den Reiter, die Blase sitzt schon dort. Kommt kein Klick, kehrt sie zurück.
+    if (!d.moved && !cancel && !multi) { clearTimeout(pressT); pressT = setTimeout(toActive, 450); return; }
     toActive();
   };
   bar.addEventListener("touchend", e => finish(e, false));
@@ -5128,11 +5152,11 @@ var ACHM = (() => {
     ban.hidden = false;
     if (!reduce && ban.animate) ban.animate([{ transform: "translateY(calc(-100% - 30px))", opacity: 0 }, { transform: "translateY(4px)", opacity: 1, offset: .72 }, { transform: "none", opacity: 1 }],
       { duration: 760, easing: "cubic-bezier(.22,.9,.3,1)" });
-    clearTimeout(banT); if (oldQ) banT = setTimeout(nextOld, 2600); // ein neuer Erfolg bleibt stehen, bis man ihn antippt
+    clearTimeout(banT); banT = oldQ ? setTimeout(nextOld, 2600) : setTimeout(autoHide, 4200);
   }
   function nextOld() {
     clearTimeout(banT);
-    if (!oldQ || oldI >= oldQ.length) return; // der letzte bleibt stehen, bis man ihn antippt
+    if (!oldQ || oldI >= oldQ.length) return autoHide();
     banFill(oldQ[oldI], `${oldI + 1} / ${oldQ.length}`, 0); oldI++;
     banT = setTimeout(nextOld, 2000);
   }
@@ -5155,7 +5179,15 @@ var ACHM = (() => {
     ban.animate([{ transform: ban.style.transform || "none", opacity: 1 }, { transform: "translateY(calc(-100% - 30px))", opacity: 0 }], { duration: 480, easing: "cubic-bezier(.5,0,.75,0)", fill: "forwards" }).onfinish = banDone;
   }
   // Antippen = weiter: zum nächsten alten Erfolg, sonst Banner weg (es öffnet sich nichts)
-  // Weg nur durch den Nutzer selbst: Erst dann zählt der Erfolg als gesehen und kommt nicht wieder
+  // Von allein weg nach gut 4 Sekunden – aber nicht, solange man gerade scrollt oder den Bildschirm berührt
+  // (sonst ist er weg, bevor man ihn gesehen hat). Verschwindet er nur kurz wegen eines Fensters, kommt er danach wieder.
+  function autoHide() {
+    clearTimeout(banT);
+    if (ban.hidden || banHiding) return;
+    if (touching || Date.now() - lastScroll < 1500) { banT = setTimeout(autoHide, 700); return; }
+    banGone();
+  }
+  // Weg durch Antippen, Wegwischen oder von allein: Erst dann zählt der Erfolg als gesehen und kommt nicht wieder
   function banGone() {
     if (banCur && got[banCur.id]) { got[banCur.id][1] = 1; store(KEY_A, got); prof(); }
     banCur = null; hideBan();
@@ -5274,7 +5306,7 @@ var ACHM = (() => {
     if (!last && ((Array.isArray(x.ach) && x.ach.length) || (Array.isArray(x.achP) && x.achP.length))) { got = {}; ttl = {}; ev = {}; saveEv(); store(KEY_TTL, ttl); ch = true;
       const pg = prog(); [...N, ...P].forEach(a => { const [h, need] = pg[a.id]; if (need > 0 && h >= need) got[a.id] = [Date.now(), 1]; }); }
     [...(Array.isArray(x.ach) ? x.ach : []), ...(Array.isArray(x.achP) ? x.achP : [])].forEach(id => {
-      if (typeof id === "string" && BYID.has(id) && !got[id]) { got[id] = [Date.now(), 1]; ch = true; }
+      if (typeof id === "string" && BYID.has(id) && !got[id] && !(ev.rv && Date.now() - (ev.rv[id] || 0) < 6048e5)) { got[id] = [Date.now(), 1]; ch = true; }
     });
     if (ch) store(KEY_A, got);
     // Titel: Was im Konto steht, gilt auf allen Geräten (dort steht immer die zuletzt gewählte Wahl, egal von welchem Gerät).
@@ -5355,11 +5387,30 @@ var ACHM = (() => {
   // Gesehen/Gemerkt kamen aus dem Konto (Anmelden, anderes Gerät): Was dadurch erreicht ist, still freischalten.
   // Der Banner kam schon dort, wo es passiert ist – einmal Freigeschaltetes zeigt nie wieder einen Banner, egal auf welchem Gerät
   function quiet() {
+    undo(); // auf dem anderen Gerät zurückgenommen: hier auch weg
     let pg = prog();
     const sc = () => [...N, ...P].forEach(a => { const [h, need] = pg[a.id]; if (!got[a.id] && need > 0 && h >= need) got[a.id] = [Date.now(), 1]; });
     sc(); pg = prog(); sc(); store(KEY_A, got);
     rwSeen = [...RW, ...RWP].filter(r => rwOn(r[1])).map(r => r[1]); store(KEY_RW, rwSeen);
     prof();
+  }
+  // Haken zurückgenommen (z. B. aus Versehen gesetzt): Erfolge, die an gesehenen Titeln hängen und erst seit höchstens
+  // 24 Stunden da sind, gehen sofort wieder weg, wenn die Bedingung nicht mehr stimmt. Ältere bleiben (z. B. wenn ein Titel
+  // aus der Liste fällt). Erreicht man ihn wieder, kommt der Banner ganz normal.
+  const KEEP = new Set(["merk", "friend", "tips", "prisc", "night"]);
+  function undo() {
+    const pg = prog(), now = Date.now(); let ch = false;
+    [...N, ...P].forEach(a => {
+      const g = got[a.id]; if (!g || KEEP.has(a.id) || now - g[0] > 864e5) return;
+      const [h, need] = pg[a.id]; if (h >= need) return;
+      delete got[a.id]; ch = true;
+      ev.rv = ev.rv || {}; ev.rv[a.id] = now; // kommt nicht über das Konto zurück, solange dort noch der alte Stand steht
+      ["n", "p"].forEach(k => { if (ttl[k] === a.id) { ttl[k] = ""; ttl.d = 1; } });
+      if (banCur && banCur.id === a.id) { banCur = null; clearTimeout(banT); banDone(); }
+    });
+    if (!ch) return;
+    if (ev.rv) Object.keys(ev.rv).forEach(k => { if (now - ev.rv[k] > 6048e5) delete ev.rv[k]; });
+    saveEv(); store(KEY_A, got); store(KEY_TTL, ttl); prof(); push(true);
   }
   // Abmelden: Erfolge, Titel und Ereignisse auf diesem Gerät löschen. Beim nächsten Anmelden kommen sie aus dem Konto
   function reset() {
@@ -5367,7 +5418,7 @@ var ACHM = (() => {
     [KEY_EV, KEY_TTL, KEY_RW, KEY_PUSH, KEY_UID].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
     store(KEY_A, got); prof();
   }
-  return { prof, check, evt, dice, priscOn, friend, open, push, reset, quiet, cnt: () => doneOf(N).length + doneOf(P).length };
+  return { prof, check, evt, dice, priscOn, friend, open, push, reset, quiet, undo, cnt: () => doneOf(N).length + doneOf(P).length };
 })();
 </script>
 
