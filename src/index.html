@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <!-- Dunkler Hintergrund ganz am Anfang, noch vor Symbolen und Schriften: So ist die Seite beim Öffnen sofort dunkel statt weiß -->
 <meta name="color-scheme" content="dark">
-<style>html{background:#0F1120}</style>
+<style>html{background:#0C0C0E}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="description" content="Die besten Animes auf Crunchyroll Deutschland, mit Wertung und deutscher Synchro.">
-<meta name="theme-color" content="#0F1120">
+<meta name="theme-color" content="#0C0C0E">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Animes">
 <!-- App: Statusleiste durchsichtig, die Liste läuft unter der Uhr durch (wie bei iPhone-Apps) -->
@@ -70,8 +70,8 @@
 <style>
 /* Layout: Leihregal-Prinzip. Kopf mit Titel, Filterleiste, Karten im Raster, eigene Wertung als Hanko-Stempel, IMDb darunter. */
 :root {
-  --paper: #0F1120; --sheet: #181B2D; --ink: #E8EAF3; --muted: #9EA3BC; --line: #2A2F48;
-  --chip: #23273D; --hanko: #F05A50; --hanko-soft: #3A1E22; --on-hanko: #1A0C0B;
+  --paper: #0C0C0E; --sheet: #151517; --ink: #E8EAF3; --muted: #A3A3AB; --line: #26262A;
+  --chip: #1F1F23; --hanko: #F05A50; --hanko-soft: #3A1E22; --on-hanko: #1A0C0B;
   --gold: #F2C14E; --on-gold: #1C1503;
   --ok: #5FD3A6; --ok-soft: #173329; --warn: #F0C064; --warn-soft: #3A2E14; --focus: #E8EAF3;
   --f-display: "Dela Gothic One", "Arial Black", "Helvetica Neue", sans-serif;
@@ -371,14 +371,13 @@ button, a, summary, input, label { touch-action: manipulation; }
   width: 100%; max-width: 460px; justify-self: start;
   display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px;
   text-align: left; font: inherit; color: var(--on-hanko); background: var(--hanko);
-  border: 0; border-radius: 14px; padding: 12px 14px; cursor: pointer;
-  box-shadow: 0 6px 18px color-mix(in srgb, var(--hanko) 35%, transparent);
+  border: 0; border-radius: 10px; padding: 12px 14px; cursor: pointer;
   transition: transform .12s, filter .12s;
 }
 @media (hover: hover) { .pick-btn:hover { filter: brightness(1.06); } }
 /* Kopf: „Crunchyroll“ in Crunchyroll-Orange, Würfel-Knopf von Hanko-Rot nach Orange (nicht im Priscilla-Modus) */
-html:not(.prisc) h1 .red { color: #F47521; }
-html:not(.prisc) .pick-btn { background: linear-gradient(100deg, #F05A50, #F47521); box-shadow: 0 6px 18px rgba(244, 117, 33, .35); }
+h1 .red { color: inherit; }
+html:not(.prisc) .pick-btn { background: #F47521; }
 .pick-btn:active { transform: scale(.98); }
 .pick-ico { width: 42px; height: 42px; border-radius: 11px; display: grid; place-items: center; background: color-mix(in srgb, var(--on-hanko) 18%, transparent); }
 .pick-ico svg { width: 24px; height: 24px; animation: nudge 1.2s ease-in-out 1s 2; }
@@ -476,7 +475,7 @@ html:not(.prisc) .card.pick { outline-color: #F47521; } /* Orange wie „Crunchy
   position: fixed; z-index: 20;
   left: 50%; margin-left: -21px; bottom: max(16px, env(safe-area-inset-bottom, 0px));
   width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(232,234,243,.35);
-  background: rgba(58,63,92,.85); color: var(--ink); display: grid; place-items: center; cursor: pointer;
+  background: rgba(40,40,46,.85); color: var(--ink); display: grid; place-items: center; cursor: pointer;
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
   box-shadow: 0 6px 18px rgba(0,0,0,.45);
 }
@@ -666,7 +665,7 @@ html.prisc .prog.max .ring svg { filter: drop-shadow(0 0 4px rgba(246, 196, 83, 
 .app .tabs .pfi { width: 24px; height: 24px; }
 #n-seen { display: none !important; } /* die Zahl steht jetzt im Profil */
 /* Priscilla-Modus: rosa Akzente, Leiste mit „Beenden“, fallende Herzen und Kirschblüten */
-html.prisc { --hanko: #FF6FA8; --hanko-soft: #3A1A2A; --gold: #FF9CC8; --on-gold: #2A0A18; }
+html.prisc { --hanko: #FF6FA8; --hanko-soft: #3A1A2A; --gold: #FF9CC8; --on-gold: #2A0A18; --paper: #100B0F; --sheet: #1A1319; --line: #2D2229; --chip: #251B22; }
 .prisbar { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 8px 8px 8px 12px; border-radius: 12px; background: #3A1A2A; border: 1px solid #FF6FA8; color: #FFD3E6; font-size: 13.5px; font-weight: 700; }
 .prisbar[hidden] { display: none; }
 .prisbar span { flex: 1; min-width: 0; }
@@ -715,7 +714,6 @@ html.prisc .prog.rt4, html.prisc .ladder li.rt4, html.prisc .frk.rt4 { --rc: #F6
 html.prisc .rankup.rt0 .ru-card { --rc: #A3A8C2; } html.prisc .rankup.rt5 .ru-card { --rc: #B9A7EB; } html.prisc .rankup.rt1 .ru-card { --rc: #FF9CC8; } html.prisc .rankup.rt2 .ru-card { --rc: #FF8B6E; }
 html.prisc .rankup.rt3 .ru-card { --rc: #FF4D6D; } html.prisc .rankup.rt4 .ru-card { --rc: #F6C453; }
 /* „Entfernen“ (nicht mehr gesehen, Freund entfernen): gleiche Farbe */
-html:not(.prisc) #seenAskOk, html:not(.prisc) #frAskOk, html:not(.prisc) #outAskOk { background: linear-gradient(100deg, #F05A50, #F47521); border-color: transparent; color: var(--on-hanko); }
 /* Ränge-Fenster: „OK“ ruhig grau wie „Schließen“ im Regal */
 #rankSheet .ov-btn.main, #ruOk, #instSheet .ov-btn.main, #whySheet .ov-btn.main { background: var(--chip); border-color: var(--line); color: var(--ink); }
 /* Abstände (App und Safari): keine Trennlinie über der Liste, schmale Priscilla-Leiste, etwas mehr Luft zwischen den Karten */
@@ -1141,7 +1139,7 @@ html.prisc .ach-sh { background: #24121F; border-color: #4A2238; box-shadow: 0 -
 .ach-hd h3 { font: 400 23px/1.05 var(--f-display); margin: 0 0 5px; }
 .ach-hd p { margin: 0; color: var(--muted); font-weight: 700; font-size: 14px; }
 html.prisc .ach-hd p { color: #D9A3BE; }
-.ach-rw { display: flex; gap: 12px; align-items: center; border-radius: 16px; padding: 12px; margin: 14px 0 6px; background: linear-gradient(100deg, #3A2E14, #22263C); border: 1px solid #5A4720; }
+.ach-rw { display: flex; gap: 12px; align-items: center; border-radius: 16px; padding: 12px; margin: 14px 0 6px; background: linear-gradient(100deg, #3A2E14, #2A2A2E); border: 1px solid #5A4720; }
 html.prisc .ach-rw { background: linear-gradient(100deg, #4A1630, #2A1424); border-color: #7A2A52; }
 .ach-sw { width: 42px; height: 42px; border-radius: 12px; flex: none; display: grid; place-items: center; font-size: 22px; }
 .ach-rw b { display: block; font-size: 14px; line-height: 1.3; }
@@ -1232,7 +1230,7 @@ html.prisc .toast .toast-act { color: #D9367A; }
 @media (prefers-reduced-motion: reduce) { .toast { animation: none; } }
 /* Banner wieder fest am Bildschirm (auf der Seite liegend ruckelte es in Safari beim Scrollen mit).
    Mit Glas-Unschärfe wie die Leiste unten: Dann färbt Safari oben keinen dunklen Balken ein */
-.app .ach-ban { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 24px); background: rgba(24, 27, 45, .9);
+.app .ach-ban { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 24px); background: rgba(21, 21, 23, .92);
   -webkit-backdrop-filter: blur(16px) saturate(150%); backdrop-filter: blur(16px) saturate(150%); }
 html.app.prisc .ach-ban { background: rgba(42, 20, 36, .92); }
 
@@ -1368,6 +1366,46 @@ html:not(.app) { scrollbar-gutter: stable; }
 /* V313: iPhone öffnet die Crunchyroll-App, am PC die Suche im Browser */
 html.app .empty .eq-web { display: none; }
 html:not(.app) .empty .eq-app { display: none; }
+/* V315: neues Design */
+h1 { position: relative; }
+h1 .seal { position: absolute; right: 0; top: -58px; width: 40px; height: 54px; border: 2.5px solid #E5483E; border-radius: 6px; color: #E5483E; display: grid; place-items: center;
+  font-family: "Hiragino Mincho ProN", "Anime KJ", "Yu Mincho", "Noto Serif CJK JP", serif; font-weight: 700; font-size: 18px; line-height: 1.05; writing-mode: vertical-rl; transform: rotate(4deg); opacity: .92; }
+h1 .seal::before { content: "番付"; }
+html.prisc h1 .seal { border-color: #FF6FA8; color: #FF6FA8; font-size: 26px; }
+html.prisc h1 .seal::before { content: "恋"; }
+html:not(.app) h1 .seal { position: static; display: inline-grid; vertical-align: middle; margin-left: 18px; width: 34px; height: 46px; font-size: 15px; }
+.pick-ico { background: rgba(0, 0, 0, .13); }
+/* Liste: keine Kästen, Trennlinien, große Platzzahl; „Serie/Film“ steht unten schon bei den Folgen */
+.app #list > .card { background: none; border: 0; border-radius: 0; border-top: 1px solid var(--line); padding: 20px 0 18px; }
+.app .meta { align-items: center; }
+.meta .rank i { font-style: normal; }
+.app .meta .rank:not(.rel) { font-family: var(--f-display); font-size: 30px; line-height: 1; letter-spacing: 0; color: var(--ink); }
+.app .meta .rank i { display: none; }
+.app .meta > span:not([class]) { display: none; }
+.app .tags { gap: 0 6px; }
+.app .tag { background: none; padding: 0; border-radius: 0; color: var(--muted); font-size: 13.5px; }
+.app .tag + .tag::before { content: "·"; margin-right: 6px; }
+.app .dub { background: none; padding: 0; }
+/* Würfel-Tipp: die Karte bekommt wieder einen Kasten, damit der Rahmen nicht in der Luft hängt */
+.app #list > .card.pick { background: var(--sheet); border-radius: 12px; border-top: 0; padding: 16px; margin-block: 6px; outline-offset: 0; }
+/* Überschriften-Zeilen „Gestern · 35 neu“ und „Tipps von Freunden“ ohne eigene Linie: die Trennlinie der Karte darunter reicht */
+.app .grid > .nvday::after, .app .tp-sec::after { display: none; }
+/* Gemerkt: Liste statt Kästen */
+.app .cmp { gap: 0; }
+.app .cmp li { background: none; border: 0; border-radius: 0; border-top: 1px solid var(--line); padding: 12px 0; }
+.app .cmp .th { border-radius: 6px; }
+.tile { border-radius: 10px; }
+/* Leiste unten wie WhatsApp */
+.app .tabs { padding: 5px; border-radius: 999px; background: rgba(30, 30, 32, .94); -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, .09); box-shadow: 0 12px 32px rgba(0, 0, 0, .5); }
+.app .tabs button { padding: 5px 2px 4px; gap: 2px; font-size: 11px; font-weight: 600; color: rgba(255, 255, 255, .8); text-shadow: none; }
+.app .tabs .ti { width: 25px; height: 25px; }
+.app .tabs .lens { top: 5px; bottom: 5px; left: 5px; width: calc((100% - 16px) / 4); }
+.app .tabs .lens > i { background: rgba(255, 255, 255, .11); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .10); }
+.app .tabs.drag .lens > i, .app .tabs.press .lens > i { background: rgba(255, 255, 255, .17); }
+html.prisc.app .tabs { background: rgba(36, 24, 32, .94); }
+/* Nach-oben-Knopf: die Leiste ist etwas höher geworden, der Knopf rückt mit */
+.app .totop { bottom: calc(max(8px, calc(env(safe-area-inset-bottom, 0px) - 12px)) + 76px); }
 </style>
 </head>
 <body>
@@ -1381,8 +1419,8 @@ html:not(.app) .empty .eq-app { display: none; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V314</span></span></div>
-    <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V315</span></span></div>
+    <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
     <details class="why"><summary><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".95" fill="currentColor"/></svg>So entsteht die Wertung<svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="why-body"><p>Basiert auf <b>MyAnimeList</b> und <b>IMDb</b>. Eine KI prüft Story, Figuren, Animation und Ende sowie Füllerfolgen und Längen.</p><p class="scale-txt">Ab 9 herausragend · ab 8 sehr gut · ab 7 gut</p><div class="scale2"><span><i class="mini top">9</i>herausragend</span><span><i class="mini mid">8</i>sehr gut</span><span><i class="mini low">7</i>gut</span></div></div></details>
@@ -2782,7 +2820,7 @@ function card(it) {
     <li class="card${isSeen ? " is-seen" : ""}">
       <div class="cbody">
       <div class="cv" aria-hidden="true"><img alt="" draggable="false" loading="lazy" decoding="async"${coverOf(it) ? coverAttrs(coverOf(it), CV_SIZES) : ""}${it.rank <= 3 ? ' fetchpriority="high"' : ""} onload="this.classList.add('ok')" onerror="if(this.srcset)this.removeAttribute('srcset');else this.remove()"></div>
-      <div class="meta"><span class="rank">Platz ${it.rank}</span>${isFresh(it) ? '<span class="neu">Neu</span>' : ""}<span>${it.type === "F" ? "Film" : "Serie"}</span>${isRom(it) && it.mine >= 8.3 ? '<span class="pg">💘 Priscilla-geprüft</span>' : ""}</div>
+      <div class="meta"><span class="rank"><i>Platz </i>${it.rank}</span>${isFresh(it) ? '<span class="neu">Neu</span>' : ""}<span>${it.type === "F" ? "Film" : "Serie"}</span>${isRom(it) && it.mine >= 8.3 ? '<span class="pg">💘 Priscilla-geprüft</span>' : ""}</div>
       <div class="score">
         <div class="stamp ${tier(it.mine)}" aria-label="Wertung ${fmt(it.mine)} von 10">${fmt(it.mine)}<small>/10</small></div>
       </div>
@@ -3301,7 +3339,7 @@ function render() {
   byMine.forEach(it => {
     const el = cardEls.get(it.id), on = show.has(it.id);
     if (el.hidden === on) el.hidden = !on;
-    if (on) { const gr = (prisc ? it.grR : it.gr) || {}; const r = effSort() === "neu" && relText(it) ? relText(it) : gName && gr[gName] ? `Platz ${gr[gName]}` : prisc && gr.Romance ? `Platz ${gr.Romance}` : `Platz ${it.rank}`; if (el._rank.textContent !== r) el._rank.textContent = r; }
+    if (on) { const gr = (prisc ? it.grR : it.gr) || {}; const r = effSort() === "neu" && relText(it) ? relText(it) : gName && gr[gName] ? `Platz ${gr[gName]}` : prisc && gr.Romance ? `Platz ${gr.Romance}` : `Platz ${it.rank}`; if (el._rank.dataset.r !== r) { const isP = r.startsWith("Platz "); el._rank.dataset.r = r; el._rank.innerHTML = isP ? `<i>Platz </i>${r.slice(6)}` : esc(r); el._rank.classList.toggle("rel", !isP); } }
   });
   const e = $("#empty");
   e.hidden = list.length > 0 || (state.view === "seen" && !seen.size); // bei 0 Gesehenen erklärt die Fortschritts-Karte alles
@@ -4866,7 +4904,7 @@ async function codeCard() {
   const parts = (list, y) => { const w = list.reduce((a, [t, f]) => { x.font = f; return a + x.measureText(t).width; }, 0); let p = S / 2 - w / 2; x.textAlign = "left"; list.forEach(([t, f, col]) => { x.font = f; x.fillStyle = col; x.fillText(t, p, y); p += x.measureText(t).width; }); };
   x.textBaseline = "top";
   // Grund und Banner in der Rangfarbe, dahinter groß das Rang-Zeichen
-  x.fillStyle = "#0F1120"; x.fillRect(0, 0, S, S);
+  x.fillStyle = "#0C0C0E"; x.fillRect(0, 0, S, S);
   const g = x.createLinearGradient(0, 0, S, 520);
   g.addColorStop(0, `rgba(${rgb(rc)},.6)`); g.addColorStop(.55, `rgba(${rgb(rc)},.16)`); g.addColorStop(1, `rgba(${rgb(rc)},.05)`);
   const ring = rc, kjCol = king ? "rgba(255,59,59,.3)" : "rgba(255,255,255,.1)";
@@ -4875,13 +4913,13 @@ async function codeCard() {
   x.fillStyle = kjCol; x.font = `400 500px ${KJ}`; x.textAlign = "right"; x.fillText(r[1], S + 36, -92);
   x.fillStyle = "rgba(236,238,248,.85)"; x.font = `700 28px ${BODY}`; spaced("LASS UNS FREUNDE SEIN!", 56, 48, 3.4, false);
   // Profilbild mit Ring und Rang-Zeichen
-  x.fillStyle = ring; circ(540, 344, 154); x.fillStyle = "#0F1120"; circ(540, 344, 146);
+  x.fillStyle = ring; circ(540, 344, 154); x.fillStyle = "#0C0C0E"; circ(540, 344, 146);
   x.save(); x.beginPath(); x.arc(540, 344, 136, 0, Math.PI * 2); x.clip();
   let drawn = false;
   if (me.av && AV_IMG[me.av]) { try { const im = new Image(); im.src = avSrc(me.av); await im.decode(); x.drawImage(im, 404, 208, 272, 272); drawn = true; } catch (e) {} }
   if (!drawn) { x.fillStyle = "#F47521"; x.fillRect(404, 208, 272, 272); x.fillStyle = "#fff"; x.font = `700 130px ${BODY}`; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(([...name][0] || "?").toUpperCase(), 540, 350); x.textBaseline = "top"; }
   x.restore();
-  rr(608, 412, 80, 80, 24); x.fillStyle = "#0F1120"; x.fill(); x.lineWidth = 5; x.strokeStyle = ring; x.stroke();
+  rr(608, 412, 80, 80, 24); x.fillStyle = "#0C0C0E"; x.fill(); x.lineWidth = 5; x.strokeStyle = ring; x.stroke();
   x.fillStyle = ring; x.font = `700 46px ${KJ}`; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(r[1], 648, 454); x.textBaseline = "top";
   // Name, Rang
   let fs = 72; x.font = `700 ${fs}px ${BODY}`; while (x.measureText(name).width > 940 && fs > 40) { fs -= 4; x.font = `700 ${fs}px ${BODY}`; }
@@ -5074,7 +5112,7 @@ var ACHM = (() => {
   }
   function seal(pk) {
     if (pk) return `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="${HP}" fill="#3A1A2C"/><g transform="translate(50 50) scale(.8) translate(-50 -50)"><path d="${HP}" fill="#1E0E19" stroke="#5A2A44" stroke-width="2"/></g><text x="50" y="47" text-anchor="middle" dominant-baseline="central" font-size="28" ${KJF} fill="#5A2A44">？</text><g transform="rotate(-12 66 66)"><rect x="54" y="54" width="25" height="25" rx="4" fill="#FF4F9A"/><text x="66.5" y="66.5" text-anchor="middle" dominant-baseline="central" font-size="14" ${KJF} fill="#FFE6F1">封</text></g></svg>`;
-    return `<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="47" fill="#22263C"/><circle cx="50" cy="50" r="44.5" fill="none" stroke="#3A3F5C" stroke-width="3" stroke-dasharray="1.6 1.9"/><circle cx="50" cy="50" r="37" fill="#14172A" stroke="#3A3F5C" stroke-width="2.5"/><text x="50" y="52" text-anchor="middle" dominant-baseline="central" font-size="34" ${KJF} fill="#3A3F5C">？</text><g transform="rotate(-12 64 66)"><rect x="50" y="52" width="28" height="28" rx="4" fill="#E2483F"/><rect x="53" y="55" width="22" height="22" rx="2" fill="none" stroke="#FFD9D4" stroke-width="1.2"/><text x="64" y="67" text-anchor="middle" dominant-baseline="central" font-size="15" ${KJF} fill="#FFE9E5">封</text></g></svg>`;
+    return `<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="47" fill="#26262A"/><circle cx="50" cy="50" r="44.5" fill="none" stroke="#3E3E44" stroke-width="3" stroke-dasharray="1.6 1.9"/><circle cx="50" cy="50" r="37" fill="#14172A" stroke="#3E3E44" stroke-width="2.5"/><text x="50" y="52" text-anchor="middle" dominant-baseline="central" font-size="34" ${KJF} fill="#3E3E44">？</text><g transform="rotate(-12 64 66)"><rect x="50" y="52" width="28" height="28" rx="4" fill="#E2483F"/><rect x="53" y="55" width="22" height="22" rx="2" fill="none" stroke="#FFD9D4" stroke-width="1.2"/><text x="64" y="67" text-anchor="middle" dominant-baseline="central" font-size="15" ${KJF} fill="#FFE9E5">封</text></g></svg>`;
   }
   const pic = (a, off) => a.t === "pk" ? heart(a.k, off) : coin(a.t, a.k, off);
   const TIER = { br: ["BRONZE", "#E2A877"], sv: ["SILBER", "#C8CEE6"], gd: ["GOLD", "#F2C14E"], gh: ["GEHEIM", "#F2C14E"] };
