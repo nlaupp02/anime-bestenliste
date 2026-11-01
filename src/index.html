@@ -1369,10 +1369,10 @@ html:not(.app) .empty .eq-app { display: none; }
 /* V315: neues Design */
 h1 { position: relative; }
 /* Der Stempel sitzt rechts neben „auf Crunchyroll“: weiter oben läge er unter der Statusleiste, die das iPhone verschwommen zeichnet */
-h1 .seal { position: absolute; right: 0; bottom: -18px; width: 40px; height: 54px; border: 2.5px solid #E5483E; border-radius: 6px; color: #E5483E; display: grid; place-items: center;
-  font-family: "Hiragino Mincho ProN", "Anime KJ", "Yu Mincho", "Noto Serif CJK JP", serif; font-weight: 700; font-size: 18px; line-height: 1.05; writing-mode: vertical-rl; transform: rotate(4deg); opacity: .92; }
+h1 .seal { position: absolute; right: 0; bottom: -26px; width: 36px; height: 48px; border: 2.5px solid #E5483E; border-radius: 6px; color: #E5483E; display: grid; place-items: center;
+  font-family: "Hiragino Mincho ProN", "Anime KJ", "Yu Mincho", "Noto Serif CJK JP", serif; font-weight: 700; font-size: 16px; line-height: 1.05; writing-mode: vertical-rl; transform: rotate(4deg); opacity: .92; }
 h1 .seal::before { content: "番付"; }
-html.prisc h1 .seal { border-color: #FF6FA8; color: #FF6FA8; font-size: 26px; }
+html.prisc h1 .seal { border-color: #FF6FA8; color: #FF6FA8; font-size: 23px; }
 html.prisc h1 .seal::before { content: "恋"; }
 html:not(.app) h1 .seal { position: static; display: inline-grid; vertical-align: middle; margin-left: 18px; width: 34px; height: 46px; font-size: 15px; }
 .pick-ico { background: rgba(0, 0, 0, .13); }
@@ -1420,7 +1420,7 @@ html.prisc.app .tabs { background: rgba(36, 24, 32, .94); }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V316</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V317</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
