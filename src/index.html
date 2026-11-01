@@ -1332,55 +1332,16 @@ html:not(.app) main { padding-top: 6px; }
 html:not(.app) .tabs .n { display: none; }
 /* Am PC immer Platz für die Scroll-Leiste: sonst ist eine kurze Seite (z. B. Genres) breiter als eine lange und alles springt seitlich */
 html:not(.app) { scrollbar-gutter: stable; }
-/* V298: Leiste unten wie in anderen iOS-Apps: 21 px vom Rand, knapp über dem Home-Balken, etwas flacher */
-.app .tabs {
-  left: 21px; right: 21px; padding: 4px;
-  bottom: max(8px, calc(env(safe-area-inset-bottom, 0px) - 12px));
-  /* mehr Glas: kräftigere Farben dahinter, Lichtkante rundum (oben hell, unten und seitlich zart) */
-  -webkit-backdrop-filter: blur(14px) saturate(190%); backdrop-filter: blur(14px) saturate(190%);
-  background: linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.02) 55%, rgba(255,255,255,.05)), rgba(20,22,38,.70);
-  border: 1px solid rgba(255,255,255,.10);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.38), inset 0 -1px 0 rgba(255,255,255,.12), inset 1px 0 0 rgba(255,255,255,.10), inset -1px 0 0 rgba(255,255,255,.10), inset 0 0 18px rgba(255,255,255,.05);
-}
-.app .tabs button { padding: 5px 2px 4px; }
-.app .tabs .lens {
-  top: 4px; bottom: 4px; left: 4px; width: calc((100% - 14px) / 4);
-  background: radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,.22), rgba(255,255,255,.10) 60%, rgba(255,255,255,.14));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), inset 0 -1px 0 rgba(255,255,255,.10);
-}
-/* Nach-oben-Knopf bleibt 11 px über der Leiste */
-.app .totop { bottom: calc(max(8px, calc(env(safe-area-inset-bottom, 0px) - 12px)) + 72px); }
-/* V299: Glasblase wie in iOS – Optik im inneren Element (dehnt sich beim Gleiten), beim Berühren hebt sie sich an */
+/* V299: Blase als inneres Element (kann sich beim Gleiten dehnen), Optik wie im Original; beim Berühren hebt sie sich leicht */
 .app .tabs .lens, .app .tabs.drag .lens { background: none; box-shadow: none; }
-.app .tabs .lens { transition: transform .42s cubic-bezier(.3, 1.3, .5, 1), scale .3s cubic-bezier(.3, 1.6, .5, 1); }
+.app .tabs .lens { transition: transform .4s cubic-bezier(.3, 1.35, .5, 1), scale .3s cubic-bezier(.3, 1.6, .5, 1); }
 .app .tabs.drag .lens { transition: scale .3s cubic-bezier(.3, 1.6, .5, 1); }
-.app .tabs .lens > i {
-  position: absolute; inset: 0; border-radius: inherit; will-change: transform;
-  background: radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,.22), rgba(255,255,255,.10) 60%, rgba(255,255,255,.14));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), inset 0 -1px 0 rgba(255,255,255,.10);
-}
-.app .tabs .lens > i::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: rgba(255,255,255,.10); box-shadow: inset 0 0 0 1px rgba(255,255,255,.2); opacity: 0; transition: opacity .2s ease; }
+.app .tabs .lens > i { position: absolute; inset: 0; border-radius: inherit; will-change: transform; background: rgba(255,255,255,.13); box-shadow: inset 0 1px 0 rgba(255,255,255,.14); transition: background-color .15s ease; }
+.app .tabs.drag .lens > i, .app .tabs.press .lens > i { background: rgba(255,255,255,.2); }
 .app .tabs.press .lens { scale: 1.1; }
-.app .tabs.press .lens > i::after { opacity: 1; }
-/* V302: Glas wie in iOS-Apps – gleichmäßig getönt, Lichtkante rundum, flache helle Blase */
-.app .tabs {
-  background: rgba(26,28,38,.74); border-color: transparent;
-  -webkit-backdrop-filter: blur(16px) saturate(180%); backdrop-filter: blur(16px) saturate(180%);
-  box-shadow: 0 6px 22px rgba(0,0,0,.30);
-}
-.app .tabs::before {
-  content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; pointer-events: none; z-index: 2;
-  background: linear-gradient(135deg, rgba(255,255,255,.45), rgba(255,255,255,.12) 26%, rgba(255,255,255,.06) 62%, rgba(255,255,255,.28));
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-}
-.app .tabs .lens > i { background: rgba(255,255,255,.15); box-shadow: inset 0 0 0 .5px rgba(255,255,255,.10); }
-/* V304: Leiste gibt beim Ziehen über das Ende nach und federt zurück; Blase hebt sich beim Berühren nur leicht; Lichtkante dezenter */
+/* V304: Leiste gibt beim Ziehen über das Ende nach und federt zurück */
 .app .tabs { transition: transform .45s cubic-bezier(.2, 1.25, .4, 1); }
 .app .tabs.drag { transition: none; }
-.app .tabs.press .lens { scale: 1.06; }
-.app .tabs::before { background: linear-gradient(135deg, rgba(255,255,255,.34), rgba(255,255,255,.11) 26%, rgba(255,255,255,.06) 62%, rgba(255,255,255,.22)); }
-.app .tabs .lens > i { background: rgba(255,255,255,.17); }
 </style>
 </head>
 <body>
@@ -1394,7 +1355,7 @@ html:not(.app) { scrollbar-gutter: stable; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V304</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V305</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
