@@ -1346,6 +1346,21 @@ html:not(.app) { scrollbar-gutter: stable; }
 .app .tabs.drag .lens > i, .app .tabs.press .lens > i { background: rgba(255,255,255,.2); }
 .app .tabs.press .lens > i { scale: 1.1; } /* nur das Glas hebt sich, die Position der Blase bleibt exakt */
 .app .tabs, .app .tabs * { -webkit-user-drag: none; }
+/* V309: Gemerkt als kompakte Liste */
+.cmp[hidden] { display: none; }
+.cmp { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr)); }
+.cmp li { display: flex; align-items: center; gap: 13px; min-width: 0; padding: 9px 12px 9px 9px; border-radius: 16px; background: var(--sheet); border: 1px solid var(--line); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.cmp li:active { filter: brightness(1.12); }
+.cmp .th { width: 58px; height: 84px; flex: none; border-radius: 9px; overflow: hidden; background: var(--chip); }
+.cmp .th img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cmp .tx { flex: 1; min-width: 0; }
+.cmp .tx b { display: block; font-size: 16px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cmp .tx small { display: block; margin-top: 4px; font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cmp .tx .de { color: var(--ok); font-weight: 700; }
+.cmp .tx .teil { color: var(--warn); font-weight: 700; }
+.cmp .stamp { flex: none; width: 40px; height: 40px; font-size: 13px; border-width: 2px; transform: none; }
+.cmp .stamp small { display: none; }
+.cmp .stamp.low { background: var(--paper); }
 </style>
 </head>
 <body>
@@ -1359,7 +1374,7 @@ html:not(.app) { scrollbar-gutter: stable; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V308</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V309</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1423,6 +1438,7 @@ html:not(.app) { scrollbar-gutter: stable; }
     <section class="tp-wrap" id="tipRow" hidden aria-label="Tipps von Freunden"></section>
     <ol class="grid" id="list"></ol>
     <ul class="shelf" id="shelf" hidden></ul>
+    <ul class="cmp" id="cmp" hidden aria-label="Gemerkte Titel"></ul>
     <p class="empty" id="empty" hidden>Kein Titel passt zu diesen Filtern. Setz einzelne Filter zurück oder leere die Suche.</p>
   </main>
   <button type="button" class="totop" id="totop" aria-label="Nach oben" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13.5V3M3.5 7.5L8 3l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -2999,6 +3015,7 @@ function applyCovers() {
   tipRow();
   if (any && $("#tiles").childElementCount) renderTiles();
   if (any && state.view === "seen" && shelfList.length) renderShelf(shelfList);
+  if (any && state.view === "saved") renderCmp(cmpList); // Cover kamen nach: in der Gemerkt-Liste nachtragen
   else if (any) prewarmShelf(); // Cover-Adressen kamen erst nach dem Vorbereiten: im versteckten Regal nachtragen
   if (!any || !cardEls) return;
   items.forEach(it => {
@@ -3242,6 +3259,7 @@ function render() {
   e.dataset.ic = /gemerkt/.test(e.textContent) ? "saved" : /gesehen markiert/.test(e.textContent) ? "seen" : "find";
   nvDays(list);
   renderShelf(list);
+  renderCmp(list);
   tipRow();
   status(list.length);
   // Sobald die Liste einmal sichtbar gezeichnet wurde, kennt das iPhone alle Kartenhöhen: ab dann nur noch sichtbare Karten zeichnen
@@ -3312,6 +3330,36 @@ function renderShelf(list) {
   $("#pfFavL").textContent = favWord();
   $("#favg").innerHTML = best.length === 1 ? `Dein Lieblingsgenre: ${best[0]}` : `Deine Lieblingsgenres: ${best.slice(0, -1).join(", ")} & ${best[best.length - 1]}`;
 }
+// Gemerkt als kompakte Liste: kleines Cover, Name, Genres, Ton, Länge und Wertung. Antippen öffnet die ganze Karte
+let cmpList = [];
+function cmpLi(it, li) {
+  const u = coverOf(it);
+  if (!li) {
+    li = document.createElement("li"); li.dataset.id = it.id; li.tabIndex = 0; li.setAttribute("role", "button"); li.setAttribute("aria-label", it.title);
+    const ton = it.dub === "de" || it.dub === "teil" || it.dub === "sub" ? `<span class="${it.dub}">${DUB[it.dub]}</span> · ` : "";
+    li.innerHTML = `<div class="th"></div><div class="tx"><b>${esc(shortT(it.title))}</b><small>${esc(it.genres.slice(0, 3).join(" · "))}</small><small>${ton}${esc(it.len)}</small></div><div class="stamp ${tier(it.mine)}">${fmt(it.mine)}<small>/10</small></div>`;
+  }
+  const th = li.firstElementChild;
+  if (u && !th.firstElementChild) th.innerHTML = `<img${coverAttrs(u, "58px")} alt="" loading="lazy" decoding="async" draggable="false" onerror="if(this.srcset)this.removeAttribute('srcset')">`;
+  return li;
+}
+function renderCmp(list) {
+  const box = $("#cmp"), on = state.view === "saved";
+  if (!on) { cmpList = []; box.hidden = true; return; }
+  $("#list").hidden = true;
+  cmpList = list; box.hidden = !list.length;
+  // Vorhandene Zeilen bleiben stehen (kein Neuladen der Cover): nur Fehlendes ergänzen, Entferntes herausnehmen
+  const have = new Map([...box.children].map(li => [li.dataset.id, li])), want = new Set(list.map(it => it.id));
+  have.forEach((li, id) => { if (!want.has(id)) li.remove(); });
+  let prev = null;
+  list.forEach(it => {
+    const li = cmpLi(it, have.get(it.id)), at = prev ? prev.nextElementSibling : box.firstElementChild;
+    if (at !== li) box.insertBefore(li, at);
+    prev = li;
+  });
+}
+$("#cmp").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li) openShelf(li.dataset.id); });
+$("#cmp").addEventListener("keydown", e => { const li = e.target.closest("li[data-id]"); if (li && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openShelf(li.dataset.id); } });
 // Nach dem Start im Hintergrund: Genre-Kacheln und Profil-Regal schon bauen und deren Bilder laden.
 // So sind beide Reiter beim ersten Öffnen sofort fertig. Wird gerade gewischt, kurz später noch einmal versuchen.
 function prewarmTabs(step = 0) {
