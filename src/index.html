@@ -1375,7 +1375,7 @@ html:not(.app) { scrollbar-gutter: stable; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V300</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V301</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4014,7 +4014,7 @@ async function acctSyncRun() {
         how = firstPick; firstPick = ""; choice = null;
       }
     }
-    if (how === "account") applyMarks(new Set(rSeen), new Set(rSaved));
+    if (how === "account") { applyMarks(new Set(rSeen), new Set(rSaved)); if (typeof ACHM !== "undefined" && ACHM) ACHM.push(true); }
     else if (how === "device") { /* Liste von diesem Gerät gilt, sie wird gleich ins Konto geschrieben */ }
     else if (r && (!mine || r.ver !== acct.ver)) {
       if (mine && !acct.dirty) applyMarks(new Set(rSeen), new Set(rSaved));
@@ -5179,12 +5179,11 @@ var ACHM = (() => {
     ban.animate([{ transform: ban.style.transform || "none", opacity: 1 }, { transform: "translateY(calc(-100% - 30px))", opacity: 0 }], { duration: 480, easing: "cubic-bezier(.5,0,.75,0)", fill: "forwards" }).onfinish = banDone;
   }
   // Antippen = weiter: zum nächsten alten Erfolg, sonst Banner weg (es öffnet sich nichts)
-  // Von allein weg nach gut 4 Sekunden – aber nicht, solange man gerade scrollt oder den Bildschirm berührt
-  // (sonst ist er weg, bevor man ihn gesehen hat). Verschwindet er nur kurz wegen eines Fensters, kommt er danach wieder.
+  // Von allein weg nach gut 4 Sekunden, egal ob man scrollt (Tippen oder Wischen woanders schließt ihn nicht).
+  // Verschwindet er nur kurz wegen eines Fensters, kommt er danach wieder.
   function autoHide() {
     clearTimeout(banT);
     if (ban.hidden || banHiding) return;
-    if (touching || Date.now() - lastScroll < 1500) { banT = setTimeout(autoHide, 700); return; }
     banGone();
   }
   // Weg durch Antippen, Wegwischen oder von allein: Erst dann zählt der Erfolg als gesehen und kommt nicht wieder
@@ -5269,7 +5268,7 @@ var ACHM = (() => {
   function check() {
     const before = { n: doneOf(N).length, p: doneOf(P).length };
     let pg = prog();
-    const scan = () => [...N, ...P].forEach(a => { const [h, need] = pg[a.id]; if (!got[a.id] && need > 0 && h >= need) got[a.id] = [Date.now(), 0]; });
+    const scan = () => [...N, ...P].forEach(a => { const [h, need] = pg[a.id]; if (!got[a.id] && need > 0 && h >= need) got[a.id] = [Date.now(), 0, 1]; }); // 1 = hier selbst freigeschaltet
     scan(); pg = prog(); scan(); // zweiter Durchgang: Erfolge, die von anderen abhängen
     store(KEY_A, got);
     // Neue Belohnung? (nicht beim allerersten Mal)
@@ -5316,7 +5315,8 @@ var ACHM = (() => {
       if (ok(x.ttl) && x.ttl !== (ttl.n || "")) { ttl.n = x.ttl; ch = true; }
       if (ok(x.ttlP) && x.ttlP !== (ttl.p || "")) { ttl.p = x.ttlP; ch = true; }
     }
-    if (ch) { store(KEY_TTL, ttl); prof(); }
+    if (ch) store(KEY_TTL, ttl);
+    prof(); // Profil-Leiste immer auf den Stand aus dem Konto bringen
   }
   // Zurück in der App (z. B. nach einer Wahl auf dem anderen Gerät): Titel aus dem Konto neu holen, höchstens alle 15 s
   let pullAt = 0;
@@ -5401,7 +5401,7 @@ var ACHM = (() => {
   function undo() {
     const pg = prog(), now = Date.now(); let ch = false;
     [...N, ...P].forEach(a => {
-      const g = got[a.id]; if (!g || KEEP.has(a.id) || now - g[0] > 864e5) return;
+      const g = got[a.id]; if (!g || g[2] !== 1 || KEEP.has(a.id) || now - g[0] > 864e5) return; // nur selbst hier freigeschaltete, nicht aus dem Konto geholte
       const [h, need] = pg[a.id]; if (h >= need) return;
       delete got[a.id]; ch = true;
       ev.rv = ev.rv || {}; ev.rv[a.id] = now; // kommt nicht über das Konto zurück, solange dort noch der alte Stand steht
