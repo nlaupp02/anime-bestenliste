@@ -1346,9 +1346,6 @@ html:not(.app) { scrollbar-gutter: stable; }
 .app .tabs.drag .lens > i, .app .tabs.press .lens > i { background: rgba(255,255,255,.2); }
 .app .tabs.press .lens > i { scale: 1.1; } /* nur das Glas hebt sich, die Position der Blase bleibt exakt */
 .app .tabs, .app .tabs * { -webkit-user-drag: none; }
-/* V304: Leiste gibt beim Ziehen über das Ende nach und federt zurück */
-.app .tabs { transition: transform .45s cubic-bezier(.2, 1.25, .4, 1); }
-.app .tabs.drag { transition: none; }
 </style>
 </head>
 <body>
@@ -1362,7 +1359,7 @@ html:not(.app) { scrollbar-gutter: stable; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V307</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V308</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -3742,7 +3739,7 @@ const placeLens = (() => {
     bar.classList.add("press"); btns[i0].classList.add("hover"); drag.i = i0; setI(i0);
   }, { passive: false });
   // Feder: Die Blase läuft dem Finger weich hinterher und dehnt sich dabei, je schneller, desto länger (wie ein Tropfen)
-  const OVER = 5, K = 480, C = 2 * Math.sqrt(480) * .9;
+  const OVER = 4, K = 480, C = 2 * Math.sqrt(480) * .9;
   let lx = 0, lv = 0, lt = 0, ls = 0;
   const frame = now => {
     raf = 0; if (!drag) return;
@@ -3756,8 +3753,7 @@ const placeLens = (() => {
     ls = Math.min(.28, Math.abs(lv) / 2400);
     lens.style.transform = `translate3d(${lx}px,0,0)`; // angehoben ist sie schon über „press“
     glass.style.transform = ls > .004 ? `scale(${(1 + ls).toFixed(3)},${(1 - ls * .4).toFixed(3)})` : "";
-    // Über das Ende hinaus: die ganze Leiste gibt ein paar Pixel nach (Gummiband)
-    const shift = Math.max(-14, Math.min(14, ex * .18)); bar.style.transform = shift ? `translate3d(${shift.toFixed(1)}px,0,0)` : "";
+    const shift = 0; // V308: kein Nachgeben der Leiste mehr am Ende (nur die Blase hat etwas Spiel)
     const c = nextX - drag.left; let i = 0; pos.forEach((q, k) => { if (c >= q.l) i = k; });
     if (i !== drag.i) { if (drag.i >= 0) btns[drag.i].classList.remove("hover"); btns[i].classList.add("hover"); drag.i = i; }
     if (lx !== tx || lv || shift) raf = requestAnimationFrame(frame); // weiterfedern, bis alles ruht
