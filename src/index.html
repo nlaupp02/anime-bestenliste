@@ -1340,11 +1340,12 @@ html:not(.app) { scrollbar-gutter: stable; }
 .app .totop { bottom: calc(max(8px, calc(env(safe-area-inset-bottom, 0px) - 12px)) + 72px); }
 /* V299: Blase als inneres Element (kann sich beim Gleiten dehnen), Optik wie im Original; beim Berühren hebt sie sich leicht */
 .app .tabs .lens, .app .tabs.drag .lens { background: none; box-shadow: none; }
-.app .tabs .lens { transition: transform .4s cubic-bezier(.3, 1.35, .5, 1), scale .3s cubic-bezier(.3, 1.6, .5, 1); }
-.app .tabs.drag .lens { transition: scale .3s cubic-bezier(.3, 1.6, .5, 1); }
-.app .tabs .lens > i { position: absolute; inset: 0; border-radius: inherit; will-change: transform; background: rgba(255,255,255,.13); box-shadow: inset 0 1px 0 rgba(255,255,255,.14); transition: background-color .15s ease; }
+.app .tabs .lens { transition: transform .4s cubic-bezier(.3, 1.35, .5, 1); }
+.app .tabs.drag .lens { transition: none; }
+.app .tabs .lens > i { position: absolute; inset: 0; border-radius: inherit; will-change: transform; background: rgba(255,255,255,.13); box-shadow: inset 0 1px 0 rgba(255,255,255,.14); transition: background-color .15s ease, scale .3s cubic-bezier(.3, 1.6, .5, 1); }
 .app .tabs.drag .lens > i, .app .tabs.press .lens > i { background: rgba(255,255,255,.2); }
-.app .tabs.press .lens { scale: 1.1; }
+.app .tabs.press .lens > i { scale: 1.1; } /* nur das Glas hebt sich, die Position der Blase bleibt exakt */
+.app .tabs, .app .tabs * { -webkit-user-drag: none; }
 /* V304: Leiste gibt beim Ziehen über das Ende nach und federt zurück */
 .app .tabs { transition: transform .45s cubic-bezier(.2, 1.25, .4, 1); }
 .app .tabs.drag { transition: none; }
@@ -1361,7 +1362,7 @@ html:not(.app) { scrollbar-gutter: stable; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V306</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V307</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -3731,6 +3732,7 @@ const placeLens = (() => {
   document.addEventListener("touchcancel", e => { if (!e.touches.length) multi = false; }, { passive: true });
   bar.addEventListener("touchstart", e => {
     if (!isApp() || e.touches.length > 1) { abort(); return; }
+    if (e.cancelable) e.preventDefault(); // kein Lupe/Vorschau-Fenster von iOS bei langem Drücken; den Klick löst die Leiste selbst aus
     const t = e.changedTouches[0], r = bar.getBoundingClientRect();
     const pos = btns.map(b => ({ l: b.offsetLeft, w: b.offsetWidth }));
     drag = { id: t.identifier, x0: t.clientX, y0: t.clientY, left: r.left + bar.clientLeft, pos, moved: false, i: -1 };
@@ -3738,7 +3740,7 @@ const placeLens = (() => {
     // Das passiert, bevor die Liste umgebaut wird, deshalb wirkt der Wechsel sofort und nichts hängt.
     const fx = t.clientX - drag.left; let i0 = 0; pos.forEach((q, k) => { if (fx >= q.l) i0 = k; });
     bar.classList.add("press"); btns[i0].classList.add("hover"); drag.i = i0; setI(i0);
-  }, { passive: true });
+  }, { passive: false });
   // Feder: Die Blase läuft dem Finger weich hinterher und dehnt sich dabei, je schneller, desto länger (wie ein Tropfen)
   const OVER = 5, K = 480, C = 2 * Math.sqrt(480) * .9;
   let lx = 0, lv = 0, lt = 0, ls = 0;
@@ -3785,8 +3787,8 @@ const placeLens = (() => {
     bar.style.transform = ""; // Leiste federt zurück (per CSS-Übergang)
     if (d.moved) { relax(ls); noSquish = true; } // Form federt aus der jetzigen Dehnung zurück, nicht noch einmal extra
     if (d.moved && !cancel && !multi) { if (e.cancelable) e.preventDefault(); if (d.i >= 0 && btns[d.i].getAttribute("aria-selected") !== "true") btns[d.i].click(); }
-    // Kurz getippt: Der Klick gleich danach wechselt den Reiter, die Blase sitzt schon dort. Kommt kein Klick, kehrt sie zurück.
-    if (!d.moved && !cancel && !multi) { clearTimeout(pressT); pressT = setTimeout(toActive, 450); return; }
+    // Kurz getippt: Reiter wechseln (den Klick gibt es nach preventDefault nicht mehr von selbst)
+    if (!d.moved && !cancel && !multi && d.i >= 0) { if (e.cancelable) e.preventDefault(); if (btns[d.i].getAttribute("aria-selected") !== "true") btns[d.i].click(); }
     toActive(); noSquish = false;
   };
   bar.addEventListener("touchend", e => finish(e, false));
