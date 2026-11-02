@@ -550,12 +550,12 @@ html.prisc .prog.max .ring svg { filter: drop-shadow(0 0 4px rgba(246, 196, 83, 
 .pfh-stats b { line-height: 28px; }
 /* Freunde: kleiner Knopf oben links im Banner (Gesichter + Anzahl), öffnet die Liste */
 .pf-fr { position: absolute; top: 10px; left: 10px; z-index: 2; display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 12px 0 6px; border-radius: 18px;
-  font: inherit; font-size: 13px; font-weight: 700; color: var(--ink); background: rgba(15, 17, 32, .55); border: 1px solid rgba(255, 255, 255, .14);
+  font: inherit; font-size: 13px; font-weight: 700; color: var(--ink); background: rgba(0, 0, 0, .38); border: 1px solid rgba(255, 255, 255, .14);
   -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .pf-fr.none { padding-left: 12px; }
 .pf-fr[hidden] { display: none; }
 .pf-stack { display: flex; align-items: center; }
-.pf-stack .avr { width: 24px; height: 24px; box-shadow: 0 0 0 2px #1A1D2E; margin-left: -8px; display: grid; }
+.pf-stack .avr { width: 24px; height: 24px; box-shadow: 0 0 0 2px rgba(0, 0, 0, .55); margin-left: -8px; display: grid; }
 .pf-stack .avr:first-child { margin-left: 0; }
 .pf-stack .avr.fr-l { font-size: 12px; }
 /* Kacheln: welche Freunde den Titel gesehen haben */
@@ -687,7 +687,7 @@ html.prisc .meta .neu { color: #2A0A18; }
 .neubar { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 8px 8px 8px 12px; border-radius: 12px; background: var(--hanko-soft); border: 1px solid var(--hanko); color: var(--ink); font-size: 13.5px; font-weight: 700; }
 .neubar[hidden] { display: none; }
 .neubar span { flex: 1; min-width: 0; }
-.neubar button { font: inherit; font-size: 13px; font-weight: 700; color: #12131C; background: var(--ink); border: 0; border-radius: 999px; padding: 6px 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.neubar button { font: inherit; font-size: 13px; font-weight: 700; color: #11131F; background: var(--ink); border: 0; border-radius: 999px; padding: 6px 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 html.prisc .neubar { background: #3A1A2A; border-color: #FF6FA8; color: #FFD3E6; }
 html.prisc .neubar button { background: #FF9CC8; color: #2A0A18; }
 /* Liebes-Ränge: Grau (Single) → Flieder → Rosa → Koralle → Rot → Gold für die Herzkönigin */
@@ -759,7 +759,7 @@ html.prisc .ladder .big.glow { box-shadow: 0 0 8px rgba(246, 196, 83, .4); }
 .ladder li.cur .ab { color: var(--ink); font-weight: 700; }
 .ladder li.lock { opacity: .62; }
 .ladder .nm { min-width: 0; }
-.ladder .du { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 99px; background: var(--ink); color: #12131C; font-size: 11px; font-weight: 800; vertical-align: 1px; }
+.ladder .du { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 99px; background: var(--ink); color: #11131F; font-size: 11px; font-weight: 800; vertical-align: 1px; }
 .toast {
   position: fixed; z-index: 50; /* über offenen Fenstern, sonst liegt der Hinweis dunkel hinter dem Schleier */ left: 50%; transform: translateX(-50%);
   bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + 58px);
@@ -1222,7 +1222,7 @@ html.prisc .ach-ban { background: #2E1727; border-color: #4A2238; }
 
 /* Hinweise: klein und weiß, unten über der Leiste (oben lagen sie auf der großen Überschrift) */
 .toast { z-index: 85; /* über den Blüten vom Priscilla-Modus */ display: flex; align-items: center; gap: 8px; max-width: 88vw; padding: 9px 14px; border-radius: 999px;
-  background: #E8EAF3; color: #0F1120; font-size: 13.5px; font-weight: 600; line-height: 1.3; box-shadow: 0 8px 22px rgba(0, 0, 0, .4); animation: tstIn .28s cubic-bezier(.2,.8,.2,1); }
+  background: #E8EAF3; color: #11131F; font-size: 13.5px; font-weight: 600; line-height: 1.3; box-shadow: 0 8px 22px rgba(0, 0, 0, .4); animation: tstIn .28s cubic-bezier(.2,.8,.2,1); }
 .toast[hidden] { display: none; }
 .toast .toast-act { color: #D63F35; padding: 2px 0 2px 2px; }
 html.prisc .toast .toast-act { color: #D9367A; }
@@ -1428,7 +1428,7 @@ html.prisc.app .tabs { background: rgba(46, 34, 42, .94); }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V324</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V325</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -2582,6 +2582,7 @@ renderCounts();
 
 document.querySelectorAll(".seg button[data-type]").forEach(b => b.addEventListener("click", () => { state.type = b.dataset.type; sync(); render(); }));
 document.querySelectorAll(".seg button[data-sort]").forEach(b => b.addEventListener("click", () => { if (state.sort === b.dataset.sort) return; state.sort = b.dataset.sort; sync(); render(); }));
+$("#q").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); e.target.blur(); } });
 $("#q").addEventListener("input", e => {
   const v = e.target.value.trim().toLowerCase();
   if (v === "priscilla") { e.target.value = ""; state.q = ""; e.target.blur(); if (prisc) { render(); askPrisc(); } else { setPrisc(true, true); render(); } return; }
@@ -2592,6 +2593,7 @@ function setPrisc(on, fx) {
   state.g2 = "";
   // Romanzen-Stimmungen gibt es nur im Modus, die normalen nur außerhalb
   document.documentElement.classList.toggle("prisc", on);
+  { const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = on ? "#1C1019" : "#11131F"; }
   $("#prisBar").hidden = !on;
   renderCounts();
   if (!fx) return;
@@ -2645,6 +2647,7 @@ $("#prisOff").addEventListener("click", askPrisc);
 $("#newBtn").addEventListener("click", () => { neuView = true; render(); });
 $("#neuOff").addEventListener("click", () => { neuView = false; render(); });
 $("#prisBar").hidden = !prisc;
+if (prisc) { const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = "#1C1019"; }
 // iPhone: Für die Tastatur verschiebt das iPhone die (sonst stillstehende) Seite. Danach wieder an ihren Platz.
 document.addEventListener("focusin", e => { if (e.target.matches("input, textarea")) typing = true; });
 // iPhone: Beim Antippen des Suchfelds schiebt iOS die Seite sonst kurz nach unten, obwohl das Feld oben schon sichtbar ist.
@@ -2884,14 +2887,18 @@ function qOk(it) {
     const pool = prisc ? items.filter(isRom) : items;
     // Erst ohne Leerzeichen vergleichen („dan da dan“ = Dandadan); nur wenn das nichts findet, die Wörter einzeln (in beliebiger Reihenfolge, je am Wortanfang)
     const byCmp = x => !!QC && qCmp(x).includes(QC);
-    const byWords = x => tk.length > 1 && tk.every(t => (" " + qHay(x)).includes(" " + t));
+    // Jedes Suchwort braucht ein eigenes Titelwort (zwei gleiche Suchwörter also zwei Titelwörter)
+    const words = x => x._qw2 || (x._qw2 = qHay(x).split(" ").filter(Boolean));
+    const assign = (ws, fit) => { const used = new Set(); return tk.every(t => { const i = ws.findIndex((w, j) => !used.has(j) && fit(t, w)); if (i < 0) return false; used.add(i); return true; }); };
+    const byWords = x => tk.length > 1 && assign(words(x), (t, w) => w.startsWith(t));
     const near = t => t.length >= 7 ? 2 : t.length >= 4 ? 1 : 0;
     // Tippfehler: gleicher Anfangsbuchstabe (vertippt wird fast nie am Anfang), sonst wäre „Rache“ plötzlich „Sache“
     const close = (t, w, m) => w[0] === t[0] && qDist(t, w, m) <= m;
-    const byFuzzy = x => { const ws = x._qw || (x._qw = qHay(x).split(" ").filter(w => w.length >= 3));
-      return tk.every(t => { const m = near(t); if (!m) return (" " + qHay(x)).includes(" " + t);
-        return ws.some(w => close(t, w, m)) || close(t, qCmp(x).slice(0, t.length), m); }); };
-    const byDesc = x => { const d = x._qd || (x._qd = qFold(x.desc)); return tk.every(t => d.includes(t)); };
+    const byFuzzy = x => assign(words(x), (t, w) => { const m = near(t); return m ? w.length >= 3 && close(t, w, m) : w.startsWith(t); })
+      || (tk.length === 1 && near(tk[0]) > 0 && close(tk[0], qCmp(x).slice(0, tk[0].length), near(tk[0])));
+    // Beschreibung: nur Wörter ab 3 Buchstaben zählen, je am Wortanfang („da“ steckt sonst in fast jedem Text)
+    const dtk = tk.filter(t => t.length >= 3);
+    const byDesc = x => { const d = x._qd || (x._qd = " " + qFold(x.desc)); return dtk.length > 0 && dtk.every(t => d.includes(" " + t)); };
     const byTitle = !QC || pool.some(byCmp) ? byCmp : byWords;
     qMode = !QC ? "title" : pool.some(byTitle) ? "title" : pool.some(byFuzzy) ? "fuzzy" : Q.length >= 4 && pool.some(byDesc) ? "desc" : "none";
     qTest = !QC ? () => true : qMode === "title" ? byTitle : qMode === "fuzzy" ? byFuzzy : qMode === "desc" ? byDesc : () => false;
@@ -2927,7 +2934,7 @@ function status(n) {
     const m = byMine.reduce((a, it) => { const el = cardEls.get(it.id); return el && !el.hidden && el.parentNode && el.parentNode.id === "list" ? a + minutesOf(it) : a; }, 0);
     if (m) hrs = ` · ${Math.max(1, Math.round(m / 60))} Std.`;
   }
-  $("#status").textContent = n < 0 ? `${tileCount} ${prisc ? (tileCount === 1 ? "Thema" : "Themen") : tileCount === 1 ? "Genre" : "Genres"}` : (prisc ? `${n} ${n === 1 ? "Romanze" : "Romanzen"}` : active ? `${n} Treffer` + (state.q && qMode === "fuzzy" ? " · ähnlich geschrieben" : state.q && qMode === "desc" ? " · aus den Beschreibungen" : "") : `${n} Titel`) + hrs + (effSort() === "neu" && n >= 0 && !neuView ? ` · erschienen ${NEU_JAHR}` : "");
+  $("#status").textContent = n < 0 ? `${tileCount} ${prisc ? (tileCount === 1 ? "Thema" : "Themen") : tileCount === 1 ? "Genre" : "Genres"}` : ((prisc ? `${n} ${n === 1 ? "Romanze" : "Romanzen"}` : active ? `${n} Treffer` : `${n} Titel`) + (state.q && qMode === "fuzzy" ? " · ähnlich geschrieben" : state.q && qMode === "desc" ? " · aus den Beschreibungen" : "")) + hrs + (effSort() === "neu" && n >= 0 && !neuView ? ` · erschienen ${NEU_JAHR}` : "");
   $("#reset").hidden = !active;
   $("#share").hidden = !(state.view === "saved" && nSaved);
   // „So entsteht die Wertung“ (ⓘ) nur bei Alle – auf den anderen Reitern nimmt es nur Platz weg
