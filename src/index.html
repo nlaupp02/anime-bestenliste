@@ -1428,7 +1428,7 @@ html.prisc.app .tabs { background: rgba(46, 34, 42, .94); }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V330</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V331</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -3691,16 +3691,23 @@ const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 let pickAnim = 0;
 function glideTo(el, done) {
   cancelAnimationFrame(pickAnim);
-  const targetY = () => Math.max(0, Math.min(maxY(), getY() + el.getBoundingClientRect().top - Math.max(16, (viewH() - el.offsetHeight) / 2)));
+  const vh = viewH(), targetY = () => Math.max(0, Math.min(maxY(), getY() + el.getBoundingClientRect().top - Math.max(16, (vh - el.offsetHeight) / 2)));
   if (reduce) { setY(targetY()); if (done) done(); return; }
-  const y0 = getY(), t0 = performance.now(), dur = Math.min(1100, 450 + Math.abs(targetY() - y0) / 30);
-  const step = now => {
-    const k = Math.min(1, (now - t0) / dur), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
-    setY(Math.round(y0 + (targetY() - y0) * e));
-    if (k < 1) pickAnim = requestAnimationFrame(step);
-    else pickAnim = requestAnimationFrame(() => { pickAnim = 0; if (Math.abs(targetY() - getY()) > 3) setY(targetY()); if (done) done(); });
+  const go = () => {
+    const y0 = getY(), t0 = performance.now(), dur = 560;
+    const step = now => {
+      const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+      setY(Math.round(y0 + (targetY() - y0) * e));
+      if (k < 1) pickAnim = requestAnimationFrame(step);
+      else pickAnim = requestAnimationFrame(() => { pickAnim = 0; if (Math.abs(targetY() - getY()) > 3) setY(targetY()); if (done) done(); });
+    };
+    pickAnim = requestAnimationFrame(step);
   };
-  pickAnim = requestAnimationFrame(step);
+  const far = targetY() - getY(), box = SC || document.querySelector("main");
+  if (Math.abs(far) <= vh * 1.2 || !box || !box.animate) { go(); return; }
+  // Weit weg: kurz ausblenden, knapp vor die Karte springen, einblenden und das letzte Stück gleiten
+  const f = box.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 110, easing: "ease-in", fill: "forwards" });
+  f.onfinish = () => { setY(targetY() - Math.sign(far) * vh * .7); f.cancel(); box.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: "ease-out" }); go(); };
 }
 
 // Zufallstipp-Animation: Der Würfel rollt (Augen wechseln), danach wird auf der gewählten Karte die Wertung
