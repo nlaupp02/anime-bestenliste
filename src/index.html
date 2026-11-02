@@ -1425,7 +1425,7 @@ html.prisc.app .tabs { background: rgba(46, 34, 42, .94); }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V321</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V322</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4910,14 +4910,14 @@ async function codeCard() {
   const parts = (list, y) => { const w = list.reduce((a, [t, f]) => { x.font = f; return a + x.measureText(t).width; }, 0); let p = S / 2 - w / 2; x.textAlign = "left"; list.forEach(([t, f, col]) => { x.font = f; x.fillStyle = col; x.fillText(t, p, y); p += x.measureText(t).width; }); };
   x.textBaseline = "top";
   // Grund und Banner in der Rangfarbe, dahinter groß das Rang-Zeichen
-  const BG = prisc ? "#1C1019" : "#11131F", MUT = prisc ? "#BFAEB9" : "#B3B7C6";
+  const BG = prisc ? "#281A25" : "#1B1E2C", BOXF = prisc ? "#1C1019" : "#11131F", MUT = prisc ? "#BFAEB9" : "#B3B7C6";
   x.fillStyle = BG; x.fillRect(0, 0, S, S);
   const g = x.createLinearGradient(0, 0, S, 520);
   g.addColorStop(0, `rgba(${rgb(rc)},.6)`); g.addColorStop(.55, `rgba(${rgb(rc)},.16)`); g.addColorStop(1, `rgba(${rgb(rc)},.05)`);
   const ring = rc, kjCol = king ? "rgba(255,59,59,.3)" : "rgba(255,255,255,.1)";
   if (king) { const k = x.createLinearGradient(0, 0, S, 520); k.addColorStop(0, "#3A0610"); k.addColorStop(.6, "#1A060C"); k.addColorStop(1, "#12070D"); x.fillStyle = k; } else x.fillStyle = g;
   x.fillRect(0, 0, S, 356);
-  x.fillStyle = kjCol; x.font = `400 500px ${KJ}`; x.textAlign = "right"; x.fillText(r[1], S + 36, -92);
+  x.save(); x.beginPath(); x.rect(0, 0, S, 356); x.clip(); x.fillStyle = kjCol; x.font = `400 500px ${KJ}`; x.textAlign = "right"; x.fillText(r[1], S + 36, -92); x.restore();
   x.fillStyle = "rgba(236,238,248,.85)"; x.font = `700 28px ${BODY}`; spaced("LASS UNS FREUNDE SEIN!", 56, 48, 3.4, false);
   // Profilbild mit Ring und Rang-Zeichen
   x.fillStyle = ring; circ(540, 344, 154); x.fillStyle = BG; circ(540, 344, 146);
@@ -4934,7 +4934,7 @@ async function codeCard() {
   parts([[r[3], `700 36px ${BODY}`, rc], [sub, `700 36px ${BODY}`, MUT]], 622);
   // Code im Kasten
   const box = acc; // Code-Kasten immer gleich (gold)
-  rr(88, 712, 904, 208, 40); x.fillStyle = `rgba(${rgb(box)},.08)`; x.fill(); x.lineWidth = 4; x.strokeStyle = box; x.stroke();
+  rr(88, 712, 904, 208, 40); x.fillStyle = BOXF; x.fill(); x.lineWidth = 4; x.strokeStyle = box; x.stroke();
   x.fillStyle = MUT; x.font = `700 26px ${BODY}`; spaced("MEIN CODE FÜR DIE ANIME-APP", 540, 744, 3.6, true);
   x.fillStyle = acc; x.font = `700 100px ${MONO}`; spaced(fmtCode(acct.code), 540, 790, 5, true);
   parts([["In der App: ", `500 32px ${BODY}`, MUT], ["Profil → Freunde → +", `700 32px ${BODY}`, "#ECEEF8"]], 962);
