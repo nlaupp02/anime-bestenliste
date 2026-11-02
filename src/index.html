@@ -1415,6 +1415,13 @@ html.app { --pk: #F47521; } html.app.prisc { --pk: var(--hanko); }
 html.prisc.app .tabs { background: rgba(46, 34, 42, .94); }
 /* Nach-oben-Knopf: die Leiste ist etwas höher geworden, der Knopf rückt mit */
 .app .totop { bottom: calc(max(8px, calc(env(safe-area-inset-bottom, 0px) - 12px)) + 76px); }
+/* V327: Würfel-Tipp im Fenster */
+#shelfOne .card .pk-head { text-align: center; color: var(--gold); font-weight: 800; font-size: 12.5px; letter-spacing: .12em; text-transform: uppercase; margin: -2px 0 12px; }
+#shelfOne .card .reroll { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin-top: 14px; }
+#shelfOne .card .reroll + .sclose { margin-top: 8px; }
+.reroll .rr-d { display: inline-grid; width: 20px; height: 20px; }
+.reroll .rr-d svg { width: 20px; height: 20px; }
+.pick-ico { will-change: auto; }
 </style>
 </head>
 <body>
@@ -1428,7 +1435,7 @@ html.prisc.app .tabs { background: rgba(46, 34, 42, .94); }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V326</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V327</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -3529,7 +3536,8 @@ function openShelf(id) {
   requestAnimationFrame(() => { if (window.fitAll) window.fitAll(); });
 }
 function closeShelf() {
-  if (shelfEl) { const x = shelfEl.querySelector(".sclose"); if (x) x.remove(); }
+  if (shelfEl) { shelfEl.querySelectorAll(".sclose, .reroll, .pk-head").forEach(x => x.remove()); const cb = shelfEl.querySelector(".cbody"); if (cb) cb.style.opacity = ""; }
+  pickOpen = false; shelfOv.classList.remove("pk");
   if (shelfEl && shelfPh) shelfPh.replaceWith(shelfEl);
   shelfEl = shelfPh = null; shelfOv.hidden = true;
   if (state.view !== "seen") render(); // Karte aus Tipp-Reihe o. Ä. geöffnet: wieder richtig ein- oder ausblenden
@@ -3688,20 +3696,6 @@ function toast(msg, action, ms) {
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // Sichtbar zur Karte gleiten. Das Ziel wird in jedem Bild neu gemessen, weil Karten unterwegs erst gezeichnet werden und ihre Höhe ändern
-let pickAnim = 0;
-function glideTo(el, done) {
-  cancelAnimationFrame(pickAnim);
-  const targetY = () => Math.max(0, Math.min(maxY(), getY() + el.getBoundingClientRect().top - Math.max(16, (viewH() - el.offsetHeight) / 2)));
-  if (reduce) { setY(targetY()); if (done) done(); return; }
-  const y0 = getY(), t0 = performance.now(), dur = Math.min(1100, 450 + Math.abs(targetY() - y0) / 30);
-  const step = now => {
-    const k = Math.min(1, (now - t0) / dur), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
-    setY(Math.round(y0 + (targetY() - y0) * e));
-    if (k < 1) pickAnim = requestAnimationFrame(step);
-    else pickAnim = requestAnimationFrame(() => { pickAnim = 0; if (Math.abs(targetY() - getY()) > 3) setY(targetY()); if (done) done(); });
-  };
-  pickAnim = requestAnimationFrame(step);
-}
 
 // Zufallstipp-Animation: Der Würfel rollt (Augen wechseln), danach wird auf der gewählten Karte die Wertung
 // wie ein Hanko-Stempel aufgedrückt. Mit „Bewegung reduzieren“ geht es ohne Animation direkt zur Karte.
@@ -3721,27 +3715,20 @@ const setFace = n => {
     return c;
   }));
 };
-function rollDice(done) {
-  if (reduce || !diceSvg.animate) { done(); return; }
+function rollDice(done, ico) {
+  ico = ico || document.querySelector(".pick-ico");
+  if (reduce || !ico || !ico.animate) { done(); return; }
   rolling = true;
-  diceSvg.style.animation = "none";
-  const roll = diceSvg.animate([
-    { transform: "translateY(0) rotate(0deg) scale(1)", offset: 0 },
-    { transform: "translateY(-7px) rotate(260deg) scale(1.18)", offset: .3 },
-    { transform: "translateY(0) rotate(560deg) scale(1)", offset: .62 },
-    { transform: "translateY(-3px) rotate(700deg) scale(1.06)", offset: .78 },
-    { transform: "translateY(0) rotate(714deg) scale(1)", offset: .9 },
-    { transform: "translateY(0) rotate(720deg) scale(1)", offset: 1 }
-  ], { duration: 750, easing: "cubic-bezier(.2,.7,.3,1)" });
-  // Während der schnellen Drehung verschwimmen die Augen (kein hartes Umspringen), die neue Zahl kommt erst,
-  // wenn sie fast unsichtbar sind, und blendet dann weich ein
-  pips.animate([{ opacity: 1 }, { opacity: .15, offset: .2 }, { opacity: .15, offset: .58 }, { opacity: 1, offset: .86 }, { opacity: 1 }],
-    { duration: 750, easing: "ease-in-out" });
-  const sw = setTimeout(() => {
-    let n; do { n = 1 + Math.floor(Math.random() * 6); } while (n === diceFace);
-    diceFace = n; setFace(n);
-  }, 400);
-  roll.onfinish = roll.oncancel = () => { clearTimeout(sw); rolling = false; done(); };
+  diceSvg.style.animation = "none"; ico.style.willChange = "transform";
+  const roll = ico.animate([
+    { transform: "translateY(0) rotate(0deg) scale(1)" },
+    { transform: "translateY(-6px) rotate(250deg) scale(1.15)", offset: .32 },
+    { transform: "translateY(0) rotate(540deg) scale(1)", offset: .64 },
+    { transform: "translateY(-2px) rotate(700deg) scale(1.04)", offset: .82 },
+    { transform: "translateY(0) rotate(720deg) scale(1)" }
+  ], { duration: 700, easing: "cubic-bezier(.2,.7,.3,1)" });
+  const sw = setTimeout(() => { let n; do { n = 1 + Math.floor(Math.random() * 6); } while (n === diceFace); diceFace = n; setFace(n); }, 330);
+  roll.onfinish = roll.oncancel = () => { clearTimeout(sw); ico.style.willChange = ""; rolling = false; done(); };
 }
 function pressStamp(el) {
   if (reduce || !el.animate) return;
@@ -3752,39 +3739,60 @@ function pressStamp(el) {
     { transform: "scale(1.06) rotate(-9deg)", opacity: 1, offset: .75 },
     { transform: "scale(1) rotate(-8deg)", opacity: 1, offset: 1 }
   ], { duration: 520, easing: "cubic-bezier(.3,.7,.2,1)" });
-  el.animate([{ transform: "scale(1)" }, { transform: "scale(1.015)", offset: .5 }, { transform: "scale(1)" }], { duration: 520, easing: "ease-out" });
 }
 
 // Zufallstipp: bevorzugt hoch bewertete Titel, die noch nicht gesehen sind
-let lastPick = null, pickT;
+let lastPick = null;
 if (matchMedia("(hover: hover) and (pointer: fine)").matches) { const s = document.querySelector("#pick .pick-txt small"); if (s) s.textContent = "Hier klicken für einen zufälligen Tipp"; }
-$("#pick").addEventListener("click", () => {
-  if (rolling) return; // während der Würfel rollt, zählt ein zweiter Tipp nicht
-  // Der Zufallstipp wählt immer aus allen Titeln: von einem anderen Reiter aus geht es dafür zu Alle
-  if (state.view !== "all") { state.view = "all"; state.g2 = ""; sync(); render(); }
+// Wählt den nächsten Tipp (gewichtet nach Wertung, nie zweimal derselbe hintereinander)
+function pickOne() {
   let pool = filtered().filter(it => !seen.has(it.id));
   if (!pool.length && byMine.some(it => !seen.has(it.id))) {
     Object.assign(state, DEFAULTS, { q: "" }); $("#q").value = ""; neuView = false; sync(); render();
     pool = filtered().filter(it => !seen.has(it.id));
   }
-  if (!pool.length) { toast("Du hast schon alle gesehen!"); return; }
+  if (!pool.length) return null;
   if (pool.length > 1) pool = pool.filter(it => it.id !== lastPick);
   const w = pool.map(it => Math.pow(Math.max(it.mine - 6.8, 0.2), 2));
   let r = Math.random() * w.reduce((a, b) => a + b, 0), pick = pool[pool.length - 1];
   for (let i = 0; i < pool.length; i++) { r -= w[i]; if (r <= 0) { pick = pool[i]; break; } }
   lastPick = pick.id; ACHM && ACHM.dice(pick.id);
-  const btn = document.getElementById("v-" + pick.id);
-  if (!btn) return;
-  const el = btn.closest(".card"), token = tabToken;
-  rollDice(() => {
-    if (token !== tabToken || state.view !== "all" || el.hidden) return; // inzwischen anderer Reiter oder Titel ausgeblendet
-    document.querySelectorAll(".card.pick").forEach(c => c.classList.remove("pick"));
-    el.classList.add("pick");
-    glideTo(el, () => pressStamp(el));
-    toast(prisc ? "💘 Priscilla empfiehlt: " + pick.title : "Wie wär's mit: " + pick.title + "?");
-    clearTimeout(pickT); pickT = setTimeout(() => el.classList.remove("pick"), 6000);
-  });
+  return pick;
+}
+const RR_DICE = '<span class="rr-d"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg></span>';
+let pickOpen = false;
+// Tipp im Fenster zeigen (beim „Nochmal würfeln“ wird nur die Karte im offenen Fenster getauscht)
+function showPick(pick, swap) {
+  const el = cardEls.get(pick.id); if (!el) return;
+  if (swap && shelfEl) { shelfEl.querySelectorAll(".sclose, .reroll, .pk-head").forEach(x => x.remove()); shelfPh.replaceWith(shelfEl); shelfEl = shelfPh = null; }
+  openShelf(pick.id);
+  pickOpen = true; shelfOv.classList.add("pk");
+  const h = document.createElement("div"); h.className = "pk-head"; h.textContent = prisc ? "💘 Priscilla empfiehlt" : "🎲 Dein Zufalls-Tipp"; el.prepend(h);
+  const x = el.querySelector(".sclose");
+  const r = document.createElement("button"); r.type = "button"; r.className = "ov-btn main reroll"; r.innerHTML = RR_DICE + "Nochmal würfeln"; x.before(r);
+  $(".shelf-one").scrollTop = 0;
+  { const cb = el.querySelector(".cbody"); if (swap && cb && !reduce && cb.animate) cb.animate([{ opacity: .12, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: 240, easing: "ease-out" }); }
+  pressStamp(el);
+}
+$("#pick").addEventListener("click", () => {
+  if (rolling) return; // während der Würfel rollt, zählt ein zweiter Tipp nicht
+  // Der Zufallstipp wählt immer aus allen Titeln: von einem anderen Reiter aus geht es dafür zu Alle
+  if (state.view !== "all") { state.view = "all"; state.g2 = ""; sync(); render(); }
+  const pick = pickOne();
+  if (!pick) { toast("Du hast schon alle gesehen!"); return; }
+  const token = tabToken;
+  rollDice(() => { if (token === tabToken && !shelfEl) showPick(pick); });
 });
+shelfOv.addEventListener("click", e => {
+  const b = e.target.closest(".reroll"); if (!b || rolling || !shelfEl) return;
+  e.stopPropagation();
+  const pick = pickOne();
+  if (!pick) { toast("Du hast schon alle gesehen!"); return; }
+  // Inhalt der Karte blendet aus, die Knöpfe bleiben stehen (der kleine Würfel darin dreht sich)
+  const body = shelfEl.querySelector(".cbody");
+  if (body && !reduce && body.animate) body.animate([{ opacity: 1 }, { opacity: .12 }], { duration: 180, easing: "ease-in", fill: "forwards" }).onfinish = function () { body.style.opacity = ".12"; this.cancel(); };
+  rollDice(() => { if (body) body.style.opacity = ""; if (shelfEl) showPick(pick, true); }, b.querySelector(".rr-d"));
+}, true);
 
 // Nach oben
 const totop = $("#totop");
@@ -3817,7 +3825,6 @@ const animTop = () => {
 // Fasst man woanders hin, stoppt die Fahrt nach oben
 document.addEventListener("touchstart", e => {
   if (topAnim && !e.target.closest("#totop")) { cancelAnimationFrame(topAnim); topAnim = 0; scrollStyle().overflow = ""; }
-  if (pickAnim && !e.target.closest("#pick")) { cancelAnimationFrame(pickAnim); pickAnim = 0; }
 }, { passive: true });
 totop.addEventListener("touchstart", e => {
   const t = e.touches[0]; ttop = { x: t.clientX, y: t.clientY, fired: false };
