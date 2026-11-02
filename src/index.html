@@ -665,7 +665,7 @@ html.prisc .prog.max .ring svg { filter: drop-shadow(0 0 4px rgba(246, 196, 83, 
 .app .tabs .pfi { width: 24px; height: 24px; }
 #n-seen { display: none !important; } /* die Zahl steht jetzt im Profil */
 /* Priscilla-Modus: rosa Akzente, Leiste mit „Beenden“, fallende Herzen und Kirschblüten */
-html.prisc { --hanko: #FF6FA8; --hanko-soft: #3A1A2A; --gold: #FF9CC8; --on-gold: #2A0A18; --paper: #160F14; --sheet: #221820; --line: #362630; --chip: #2B1F28; }
+html.prisc { --hanko: #FF6FA8; --hanko-soft: #3A1A2A; --gold: #FF9CC8; --on-gold: #2A0A18; --paper: #1C1019; --sheet: #281A25; --line: #412E3A; --chip: #342430; }
 .prisbar { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 8px 8px 8px 12px; border-radius: 12px; background: #3A1A2A; border: 1px solid #FF6FA8; color: #FFD3E6; font-size: 13.5px; font-weight: 700; }
 .prisbar[hidden] { display: none; }
 .prisbar span { flex: 1; min-width: 0; }
@@ -1130,7 +1130,7 @@ html.prisc .ach-strip { background: #3A1A2C; }
   border-radius: 24px 24px 0 0; padding: 10px 16px calc(22px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -18px 50px rgba(0, 0, 0, .45), 0 200px 0 0 var(--sheet); animation: achUp .26s cubic-bezier(.2, .8, .2, 1); }
 /* Der zweite Schatten (200px nach unten, gleiche Farbe) füllt in der App den Streifen unter dem Fenster, sonst sah man dort die Leiste unten */
 @keyframes achUp { from { transform: translateY(40px); opacity: 0; } }
-html.prisc .ach-sh { background: #24121F; border-color: #4A2238; box-shadow: 0 -18px 50px rgba(0, 0, 0, .45), 0 200px 0 0 #24121F; }
+html.prisc .ach-sh { background: #2B1926; border-color: #4A2238; box-shadow: 0 -18px 50px rgba(0, 0, 0, .45), 0 200px 0 0 #2B1926; }
 /* Keine Scroll-Leiste rechts im Fenster */
 .ach-sh { scrollbar-width: none; }
 .ach-sh::-webkit-scrollbar { display: none; }
@@ -1201,7 +1201,7 @@ html.prisc .ttl-more { background: #3A1A2C; }
 .ach-ban { position: fixed; z-index: 60; left: 12px; right: 12px; top: calc(env(safe-area-inset-top, 0px) + 10px); max-width: 480px; margin: 0 auto; display: flex; align-items: center; gap: 12px;
   padding: 10px 14px 10px 10px; border-radius: 20px; background: var(--sheet); border: 1px solid var(--line); box-shadow: 0 10px 26px rgba(0, 0, 0, .45);
   color: var(--ink); font: inherit; text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
-html.prisc .ach-ban { background: #2A1424; border-color: #4A2238; }
+html.prisc .ach-ban { background: #2E1727; border-color: #4A2238; }
 .ach-ban svg { width: 52px; height: 52px; flex: none; }
 .ach-ban .t { flex: 1; min-width: 0; }
 .ach-ban .ct { flex: none; align-self: flex-start; margin-top: 2px; font-size: 11.5px; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -1232,7 +1232,7 @@ html.prisc .toast .toast-act { color: #D9367A; }
    Mit Glas-Unschärfe wie die Leiste unten: Dann färbt Safari oben keinen dunklen Balken ein */
 .app .ach-ban { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 24px); background: rgba(27, 30, 44, .92);
   -webkit-backdrop-filter: blur(16px) saturate(150%); backdrop-filter: blur(16px) saturate(150%); }
-html.app.prisc .ach-ban { background: rgba(42, 20, 36, .92); }
+html.app.prisc .ach-ban { background: rgba(46, 23, 39, .92); }
 
 /* Handy: Das Fenster reicht 200px unter den Bildschirmrand (wie die Fenster-Fläche selbst). So geht es in der App und in Safari
    bis ganz unten durch, auch hinter der Safari-Leiste, und die Liste rollt bis dorthin, statt mitten im Bild abgeschnitten zu enden.
@@ -1404,7 +1404,7 @@ html:not(.app) h1 .seal { position: static; display: inline-grid; vertical-align
 .app .tabs .lens { top: 5px; bottom: 5px; left: 5px; width: calc((100% - 16px) / 4); }
 .app .tabs .lens > i { background: rgba(255, 255, 255, .11); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .10); }
 .app .tabs.drag .lens > i, .app .tabs.press .lens > i { background: rgba(255, 255, 255, .17); }
-html.prisc.app .tabs { background: rgba(40, 28, 36, .94); }
+html.prisc.app .tabs { background: rgba(46, 34, 42, .94); }
 /* Nach-oben-Knopf: die Leiste ist etwas höher geworden, der Knopf rückt mit */
 .app .totop { bottom: calc(max(8px, calc(env(safe-area-inset-bottom, 0px) - 12px)) + 76px); }
 </style>
@@ -1420,7 +1420,7 @@ html.prisc.app .tabs { background: rgba(40, 28, 36, .94); }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V318</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V319</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
