@@ -1388,13 +1388,8 @@ html:not(.app) h1 .seal { position: static; display: inline-grid; vertical-align
 .app .tag { background: none; padding: 0; border-radius: 0; color: var(--muted); font-size: 13.5px; }
 .app .tag + .tag::before { content: "·"; margin-right: 6px; }
 .app .dub { background: none; padding: 0; }
-/* Würfel-Tipp: kein Kasten, sondern ein Streifen links am Rand und die Platzzahl in Orange (Priscilla: Pink).
-   Der Streifen liegt im Seitenrand, dadurch rückt nichts zur Seite, wenn die Markierung nach 6 Sekunden wieder geht */
-html.app { --pk: #F47521; } html.app.prisc { --pk: var(--hanko); }
-.app #list > .card.pick { outline: 0; position: relative; content-visibility: visible; }
-.app #list > .card.pick::before { content: ""; position: absolute; left: -10px; top: 20px; bottom: 18px; width: 3px; border-radius: 2px; background: var(--pk); animation: pkIn .25s ease-out; }
-.app #list > .card.pick .meta .rank { color: var(--pk); }
-@keyframes pkIn { from { opacity: 0; transform: scaleY(.6); } to { opacity: 1; transform: none; } }
+/* Würfel-Tipp: in der App kein Rahmen um die Karte, markiert wird mit dem Abzeichen „Dein Tipp“ neben der Platzzahl (V332) */
+.app #list > .card.pick { outline: 0; content-visibility: visible; }
 /* Überschriften-Zeilen „Gestern · 35 neu“ und „Tipps von Freunden“ ohne eigene Linie: die Trennlinie der Karte darunter reicht */
 .app .grid > .nvday::after, .app .tp-sec::after { display: none; }
 /* Gemerkt: Liste statt Kästen */
@@ -1415,6 +1410,11 @@ html.app { --pk: #F47521; } html.app.prisc { --pk: var(--hanko); }
 html.prisc.app .tabs { background: rgba(46, 34, 42, .94); }
 /* Nach-oben-Knopf: die Leiste ist etwas höher geworden, der Knopf rückt mit */
 .app .totop { bottom: calc(max(8px, calc(env(safe-area-inset-bottom, 0px) - 12px)) + 76px); }
+/* V332: Abzeichen für den Würfel-Tipp, gestaltet wie „NEU“ (orange, im Priscilla-Modus pink) */
+.meta .tipb { background: #F47521; color: #1A0C0B; border-radius: 6px; padding: 2px 8px 1px; font-size: 11px; letter-spacing: .08em; line-height: 1.2; font-weight: 800; text-transform: uppercase; white-space: nowrap; animation: tipbIn .32s cubic-bezier(.3, 1.5, .5, 1); }
+html.prisc .meta .tipb { background: var(--hanko); color: #2A0A18; }
+@keyframes tipbIn { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .meta .tipb { animation: none; } }
 </style>
 </head>
 <body>
@@ -1428,7 +1428,7 @@ html.prisc.app .tabs { background: rgba(46, 34, 42, .94); }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V331</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V332</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -3779,10 +3779,17 @@ $("#pick").addEventListener("click", () => {
   rollDice(() => {
     if (token !== tabToken || state.view !== "all" || el.hidden) return; // inzwischen anderer Reiter oder Titel ausgeblendet
     document.querySelectorAll(".card.pick").forEach(c => c.classList.remove("pick"));
+    document.querySelectorAll(".tipb").forEach(b => b.remove());
     el.classList.add("pick");
+    { const r = el.querySelector(".meta .rank"); if (r) { const t = document.createElement("span"); t.className = "tipb"; t.textContent = (prisc ? "💘" : "🎲") + " Dein Tipp"; r.after(t); } }
     glideTo(el, () => pressStamp(el));
     toast(prisc ? "💘 Priscilla empfiehlt: " + pick.title : "Wie wär's mit: " + pick.title + "?");
-    clearTimeout(pickT); pickT = setTimeout(() => el.classList.remove("pick"), 6000);
+    clearTimeout(pickT); pickT = setTimeout(() => {
+      el.classList.remove("pick");
+      const t = el.querySelector(".tipb"); if (!t) return;
+      if (reduce || !t.animate) { t.remove(); return; }
+      t.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, easing: "ease-in", fill: "forwards" }).onfinish = () => t.remove();
+    }, 6000);
   });
 });
 
