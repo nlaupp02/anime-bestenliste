@@ -1419,8 +1419,9 @@ html.prisc.app .tabs { background: rgba(46, 34, 42, .94); }
 #shelfOne .card .pk-head { text-align: center; color: var(--gold); font-weight: 800; font-size: 12.5px; letter-spacing: .12em; text-transform: uppercase; margin: -2px 0 12px; }
 #shelfOne .card .reroll { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin-top: 14px; }
 #shelfOne .card .reroll + .sclose { margin-top: 8px; }
-/* Gleich große Würfel-Karten: Platz für fast jeden Titel (gemessen: 99 % sind kleiner), Rest kommt über den Knöpfen dazu */
-#shelfOne .card.pkc { min-height: min(580px, calc(100svh - 64px)); }
+/* Würfel-Karten in fester Größe (etwa eine durchschnittliche Karte, wenig Luft bei kurzen). Eine längere Karte lässt das Fenster
+   einmal wachsen, danach bleibt es so groß, bis es zu ist */
+#shelfOne .card.pkc { min-height: min(530px, calc(100svh - 64px)); }
 .reroll .rr-d { display: inline-grid; width: 20px; height: 20px; }
 .reroll .rr-d svg { width: 20px; height: 20px; }
 .pick-ico { will-change: auto; }
@@ -1437,7 +1438,7 @@ html.prisc.app .tabs { background: rgba(46, 34, 42, .94); }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V328</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V329</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
