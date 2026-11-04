@@ -1439,7 +1439,7 @@ html.prisc .app #list > .card.pick::before, .app.prisc #list > .card.pick::befor
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V344</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V345</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4235,7 +4235,7 @@ async function acctSyncRun() {
     let ver = r && r.ver;
     if (!r || !same(rSeen, new Set(outSeen)) || !same(rSaved, new Set(outSaved))) {
       ver = newVer();
-      await fb.F.setDoc(ref(), { seen: outSeen, saved: outSaved, ver, at: Date.now() });
+      await fb.F.setDoc(ref(), { seen: outSeen, saved: outSaved, ver, at: Date.now() }, { merge: true });
     }
     if (!user || user.uid !== uid) throw 0; // inzwischen abgemeldet
     acct = { uid, ver, dirty: gen !== g, base: { seen: outSeen, saved: outSaved }, name: nameOf(user), email: user.email || "", av: avOf(user), code: mine ? acct.code : undefined, prof: mine ? acct.prof : undefined }; saveAcct();
@@ -4639,7 +4639,7 @@ var tipSendOv = $("#tipSendOv"), tipOv = $("#tipOv");
 $("#tpsShare").insertAdjacentHTML("afterbegin", ICON.share);
 function tipClear() {
   tipsIn = []; tipsOut = []; tipAt = 0; tipRowSig = ""; tipQ = []; tipI = 0; tipBack = false;
-  [KEY_TIPS, KEY_SENT].forEach(k => store(k, [])); [KEY_TIPK, KEY_TIPW, KEY_TIPD].forEach(k => store(k, null));
+  [KEY_TIPS, KEY_SENT].forEach(k => store(k, [])); [KEY_TIPK, KEY_TIPW, KEY_TIPD].forEach(k => store(k, null)); try { tipAcctK = new Set(); } catch (e) {}
   if (tipSendOv) { tipSendOv.hidden = true; tipOv.hidden = true; }
   tipRow(true);
 }
@@ -4687,15 +4687,33 @@ setInterval(async () => {
   } catch (e) { /* ohne Netz: beim nächsten Mal */ }
   finally { tipPollBusy = false; }
 }, 30000);
+// Im Konto vermerkte, schon gezeigte Tipps (gilt für alle Geräte). Geschrieben wird nur, wenn sich etwas geändert hat.
+var tipAcctK = new Set(), tipChk = false;
+const KEY_TIPA = "cr-top100-tipk-acct";
+function tipAcctPut(ks) {
+  if (!user || !fb) return;
+  const have = new Set(tipsIn.map(t => t.k)), all = [...new Set([...ks, ...[...tipAcctK].filter(k => have.has(k))])].sort(); // nur Tipps, die es noch gibt
+  const sig = user.uid + "|" + all.join(",");
+  if (load(KEY_TIPA, "") === sig) return;
+  const uid = user.uid;
+  Promise.resolve().then(() => fb.F.setDoc(ref(), { tipk: all }, { merge: true })).then(() => { if (user && user.uid === uid) { store(KEY_TIPA, sig); tipAcctK = new Set(all); } }).catch(() => {});
+}
 // Neue Tipps zeigen (einmal), und Bescheid sagen, wenn ein Freund meinen Tipp geschaut hat (einmal)
 function tipNews() {
   if (!user) return;
   if (document.querySelector(".ov:not([hidden])")) { tipCalm(tipNews); return; } // nichts über ein offenes Fenster legen: warten, bis es zu ist
   const fr = new Map(friends.map(f => [f.uid, f]));
   const known = load(KEY_TIPK, null), kn = new Set(Array.isArray(known) ? known : []);
-  const fresh = tipsIn.filter(t => fr.has(t.from) && !kn.has(t.k) && !seen.has(t.id) && (Array.isArray(known) || Date.now() - t.at < 3 * 864e5));
-  if (fresh.length) { const ks = tipsIn.map(t => t.k); tipCalm(() => { store(KEY_TIPK, ks); tipShow(fresh); }); return; }
-  store(KEY_TIPK, tipsIn.map(t => t.k));
+  const fresh = tipsIn.filter(t => fr.has(t.from) && !kn.has(t.k) && !tipAcctK.has(t.k) && !seen.has(t.id) && (Array.isArray(known) || Date.now() - t.at < 3 * 864e5));
+  // Erst im Konto nachsehen, ob der Tipp schon woanders gezeigt wurde (Home-Bildschirm-App und Safari merken sich das getrennt)
+  if (fresh.length && !tipChk && fb) {
+    tipChk = true; const uid = user.uid;
+    Promise.resolve().then(() => fb.F.getDoc(ref())).then(s => { const a = s.exists() ? s.data().tipk : null; if (user && user.uid === uid && Array.isArray(a)) tipAcctK = new Set(a.filter(x => typeof x === "string")); })
+      .catch(() => {}).finally(() => { if (user && user.uid === uid) tipNews(); tipChk = false; });
+    return;
+  }
+  if (fresh.length) { const ks = tipsIn.map(t => t.k); tipCalm(() => { store(KEY_TIPK, ks); tipAcctPut(ks); tipShow(fresh); }); return; }
+  store(KEY_TIPK, tipsIn.map(t => t.k)); tipAcctPut(tipsIn.map(t => t.k));
   const told = load(KEY_TIPW, null), tw = new Set(Array.isArray(told) ? told : []);
   const watched = tipsOut.filter(t => { const f = fr.get(t.to); return f && f.seen.includes(t.id); });
   const nw = watched.filter(t => !tw.has(tipKey(t.to, t.id)));
