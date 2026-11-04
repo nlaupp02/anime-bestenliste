@@ -1439,7 +1439,7 @@ html.prisc .app #list > .card.pick::before, .app.prisc #list > .card.pick::befor
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V343</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V344</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -3266,8 +3266,8 @@ const minutesOf = it => {
 };
 // Ränge: ab wie vielen gesehenen Titeln, Kanji, Name, Bedeutung, Farbstufe (0 grau, 5 Einstieg, dann 1 bis 4, 6 Dämonenkönig)
 const RANKS = [[0, "初", "Shoshinsha", "Anfänger", 0], [1, "新", "Kōhai", "Entdecker", 5], [5, "推", "Otaku", "Anime-Fan", 1],
-  [10, "熱", "Senpai", "Serienjunkie", 1], [20, "侍", "Samurai", "Samurai", 2], [35, "師", "Sensei", "Meister", 2], [60, "極", "Shōgun", "Großmeister", 3],
-  [100, "伝", "Sennin", "Legende", 3], [150, "鬼", "Oni", "Dämon", 4], [200, "魔", "Maō", "Dämonenkönig", 6]];
+  [10, "熱", "Senpai", "Serienjunkie", 1], [20, "侍", "Samurai", "Samurai", 2], [40, "師", "Sensei", "Meister", 2], [80, "極", "Shōgun", "Großmeister", 3],
+  [120, "伝", "Sennin", "Legende", 3], [160, "鬼", "Oni", "Dämon", 4], [200, "魔", "Maō", "Dämonenkönig", 6]];
 // Im Priscilla-Modus gibt es eigene Liebes-Ränge, die nur gesehene Romanzen zählen
 const LOVE = [[0, "独", "Hitori", "Single", 0], [1, "惚", "Horeru", "Verknallt", 5], [3, "鼓", "Kodō", "Herzklopfen", 1],
   [5, "約", "Yakusoku", "Verabredet", 1], [10, "絆", "Kizuna", "Vergeben", 2], [20, "婚", "Kon'yaku", "Verlobt", 2],
