@@ -1439,7 +1439,7 @@ html.prisc .app #list > .card.pick::before, .app.prisc #list > .card.pick::befor
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V340</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: Oktober 2026 <span class="ver">· V341</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4634,7 +4634,7 @@ const nmList = l => { const b = l.map(f => `<b>${esc(f.name)}</b>`);
 const faceStack = (l, cls) => { const fs = l.length > 3 ? l.slice(0, 2) : l, add = cls ? s => s.replace('class="avr', 'class="avr ' + cls) : s => s;
   return fs.map(f => add(frFace(f))).join("") + (l.length > 3 ? add(`<span class="avr pl">+${l.length - 2}</span>`) : ""); };
 const tipKey = (from, id) => from + "_" + id;
-var tipFrX = [], tipAt = 0, tipBusy = false, tipRowSig = "", tpsId = "", tpsSel = new Set(); // var: wird ggf. schon vor dieser Stelle aufgerufen
+var tipFrX = [], tipAt = 0, tipBusy = false, tipKnown = new Map(), tipMaxAt = 0, tipPollBusy = false, tipRowSig = "", tpsId = "", tpsSel = new Set(); // var: wird ggf. schon vor dieser Stelle aufgerufen
 var tipSendOv = $("#tipSendOv"), tipOv = $("#tipOv");
 $("#tpsShare").insertAdjacentHTML("afterbegin", ICON.share);
 function tipClear() {
@@ -4650,6 +4650,8 @@ async function tipLoad(force) {
   try {
     const ok = new Set(items.map(it => it.id));
     const qs = await fb.F.getDocs(fb.F.collection(fb.db, "tips", uid, "list"));
+    // Für das Nachsehen alle 30 Sekunden: welche Tipps (und von wann) schon bekannt sind
+    tipKnown = new Map(qs.docs.map(d => [d.id, +d.data().at || 0])); tipMaxAt = Math.max(0, ...tipKnown.values());
     let list = qs.docs.map(d => { const x = d.data(); return { k: d.id, from: String(x.from || ""), id: String(x.id || ""), at: +x.at || 0 }; })
       .filter(t => t.from && ok.has(t.id)).sort((a, b) => b.at - a.at);
     // Weggeklickt, aber ohne Netz noch nicht gelöscht: jetzt löschen. Mehr als 50 alte Tipps: aufräumen.
@@ -4674,6 +4676,17 @@ async function tipLoad(force) {
   frCardSig = ""; frCards(); tipRow(); tipNews();
 }
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && user) tipLoad(); });
+// Solange die App offen ist: alle 30 Sekunden kurz nachsehen. Gefragt wird nur nach Tipps der letzten Stunde vor dem neuesten
+// bekannten (falls die Uhr beim Freund etwas nachgeht); neu ist ein Tipp, den es noch nicht gab oder der neu geschickt wurde.
+setInterval(async () => {
+  if (document.visibilityState !== "visible" || !user || !fb || !tipAt || tipBusy || tipPollBusy || navigator.onLine === false) return;
+  tipPollBusy = true; const uid = user.uid;
+  try {
+    const qs = await fb.F.getDocs(fb.F.query(fb.F.collection(fb.db, "tips", uid, "list"), fb.F.where("at", ">", tipMaxAt - 36e5)));
+    if (user && user.uid === uid && qs.docs.some(d => tipKnown.get(d.id) !== (+d.data().at || 0))) tipLoad(true);
+  } catch (e) { /* ohne Netz: beim nächsten Mal */ }
+  finally { tipPollBusy = false; }
+}, 30000);
 // Neue Tipps zeigen (einmal), und Bescheid sagen, wenn ein Freund meinen Tipp geschaut hat (einmal)
 function tipNews() {
   if (!user) return;
