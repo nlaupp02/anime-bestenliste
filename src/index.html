@@ -1344,9 +1344,9 @@ html:not(.app) { scrollbar-gutter: stable; }
 .app .totop { bottom: calc(max(8px, calc(env(safe-area-inset-bottom, 0px) - 12px)) + 72px); }
 /* V299: Blase als inneres Element (kann sich beim Gleiten dehnen), Optik wie im Original; beim Berühren hebt sie sich leicht */
 .app .tabs .lens, .app .tabs.drag .lens { background: none; box-shadow: none; }
-.app .tabs .lens { transition: transform .26s cubic-bezier(.3, 1.25, .5, 1); } /* V354: flotter auf den Reiter (vorher .4s) */
-.app .tabs.drag .lens { transition: transform .22s cubic-bezier(.3, 1.2, .5, 1); } /* V357: auch beim Ziehen gleitet die Blase per CSS von Reiter zu Reiter */
-.app .tabs .lens > i { position: absolute; inset: 0; border-radius: inherit; will-change: transform; background: rgba(255,255,255,.13); box-shadow: inset 0 1px 0 rgba(255,255,255,.14); transition: background-color .15s ease, scale .18s cubic-bezier(.3, 1.6, .5, 1); }
+.app .tabs .lens { transition: transform .4s cubic-bezier(.3, 1.35, .5, 1); }
+.app .tabs.drag .lens { transition: none; }
+.app .tabs .lens > i { position: absolute; inset: 0; border-radius: inherit; will-change: transform; background: rgba(255,255,255,.13); box-shadow: inset 0 1px 0 rgba(255,255,255,.14); transition: background-color .15s ease, scale .3s cubic-bezier(.3, 1.6, .5, 1); }
 .app .tabs.drag .lens > i, .app .tabs.press .lens > i { background: rgba(255,255,255,.2); }
 .app .tabs.press .lens > i { scale: 1.1; } /* nur das Glas hebt sich, die Position der Blase bleibt exakt */
 .app .tabs, .app .tabs * { -webkit-user-drag: none; }
@@ -1446,7 +1446,7 @@ html.prisc .app #list > .card.pick::before, .app.prisc #list > .card.pick::befor
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V357</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V358</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4123,7 +4123,7 @@ const placeLens = (() => {
   // Blase federt in Form zurück: s0 = Dehnung, mit der sie gerade losgelassen wurde (0 = Tipp ohne Ziehen)
   const relax = s0 => { glass.style.transform = ""; if (!glass.animate || calm.matches) return;
     const a = 1 + Math.max(.12, s0), b = 1 - Math.max(.12, s0) * .5;
-    glass.animate([{ transform: `scale(${a},${b})` }, { transform: "scale(.97,1.03)", offset: .55 }, { transform: "scale(1.01,.995)", offset: .8 }, { transform: "scale(1,1)" }], { duration: 360, easing: "cubic-bezier(.2,.8,.3,1)" }); };
+    glass.animate([{ transform: `scale(${a},${b})` }, { transform: "scale(.97,1.03)", offset: .55 }, { transform: "scale(1.01,.995)", offset: .8 }, { transform: "scale(1,1)" }], { duration: 520, easing: "cubic-bezier(.2,.8,.3,1)" }); };
   let noSquish = false;
   const setI = i => { if (i !== curI) { if (curI >= 0 && !noSquish) relax(0); curI = i; } lens.style.setProperty("--i", i); };
   const isApp = () => document.documentElement.classList.contains("app");
@@ -4157,7 +4157,7 @@ const placeLens = (() => {
     bar.classList.add("press"); btns[i0].classList.add("hover"); drag.i = i0; setI(i0);
   }, { passive: false });
   // Feder: Die Blase läuft dem Finger weich hinterher und dehnt sich dabei, je schneller, desto länger (wie ein Tropfen)
-  const OVER = 4, K = 1800, C = 2 * Math.sqrt(1800) * .85; // V354: straffere Feder, die Blase klebt enger am Finger (vorher 480)
+  const OVER = 4, K = 480, C = 2 * Math.sqrt(480) * .9;
   let lx = 0, lv = 0, lt = 0, ls = 0;
   const frame = now => {
     raf = 0; if (!drag) return;
@@ -4165,11 +4165,8 @@ const placeLens = (() => {
     const raw = nextX - drag.left - w / 2 - pos[0].l; // wo der Finger die Blase haben will
     let tx = raw, ex = 0; // ex: wie weit der Finger über das Ende hinaus zieht
     if (raw < 0) { ex = raw; tx = -Math.min(OVER, -raw * .35); } else if (raw > max) { ex = raw - max; tx = max + Math.min(OVER, ex * .35); }
-    const dt = Math.min(.1, lt ? (now - lt) / 1000 : .016); lt = now; // V356: bei langsamen Bildern (App-Start) holt die Blase in Echtzeit auf statt in Zeitlupe
-    // V355: in kleinen Schritten rechnen (höchstens 6 ms). Mit einem großen Schritt wurde die straffe Feder instabil, wenn das
-    // Handy beim Start beschäftigt war und Bilder länger dauerten – die Blase schaukelte sich auf und sprang wild hin und her.
-    for (let rest = dt; rest > 1e-6; rest -= .006) { const h = Math.min(.006, rest); lv += (-K * (lx - tx) - C * lv) * h; lx += lv * h; }
-    if (lx < -OVER - 2) { lx = -OVER - 2; lv = 0; } else if (lx > max + OVER + 2) { lx = max + OVER + 2; lv = 0; } // nie über die Leiste hinaus
+    const dt = Math.min(.032, lt ? (now - lt) / 1000 : .016); lt = now;
+    lv += (-K * (lx - tx) - C * lv) * dt; lx += lv * dt;
     if (Math.abs(lx - tx) < .05 && Math.abs(lv) < .5) { lx = tx; lv = 0; }
     ls = Math.min(.28, Math.abs(lv) / 2400);
     lens.style.transform = `translate3d(${lx}px,0,0)`; // angehoben ist sie schon über „press“
@@ -4194,11 +4191,7 @@ const placeLens = (() => {
       // Start der Feder: dort, wo die Blase gerade sitzt (auf dem berührten Reiter)
       lx = drag.pos[drag.i >= 0 ? drag.i : 0].l - drag.pos[0].l; lv = 0; lt = 0; ls = 0;
     }
-    // V357: Die Blase klebt nicht mehr am Finger (das wurde Bild für Bild im Hauptablauf gerechnet und hakte, wenn die App
-    // beschäftigt war, z. B. beim Start). Sie gleitet jetzt von Reiter zu Reiter, sobald der Finger einen erreicht – das Gleiten
-    // übernimmt die Grafikkarte (CSS-Übergang), es läuft immer weich. Gewechselt wird weiter erst beim Loslassen.
-    const c = t.clientX - drag.left; let i = 0; drag.pos.forEach((q, k) => { if (c >= q.l) i = k; });
-    if (i !== drag.i) { if (drag.i >= 0) btns[drag.i].classList.remove("hover"); btns[i].classList.add("hover"); drag.i = i; lens.style.transform = ""; setI(i); }
+    nextX = t.clientX; if (!raf) raf = requestAnimationFrame(frame);
   }, { passive: false });
   const finish = (e, cancel) => {
     if (multi && e.cancelable) e.preventDefault(); // nach Zwei-Finger-Geste kein Tippen auslösen
