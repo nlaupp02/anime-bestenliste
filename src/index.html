@@ -1446,7 +1446,7 @@ html.prisc .app #list > .card.pick::before, .app.prisc #list > .card.pick::befor
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V355</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V356</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4165,7 +4165,7 @@ const placeLens = (() => {
     const raw = nextX - drag.left - w / 2 - pos[0].l; // wo der Finger die Blase haben will
     let tx = raw, ex = 0; // ex: wie weit der Finger über das Ende hinaus zieht
     if (raw < 0) { ex = raw; tx = -Math.min(OVER, -raw * .35); } else if (raw > max) { ex = raw - max; tx = max + Math.min(OVER, ex * .35); }
-    const dt = Math.min(.032, lt ? (now - lt) / 1000 : .016); lt = now;
+    const dt = Math.min(.1, lt ? (now - lt) / 1000 : .016); lt = now; // V356: bei langsamen Bildern (App-Start) holt die Blase in Echtzeit auf statt in Zeitlupe
     // V355: in kleinen Schritten rechnen (höchstens 6 ms). Mit einem großen Schritt wurde die straffe Feder instabil, wenn das
     // Handy beim Start beschäftigt war und Bilder länger dauerten – die Blase schaukelte sich auf und sprang wild hin und her.
     for (let rest = dt; rest > 1e-6; rest -= .006) { const h = Math.min(.006, rest); lv += (-K * (lx - tx) - C * lv) * h; lx += lv * h; }
@@ -5311,8 +5311,13 @@ document.addEventListener("keydown", e => { if (e.key !== "Escape") return; if (
 acctUi();
 // Wer schon angemeldet war: Firebase erst kurz nach dem Start laden, damit die Seite nicht langsamer öffnet
 // Konto: erst anmelden, wenn die Liste steht und das iPhone gerade nichts zu tun hat (spätestens nach 4 Sekunden)
-if (acct.uid) setTimeout(() => (window.requestIdleCallback || (f => f()))(avAll, { timeout: 4000 }), 3500);
-if (FB_HOST && acct.uid) setTimeout(() => (window.requestIdleCallback || (f => f()))(() => fbLoad().catch(() => { syncSt = "err"; acctUi(); syncRetry(); }), { timeout: 2500 }), 1500);
+// V356: Firebase (Anmeldung, Freunde, Tipps) und die Freunde-Bilder erst laden, wenn gerade niemand die Leiste oder Liste bewegt –
+// sonst teilte sich das Laden direkt nach dem Start die Rechenzeit mit der Glas-Blase und sie lief mit wenigen Bildern pro Sekunde
+let touchEndAt = 0;
+document.addEventListener("touchend", () => { touchEndAt = Date.now(); }, { passive: true });
+const calmThen = (fn, t0 = Date.now()) => { if ((!touching && Date.now() - lastScroll > 500 && Date.now() - touchEndAt > 500) || Date.now() - t0 > 8000) fn(); else setTimeout(() => calmThen(fn, t0), 300); }; // spätestens nach 8 s trotzdem
+if (acct.uid) setTimeout(() => calmThen(() => (window.requestIdleCallback || (f => f()))(avAll, { timeout: 4000 })), 3500);
+if (FB_HOST && acct.uid) setTimeout(() => calmThen(() => (window.requestIdleCallback || (f => f()))(() => fbLoad().catch(() => { syncSt = "err"; acctUi(); syncRetry(); }), { timeout: 2500 })), 1500);
 
 // ===== Erfolge =====
 // 24 Erfolge im normalen Modus, 12 Liebes-Erfolge im Priscilla-Modus. Freigeschaltet bleibt freigeschaltet (auch wenn ein Haken wieder weg ist).
