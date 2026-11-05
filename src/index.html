@@ -1345,7 +1345,7 @@ html:not(.app) { scrollbar-gutter: stable; }
 /* V299: Blase als inneres Element (kann sich beim Gleiten dehnen), Optik wie im Original; beim Berühren hebt sie sich leicht */
 .app .tabs .lens, .app .tabs.drag .lens { background: none; box-shadow: none; }
 .app .tabs .lens { transition: transform .26s cubic-bezier(.3, 1.25, .5, 1); } /* V354: flotter auf den Reiter (vorher .4s) */
-.app .tabs.drag .lens { transition: none; }
+.app .tabs.drag .lens { transition: transform .22s cubic-bezier(.3, 1.2, .5, 1); } /* V357: auch beim Ziehen gleitet die Blase per CSS von Reiter zu Reiter */
 .app .tabs .lens > i { position: absolute; inset: 0; border-radius: inherit; will-change: transform; background: rgba(255,255,255,.13); box-shadow: inset 0 1px 0 rgba(255,255,255,.14); transition: background-color .15s ease, scale .18s cubic-bezier(.3, 1.6, .5, 1); }
 .app .tabs.drag .lens > i, .app .tabs.press .lens > i { background: rgba(255,255,255,.2); }
 .app .tabs.press .lens > i { scale: 1.1; } /* nur das Glas hebt sich, die Position der Blase bleibt exakt */
@@ -1446,7 +1446,7 @@ html.prisc .app #list > .card.pick::before, .app.prisc #list > .card.pick::befor
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V356</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V357</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4194,7 +4194,11 @@ const placeLens = (() => {
       // Start der Feder: dort, wo die Blase gerade sitzt (auf dem berührten Reiter)
       lx = drag.pos[drag.i >= 0 ? drag.i : 0].l - drag.pos[0].l; lv = 0; lt = 0; ls = 0;
     }
-    nextX = t.clientX; if (!raf) raf = requestAnimationFrame(frame);
+    // V357: Die Blase klebt nicht mehr am Finger (das wurde Bild für Bild im Hauptablauf gerechnet und hakte, wenn die App
+    // beschäftigt war, z. B. beim Start). Sie gleitet jetzt von Reiter zu Reiter, sobald der Finger einen erreicht – das Gleiten
+    // übernimmt die Grafikkarte (CSS-Übergang), es läuft immer weich. Gewechselt wird weiter erst beim Loslassen.
+    const c = t.clientX - drag.left; let i = 0; drag.pos.forEach((q, k) => { if (c >= q.l) i = k; });
+    if (i !== drag.i) { if (drag.i >= 0) btns[drag.i].classList.remove("hover"); btns[i].classList.add("hover"); drag.i = i; lens.style.transform = ""; setI(i); }
   }, { passive: false });
   const finish = (e, cancel) => {
     if (multi && e.cancelable) e.preventDefault(); // nach Zwei-Finger-Geste kein Tippen auslösen
