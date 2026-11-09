@@ -51,10 +51,13 @@
   const show = () => {
     if (shown) return; shown = true;
     const s = document.getElementById("boot");
-    const go = () => { d.classList.remove("boot"); if (s) { s.classList.add("off"); setTimeout(() => s.remove(), 350); } }; // wie in der Fitness-App
+    // V364: Die Start-Klasse (schaltet Übergänge ab) schon jetzt wegnehmen, solange das Startbild noch alles verdeckt. Das Wegnehmen
+    // lässt das iPhone die ganze Seite neu durchrechnen. Passierte das erst beim Ausblenden, fehlte dessen Anfang (es sprang).
+    d.classList.remove("boot"); void d.offsetHeight; // gleich hier durchrechnen lassen, nicht erst mit dem nächsten Bild
+    const go = () => { if (s) { s.classList.add("off"); setTimeout(() => s.remove(), 350); } }; // wie in der Fitness-App: nur das Startbild blendet aus
     if (!s) return go();
     // 0,9 s sichtbar wie in der Fitness-App, gezählt ab dem Moment, in dem das Bild erscheint
-    const wait = () => { const fx = +s.dataset.fx; if (!fx && Date.now() - t0 < 2000) return setTimeout(wait, 20); const w = 900 - (Date.now() - (fx || Date.now())); if (w > 0) setTimeout(go, w); else go(); };
+    const wait = () => { const fx = +s.dataset.fx; if (!fx && Date.now() - t0 < 2000) return setTimeout(wait, 20); const w = 900 - (Date.now() - (fx || Date.now())); if (w > 34) setTimeout(go, w); else requestAnimationFrame(() => requestAnimationFrame(go)); }; // ist die Zeit schon um: erst ein Bild zeichnen lassen, dann ausblenden
     wait();
   };
   const up = () => window.__appUp === true; // das große Skript unten ist durchgelaufen, die App steht fertig unter dem Startbild
@@ -867,7 +870,10 @@ html:not(.inst) .ibanner { display: none; }
 .app body { transition: opacity .32s cubic-bezier(.25, .6, .3, 1); }
 /* Startbild auf dem Handy, als App und in Safari (wie in der Fitness-App): verdeckt die Seite, bis sie fertig ist, dann blendet es aus */
 #boot { display: none; }
-.app #boot { display: flex; position: fixed; inset: 0; z-index: 2147483000; overflow: hidden; flex-direction: column; align-items: center; padding-top: calc(48px + var(--bsat, env(safe-area-inset-top, 0px))); background: var(--paper); transition: opacity .3s ease; } /* Abstand oben genau wie in der Fitness-App: 48px unter der Statusleiste. --bsat ist deren Höhe vom letzten Start (siehe Skript am Startbild) */
+.app #boot { display: flex; position: fixed; inset: 0; z-index: 2147483000; overflow: hidden; flex-direction: column; align-items: center; padding-top: calc(48px + var(--bsat, env(safe-area-inset-top, 0px))); background: var(--paper); transition: opacity .3s ease; will-change: opacity; } /* Abstand oben genau wie in der Fitness-App: 48px unter der Statusleiste. --bsat ist deren Höhe vom letzten Start (siehe Skript am Startbild) */
+/* V364: Glas-Leiste, Pfeil und Hinweis stehen in der Seite zuerst im Roll-Bereich #sc, das große Skript hängt sie beim Start nach außen.
+   Solange sie noch drin stehen, zeichnet das iPhone sie über das Startbild (die Leiste war beim Öffnen kurz unten zu sehen). Bis dahin unsichtbar. */
+.app #sc .tabs, .app #sc .totop, .app #sc .toast { visibility: hidden; }
 .bt-sa { position: absolute; top: 0; left: 0; width: 0; height: env(safe-area-inset-top, 0px); pointer-events: none; } /* misst die Höhe der Statusleiste */
 .app #boot.off { opacity: 0; pointer-events: none; }
 #boot > * { visibility: hidden; } /* Symbol, Name und Kreis erscheinen zusammen in einem Bild (wie in der Fitness-App), nie einzeln nacheinander */
@@ -1514,7 +1520,7 @@ html.prisc .app #list > .card.pick::before, .app.prisc #list > .card.pick::befor
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V363</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V364</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
