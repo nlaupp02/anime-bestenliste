@@ -45,10 +45,17 @@
   // Öffnen und Neuladen: Das iPhone zeigt die Seite oft schon, bevor das Skript unten fertig ist. In Safari steht sie dann
   // noch 200px zu tief (siehe OFF im Skript) und die Zahlen fehlen, in der App kommt die Höhe der Statusleiste erst etwas später.
   // Deshalb bleibt die Seite kurz verdeckt (nur der dunkle Hintergrund), bis sich nichts mehr bewegt, und wird dann eingeblendet.
-  const t0 = Date.now(); let last = "", same = 0;
-  const show = () => d.classList.remove("boot");
+  const t0 = Date.now(); let last = "", same = 0, shown = false;
+  try { if (JSON.parse(localStorage.getItem("cr-top100-priscilla")) === true) d.classList.add("prisc"); } catch (e) {}
+  // Startbild (nur Home-Bildschirm-App): App-Symbol, Name und Lade-Kreis, mindestens 0,8 s, dann sanft ausblenden
+  const show = () => {
+    if (shown) return; shown = true;
+    const go = () => { d.classList.remove("boot"); const s = document.getElementById("boot"); if (s) { s.classList.add("off"); setTimeout(() => s.remove(), 450); } };
+    const wait = app ? Math.max(0, 800 - (Date.now() - t0)) : 0;
+    if (wait) setTimeout(go, wait); else go();
+  };
   const check = () => {
-    if (!d.classList.contains("boot")) return;
+    if (shown || !d.classList.contains("boot")) return;
     const t = Date.now() - t0, h = document.querySelector("header.top"), h1 = document.querySelector("h1"), sc = document.getElementById("sc");
     if (t > 1200) return show();
     if (h && h1 && document.readyState === "complete") {
@@ -853,7 +860,18 @@ html:not(.inst) .ibanner { display: none; }
    Solange die Seite verdeckt ist, gibt es keine Bewegungen (z. B. die Blase der Leiste): Alles steht schon an seinem Platz,
    wenn die Seite erscheint. */
 .app body { transition: opacity .32s cubic-bezier(.25, .6, .3, 1); }
-html.boot body { opacity: 0; }
+html.boot:not(.standalone) body { opacity: 0; }
+/* Startbild der Home-Bildschirm-App (wie in der Fitness-App): verdeckt die Seite, bis sie fertig ist, dann blendet es aus */
+#boot { display: none; }
+.standalone #boot { display: flex; position: fixed; inset: 0; z-index: 2147483000; flex-direction: column; align-items: center; padding-top: calc(env(safe-area-inset-top, 0px) + 48px); background: var(--paper); transition: opacity .3s ease; }
+.standalone #boot.off { opacity: 0; pointer-events: none; }
+.bt-ic { display: block; width: 84px; height: 84px; border-radius: 20px; margin-bottom: 14px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .06); }
+.bt-n { font: 400 34px/1.1 "Dela Gothic One", sans-serif; color: var(--ink); margin: 0 0 8px; letter-spacing: .01em; opacity: 0; }
+#boot.fx .bt-n { opacity: 1; }
+html.boot #boot .bt-n { transition: opacity .2s ease !important; }
+.bt-sp { width: 28px; height: 28px; margin: 18px auto; border-radius: 50%; border: 3px solid var(--line); border-top-color: #F47521; animation: bt-spin .8s linear infinite; }
+.prisc .bt-sp { border-top-color: var(--hanko); }
+@keyframes bt-spin { to { transform: rotate(360deg); } }
 html.boot *, html.boot *::before, html.boot *::after { transition: none !important; }
 /* App und Handy-Safari: Die Liste rollt in einem eigenen Bereich, die Glas-Leiste liegt außerhalb davon.
    So reagiert die Leiste sofort, auch während die Liste noch nachrollt (wie bei iPhone-Apps). Die Seite selbst rollt nie,
@@ -1436,6 +1454,13 @@ html.prisc .app #list > .card.pick::before, .app.prisc #list > .card.pick::befor
 </style>
 </head>
 <body>
+<div id="boot" aria-hidden="true"><img class="bt-ic" id="btIc" alt=""><div class="bt-n">Animes</div><div class="bt-sp"></div></div>
+<script>
+// Startbild: das echte App-Symbol (steht schon oben als Home-Bildschirm-Symbol in der Seite, ist also sofort da);
+// der Name erscheint, sobald die Schrift bereit ist – so blitzt nie eine leere Stelle oder eine Ersatzschrift auf
+(() => { const b = document.getElementById("boot"), l = document.querySelector('link[rel="apple-touch-icon"]'); if (l) document.getElementById("btIc").src = l.href;
+  const fx = () => b.classList.add("fx"); if (document.fonts && document.fonts.load) document.fonts.load('34px "Dela Gothic One"').then(fx, fx); else fx(); })();
+</script>
 <div id="sc">
 <div class="wrap">
   <header class="top">
@@ -1446,7 +1471,7 @@ html.prisc .app #list > .card.pick::before, .app.prisc #list > .card.pick::befor
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V358</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V359</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
