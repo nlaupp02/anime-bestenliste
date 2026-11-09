@@ -7,16 +7,17 @@ let s = fs.readFileSync(src, "utf8");
 const before = s.length;
 (async () => {
   // Skripte (ohne externe src)
-  const scripts = [...s.matchAll(/<script>([\s\S]*?)<\/script>/g)];
+  // (das große Skript steht als Text in der Seite und wird erst nach dem Startbild gestartet – es wird genauso verdichtet)
+  const scripts = [...s.matchAll(/<script( type="text\/plain" id="appjs")?>([\s\S]*?)<\/script>/g)];
   for (const m of scripts) {
-    const r = await minJs(m[1], {
+    const r = await minJs(m[2], {
       ecma: 2020, toplevel: false, module: false,
       compress: { passes: 2, drop_console: false, keep_fargs: true, unsafe: false, directives: false, inline: 1, reduce_vars: true, sequences: false, join_vars: false },
       mangle: { toplevel: false, keep_classnames: true },
       format: { comments: false, ascii_only: false, ecma: 2020 }
     });
     if (r.error) throw r.error;
-    s = s.replace(m[0], () => "<script>" + r.code + "</script>");
+    s = s.replace(m[0], () => "<script" + (m[1] || "") + ">" + r.code + "</script>");
   }
   // Stile: ohne Umstrukturierung (Reihenfolge der Regeln bleibt, damit nichts anders überdeckt)
   const styles = [...s.matchAll(/<style>([\s\S]*?)<\/style>/g)];
