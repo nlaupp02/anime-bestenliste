@@ -1541,7 +1541,6 @@ html:not(.app) #shelfOv.pk { padding-bottom: 40px; }
 #trOv[hidden].pre { display: grid; visibility: hidden; pointer-events: none; animation: none; }
 .tr-ttl { font-family: var(--f-display); font-weight: 400; font-size: 18px; line-height: 1.15; text-align: center; overflow-wrap: anywhere; }
 .tr-ttl:empty { display: none; }
-.tr-hint { margin: 0; text-align: center; font-size: 13px; color: var(--muted); }
 .tr-ext { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 8px; padding: 16px; text-align: center; color: var(--ink); text-decoration: none; background: linear-gradient(140deg, #2b3454, #141726 72%); }
 .tr-ext .trp { width: 54px; height: 54px; border-radius: 50%; border: 2px solid var(--ink); display: grid; place-items: center; }
 .tr-ext .trp svg { width: 22px; height: 22px; margin-left: 3px; }
@@ -1678,7 +1677,7 @@ html:not(.app) .dt { max-width: 560px; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V378</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V379</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-s a">Anderer Tipp</span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -1831,7 +1830,7 @@ html:not(.app) .dt { max-width: 560px; }
 </div>
 <div class="ov" id="trOv" hidden>
   <div class="ov-bg" data-close></div>
-  <div class="tr-card" role="dialog" aria-modal="true" aria-label="Trailer"><b class="tr-ttl" id="trTtl"></b><div class="tr-vid" id="trVid"></div><p class="tr-hint" id="trHint" hidden>Für Ton einmal auf das Video tippen.</p><button type="button" class="ov-btn" data-close>Schließen</button></div>
+  <div class="tr-card" role="dialog" aria-modal="true" aria-label="Trailer"><b class="tr-ttl" id="trTtl"></b><div class="tr-vid" id="trVid"></div><button type="button" class="ov-btn" data-close>Schließen</button></div>
 </div>
 <div class="ov" id="seenAsk" hidden>
   <div class="ov-bg" data-close></div>
@@ -3772,7 +3771,7 @@ const trOv = $("#trOv");
 // Erlaubt das iPhone den Ton trotzdem nicht, läuft es nach kurzer Kontrolle ohne Ton weiter und der Hinweis erscheint.
 // Vorbereitet wird der Spieler nur bei Leuten, die schon einmal einen Trailer angesehen haben (kurz nach dem Start, unsichtbar).
 const KEY_TRUSED = "cr-top100-trailer-used";
-let ytP = null, ytReady = false, ytApi = false, ytWant = "", ytT = 0;
+let ytP = null, ytReady = false, ytApi = false, ytWant = "";
 function ytPre() {
   if (!REAL_HOST || ytApi) return; ytApi = true;
   trOv.classList.add("pre");
@@ -3781,39 +3780,37 @@ function ytPre() {
     try {
       ytP = new YT.Player("ytBox", { host: "https://www.youtube-nocookie.com", width: "100%", height: "100%",
         playerVars: { playsinline: 1, rel: 0, iv_load_policy: 3, hl: "de" },
-        events: { onReady: () => { ytReady = true; if (ytWant && !trOv.hidden) { const id = ytWant; ytWant = ""; ytStart(id, false); } },
+        events: { onReady: () => { ytReady = true; if (ytWant && !trOv.hidden) { const id = ytWant; ytWant = ""; ytStart(id); } },
           // Untertitel ausschalten, sobald das Video läuft (der Spieler merkt sich sonst, dass sie einmal an waren)
           onStateChange: e => { if (e && e.data === 1) { try { ytP.unloadModule("captions"); ytP.setOption("captions", "track", {}); } catch (er) {} } } } });
     } catch (e) { ytApi = false; }
   };
   const sc = document.createElement("script"); sc.src = "https://www.youtube.com/iframe_api"; sc.async = true; sc.onerror = () => { ytApi = false; }; document.head.append(sc);
 }
-function ytStart(id, tapped) {
-  const app = isAppMode();
-  try { if (tapped || !app) ytP.unMute(); else ytP.mute(); ytP.loadVideoById(id); } catch (e) {}
-  $("#trHint").hidden = tapped || !app;
-  clearTimeout(ytT);
-  // Kontrolle: Läuft das Video nach kurzer Zeit nicht, ohne Ton starten (das erlaubt das iPhone immer) und den Hinweis zeigen
-  if (tapped) ytT = setTimeout(() => { if (trOv.hidden) return; let st = -1; try { st = ytP.getPlayerState(); } catch (e) {} if (st !== 1 && st !== 3) { try { ytP.mute(); ytP.playVideo(); } catch (e) {} $("#trHint").hidden = false; } }, 1800);
+// V379: Immer mit Ton starten und nie von selbst stumm schalten. Vorher wurde nach 1,8 s auf „ohne Ton“ umgestellt, wenn das Video
+// noch nicht lief – das traf auch jede Werbung vor dem Trailer (die zählt für den Spieler nicht als „läuft“), der Ton war dann weg.
+// Lässt das iPhone den Start einmal nicht zu, zeigt YouTube seinen Abspiel-Knopf; ein Tipp darauf startet mit Ton.
+function ytStart(id) {
+  try { ytP.unMute(); ytP.loadVideoById(id); } catch (e) {}
 }
 function trOpen(key) {
   const yt = TRAILER[key]; if (!yt || !trOv.hidden) return false;
   if (!REAL_HOST) {
     $("#trVid").innerHTML = `<a class="tr-ext" href="https://www.youtube.com/watch?v=${yt}" target="_blank" rel="noopener"><span class="trp">${V_PLAY}</span><b>Trailer auf YouTube öffnen</b><small>Im Artifact lässt sich das Video nicht einbetten. In der echten App läuft es direkt hier.</small></a>`;
-    $("#trHint").hidden = true; trOv.hidden = false; return true;
+    trOv.hidden = false; return true;
   }
   const it = items.find(x => x.key === key); $("#trTtl").textContent = it ? it.title : "";
   clearTimeout(ytStopT);
-  trOv.classList.remove("pre"); trOv.hidden = false; $("#trHint").hidden = true;
+  trOv.classList.remove("pre"); trOv.hidden = false;
   store(KEY_TRUSED, 1);
-  if (ytReady && ytP) ytStart(yt, true);   // Spieler steht schon: noch im selben Tipp mit Ton starten
-  else { ytWant = yt; ytPre(); }           // erster Trailer: Spieler wird erst geladen und startet dann (am Handy ohne Ton)
+  if (ytReady && ytP) ytStart(yt);   // Spieler steht schon: noch im selben Tipp mit Ton starten
+  else { ytWant = yt; ytPre(); }           // erster Trailer: Spieler wird erst geladen und startet dann
   return true;
 }
 let ytStopT = 0;
 function trClose() {
   if (trOv.hidden) return;
-  clearTimeout(ytT); ytWant = "";
+  ytWant = "";
   trOv.hidden = true;
   if (REAL_HOST && ytP) {
     trOv.classList.add("pre");
