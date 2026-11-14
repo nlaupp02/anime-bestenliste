@@ -1476,6 +1476,12 @@ html:not(.app) #shelfOv.pk { padding-bottom: 40px; }
 .app.standalone #shelfOv.pk { padding-bottom: calc(214px + env(safe-area-inset-bottom, 0px)); }
 .standalone #shelfOv.pk { padding-top: calc(env(safe-area-inset-top, 0px) + 8px); }
 #shelfOv.pk .shelf-one { max-height: 100%; }
+/* V374: Am Handy ist auch das normale Fenster (News, Tipp des Tages, Profil, Freunde) unten verankert wie das Würfel-Fenster:
+   Es wächst nur nach oben, „Schließen“ und die Knopfzeile stehen bei jedem Titel an derselben Stelle */
+.app #shelfOv.anc { align-items: end; }
+.app.standalone #shelfOv.anc { padding-bottom: calc(214px + env(safe-area-inset-bottom, 0px)); }
+.standalone #shelfOv.anc { padding-top: calc(env(safe-area-inset-top, 0px) + 8px); }
+.app #shelfOv.anc .shelf-one { max-height: 100%; }
 .reroll .rr-d { display: inline-grid; width: 20px; height: 20px; }
 .reroll .rr-d svg { width: 20px; height: 20px; }
 .pick-ico { will-change: auto; }
@@ -1517,7 +1523,14 @@ html:not(.app) #shelfOv.pk { padding-bottom: 40px; }
 }
 /* Karten mit Trailer-Knopf: am Handy nur „Crunchyroll“, ganz schmal der Trailer-Knopf ohne Wort */
 @container (max-width: 430px) { .has-tr .btn.cr .crl, .has-tr .btn.cr .crv { display: none; } }
-@container (max-width: 335px) { .foot .btn.trl { width: 42px; padding: 0; } .foot .btn.trl::after { content: none; } }
+/* V374: das Wort „Trailer“ bleibt auch im Fenster stehen (dort ist die Zeile schmaler) – erst enger gesetzt, dann schmalere Knöpfe, nur ganz schmal ohne Wort */
+@container (max-width: 335px) { .foot .btn.trl { padding: 0 9px; gap: 6px; } }
+@container (max-width: 322px) {
+  .has-tr .foot .btn.trl { padding: 0 8px; gap: 5px; }
+  .has-tr .foot .btn.cr { padding-left: 9px; padding-right: 9px; gap: 6px; }
+  .has-tr .foot .btn.shr, .has-tr .foot .btn.seen, .has-tr .foot .btn.save, .has-tr .foot .btn.seen[aria-pressed="true"] { width: 38px; }
+}
+@container (max-width: 304px) { .has-tr .foot .btn.trl, .foot .btn.trl { width: 42px; padding: 0; } .foot .btn.trl::after { content: none; } }
 @supports not (container-type: inline-size) { @media (max-width: 500px) { .has-tr .btn.cr .crl, .has-tr .btn.cr .crv { display: none; } } }
 /* Trailer-Fenster */
 .tr-card { position: relative; width: 100%; max-width: 640px; display: grid; gap: 12px; animation: cardIn .2s ease-out; }
@@ -1573,30 +1586,34 @@ html:not(.app) #shelfOv.pk { padding-bottom: 40px; }
 #dayTip > .pick-btn .pick-s.a { display: inline; }
 /* PC: Tipp-Karte nicht über die ganze Breite */
 html:not(.app) .dt { max-width: 560px; }
-/* News-Reiter (V373): nach Tagen geordnet, kompakte Zeilen, Heute rot, neue Staffeln gold */
-.news { display: block; margin: 0 0 18px; }
-.nw-day { display: flex; align-items: center; gap: 8px; margin: 18px 2px 8px; font-family: var(--f-body); font-weight: 800; font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-.nw-day:first-child { margin-top: 2px; }
-.nw-day.now { color: var(--hanko); }
-.nw-day.gld { color: var(--gold); }
-.nw-day::after { content: ""; flex: 1; height: 1px; background: var(--line); }
-.nw-it { display: flex; gap: 12px; align-items: center; margin: 0 0 8px; padding: 8px 10px 8px 8px; color: var(--ink); background: var(--sheet); border: 1px solid var(--line); border-radius: 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.nw-it.now { border-left: 3px solid var(--hanko); }
-.nw-it.gld { border-left: 3px solid var(--gold); }
-.nw-it .th { width: 42px; height: 60px; flex: none; border-radius: 6px; overflow: hidden; background: var(--chip); display: grid; place-items: center; font-size: 12.5px; font-weight: 700; color: var(--gold); }
+/* News-Reiter (V374: wieder das Design mit großer Kachel oben und beschrifteten Zeilen, dazu der Schalter „Nur meine Titel“) */
+.news { display: grid; gap: 10px; margin: 0 0 18px; }
+.nw-h { font-family: var(--f-display); font-weight: 400; font-size: 17px; margin: 12px 0 0; }
+.nw-h:first-child { margin-top: 0; }
+.nw-big { display: block; width: 100%; padding: 0; text-align: left; font: inherit; color: var(--ink); background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.nw-ban { position: relative; display: flex; align-items: flex-end; height: 150px; padding: 12px; overflow: hidden; background: linear-gradient(160deg, #3b4368, #171a2b); }
+.nw-ban .bg { position: absolute; inset: -28px; background-size: cover; background-position: center 22%; filter: blur(16px) saturate(1.2); opacity: .62; }
+.nw-ban img { position: absolute; right: 14px; bottom: -22px; width: 104px; height: 148px; object-fit: cover; border-radius: 8px; box-shadow: 0 8px 22px rgba(0, 0, 0, .5); transform: rotate(4deg); }
+.nw-ban b { position: relative; font-family: var(--f-display); font-weight: 400; font-size: 23px; line-height: 1.1; max-width: 62%; text-shadow: 0 2px 10px rgba(0, 0, 0, .65); overflow-wrap: anywhere; }
+.nw-ban.nocv b { max-width: 100%; }
+.nw-tag { position: absolute; left: 0; top: 12px; z-index: 1; background: var(--ink); color: var(--paper); font-weight: 700; font-size: 11px; letter-spacing: .1em; padding: 5px 10px; border-radius: 0 6px 6px 0; }
+.nw-in { display: flex; align-items: center; gap: 6px; padding: 12px; color: var(--muted); font-size: 14px; }
+.nw-in svg { width: 16px; height: 16px; flex: none; }
+.nw-in b { color: var(--ink); }
+.nw-it { display: flex; gap: 12px; align-items: center; width: 100%; padding: 9px; text-align: left; font: inherit; color: var(--ink); background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.nw-it .th { width: 50px; height: 72px; flex: none; border-radius: 7px; overflow: hidden; background: var(--chip); display: grid; place-items: center; font-size: 13px; font-weight: 700; color: var(--gold); }
 .nw-it .th img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.nw-it .th:empty { display: none; }
-.nw-it:has(.th:empty) { padding: 12px 10px 12px 14px; }
-.nw-it .tx { flex: 1; min-width: 0; display: grid; gap: 3px; }
+.nw-it .tx { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.nw-it small { font-size: 10.5px; font-weight: 700; letter-spacing: .07em; color: var(--muted); text-transform: uppercase; }
+.nw-it small.red { color: var(--hanko); } .nw-it small.gld { color: var(--gold); }
 .nw-it .tx b { font-size: 15px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .nw-it .ln { font-size: 12.5px; color: var(--muted); }
+.nw-it .go { font-size: 20px; color: var(--muted); padding-right: 4px; }
+.nw-note { font-size: 12.5px; color: var(--muted); line-height: 1.45; margin: 6px 2px 0; }
+.nw-empty { padding: 22px 14px; text-align: center; color: var(--muted); background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; }
+.nw-it .th:empty { display: none; }
+.nw-it:has(.th:empty) { padding: 12px 9px 12px 14px; }
 .nw-it .de { color: var(--ok); font-weight: 700; }
-.nw-tr { flex: none; width: 38px; height: 38px; padding: 0; border-radius: 50%; border: 1px solid var(--line); background: none; color: var(--ink); display: grid; place-items: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.nw-tr svg { width: 13px; height: 13px; margin-left: 2px; }
-.nw-cd { flex: none; font-size: 12px; font-weight: 700; color: var(--gold); white-space: nowrap; }
-.nw-go { flex: none; font-size: 20px; color: var(--muted); padding-right: 4px; }
-.nw-note { font-size: 12.5px; color: var(--muted); line-height: 1.45; margin: 12px 2px 0; }
-.nw-empty { margin: 0 0 8px; padding: 22px 14px; text-align: center; color: var(--muted); background: var(--sheet); border: 1px solid var(--line); border-radius: 12px; }
 /* News braucht keine Suche und keine Filter. An der Stelle der Suche sitzt der Schalter „Nur meine Titel“ (gleiche Höhe wie die Suchzeile,
    damit Anzahl und Priscilla-Balken in jedem Reiter an derselben Stelle stehen) */
 .top[data-v="news"] + .bar .searchrow, .top[data-v="news"] + .bar .panel, .top[data-v="news"] + .bar #reset { display: none; }
@@ -1665,7 +1682,7 @@ html:not(.app) .dt { max-width: 560px; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V373</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V374</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-s a">Anderer Tipp</span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -3853,37 +3870,30 @@ function newsToday() { const t0 = day0(Date.now()); return airItems(newsOwn).fil
 function updNewsDot() { const d = $("#newsDot"); if (d) d.hidden = !(newsToday() && load(KEY_NEWSDAY, "") !== isoDay(new Date()) && state.view !== "news"); }
 function renderNews() {
   const box = $("#news"); if (!box) return;
-  const now = Date.now(), t0 = day0(now), every = airItems(), mine = airItems(newsOwn);
+  const now = Date.now(), every = airItems(), mine = airItems(newsOwn);
   const mode = newsMode === "mine" || newsMode === "all" ? newsMode : mine.length ? "mine" : "all";
   const all = mode === "mine" ? mine : every;
-  const nNew = items.filter(it => isFresh(it) && (!prisc || isRom(it))).length;
-  const lastDay = Object.keys(ADDED).sort().pop() || "";
+  let week = all.filter(x => x.kind === "ep" && x.at < now + 7 * DAY_MS), soon = all.filter(x => !(x.kind === "ep" && x.at < now + 7 * DAY_MS));
+  // Groß oben: der nächste Staffelstart mit festem Termin (höchstens 60 Tage hin)
+  const big = all.find(x => !x.own && ((x.kind === "ep" && x.first) || (x.kind === "soon" && x.d)) && x.at < now + 60 * DAY_MS) || null;
+  if (big) { week = week.filter(x => x !== big); soon = soon.filter(x => x !== big); }
+  const dated = soon.filter(x => x.at !== Infinity), open = soon.filter(x => x.at === Infinity);
   // Schalter und Anzahl stehen oben in der Leiste (wie Suche und „520 Titel“ in den anderen Reitern)
   $("#newsSeg").innerHTML = `<button type="button" class="nw-sw" role="switch" aria-checked="${mode === "mine"}" data-nm="${mode === "mine" ? "all" : "mine"}"><span>Nur meine Titel</span><i aria-hidden="true"></i></button>`;
   $("#status").textContent = (all.length === 1 ? "1 Neuigkeit" : `${all.length} Neuigkeiten`) + " · Stand " + new Date(air.t * 1000).toLocaleDateString("de-DE", { day: "numeric", month: "long" });
-  const sig = JSON.stringify([air.t, prisc, isoDay(new Date()), nNew, mode, mine.length, every.length, all.map(x => [x.it.id, x.at, coverOf(x.it)])]);
+  const sig = JSON.stringify([air.t, prisc, isoDay(new Date()), mode, mine.length, every.length, all.map(x => [x.it.id, x.at, coverOf(x.it)])]);
   if (sig === newsSig) return; newsSig = sig;
-  const th = it => { const u = coverOf(it); return `<span class="th">${u ? `<img${coverAttrs(u, "42px")} alt="" loading="lazy" decoding="async" draggable="false" onerror="this.remove()">` : ""}</span>`; };
+  const th = it => { const u = coverOf(it); return `<span class="th">${u ? `<img${coverAttrs(u, "50px")} alt="" loading="lazy" decoding="async" draggable="false" onerror="this.remove()">` : ""}</span>`; };
   const dub = it => it.dub === "de" ? '<span class="de">Deutsch</span>' : "Untertitel";
-  const trb = it => TRAILER[it.key] ? `<button type="button" class="nw-tr" data-trk="${it.id}" aria-label="Trailer von ${esc(it.title)} ansehen">${V_PLAY}</button>` : "";
-  const dayLong = t => { const d = Math.round((day0(t) - t0) / DAY_MS); return d === 0 ? "Heute" : d === 1 ? "Morgen" : d === -1 ? "Gestern" : new Date(t).toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "short" }); };
-  const inTxt = t => { const d = Math.ceil((t - now) / DAY_MS); return d < 1 ? "heute" : d === 1 ? "morgen" : d < 14 ? `in ${d} Tagen` : d < 70 ? `in ${Math.round(d / 7)} Wochen` : `in ${Math.round(d / 30)} Monaten`; };
-  const week = all.filter(x => x.kind === "ep" && x.at < now + 7 * DAY_MS), later = all.filter(x => !(x.kind === "ep" && x.at < now + 7 * DAY_MS));
-  let h = "", last = null;
-  // Diese Woche: nach Tagen, Heute rot
-  week.forEach(x => {
-    const d = day0(x.at), today = d === t0;
-    if (d !== last) { last = d; h += `<h3 class="nw-day${today ? " now" : ""}">${esc(dayLong(x.at))}</h3>`; }
-    h += `<div class="nw-it${today ? " now" : ""}" role="button" tabindex="0" data-open="${x.it.id}">${th(x.it)}<span class="tx"><b>${esc(x.it.title)}</b><span class="ln">Folge ${x.ep}${x.first ? (x.own ? " · Start" : " · neue Staffel") : ""} · ${dub(x.it)}</span></span>${trb(x.it)}</div>`;
-  });
-  // Später: neue Staffeln und Folgen nach einer Pause (gold), mit „in … Wochen“, wenn der Tag feststeht
-  if (later.length) h += `<h3 class="nw-day gld">Demnächst</h3>` + later.slice(0, 16).map(x => {
-    const txt = x.kind === "ep" ? `${x.first ? (x.own ? "Startet" : "Neue Staffel") : "Folge " + x.ep} am ${new Date(x.at).toLocaleDateString("de-DE", { day: "numeric", month: "short", year: "numeric" })}` : `${x.own ? "" : "Neue Staffel · "}${capFirst(soonText(x))}`;
-    const cd = x.kind === "ep" || x.d ? `<span class="nw-cd">${inTxt(x.at)}</span>` : "";
-    return `<div class="nw-it gld" role="button" tabindex="0" data-open="${x.it.id}">${th(x.it)}<span class="tx"><b>${esc(x.it.title)}</b><span class="ln">${esc(txt)}</span></span>${cd}</div>`;
-  }).join("");
-  if (!week.length && !later.length) h += `<p class="nw-empty">${mode === "mine" ? (saved.size + seen.size ? "Zu deinen gemerkten und gesehenen Titeln gibt es gerade nichts Neues." : "Hier erscheinen Neuigkeiten zu Titeln, die du gemerkt oder als gesehen markiert hast.") : "Gerade läuft keine neue Staffel von Titeln aus der Liste."}</p>`;
-  if (nNew) h += `<h3 class="nw-day">Liste</h3><div class="nw-it" role="button" tabindex="0" data-neu><span class="th">+${nNew}</span><span class="tx"><b>${nNew} ${prisc ? "neue Romanzen" : "neue Titel"} in der Liste</b><span class="ln">${lastDay ? "seit " + esc(dayName(lastDay)) + " · " : ""}antippen zum Ansehen</span></span><span class="nw-go" aria-hidden="true">›</span></div>`;
+  const rowEp = x => `<button type="button" class="nw-it" data-open="${x.it.id}">${th(x.it)}<span class="tx"><small class="${day0(x.at) <= day0(now) ? "red" : ""}">${esc(dayLabel(x.at))} · ${x.first ? (x.own ? "Start" : "Neue Staffel") : "Neue Folge"}</small><b>${esc(x.it.title)}</b><span class="ln">Folge ${x.ep} · ${dub(x.it)}</span></span><span class="go" aria-hidden="true">›</span></button>`;
+  const rowSoon = x => `<button type="button" class="nw-it" data-open="${x.it.id}">${th(x.it)}<span class="tx"><small class="gld">${x.own ? "Neu" : "Neue Staffel"}</small><b>${esc(x.it.title)}</b><span class="ln">${x.kind === "ep" ? `${x.first ? "Start" : "Folge " + x.ep} am ${esc(dayLabel(x.at))}` : esc(capFirst(soonText(x)))}</span></span><span class="go" aria-hidden="true">›</span></button>`;
+  let h = "";
+  if (big) { const u = coverOf(big.it);
+    h += `<button type="button" class="nw-big" data-open="${big.it.id}"><span class="nw-ban${u ? "" : " nocv"}">${u ? `<i class="bg" style="background-image:url(&quot;${esc(u)}&quot;)" aria-hidden="true"></i><img${coverAttrs(u, "104px")} alt="" decoding="async" draggable="false" onerror="this.parentNode.classList.add('nocv');this.remove()">` : ""}<span class="nw-tag">NEUE STAFFEL</span><b>${esc(shortT(big.it.title))}</b></span><span class="nw-in">${V_CLOCK}<span>${big.kind === "ep" ? `Start: <b>${esc(dayLabel(big.at))}</b>` : `<b>${esc(capFirst(soonText(big)))}</b>`}</span></span></button>`; }
+  if (week.length) h += `<h3 class="nw-h">Diese Woche</h3>` + week.map(rowEp).join("");
+  if (dated.length) h += `<h3 class="nw-h">Bald</h3>` + dated.slice(0, 12).map(rowSoon).join("");
+  if (open.length) h += `<h3 class="nw-h">Angekündigt</h3>` + open.slice(0, 12).map(rowSoon).join("");
+  if (!big && !week.length && !soon.length) h += `<p class="nw-empty">${mode === "mine" ? (saved.size + seen.size ? "Zu deinen gemerkten und gesehenen Titeln gibt es gerade nichts Neues." : "Hier erscheinen Neuigkeiten zu Titeln, die du gemerkt oder als gesehen markiert hast.") : "Gerade läuft keine neue Staffel von Titeln aus der Liste."}</p>`;
   h += `<p class="nw-note">Termine nach der Ausstrahlung in Japan – auf Crunchyroll meist am selben Tag, die deutsche Synchro kommt später.${REAL_HOST ? "" : " Im Artifact ist der Stand fest, in der echten App immer aktuell."}</p>`;
   box.innerHTML = h;
 }
@@ -3899,11 +3909,8 @@ $("#dayTip").addEventListener("click", e => {
   openShelf(id);
 });
 $("#newsSeg").addEventListener("click", e => { const nm = e.target.closest("[data-nm]"); if (nm) { newsMode = nm.dataset.nm; store(KEY_NEWSMODE, newsMode); newsSig = ""; renderNews(); } });
-$("#news").addEventListener("keydown", e => { const r = e.target.closest('.nw-it[role="button"]'); if (r && e.target === r && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); r.click(); } });
 $("#news").addEventListener("click", e => {
-  const tk = e.target.closest("[data-trk]"); if (tk) { const it = IT369.get(tk.dataset.trk); if (it) trOpen(it.key); return; }
-  const o = e.target.closest("[data-open]"); if (o) { openShelf(o.dataset.open); return; }
-  if (e.target.closest("[data-neu]")) { scrollMem.news = getY(); delete scrollMem.all; state.view = "all"; neuView = true; sync(); ++tabToken; render(); jumpTo(0); }
+  const o = e.target.closest("[data-open]"); if (o) openShelf(o.dataset.open);
 });
 if (isAppMode()) $("#dayTip").append($("#pick"));
 setTimeout(updNewsDot, 1500); setTimeout(airRefresh, 6000);
@@ -4397,6 +4404,7 @@ function openShelf(id, plain) {
   const el = cardEls.get(id); if (!el) return;
   shelfPh = shelfMark(el); shelfEl = el; cvLive(el);
   el._wasHid = el.hidden;
+  shelfOv.classList.toggle("anc", !plain);
   el.hidden = false; $("#shelfOne").append(el); shelfOv.hidden = false;
   const x = document.createElement("button"); x.type = "button"; x.className = "ov-btn sclose"; x.dataset.close = ""; x.textContent = "Schließen"; el.append(x);
   // V369: Trailer und Termin (nicht im Würfel-Fenster)
@@ -4408,7 +4416,7 @@ function closeShelf() {
   const o = $("#shelfOne").querySelector(":scope > .card.pk-out"); if (o) pkReturn(o);
   if (shelfEl) { shelfEl.getAnimations().forEach(a => a.cancel()); pkStrip(shelfEl); dtStrip(shelfEl); }
   $(".shelf-one").classList.remove("pk-x");
-  pickOpen = false; shelfOv.classList.remove("pk", "pk-pre");
+  pickOpen = false; shelfOv.classList.remove("pk", "pk-pre", "anc");
   if (shelfEl && shelfPh) shelfPh.replaceWith(shelfEl);
   shelfEl = shelfPh = null; shelfOv.hidden = true;
   if (state.view !== "seen") render(); // Karte aus Tipp-Reihe o. Ä. geöffnet: wieder richtig ein- oder ausblenden
@@ -4485,6 +4493,7 @@ function setMark(id, act, on) {
     if (!b) return;
     if ((act === "seen" && (state.hideSeen || state.view === "seen" || (unsave && state.view === "saved"))) || (act === "save" && state.view === "saved")) { render(); return; }
     if (state.view === "genres" && !state.g2) { render(); return; } // Kachelübersicht: Zähler der Kacheln, nicht der Karten
+    if (state.view === "news") { status(-1); newsSig = ""; renderNews(); updNewsDot(); return; } // News: Anzahl der Neuigkeiten, nicht der Karten (stand sonst „519 Titel“ da)
     status(document.querySelectorAll("#list .card:not([hidden])").length);
     headFor();
   }, 0));
