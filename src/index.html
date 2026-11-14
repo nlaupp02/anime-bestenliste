@@ -1535,7 +1535,9 @@ html.covers .cv { position: relative; }
 .dt-g { color: var(--muted); font-size: 13.5px; }
 .dt-h { margin: 0; font-size: 14.5px; line-height: 1.38; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .dt-m { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; font-size: 13px; color: var(--muted); }
-.dt-m .rt { background: var(--gold); color: var(--on-gold); font-family: var(--f-display); border-radius: 999px; padding: 2px 9px; font-size: 13px; }
+.dt-m .rt { font-family: var(--f-display); border-radius: 999px; padding: 1px 9px; font-size: 13px; border: 1.5px solid var(--hanko); color: var(--hanko); background: var(--hanko-soft); }
+.dt-m .rt.top { background: var(--gold); border-color: var(--gold); color: var(--on-gold); }
+.dt-m .rt.low { border-color: var(--muted); color: var(--muted); background: none; }
 .dt-m .de { color: var(--ok); font-weight: 700; }
 .dt-b { grid-column: 1 / -1; display: flex; gap: 8px; margin-top: 12px; }
 .dt-btn { height: 44px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; font: inherit; font-weight: 700; font-size: 14px; padding: 0 14px; cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
@@ -1562,6 +1564,10 @@ html:not(.app) .dt { max-width: 560px; }
 .news { display: grid; gap: 10px; margin: 0 0 18px; }
 .nw-h { font-family: var(--f-display); font-weight: 400; font-size: 17px; margin: 12px 0 0; }
 .nw-h:first-child { margin-top: 0; }
+.nw-seg { display: flex; padding: 4px; background: var(--sheet); border: 1px solid var(--line); border-radius: 999px; }
+.nw-seg button { flex: 1; height: 38px; border: 0; border-radius: 999px; background: none; font: inherit; font-weight: 700; font-size: 14px; color: var(--muted); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.nw-seg button[aria-pressed="true"] { background: var(--gold); color: var(--on-gold); }
+.nw-seg span { font-weight: 500; opacity: .8; margin-left: 6px; }
 .nw-big { display: block; width: 100%; padding: 0; text-align: left; font: inherit; color: var(--ink); background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .nw-ban { position: relative; display: flex; align-items: flex-end; height: 150px; padding: 12px; overflow: hidden; background: linear-gradient(160deg, #3b4368, #171a2b); }
 .nw-ban .bg { position: absolute; inset: -28px; background-size: cover; background-position: center 22%; filter: blur(16px) saturate(1.2); opacity: .62; }
@@ -3652,7 +3658,7 @@ const TRAILER = {"Frieren – Nach dem Ende der Reise":"tR8YH0G67Rk","Attack on 
 const WATCH = {"Frieren – Nach dem Ende der Reise":[209939],"Die Tagebücher der Apothekerin":[195516,200927],"One Piece":[-21],"Dandadan":[198966],"Oshi no Ko – Mein Star":[209827],"Spy x Family":[219714],"One Punch Man":[204747],"Grand Blue Dreaming":[217136],"Mushoku Tensei":[217434],"Lord of the Mysteries":[206874],"Witch Hat Atelier":[213702],"Das Band der Unterwelt":[217013],"Aoashi":[191788],"Naruto Shippuden":[165523],"Blue Lock":[199404],"Shangri-La Frontier":[189323],"Ascendance of a Bookworm":[217712],"Gachiakuta":[204436],"Detektiv Conan":[-235],"Classroom of the Elite":[213477],"Black Clover":[195604],"Mashle: Magic and Muscles":[177704],"Tokyo Revengers":[178083],"Ace of the Diamond":[213658],"SK8 the Infinity":[153676],"Oblivion Battery":[184141],"Rurouni Kenshin":[188665],"Laid-Back Camp":[184072],"Skip and Loafer":[185657],"Bocchi the Rock!":[186712],"The Rising of the Shield Hero":[199185],"Sentenced to Be a Hero":[209963],"Naruto":[165523],"Firefly Wedding":[-205909],"The Cold Sato-san is Only Sweet to Me":[-209502],"PSYREN":[-204011],"Alya Sometimes Hides Her Feelings in Russian":[181641],"Tune In to the Midnight Heart":[209762],"Spice and Wolf: Merchant Meets the Wise Wolf":[181951],"Makeine: Too Many Losing Heroines!":[189796],"Though I Am an Inept Villainess":[217070],"Victoria of Many Faces":[216272],"Witch Watch":[199793],"Marriagetoxin":[213752],"Chitose Is in the Ramune Bottle":[198727],"The Cat and the Dragon":[217011],"Fate/strange Fake":[209984],"Wistoria: Wand and Sword":[213656],"Tsukimichi -Moonlit Fantasy-":[178467],"The Wrong Way to Use Healing Magic":[179981],"BanG Dream! It's MyGO!!!!!":[189121],"Please Excuse My Younger Brothers":[-203490],"Hello, I am a Witch and my Crush Wants me to Make a Love Potion!":[-207191],"From Far Away":[-209463],"Even Though I'm a Super Timid Noble Girl, I Accepted the Bet From My Cunning Fiancé":[-200455],"The King's Avatar":[198705],"Sabikui Bisco":[167151],"Dragon Ball DAIMA":[206814],"MF Ghost":[209876],"Draw This, Then Die!":[217329],"Kill Blue":[213628],"Liar Game":[217460],"Snowball Earth":[213579],"Overgeared":[-212888],"Dragon Ball Super: Beerus":[-206814],"Magic Knight Rayearth (2026)":[-178868],"Romelia War Chronicle":[-180894,219243],"The Vermilion Mask":[-195571],"A Tale of the Secret Saint":[-187402],"A Certain Scientific Railgun":[186743],"The Weakest Tamer Began a Journey to Pick Up Trash":[203855],"BanG Dream! Ave Mujica":[189121]};
 const AIR0 = {"t":1794646989,"m":{"21":[1,1798985760,1181,1999,10,20,0],"235":[1,1794646800,1220,1996,1,8,0],"153676":[2,0,0,0,0,0,0],"165523":[2,0,0,0,0,0,0],"167151":[2,0,0,0,0,0,0],"177704":[2,0,0,2027,1,9,0],"178083":[1,1795193580,8,2026,10,3,13],"178467":[2,0,0,0,0,0,0],"178868":[1,1795013160,7,2026,10,7,0],"179981":[2,0,0,0,0,0,0],"180894":[1,1794657600,7,2026,10,3,12],"181641":[2,0,0,2027,0,0,0],"181951":[2,0,0,2027,0,0,0],"184072":[2,0,0,2027,4,0,0],"184141":[2,0,0,2027,0,0,0],"185657":[2,0,0,2027,4,0,0],"186712":[2,0,0,0,0,0,0],"186743":[2,0,0,0,0,0,0],"187402":[1,1794661200,8,2026,10,3,0],"188665":[2,0,0,0,0,0,0],"189121":[2,0,0,2027,1,8,0],"189323":[2,1800172800,1,2027,1,10,0],"189796":[2,0,0,0,0,0,0],"191788":[1,1794729600,7,2026,10,4,24],"195516":[1,1795183200,8,2026,10,2,12],"195571":[1,1795249800,7,2026,10,10,0],"195604":[1,1794664800,7,2026,10,3,0],"198705":[2,0,0,2026,0,0,0],"198727":[1,1794924000,6,2026,10,13,11],"198966":[2,0,0,2027,0,0,0],"199185":[2,0,0,2027,0,0,0],"199404":[2,0,0,0,0,0,0],"199793":[2,0,0,0,0,0,0],"200455":[1,1794753000,7,2026,10,4,12],"200927":[2,0,0,2027,4,0,12],"203490":[1,1795186800,20,2026,7,4,24],"203855":[2,0,0,0,0,0,0],"204011":[1,1794837600,6,2026,10,5,0],"204436":[2,0,0,0,0,0,0],"204747":[2,0,0,2027,1,0,0],"205909":[1,1795185000,7,2026,10,9,12],"206814":[1,1794752160,6,2026,10,11,0],"206874":[2,0,0,2027,0,0,0],"207191":[1,1794832200,7,2026,10,5,12],"209463":[1,1794754800,7,2026,10,5,0],"209502":[1,1794920400,7,2026,10,6,12],"209762":[2,0,0,2027,0,0,0],"209827":[2,0,0,0,0,0,0],"209876":[2,0,0,0,0,0,0],"209939":[2,0,0,2027,10,0,0],"209963":[2,0,0,0,0,0,0],"209984":[2,0,0,0,0,0,0],"212888":[1,1794753000,8,2026,9,27,12],"213477":[2,0,0,0,0,0,0],"213579":[2,0,0,0,0,0,0],"213628":[2,0,0,0,0,0,0],"213656":[2,0,0,0,0,0,0],"213658":[1,1794731400,6,2026,10,11,0],"213702":[2,0,0,0,0,0,0],"213752":[2,0,0,2027,1,0,0],"216272":[2,0,0,0,0,0,0],"217011":[2,0,0,2027,0,0,0],"217013":[2,0,0,0,0,0,0],"217070":[2,0,0,2027,1,0,0],"217136":[2,0,0,0,0,0,0],"217329":[2,0,0,0,0,0,0],"217434":[2,0,0,2027,0,0,0],"217460":[2,0,0,0,0,0,0],"217712":[2,0,0,0,0,0,0],"219243":[2,0,0,2027,4,0,12],"219714":[2,0,0,2027,0,0,0]}};
 const REAL_HOST = /(^|\.)github\.io$/.test(location.hostname) || location.hostname === "localhost";
-const KEY_AIR = "cr-top100-air", KEY_NEWSDAY = "cr-top100-news-day", KEY_DAYTIP = "cr-top100-daytip";
+const KEY_AIR = "cr-top100-air", KEY_NEWSDAY = "cr-top100-news-day", KEY_DAYTIP = "cr-top100-daytip", KEY_NEWSMODE = "cr-top100-news-mode";
 const V_PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z" fill="currentColor"/></svg>';
 const V_CLOCK = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 const V_BM = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
@@ -3695,10 +3701,10 @@ function airOf(it) {
   return best;
 }
 // Alle Termine, nach Zeit sortiert. Dieselbe Staffel nur einmal (z. B. Naruto und Naruto Shippuden: gleiche Fortsetzung)
-function airItems() {
+function airItems(only) {
   const seenM = new Map();
   for (const it of items) {
-    if (prisc && !isRom(it)) continue;
+    if ((prisc && !isRom(it)) || (only && !only(it))) continue;
     const x = airOf(it); if (!x) continue;
     const old = seenM.get(x.mid);
     if (!old || (x.own && !old.own)) seenM.set(x.mid, x);
@@ -3779,7 +3785,7 @@ function renderDayTip() {
         <div class="dt-l"><h3 class="dt-t">${splitT(it.title)}</h3>
         <span class="dt-g">${it.genres.map(esc).join(" · ")}</span>
         <p class="dt-h">${esc(hookOf(it))}</p></div>
-        <div class="dt-m"><span class="rt">${fmt(it.mine)}</span>${it.dub === "de" ? '<span class="de">Deutsch</span>' : ""}<span>${esc(it.len)}</span></div>
+        <div class="dt-m"><span class="rt ${tier(it.mine)}">${fmt(it.mine)}</span>${it.dub === "de" ? '<span class="de">Deutsch</span>' : ""}<span>${esc(it.len)}</span></div>
         <div class="dt-b">${TRAILER[it.key] ? `<button type="button" class="dt-btn w" data-tr>${V_PLAY}Trailer</button>` : ""}<button type="button" class="dt-btn o" data-more>Ansehen</button>${seen.has(it.id) ? "" : `<button type="button" class="dt-btn q" data-sv aria-pressed="${saved.has(it.id)}" aria-label="${saved.has(it.id) ? "Gemerkt" : "Merken"}">${V_BM}</button>`}</div>
       </div>`;
     }
@@ -3788,11 +3794,17 @@ function renderDayTip() {
 
 // --- News-Reiter ---
 let newsSig = "";
-function newsToday() { const t0 = day0(Date.now()); return airItems().filter(x => x.kind === "ep" && day0(x.at) === t0).length; }
+// „Meine Titel“ = gemerkt oder gesehen. Ohne eigene Wahl: Meine, sobald es dort etwas gibt, sonst Alle.
+const newsOwn = it => saved.has(it.id) || seen.has(it.id);
+let newsMode = load(KEY_NEWSMODE, "");
+// Der rote Punkt am Reiter gilt nur für eigene Titel (sonst wäre er fast jeden Tag an)
+function newsToday() { const t0 = day0(Date.now()); return airItems(newsOwn).filter(x => x.kind === "ep" && day0(x.at) === t0).length; }
 function updNewsDot() { const d = $("#newsDot"); if (d) d.hidden = !(newsToday() && load(KEY_NEWSDAY, "") !== isoDay(new Date()) && state.view !== "news"); }
 function renderNews() {
   const box = $("#news"); if (!box) return;
-  const now = Date.now(), all = airItems();
+  const now = Date.now(), every = airItems(), mine = airItems(newsOwn);
+  const mode = newsMode === "mine" || newsMode === "all" ? newsMode : mine.length ? "mine" : "all";
+  const all = mode === "mine" ? mine : every;
   let week = all.filter(x => x.kind === "ep" && x.at < now + 7 * DAY_MS), soon = all.filter(x => !(x.kind === "ep" && x.at < now + 7 * DAY_MS));
   // Groß oben: der nächste Staffelstart mit festem Termin (höchstens 60 Tage hin)
   const big = all.find(x => !x.own && ((x.kind === "ep" && x.first) || (x.kind === "soon" && x.d)) && x.at < now + 60 * DAY_MS) || null;
@@ -3800,20 +3812,20 @@ function renderNews() {
   const dated = soon.filter(x => x.at !== Infinity), open = soon.filter(x => x.at === Infinity);
   const nNew = items.filter(it => isFresh(it) && (!prisc || isRom(it))).length;
   const lastDay = Object.keys(ADDED).sort().pop() || "";
-  const sig = JSON.stringify([air.t, prisc, isoDay(new Date()), nNew, all.map(x => [x.it.id, x.at, coverOf(x.it)])]);
+  const sig = JSON.stringify([air.t, prisc, isoDay(new Date()), nNew, mode, mine.length, every.length, all.map(x => [x.it.id, x.at, coverOf(x.it)])]);
   if (sig === newsSig) return; newsSig = sig;
   const th = it => { const u = coverOf(it); return `<span class="th">${u ? `<img${coverAttrs(u, "50px")} alt="" loading="lazy" decoding="async" draggable="false" onerror="this.remove()">` : ""}</span>`; };
   const rowEp = x => `<button type="button" class="nw-it" data-open="${x.it.id}">${th(x.it)}<span class="tx"><small class="${day0(x.at) <= day0(now) ? "red" : ""}">${esc(dayLabel(x.at))} · ${x.first ? (x.own ? "Start" : "Neue Staffel") : "Neue Folge"}</small><b>${esc(x.it.title)}</b><span class="ln">Folge ${x.ep}</span></span><span class="go" aria-hidden="true">›</span></button>`;
   const rowSoon = x => `<button type="button" class="nw-it" data-open="${x.it.id}">${th(x.it)}<span class="tx"><small class="gld">${x.own ? "Neu" : "Neue Staffel"}</small><b>${esc(x.it.title)}</b><span class="ln">${x.kind === "ep" ? `${x.first ? "Start" : "Folge " + x.ep} am ${esc(dayLabel(x.at))}` : esc(capFirst(soonText(x)))}</span></span><span class="go" aria-hidden="true">›</span></button>`;
-  let h = "";
+  let h = `<div class="nw-seg" role="group" aria-label="Welche Titel"><button type="button" data-nm="mine" aria-pressed="${mode === "mine"}">Meine Titel<span>${mine.length}</span></button><button type="button" data-nm="all" aria-pressed="${mode === "all"}">Alle<span>${every.length}</span></button></div>`;
   if (big) { const u = coverOf(big.it);
     h += `<button type="button" class="nw-big" data-open="${big.it.id}"><span class="nw-ban${u ? "" : " nocv"}">${u ? `<i class="bg" style="background-image:url(&quot;${esc(u)}&quot;)" aria-hidden="true"></i><img${coverAttrs(u, "104px")} alt="" decoding="async" draggable="false" onerror="this.parentNode.classList.add('nocv');this.remove()">` : ""}<span class="nw-tag">NEUE STAFFEL</span><b>${esc(shortT(big.it.title))}</b></span><span class="nw-in">${V_CLOCK}<span>${big.kind === "ep" ? `Start: <b>${esc(dayLabel(big.at))}</b>` : `<b>${esc(capFirst(soonText(big)))}</b>`}</span></span></button>`; }
   if (week.length) h += `<h3 class="nw-h">Diese Woche</h3>` + week.map(rowEp).join("");
   if (dated.length) h += `<h3 class="nw-h">Bald</h3>` + dated.slice(0, 12).map(rowSoon).join("");
   if (open.length) h += `<h3 class="nw-h">Angekündigt</h3>` + open.slice(0, 12).map(rowSoon).join("");
+  if (!big && !week.length && !soon.length) h += `<p class="nw-empty">${mode === "mine" ? (saved.size + seen.size ? "Zu deinen gemerkten und gesehenen Titeln gibt es gerade nichts Neues." : "Hier erscheinen Neuigkeiten zu Titeln, die du gemerkt oder als gesehen markiert hast.") : "Gerade läuft keine neue Staffel von Titeln aus der Liste."}</p>`;
   if (nNew) h += `<h3 class="nw-h">Liste</h3><button type="button" class="nw-it" data-neu><span class="th">+${nNew}</span><span class="tx"><small>${lastDay ? esc(dayName(lastDay)) : ""}</small><b>${nNew} ${prisc ? "neue Romanzen" : "neue Titel"} in der Liste</b><span class="ln">Antippen zum Ansehen</span></span><span class="go" aria-hidden="true">›</span></button>`;
-  if (!big && !week.length && !soon.length) h = `<p class="nw-empty">Gerade läuft keine neue Staffel von Titeln aus der Liste.</p>` + h;
-  h += `<p class="nw-note">Termine nach der Ausstrahlung in Japan – auf Crunchyroll meist am selben Tag, die deutsche Synchro kommt später. Stand: ${new Date(air.t * 1000).toLocaleDateString("de-DE", { day: "numeric", month: "short" })}${REAL_HOST ? "" : " (im Artifact fest, in der echten App immer aktuell)"}.</p>`;
+  h += `<p class="nw-note">Termine nach der Ausstrahlung in Japan – auf Crunchyroll meist am selben Tag, die deutsche Synchro kommt später. Stand: ${new Date(air.t * 1000).toLocaleDateString("de-DE", { day: "numeric", month: "long" })}${REAL_HOST ? "" : " (im Artifact fest, in der echten App immer aktuell)"}.</p>`;
   box.innerHTML = h;
 }
 function v369Refresh() {
@@ -3829,6 +3841,7 @@ $("#dayTip").addEventListener("click", e => {
   if (tr && shelfEl) trPlay(shelfEl.querySelector(":scope > .trb"));
 });
 $("#news").addEventListener("click", e => {
+  const nm = e.target.closest("[data-nm]"); if (nm) { newsMode = nm.dataset.nm; store(KEY_NEWSMODE, newsMode); newsSig = ""; renderNews(); return; }
   const o = e.target.closest("[data-open]"); if (o) { openShelf(o.dataset.open); return; }
   if (e.target.closest("[data-neu]")) { scrollMem.news = getY(); delete scrollMem.all; state.view = "all"; neuView = true; sync(); ++tabToken; render(); jumpTo(0); }
 });
