@@ -1552,15 +1552,13 @@ html:not(.app) #shelfOv.pk { padding-bottom: 40px; }
 /* Tipp des Tages (Reiter Alle, über der Liste) */
 .dt { position: relative; margin: 0 0 18px; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: var(--sheet); cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .dt[hidden], .news[hidden] { display: none; }
-/* V380: wieder die Karte mit Cover rechts und weichem Cover-Hintergrund, aber ohne Beschreibungstext und schlanker:
-   „Tipp des Tages“ nur als goldene Schrift, Wertung direkt unter den Genres, drei ruhige Knöpfe */
-.dt-bg { position: absolute; inset: -34px; background-size: cover; background-position: center 24%; filter: blur(22px) saturate(1.25); opacity: .6; pointer-events: none; }
-.dt::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(17, 19, 31, .3), rgba(17, 19, 31, .84) 58%, rgba(17, 19, 31, .96)); pointer-events: none; }
-.dt-in { position: relative; z-index: 1; padding: 14px; display: grid; grid-template-columns: minmax(0, 1fr) 92px; gap: 0 14px; align-items: center; }
+/* V388: aufgeräumte Karte – ruhige Fläche ohne Cover-Schleier, Cover oben rechts, „Ansehen“ als Hauptknopf, Würfel klein in der Knopf-Reihe */
+.dt { border-radius: 16px; container: dt / inline-size; }
+.dt-in { position: relative; z-index: 1; padding: 16px; display: grid; grid-template-columns: minmax(0, 1fr) 88px; gap: 0 14px; align-items: start; }
 .dt.nocv .dt-in { grid-template-columns: minmax(0, 1fr); } .dt.nocv .dt-cv { display: none; }
-.dt-tag { grid-column: 1 / -1; justify-self: start; color: var(--gold); font-weight: 800; font-size: 11.5px; letter-spacing: .12em; margin: 6px 0 14px; }
-.dt-l { display: grid; gap: 7px; align-content: center; min-width: 0; }
-.dt-cv { width: 92px; height: 130px; border-radius: 8px; overflow: hidden; background: var(--chip); box-shadow: 0 6px 18px rgba(0, 0, 0, .45); }
+.dt-tag { grid-column: 1; justify-self: start; color: var(--gold); font-weight: 800; font-size: 11.5px; letter-spacing: .12em; margin: 1px 0 9px; }
+.dt-l { grid-column: 1; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.dt-cv { grid-column: 2; grid-row: 1 / span 2; width: 88px; height: 124px; border-radius: 8px; overflow: hidden; background: var(--chip); box-shadow: 0 4px 14px rgba(0, 0, 0, .4); }
 .dt-cv img { width: 100%; height: 100%; object-fit: cover; display: block; }
 /* V384: Anime-Titel in der normalen fetten Textschrift wie in der Liste (die breite Überschrift-Schrift machte lange Titel klobig); höchstens drei Zeilen */
 .dt-t { margin: 0; font-family: var(--f-body); font-weight: 700; font-size: 22px; line-height: 1.15; letter-spacing: -.005em; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
@@ -1571,20 +1569,24 @@ html:not(.app) #shelfOv.pk { padding-bottom: 40px; }
 .dt-m .rt.top { background: var(--gold); border-color: var(--gold); color: var(--on-gold); }
 .dt-m .rt.low { border-color: var(--muted); color: var(--muted); background: none; }
 .dt-m .de { color: var(--ok); font-weight: 700; }
-.dt-b { grid-column: 1 / -1; display: flex; gap: 8px; margin-top: 14px; }
+.dt-b { grid-column: 1 / -1; display: flex; gap: 8px; margin-top: 15px; min-width: 0; }
+.app .dt-b { padding-right: 48px; } /* Platz für den Würfel rechts in der Reihe */
 .dt-btn { height: 40px; border-radius: 10px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 7px; font: inherit; font-weight: 700; font-size: 14px; padding: 0 14px; cursor: pointer; white-space: nowrap; background: none; color: var(--ink); -webkit-tap-highlight-color: transparent; }
 .dt-btn svg { width: 15px; height: 15px; }
-.dt-btn.w { background: var(--ink); color: var(--paper); border: 0; }
-.dt-btn.o { flex: 1; border: 1px solid rgba(232, 234, 243, .45); }
-.dt-btn.q { width: 40px; padding: 0; flex: none; border: 1px solid rgba(232, 234, 243, .25); }
+.dt-btn.w { flex: 1; min-width: 0; background: var(--ink); color: var(--paper); border: 0; }
+.dt-btn.o { flex: none; border: 1px solid rgba(232, 234, 243, .3); }
+.dt-btn.q { width: 40px; padding: 0; flex: none; border: 1px solid rgba(232, 234, 243, .3); }
+/* schmale iPhones: Knöpfe enger, auf den ganz kleinen zeigt „Trailer“ nur das Zeichen */
+@container dt (max-width: 372px) { .dt-btn { padding: 0 11px; gap: 6px; } }
+@container dt (max-width: 318px) { .dt-btn.o { width: 40px; padding: 0; } .dt-btn.o span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .dt-b { gap: 7px; } }
 .dt-btn.q[aria-pressed="true"] { color: var(--gold); border-color: var(--gold); }
-/* V370: Würfel klein oben rechts in der Tipp-Karte (Handy). Am PC bleibt der große Knopf im Kopf. */
+/* V388: Würfel als kleiner Knopf rechts in der Knopf-Reihe der Tipp-Karte (Handy). Am PC bleibt der große Knopf im Kopf. */
 .pick-s { display: none; }
-#dayTip > .pick-btn { position: absolute; z-index: 2; right: 12px; top: 10px; width: auto; max-width: none; display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px 0 6px; border-radius: 999px; border: 1.5px solid rgba(232, 234, 243, .55); background: rgba(17, 19, 31, .5); color: var(--ink); font-size: 12.5px; font-weight: 700; }
-#dayTip > .pick-btn .pick-ico { width: 24px; height: 24px; border-radius: 6px; background: none; }
-#dayTip > .pick-btn .pick-ico svg { width: 18px; height: 18px; }
+#dayTip > .pick-btn { position: absolute; z-index: 2; right: 16px; bottom: 16px; top: auto; width: 40px; max-width: none; height: 40px; padding: 0; display: grid; grid-template-columns: none; place-items: center; gap: 0; border-radius: 10px; border: 1px solid rgba(232, 234, 243, .3); background: none; color: var(--ink); }
+#dayTip > .pick-btn .pick-ico { width: 19px; height: 19px; border-radius: 0; background: none; }
+#dayTip > .pick-btn .pick-ico svg { width: 19px; height: 19px; display: block; }
 #dayTip > .pick-btn .pick-txt, #dayTip > .pick-btn .pick-go { display: none; }
-#dayTip > .pick-btn .pick-s.a { display: inline; }
+#dayTip > .pick-btn .pick-s.a { display: block; position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } /* nur für die Sprachausgabe: „Anderer Tipp“ */
 /* PC: Tipp-Karte nicht über die ganze Breite */
 html:not(.app) .dt { max-width: 560px; }
 /* News-Reiter (V374: wieder das Design mit großer Kachel oben und beschrifteten Zeilen, dazu der Schalter „Nur meine Titel“) */
@@ -1691,7 +1693,7 @@ html:not(.app) .dt { max-width: 560px; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V387</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V388</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-s a">Anderer Tipp</span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -3883,13 +3885,13 @@ function renderDayTip() {
     if (sig !== dtSig) {
       dtSig = sig; box.classList.toggle("nocv", !u); box.dataset.open = it.id;
       const isSeen = seen.has(it.id), isSaved = saved.has(it.id);
-      body.innerHTML = (u ? `<i class="dt-bg" style="background-image:url(&quot;${esc(u)}&quot;)" aria-hidden="true"></i>` : "") + `<div class="dt-in">
+      body.innerHTML = `<div class="dt-in">
         <span class="dt-tag">${prisc ? "💘 TIPP DES TAGES" : "TIPP DES TAGES"}</span>
         <div class="dt-l"><h3 class="dt-t">${splitT(it.title)}</h3>
           <span class="dt-g">${it.genres.map(esc).join(" · ")}</span>
           <div class="dt-m"><span class="rt ${tier(it.mine)}">${fmt(it.mine)}</span>${it.dub === "de" ? '<span class="de">Deutsch</span>' : it.dub === "sub" ? "<span>Untertitel</span>" : ""}<span>${esc(it.len)}</span></div></div>
-        ${u ? `<span class="dt-cv"><img${coverAttrs(u, "92px")} alt="" decoding="async" draggable="false" onerror="this.closest('.dt').classList.add('nocv')"></span>` : ""}
-        <div class="dt-b">${TRAILER[it.key] ? `<button type="button" class="dt-btn w" data-act="trailer">${V_PLAY}Trailer</button>` : ""}<a class="dt-btn o" href="${crUrl(it)}" target="_blank" rel="noopener">Ansehen</a>${isSeen ? "" : `<button type="button" class="dt-btn q" data-act="save" aria-pressed="${isSaved}" aria-label="${isSaved ? "Gemerkt" : "Merken"}">${V_BM}</button>`}</div>
+        ${u ? `<span class="dt-cv"><img${coverAttrs(u, "88px")} alt="" decoding="async" draggable="false" onerror="this.closest('.dt').classList.add('nocv')"></span>` : ""}
+        <div class="dt-b"><a class="dt-btn w" href="${crUrl(it)}" target="_blank" rel="noopener">${ICON.out}Ansehen</a>${TRAILER[it.key] ? `<button type="button" class="dt-btn o" data-act="trailer" aria-label="Trailer">${V_PLAY}<span>Trailer</span></button>` : ""}${isSeen ? "" : `<button type="button" class="dt-btn q" data-act="save" aria-pressed="${isSaved}" aria-label="${isSaved ? "Gemerkt" : "Merken"}">${V_BM}</button>`}</div>
       </div>`;
     }
   }
