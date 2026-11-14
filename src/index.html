@@ -1476,16 +1476,6 @@ html:not(.app) #shelfOv.pk { padding-bottom: 40px; }
 .app.standalone #shelfOv.pk { padding-bottom: calc(214px + env(safe-area-inset-bottom, 0px)); }
 .standalone #shelfOv.pk { padding-top: calc(env(safe-area-inset-top, 0px) + 8px); }
 #shelfOv.pk .shelf-one { max-height: 100%; }
-/* V374: Am Handy ist auch das normale Fenster (News, Tipp des Tages, Profil, Freunde) unten verankert wie das Würfel-Fenster:
-   Es wächst nur nach oben, „Schließen“ und die Knopfzeile stehen bei jedem Titel an derselben Stelle */
-.app #shelfOv.anc { align-items: end; }
-/* V375: nicht ganz unten am Rand, sondern etwa dort, wo das Fenster vorher in der Mitte endete: bis zu 90 px höher.
-   Auf kurzen Bildschirmen (unter 700 px) bleibt es unten, sonst passen hohe Fenster nicht mehr ganz hinein */
-.app #shelfOv.anc { --lift: max(0px, min(90px, calc((100vh - 700px) * .6))); }
-.app.standalone #shelfOv.anc { padding-bottom: calc(214px + env(safe-area-inset-bottom, 0px) + var(--lift)); }
-.app:not(.standalone) #shelfOv.anc { padding-bottom: calc(216px + var(--lift)); }
-.standalone #shelfOv.anc { padding-top: calc(env(safe-area-inset-top, 0px) + 8px); }
-.app #shelfOv.anc .shelf-one { max-height: 100%; }
 .reroll .rr-d { display: inline-grid; width: 20px; height: 20px; }
 .reroll .rr-d svg { width: 20px; height: 20px; }
 .pick-ico { will-change: auto; }
@@ -1686,7 +1676,7 @@ html:not(.app) .dt { max-width: 560px; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V375</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V376</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-s a">Anderer Tipp</span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -4408,7 +4398,6 @@ function openShelf(id, plain) {
   const el = cardEls.get(id); if (!el) return;
   shelfPh = shelfMark(el); shelfEl = el; cvLive(el);
   el._wasHid = el.hidden;
-  shelfOv.classList.toggle("anc", !plain);
   el.hidden = false; $("#shelfOne").append(el); shelfOv.hidden = false;
   const x = document.createElement("button"); x.type = "button"; x.className = "ov-btn sclose"; x.dataset.close = ""; x.textContent = "Schließen"; el.append(x);
   // V369: Trailer und Termin (nicht im Würfel-Fenster)
@@ -4420,7 +4409,7 @@ function closeShelf() {
   const o = $("#shelfOne").querySelector(":scope > .card.pk-out"); if (o) pkReturn(o);
   if (shelfEl) { shelfEl.getAnimations().forEach(a => a.cancel()); pkStrip(shelfEl); dtStrip(shelfEl); }
   $(".shelf-one").classList.remove("pk-x");
-  pickOpen = false; shelfOv.classList.remove("pk", "pk-pre", "anc");
+  pickOpen = false; shelfOv.classList.remove("pk", "pk-pre");
   if (shelfEl && shelfPh) shelfPh.replaceWith(shelfEl);
   shelfEl = shelfPh = null; shelfOv.hidden = true;
   if (state.view !== "seen") render(); // Karte aus Tipp-Reihe o. Ä. geöffnet: wieder richtig ein- oder ausblenden
