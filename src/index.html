@@ -1493,6 +1493,106 @@ html:not(.app) #shelfOv.pk { padding-bottom: 40px; }
 .app #list > .card .frw .pf-stack { margin-left: 4px; }
 .app #list > .card .frw .pf-stack .avr { box-shadow: 0 0 0 2px var(--paper); }
 .app #list > .card .frw .pf-stack .avr.ld { box-shadow: 0 0 0 2px var(--paper), 0 0 0 3.5px var(--gold); }
+/* ===== V369 (Test): Trailer im Fenster, nächste Folge, ähnliche Titel, News-Reiter, Tipp des Tages ===== */
+.app .tabs { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.app .tabs .lens { width: calc((100% - 18px) / 5); }
+.tabs .nd { display: none; }
+.app .tabs .nd { display: block; position: absolute; top: 5px; left: calc(50% + 8px); width: 9px; height: 9px; border-radius: 50%; background: var(--hanko); box-shadow: 0 0 0 2px rgba(24, 26, 42, .95); }
+.app .tabs .nd[hidden] { display: none; }
+/* Liste: Cover und Titel öffnen das Fenster. Kleines Abspiel-Zeichen auf dem Cover, wenn es einen Trailer gibt */
+#list .card .cv, #list .card h2 { cursor: pointer; }
+html.covers .cv { position: relative; }
+.cv .pb { position: absolute; left: 6px; bottom: 6px; width: 26px; height: 26px; border-radius: 50%; background: rgba(17, 19, 31, .74); border: 1.5px solid rgba(232, 234, 243, .92); display: grid; place-items: center; pointer-events: none; color: var(--ink); }
+.cv .pb svg { width: 11px; height: 11px; margin-left: 1.5px; }
+#shelfOne .cv .pb { display: none; }
+/* Trailer oben im Fenster (bündig bis an den Kartenrand) */
+#shelfOne .card > .trb { position: relative; display: block; flex: none; margin: -16px -16px 14px; padding: 0; border: 0; aspect-ratio: 16 / 9; border-radius: 9px 9px 0 0; overflow: hidden; cursor: pointer; color: var(--ink); text-decoration: none; font: inherit; background: #0b0c14 linear-gradient(140deg, #2b3454, #141726 72%); -webkit-tap-highlight-color: transparent; }
+.trb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .86; }
+.trb .trp { position: absolute; left: 50%; top: 50%; width: 62px; height: 62px; margin: -31px 0 0 -31px; border-radius: 50%; background: rgba(17, 19, 31, .7); border: 2px solid var(--ink); display: grid; place-items: center; }
+.trb .trp svg { width: 24px; height: 24px; margin-left: 3px; }
+.trb .trl { position: absolute; left: 10px; top: 10px; background: rgba(17, 19, 31, .8); font-size: 11px; font-weight: 700; letter-spacing: .08em; padding: 4px 8px; border-radius: 5px; text-transform: uppercase; }
+.trb .trn { position: absolute; left: 12px; right: 12px; bottom: 9px; font-size: 12px; line-height: 1.3; text-align: center; text-shadow: 0 1px 3px #000; }
+.trb iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #000; }
+.trb.on { cursor: default; }
+#shelfOne .card > .trx { display: block; flex: none; margin: -8px 0 10px; font-size: 12.5px; color: var(--muted); text-align: right; text-decoration: underline; }
+/* Termin der nächsten Folge / neuen Staffel */
+#shelfOne .card > .nxl { display: flex; align-items: center; gap: 7px; flex: none; margin: 10px 0 0; font-size: 14px; color: var(--muted); }
+.nxl svg { width: 16px; height: 16px; flex: none; }
+.nxl b { color: var(--ink); font-weight: 700; }
+/* Tipp des Tages (Reiter Alle, über der Liste) */
+.dt { position: relative; margin: 0 0 18px; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: var(--sheet); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.dt[hidden], .news[hidden] { display: none; }
+.dt-bg { position: absolute; inset: -34px; background-size: cover; background-position: center 24%; filter: blur(22px) saturate(1.25); opacity: .6; pointer-events: none; }
+.dt::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(17, 19, 31, .3), rgba(17, 19, 31, .84) 58%, rgba(17, 19, 31, .96)); pointer-events: none; }
+.dt-in { position: relative; z-index: 1; padding: 14px; display: grid; grid-template-columns: minmax(0, 1fr) 96px; gap: 0 14px; align-items: start; }
+.dt.nocv .dt-in { grid-template-columns: minmax(0, 1fr); } .dt.nocv .dt-cv { display: none; }
+.dt-tag { grid-column: 1 / -1; justify-self: start; background: var(--gold); color: var(--on-gold); font-weight: 700; font-size: 11px; letter-spacing: .08em; padding: 4px 8px; border-radius: 6px; margin-bottom: 10px; }
+.dt-l { grid-column: 1; grid-row: 2; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.dt-cv { grid-column: 2; grid-row: 2; width: 96px; height: 136px; border-radius: 8px; overflow: hidden; background: var(--chip); box-shadow: 0 6px 18px rgba(0, 0, 0, .45); }
+.dt-cv img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.dt-t { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 24px; line-height: 1.1; overflow-wrap: anywhere; }
+.dt-t .sub { display: block; font-family: var(--f-body); font-weight: 700; font-size: 14px; line-height: 1.25; color: var(--muted); margin-top: 4px; }
+.dt-g { color: var(--muted); font-size: 13.5px; }
+.dt-h { margin: 0; font-size: 14.5px; line-height: 1.38; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.dt-m { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; font-size: 13px; color: var(--muted); }
+.dt-m .rt { font-family: var(--f-display); border-radius: 999px; padding: 1px 9px; font-size: 13px; border: 1.5px solid var(--hanko); color: var(--hanko); background: var(--hanko-soft); }
+.dt-m .rt.top { background: var(--gold); border-color: var(--gold); color: var(--on-gold); }
+.dt-m .rt.low { border-color: var(--muted); color: var(--muted); background: none; }
+.dt-m .de { color: var(--ok); font-weight: 700; }
+.dt-b { grid-column: 1 / -1; display: flex; gap: 8px; margin-top: 12px; }
+.dt-btn { height: 44px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; font: inherit; font-weight: 700; font-size: 14px; padding: 0 14px; cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+.dt-btn.w { background: var(--ink); color: var(--paper); border: 0; }
+.dt-btn.o { background: rgba(17, 19, 31, .35); color: var(--ink); border: 1.5px solid var(--ink); flex: 1; }
+.dt-btn.q { width: 44px; padding: 0; background: var(--sheet); color: var(--ink); border: 1.5px solid var(--line); flex: none; }
+.dt-btn.q[aria-pressed="true"] { color: var(--gold); border-color: var(--gold); }
+.dt-btn svg { width: 16px; height: 16px; }
+/* V370: Würfel klein oben rechts in der Tipp-Karte (Handy). Am PC bleibt der große Knopf im Kopf. */
+.pick-s { display: none; }
+#dayTip > .pick-btn { position: absolute; z-index: 2; right: 12px; top: 10px; width: auto; max-width: none; display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px 0 6px; border-radius: 999px; border: 1.5px solid rgba(232, 234, 243, .55); background: rgba(17, 19, 31, .5); color: var(--ink); font-size: 12.5px; font-weight: 700; }
+#dayTip > .pick-btn .pick-ico { width: 24px; height: 24px; border-radius: 6px; background: none; }
+#dayTip > .pick-btn .pick-ico svg { width: 18px; height: 18px; }
+#dayTip > .pick-btn .pick-txt, #dayTip > .pick-btn .pick-go { display: none; }
+#dayTip > .pick-btn .pick-s.a { display: inline; }
+/* Suche, Filter oder „Neu in der Liste“: nur eine schmale Würfel-Zeile */
+.dt.slim { border: 0; background: none; overflow: visible; cursor: default; margin-bottom: 14px; }
+.dt.slim::after, .dt.slim .dt-body { display: none; }
+#dayTip.slim > .pick-btn { position: static; display: flex; justify-content: center; width: 100%; height: 44px; border-radius: 10px; background: var(--sheet); border-color: var(--line); font-size: 14px; }
+#dayTip.slim > .pick-btn .pick-s.a { display: none; } #dayTip.slim > .pick-btn .pick-s.b { display: inline; }
+/* PC: Tipp-Karte nicht über die ganze Breite */
+html:not(.app) .dt { max-width: 560px; }
+/* News-Reiter */
+.news { display: grid; gap: 10px; margin: 0 0 18px; }
+.nw-h { font-family: var(--f-display); font-weight: 400; font-size: 17px; margin: 12px 0 0; }
+.nw-h:first-child { margin-top: 0; }
+.nw-seg { display: flex; padding: 4px; background: var(--sheet); border: 1px solid var(--line); border-radius: 999px; }
+.nw-seg button { flex: 1; height: 38px; border: 0; border-radius: 999px; background: none; font: inherit; font-weight: 700; font-size: 14px; color: var(--muted); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.nw-seg button[aria-pressed="true"] { background: var(--gold); color: var(--on-gold); }
+.nw-seg span { font-weight: 500; opacity: .8; margin-left: 6px; }
+.nw-big { display: block; width: 100%; padding: 0; text-align: left; font: inherit; color: var(--ink); background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.nw-ban { position: relative; display: flex; align-items: flex-end; height: 150px; padding: 12px; overflow: hidden; background: linear-gradient(160deg, #3b4368, #171a2b); }
+.nw-ban .bg { position: absolute; inset: -28px; background-size: cover; background-position: center 22%; filter: blur(16px) saturate(1.2); opacity: .62; }
+.nw-ban img { position: absolute; right: 14px; bottom: -22px; width: 104px; height: 148px; object-fit: cover; border-radius: 8px; box-shadow: 0 8px 22px rgba(0, 0, 0, .5); transform: rotate(4deg); }
+.nw-ban b { position: relative; font-family: var(--f-display); font-weight: 400; font-size: 23px; line-height: 1.1; max-width: 62%; text-shadow: 0 2px 10px rgba(0, 0, 0, .65); overflow-wrap: anywhere; }
+.nw-ban.nocv b { max-width: 100%; }
+.nw-tag { position: absolute; left: 0; top: 12px; z-index: 1; background: var(--ink); color: var(--paper); font-weight: 700; font-size: 11px; letter-spacing: .1em; padding: 5px 10px; border-radius: 0 6px 6px 0; }
+.nw-in { display: flex; align-items: center; gap: 6px; padding: 12px; color: var(--muted); font-size: 14px; }
+.nw-in svg { width: 16px; height: 16px; flex: none; }
+.nw-in b { color: var(--ink); }
+.nw-it { display: flex; gap: 12px; align-items: center; width: 100%; padding: 9px; text-align: left; font: inherit; color: var(--ink); background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.nw-it .th { width: 50px; height: 72px; flex: none; border-radius: 7px; overflow: hidden; background: var(--chip); display: grid; place-items: center; font-size: 13px; font-weight: 700; color: var(--gold); }
+.nw-it .th img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.nw-it .tx { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.nw-it small { font-size: 10.5px; font-weight: 700; letter-spacing: .07em; color: var(--muted); text-transform: uppercase; }
+.nw-it small.red { color: var(--hanko); } .nw-it small.gld { color: var(--gold); }
+.nw-it .tx b { font-size: 15px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nw-it .ln { font-size: 12.5px; color: var(--muted); }
+.nw-it .go { font-size: 20px; color: var(--muted); padding-right: 4px; }
+.nw-note { font-size: 12.5px; color: var(--muted); line-height: 1.45; margin: 6px 2px 0; }
+.nw-empty { padding: 22px 14px; text-align: center; color: var(--muted); background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; }
+.nw-it .th:empty { display: none; }
+.nw-it:has(.th:empty) { padding: 12px 9px 12px 14px; }
+/* News braucht keine Suche und keine Filter */
+.top[data-v="news"] + .bar .searchrow, .top[data-v="news"] + .bar .panel, .top[data-v="news"] + .bar .status { display: none; }
 </style>
 </head>
 <body>
@@ -1551,10 +1651,10 @@ html:not(.app) #shelfOv.pk { padding-bottom: 40px; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V368</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V369</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
-    <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+    <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-s a">Anderer Tipp</span><span class="pick-s b">Zufalls-Tipp aus dieser Auswahl</span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
     <details class="why"><summary><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".95" fill="currentColor"/></svg>So entsteht die Wertung<svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="why-body"><p>Basiert auf <b>MyAnimeList</b> und <b>IMDb</b>. Eine KI prüft Story, Figuren, Animation und Ende sowie Füllerfolgen und Längen.</p><p class="scale-txt">Ab 9 herausragend · ab 8 sehr gut · ab 7 gut</p><div class="scale2"><span><i class="mini top">9</i>herausragend</span><span><i class="mini mid">8</i>sehr gut</span><span><i class="mini low">7</i>gut</span></div></div></details>
   </header>
 
@@ -1562,6 +1662,7 @@ html:not(.app) #shelfOv.pk { padding-bottom: 40px; }
     <div class="tabs" role="tablist" aria-label="Ansicht">
       <button type="button" role="tab" data-view="all" id="tab-all"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="4.5" cy="6" r="1.4" fill="currentColor"/><circle cx="4.5" cy="12" r="1.4" fill="currentColor"/><circle cx="4.5" cy="18" r="1.4" fill="currentColor"/></svg><span class="tl">Alle</span> <span class="n" id="n-all">140</span></button>
       <button type="button" role="tab" data-view="genres" id="tab-genres"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></svg><span class="tl">Genres</span></button>
+      <button type="button" role="tab" data-view="news" id="tab-news"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><i class="nd" id="newsDot" hidden></i><span class="tl">News</span></button>
       <button type="button" role="tab" data-view="saved" id="tab-saved"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span class="tl">Gemerkt</span> <span class="n" id="n-saved">0</span></button>
       <button type="button" role="tab" data-view="seen" id="tab-seen"><svg class="ti" id="tabUser" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="ti pfi" id="tabFace" aria-hidden="true" hidden></span><span class="tl">Profil</span> <span class="n" id="n-seen">0</span></button>
     </div>
@@ -1612,6 +1713,8 @@ html:not(.app) #shelfOv.pk { padding-bottom: 40px; }
     <p class="favg" id="favg" hidden></p>
     <div class="gbar" id="gbar" hidden><button type="button" class="gback" id="gback">← Alle Genres</button><h3 id="gtitle"></h3></div>
     <div class="tiles" id="tiles" hidden></div>
+    <section class="dt" id="dayTip" hidden aria-label="Tipp des Tages"><div class="dt-body" id="dtBody"></div></section>
+    <section class="news" id="news" hidden aria-label="News"></section>
     <section class="tp-wrap" id="tipRow" hidden aria-label="Tipps von Freunden"></section>
     <ol class="grid" id="list"></ol>
     <ul class="shelf" id="shelf" hidden></ul>
@@ -3277,7 +3380,7 @@ function card(it) {
   return `
     <li class="card${isSeen ? " is-seen" : ""}">
       <div class="cbody">
-      <div class="cv" aria-hidden="true"><img alt="" draggable="false" loading="lazy" decoding="async"${coverOf(it) ? coverAttrs(coverOf(it), CV_SIZES) : ""}${it.rank <= 3 ? ' fetchpriority="high"' : ""} onload="this.classList.add('ok')" onerror="if(this.srcset)this.removeAttribute('srcset');else this.remove()"></div>
+      <div class="cv" aria-hidden="true"><img alt="" draggable="false" loading="lazy" decoding="async"${coverOf(it) ? coverAttrs(coverOf(it), CV_SIZES) : ""}${it.rank <= 3 ? ' fetchpriority="high"' : ""} onload="this.classList.add('ok')" onerror="if(this.srcset)this.removeAttribute('srcset');else this.remove()">${TRAILER[it.key] ? `<span class="pb">${V_PLAY}</span>` : ""}</div>
       <div class="meta"><span class="rank"><i>Platz </i>${it.rank}</span>${isFresh(it) ? '<span class="neu">Neu</span>' : ""}<span>${it.type === "F" ? "Film" : "Serie"}</span>${isRom(it) && it.mine >= 8.3 ? '<span class="pg">💘 Priscilla-geprüft</span>' : ""}</div>
       <div class="score">
         <div class="stamp ${tier(it.mine)}" aria-label="Wertung ${fmt(it.mine)} von 10">${fmt(it.mine)}<small>/10</small></div>
@@ -3466,7 +3569,7 @@ function headFor() {
   top.classList.toggle("sub", sub);
   top.classList.toggle("nopick", sub);
   top.dataset.v = state.view;
-  $("#vtText").textContent = { genres: "Genres", saved: "Gemerkt", seen: "Profil" }[state.view] || "";
+  $("#vtText").textContent = { genres: "Genres", saved: "Gemerkt", seen: "Profil", news: "News" }[state.view] || "";
   // Konto-Knopf: in der App auf jedem Reiter oben rechts – bei Alle in der Stand-Zeile, sonst neben dem großen Titel
   const ab = document.getElementById("acct"), host = sub && document.documentElement.classList.contains("app") ? $("#vtitle") : top.querySelector(".eyebrow");
   if (ab && ab.parentNode !== host) host === top.querySelector(".eyebrow") ? host.prepend(ab) : host.append(ab);
@@ -3546,6 +3649,201 @@ const bigOf = u => u.includes("/cover/medium/") ? u.replace("/cover/medium/", "/
   : /^https:\/\/cdn\.myanimelist\.net\/images\/anime\/\d+\/\d+\.jpg$/.test(u) ? u.replace(/\.jpg$/, "l.jpg") : "";
 const CV_SIZES = "112px", SHELF_SIZES = "(min-width: 700px) 150px, 31vw";
 const coverAttrs = (u, sizes) => { const b = bigOf(u); return ` src="${esc(u)}"` + (b ? ` srcset="${esc(u)} 230w, ${esc(b)} 460w" sizes="${sizes}"` : ""); };
+// ===== V369 (Test): Trailer im Fenster, nächste Folge, ähnliche Titel, News-Reiter, Tipp des Tages =====
+// TRAILER: YouTube-Nummer des offiziellen Trailers je Titel (von AniList, Stand siehe AIR0.t).
+// WATCH: je Titel die AniList-Nummern der Staffeln, die gerade laufen oder angekündigt sind (negativ = der Titel selbst).
+// AIR0: Momentaufnahme der Termine. Auf der echten Seite werden die Termine frisch von AniList geholt (alle 3 Stunden),
+// im Artifact geht das nicht (dort sind fremde Adressen gesperrt), da bleibt es bei der Momentaufnahme.
+const TRAILER = {"Frieren – Nach dem Ende der Reise":"tR8YH0G67Rk","Attack on Titan":"zLaVP8IhIuc","Chainsaw Man – The Movie: Reze Arc":"pv8A7eubPQQ","Gintama":"yTh0f4PGL_8","Vinland Saga":"5xqEp7R9SYM","Code Geass":"Ab9ztHX-DVg","A Silent Voice":"Sy4bPCuzfiQ","Kaguya-sama: Love Is War":"IwpJJiQkZzI","Die Tagebücher der Apothekerin":"oyHqh8ue4zw","Haikyu!!":"9kLRkH9zC5k","Death Note":"NlJZ-YgAt-c","Mob Psycho 100":"mV39saBlBLI","Re:Zero":"vFfXjuVA1Jk","Fruits Basket":"4jgVaA4bxDI","Demon Slayer: Kimetsu no Yaiba":"6vMuWuWlW4I","Demon Slayer: Infinity Castle":"ZfIXXgqxVn8","Odd Taxi":"esrwdJif-vc","Golden Kamuy":"5olutLS6mdo","Jujutsu Kaisen":"RIyb52EMx8c","Dandadan":"rJo1MnsuxyY","Link Click":"Fd6i9zOFFoA","86 – Eighty Six":"VSdS29SDvn4","The Promised Neverland":"ApLudqucq-s","A Place Further Than the Universe":"tAYL5VNAJq0","Psycho-Pass":"b_A_wsT5WQE","Jujutsu Kaisen 0":"2docezZl574","In This Corner of the World":"mcHEWjEz2k8","Oshi no Ko – Mein Star":"gKWEUJ4r5do","Spy x Family":"_VRxEEBa1XU","One Punch Man":"RzmFKUDOUgw","Grand Blue Dreaming":"m-nN3SlHwZk","Mushoku Tensei":"JoS7Z8MCD6E","JoJo's Bizarre Adventure":"kaSio11XVhM","Lord of the Mysteries":"_M9PRUrmpo0","Nichijou – Das ganz normale Leben":"CD6VdVDVDXI","To Your Eternity":"0S0ty44JPao","Suzume":"g0JMPkn7Wuo","Witch Hat Atelier":"rc26AwBXlUE","Das Band der Unterwelt":"XCyj9KKKjUI","The Elusive Samurai":"O4AqQNg1MI0","Megalo Box":"Trs1rCoLKLc","Dorohedoro":"IS6l1K19N1U","Rascal Does Not Dream of Bunny Girl Senpai":"o0TZj_d3Yfg","Dr. Stone":"pon9R5n5dMk","Solo Leveling":"HkIKAnwLZCw","Konosuba":"NU87y-38glA","Aoashi":"Eo3bKRWsfZQ","Horimiya":"tryurXgGqkI","My Teen Romantic Comedy SNAFU":"u-bpwWPNEpE","Naruto Shippuden":"PULgjzsOybA","Hell's Paradise":"t1Sqcxti0Ls","Food Wars!":"Ei7r95k5d_Q","Kill la Kill":"-ClQ7zkHtXY","Blue Lock":"5YBL7fx94RU","Shangri-La Frontier":"4HpOvyY4sDw","World Trigger":"2oui7JLlBpk","Ascendance of a Bookworm":"Wo28IopG2WE","Gachiakuta":"VpMwWDgZqtI","My Dress-Up Darling":"qJ8GyiSJ1KU","Dragonball Super: Broly":"wuIbeQv3v7c","Josie, der Tiger und die Fische":"QvgpMxoyDds","Kaiju No. 8":"7n_mFVPeApw","Classroom of the Elite":"iYsx6w5PNno","Saga of Tanya the Evil":"JwaruTPKq9I","Welcome to Demon-School, Iruma-kun":"kkeuJt0DE7g","Meine Wiedergeburt als Schleim in einer anderen Welt":"QsS7AzXCwKA","Inuyasha":"UCFBsLagBPk","My Hero Academia":"AhqVltWDqFA","Black Clover":"vUjAxk1qYzQ","Lupin III.":"n1KYjg2SwbA","A Sign of Affection":"hJd9FxYWzL0","Magi: The Labyrinth of Magic":"xTit5k75uvE","Fire Force":"Dpae4acLLeA","Zombie 100 – Bucket List of the Dead":"2VvZIEXmltw","Deca-Dence":"wqCfnp_fGwo","Mashle: Magic and Muscles":"zl0Kiv0kuQQ","Spy x Family Code: White":"3sHxvyk57jY","Black Butler":"EoipHZFNXv0","Campfire Cooking in Another World":"uLezuU0GL6Q","Penguin Highway":"Vs3w1X3GSAg","Tokyo Revengers":"nYQUVwwD-H4","Tower of God":"RNyClma6awo","Patema Inverted":"gFUuGpSyJMg","Mirai – Das Mädchen aus der Zukunft":"6d-lsJZgmJs","Sword Art Online":"C8Jl_-b7ju0","Yowamushi Pedal":"JhdLGdVNPss","Ping Pong the Animation":"lmZVuMDlw-w","Chihayafuru":"Y8U-E8hldHk","Ace of the Diamond":"9RUV98RNnNg","Free!":"TuLQDwtBDgc","SK8 the Infinity":"guStf5P4Js0","Captain Tsubasa":"d41ni2IAPiE","Oblivion Battery":"ltJa3i_4GyQ","Moriarty the Patriot":"GSIs-fXJ1Zk","Bungou Stray Dogs":"GGsohezPRXU","Durarara!!":"q5qlX4lWst0","Lycoris Recoil":"rvu_s7Vp4KE","Buddy Daddies":"Oqxm1mn917g","ID: INVADED":"nc7Y0BvEYQk","Michiko & Hatchin":"RJCiRrd-lXE","Akiba Maid War":"vUdM6VCauGM","Rurouni Kenshin":"_qZyHQhwXnU","The Heike Story":"6OQpRQ8syqw","Raven of the Inner Palace":"JcdXFO6F_-E","Princess Principal":"pp70baXff_Q","Yatagarasu":"x-L6oSJ9m3g","Chainsaw Man":"v4yLeNt-kCU","Shadows House":"dUlo9T1UQVo","Mein Schulgeist Hanako":"CKnXq1qaTG0","The Case Study of Vanitas":"S7mL2DI_X9s","Zombie Land Saga":"O3VO4zinUOI","Natsume's Book of Friends":"mea4xITAo_4","Laid-Back Camp":"vpH42sJ8t9c","Skip and Loafer":"GcfUnbrsCJk","Bocchi the Rock!":"SyMMZF5zNW4","My Love Story with Yamada-kun at Lv999":"Mk8gEBzunD8","The Ancient Magus' Bride":"W9KZgJgo-x0","Tomodachi Game":"eP2FlJtfwL8","The Rising of the Shield Hero":"VKYmpq-V3Rs","Log Horizon":"IG1VhJ75r8k","So I'm a Spider, So What?":"UZE4ZZiXBQY","Restaurant to Another World":"Y7DuhSollYQ","Journal with Witch":"Cbm6m_WfmqI","You and I Are Polar Opposites":"b5vpRUDkhT0","Jaadugar: A Witch in Mongolia":"GBHYXPp1lt8","Love Unseen Beneath the Clear Night Sky":"OPZ7TOGxWqI","Sentenced to Be a Hero":"GcRs1JC7xeg","Takopi und die Sache mit dem Glück":"SUhYB0W7gM0","TO BE HERO X":"4-e9BXNbDlc","Naruto":"-G9BqkgZXRA","Ranking of Kings":"_6ix0EBf2z0","Berserk: Das Goldene Zeitalter – Memorial Edition":"6QkMrXodGQQ","Planetes":"igmZSI3kILY","Keep Your Hands Off Eizouken!":"dgmsb1axQAs","Vivy: Fluorite Eye's Song":"Y653dJQ_ecs","Mobile Suit Gundam: Iron-Blooded Orphans":"IddxplDVGw8","Fairy Tail":"mAAKPx-ndAg","Hinamatsuri":"1oTxGJcx04Q","Miss Kobayashi's Dragon Maid":"okBHQWnYImg","Die Melancholie der Haruhi Suzumiya":"fXFoWkBaedU","Firefly Wedding":"Ex9LrBK-7hk","GNOSIA":"Rm4ipMdFpeA","Das Verschwinden der Haruhi Suzumiya":"eHKyNQopYXo","Night is Short, Walk on Girl":"tmeU9GFJW3I","The Cold Sato-san is Only Sweet to Me":"8XgKVzuLmJw","PSYREN":"fmUpSXFbSK0","Smoking Behind the Supermarket with You":"aOOwNK6Ul6E","The Quintessential Quintuplets":"pCwfEB6PbFk","The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You":"ls2VNcSifi4","The Angel Next Door Spoils Me Rotten":"twfLsWdXcZI","More than a Married Couple, but Not Lovers":"2gHhxAksU9E","Alya Sometimes Hides Her Feelings in Russian":"pBX6TtOlYow","Tune In to the Midnight Heart":"poUibdNvxPQ","Spice and Wolf: Merchant Meets the Wise Wolf":"Fr50ydw5H_Q","Makeine: Too Many Losing Heroines!":"uytJ6_KTCZI","Plastic Memories":"Rl6ypQrTzOI","Tomo-chan Is a Girl!":"a0tiJ4zxocA","Recovery of an MMO Junkie":"6B8Ie4bxabo","Tsurezure Children":"g2LxeRRzD4w","Don't Toy with Me, Miss Nagatoro":"4rQ1CJQZvzQ","The Girl I Like Forgot Her Glasses":"45lyCUdzRx4","Honey Lemon Soda":"D1Uck5jSeXE","Tying the Knot with an Amagami Sister":"pwb10_z0zvw","Princess Jellyfish":"yNJOLimplMc","My Love Story!!":"GdB0LsAceGE","Tonikawa: Over the Moon for You":"de9OckSLP1o","Kono Oto Tomare! Sounds of Life":"QsSghmL9y1k","Kokoro Connect":"MnkqA_PRRhM","Yamada-kun and the Seven Witches":"vDOknfJIUu4","My Little Monster":"SlD-8h96pDw","Saekano: How to Raise a Boring Girlfriend":"gsZb9-SRDDI","Taisho Otome Fairy Tale":"Oe2xe7Teb-o","Pseudo Harem":"PlA02yr5gyQ","7th Time Loop":"BeyQ4hPDPUI","The Quintessential Quintuplets Movie":"GTjfXPANIXY","Kakuriyo: Bed & Breakfast for Spirits":"9ZMHM6KHR1g","Sacrificial Princess and the King of Beasts":"IEkjbRs6LHo","Darling in the Franxx":"KNIS0mVawhc","Summer Pockets":"x3_Pcru8SS8","Tamon's B-Side":"WM3fJbNObSA","Gals Can't Be Kind to Otaku!?":"pdWQUnshA4M","I Want to End This Love Game":"oGJrnyjDbsA","Agents of the Four Seasons":"3NdlPDtfZU4","KAIJU GIRL CARAMELISE":"ECtHlHde3EQ","Goodbye, Lara":"gjq7xyVdv5I","Though I Am an Inept Villainess":"nR_vqhD2rGM","May I Ask for One Final Thing?":"hXQi1-eyBVg","Mushishi":"h371H0KIuPo","Sound! Euphonium":"r_Kk9xhVkB8","K-ON!":"mFHue76hqt0","Space Dandy":"QvrgMnPogKc","Asobi Asobase":"DYDZAvNJQkM","GIRLS BAND CRY":"sDY0qXuz4BY","My New Boss Is Goofy":"UrPlCGyYIFU","Dragon Quest: The Adventure of Dai":"RrwbuwhIwbA","D.Gray-man":"mJuBki_tehg","The Prince of Tennis":"ByckeNnQYI0","Anne Shirley":"-oaZ3DRpjAk","Black Butler: Book of the Atlantic":"SRV1Hhx6a4Y","Laid-Back Camp Movie":"DROz9ATilaw","My Hero Academia: Heroes Rising":"vikPO-GgNBM","Miss Kobayashi's Dragon Maid: A Lonely Dragon Wants to Be Loved":"BW6bx31UqAM","Sonny Boy":"9xeVIMD3OUs","Victoria of Many Faces":"dm8QPSlRYdI","Migi&Dali":"2aqkHQXIfiw","Stars Align":"3HF5qamjeMA","Uma Musume: Pretty Derby":"WlDbeKNVtBo","SHOSHIMIN: How to Become Ordinary":"ogzoSX6DYQc","Gundam Build Fighters":"XKMwhn7hFhc","In/Spectre":"A2b2Gxy-flU","I'm the Villainess, So I'm Taming the Final Boss":"graGALFQXrY","A Condition Called Love":"SYyAFIImIdA","The Duke of Death and His Maid":"xm-7QhAqhCQ","Witch Watch":"JHa8g_1xsvI","The Ice Guy and His Cool Female Colleague":"pzyN6jakA3Q","My Senpai Is Annoying":"6jHQlaQXQSs","Love After World Domination":"t_LOPSpeYvE","Science Fell in Love, So I Tried to Prove It":"nnB3JAn4MxQ","The World Is Still Beautiful":"Z6i8EJO3uKk","Sing \"Yesterday\" for Me":"c7wWmUywDpY","Ride Your Wave":"n7HtNsJdMDw","Aharen-san wa Hakarenai":"Rd4usifUuEY","Sugar Apple Fairy Tale":"4bfaiGioJkM","In the Clear Moonlit Dusk":"VzJSWjCCn8M","I Made Friends with the Second Prettiest Girl in My Class":"3mTUxCIyJhA","Marriagetoxin":"t0Ruh2QBpqg","Chitose Is in the Ramune Bottle":"wC7FYPFHLeQ","Yanos ganz normaler Alltag":"AVcXFW1fqAk","Betrothed to My Sister's Ex":"WjbLhMyN--Y","Dealing with Mikadono Sisters Is a Breeze":"m9eFOwi1JOM","Solo Camping for Two":"0c64HTxW_5I","Dank dir überwindet unsere Liebe alle Hindernisse":"NmmfDtxCWeQ","Pass the Monster Meat, Milady!":"wvutMIYKa2g","Tokyo Ghoul":"XfQUjYsVBrE","Trigun Stampede":"lcFWdVqh3Xs","Wind Breaker":"k5qM1PoLmUc","Secrets of the Silent Witch":"0OBF29HoV4A","Reborn!":"hOgAuJgKZuc","NieR:Automata Ver1.1a":"hlP8Bl_YCdw","Life Lessons with Uramichi Oniisan":"lK-I4OUGewQ","Sleepy Princess in the Demon Castle":"H6Pmc-3w3ek","The Yakuza's Guide to Babysitting":"o5LqB8L3a3g","Ace Attorney":"s0BQhCJCGo4","Cells at Work!":"Ek39M_lYUtE","Kemono Jihen":"BCggzUJKAzw","Elainas Reise":"Bfe08q9jer8","Mr. Villain's Day Off":"JPc_g7k2yOI","'Tis Time for \"Torture,\" Princess":"0yQFJhl0zyk","The Faraway Paladin":"yAP1O0GTeek","Kabaneri of the Iron Fortress":"NljBw9RtOx4","Dance Dance Danseur":"rd0qAYtN8Ck","Ruri Rocks":"kdh0ucpJEH8","The Cat and the Dragon":"xi4rGcyeYr8","Iron Wok Jan":"awvmDnz3URo","Tojima Wants to Be a Kamen Rider":"76c3cCV1BcU","Clevatess":"sX4o5OODMqQ","Fate/strange Fake":"k1G8EvZg_BY","Wistoria: Wand and Sword":"FNiBiXXeyb8","With You and the Rain":"i-dy1huj7-E","Dara-san of the Reiwa Era":"AZKlUSu5tQ0","Tsukimichi -Moonlit Fantasy-":"U8T63kIny7E","Dead Mount Death Play":"IOkS_GU9BNc","My Next Life as a Villainess":"QriYDN3KmQs","Raeliana – Warum sie die Verlobte des Dukes wurde":"PlLli6OaU8U","Tearmoon Empire":"spG65Z4MYVY","Yona of the Dawn":"4hVuaZ_YLGA","WorldEnd":"ZGfC2boki-I","Teasing Master Takagi-san":"g4VJra3sLMg","You Are Ms. Servant":"i0Vu4OG4ULs","A Galaxy Next Door":"ZQG_2UrgzQ8","Rascal Does Not Dream of a Dreaming Girl":"UbLBbxSm8hs","The Wrong Way to Use Healing Magic":"UkPRnHQJrws","Undead Murder Farce":"VY7pSxO5GFw","Mieruko-chan":"HD_TGzj7oU8","Angolmois: Record of Mongol Invasion":"9h8o9oX3kz8","Backflip!!":"IOu25DQuc3Q","Salaryman's Club":"s74Cvn86dEk","Burning Kabaddi":"CeUcyCPcDa4","Fena: Pirate Princess":"QTtXMqgZRpg","Darwin's Game":"uyegnzQ1CrM","One Piece Film: Red":"YAN45KAL5lg","Dragonball Super: Super Hero":"t5CIs0jDqC8","Sing a Bit of Harmony":"PbfHnIW391Y","My Hero Academia: World Heroes' Mission":"0B5TGuXVLjc","Psycho-Pass: Providence":"UOJbcihluGc","GeGeGe no Kitaro":"JL7nXF6BoOk","Talentless Nana":"5DjhDYdgck8","Apocalypse Hotel":"epz8n8a2Zik","BanG Dream! It's MyGO!!!!!":"Wo1urbVf2Ro","Release that Witch":"S4P2Mr_Cwys","Nina the Starry Bride":"s5BfrR-AG1A","I'll Become a Villainess Who Goes Down in History":"1BhTUhaugxo","An Observation Log of My Fiancée Who Calls Herself a Villainess":"r6RkeRy4B4c","Psychic Princess":"HNRc-3Plh2Q","Otome Yokai Zakuro":"TmONRcfX1Kw","Doctor Elise":"3l7MMAZ2aas","The Too-Perfect Saint":"E3oJTL-D4zE","Villainess Level 99":"ODtKada4LM0","Meiji Tokyo Renka":"UcrB_df_ZG8","Maria the Virgin Witch":"rP--uJZu3eo","Kowloon Generic Romance":"wIrH_z2TLqQ","Higehiro: After Being Rejected, I Shaved and Took in a High School Runaway":"nFljVg8xELU","365 Days to the Wedding":"BV3DvCODx64","Shikimori's Not Just a Cutie":"SB1kaI89rfM","Oresuki: Are You the Only One Who Loves Me?":"Pt3MqwiSyKY","We Never Learn: Bokuben":"CXQdqp6JFxI","Bottom-Tier Character Tomozaki":"DTyYETL1NjA","Our Dating Story: The Experienced You and the Inexperienced Me":"HYfDGdnfbuY","Days with My Stepsister":"ISJFZ-ZnBys","Yakuza Fiancé: Raise wa Tanin ga Ii":"QpdoydykBOA","An Archdemon's Dilemma: How to Love Your Elf Bride":"M3lb8-qaaTk","Kiss Him, Not Me":"y9G0kyxl5VM","Masamune-kun's Revenge":"XmfXcVLA1d8","To Every You I've Loved Before":"tQD-PlP9_gY","To Me, the One Who Loved You":"swt-hjVak7o","Hana-Kimi":"CemNP0vIiJI","The Ogre's Bride":"1hYWc5MCIPk","The Invisible Man and His Soon-to-Be Wife":"W1kp6GQhiOk","The Klutzy Class Monitor and the Girl with the Short Skirt":"jrWzZGBwWBQ","Hanaori-san Still Wants to Fight in the Next Life":"xueZbCyZcnI","Always a Catch!":"d0LkNAqMrZw","Oh Boy, Was I Wrong About Her":"UTsFnJgDJz8","Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School":"JoRr4dfpXIU","The Duke's Son Claims He Won't Love Me, Yet Showers Me with Adoration":"MNzf8UswtzI","Even a Replica Can Fall in Love":"WsT7OO91jXo","The Holy Grail of Eris":"Xl9PRzU1MVw","The Warrior Princess and the Barbaric King":"oGSDv7XSZA4","Who Made Me a Princess":"50ctpFeiICk","Inexpressive Kashiwada and Expressive Oota":"ZfWsw9daBy8","The Dark History of the Reincarnated Villainess":"gKmcRxitVxg","Catch Me at the Ballpark!":"ofvB4LYH7bE","When Supernatural Battles Became Commonplace":"Ni_KP1PLmoM","Haibara's Teenage New Game+":"MPJrey_y_DU","Zenshu":"tt_ci57IszQ","Banished from the Hero's Party, I Decided to Live a Quiet Life in the Countryside":"ZWXm83PhXYI","Please Excuse My Younger Brothers":"P927_ZvgUUg","Hello, I am a Witch and my Crush Wants me to Make a Love Potion!":"hGRtocAh3iw","From Far Away":"dLRKywRu3iM","Even Though I'm a Super Timid Noble Girl, I Accepted the Bet From My Cunning Fiancé":"e41RGxVwJRs","Knights of Sidonia":"htgcz87-Wqk","Bokurano":"x7jl7BbMGCE","Kakushigoto":"5BYONfAwOvU","Sengoku Youko":"RblpbHLx6ZA","Aldnoah.Zero":"ZXTol2NCEFY","The King's Avatar":"5URUE8XRKIo","Sabikui Bisco":"1k7o4ywm6Is","The Millionaire Detective Balance: Unlimited":"Z2GGJHXtOJ8","Ron Kamonohashi's Forbidden Deductions":"2fC2jsOYwsU","The Perfect Insider":"nmT4jMKAQhk","Dead Dead Demons Dededede Destruction":"NqSpaLIMJvY","Train to the End of the World":"f244r8O8HgY","Hitoribocchi no Marumaru Seikatsu":"6mbD6rjdqUM","Heaven's Design Team":"a3hsD6PH2gE","Gabriel DropOut":"4eADGP3b9j0","Birdie Wing: Golf Girls' Story":"5uUVPp5bGQQ","Akebi's Sailor Uniform":"G1Kip31lyMI","Wonder Egg Priority":"_TpTn3o-_Yk","Cautious Hero: The Hero Is Overpowered but Overly Cautious":"JkEH0nyKK7U","Bofuri: I Don't Want to Get Hurt, so I'll Max Out My Defense":"2ji-cLcT-UI","Parallel World Pharmacy":"fh7QGRKQ-IA","Handyman Saitou in Another World":"dFu4h4vte90","The Misfit of Demon King Academy":"9qJyDlZst8c","Dragon Ball DAIMA":"ezbYAglQoxI","KONOSUBA: An Explosion on This Wonderful World!":"XOxlEVCVzZc","The Slime Diaries":"qYI_0C_l40s","Sword Art Online Alternative: Gun Gale Online":"vRqY8I7G8Nw","Sword Art Online: Ordinal Scale":"32FLqOWjUfI","Sword Art Online Progressive":"h24YbwWGiF0","Kino's Journey: The Beautiful World":"ij21njEpveg","The Morose Mononokean":"i5JuooEr1uQ","Tegami Bachi: Letter Bee":"MMHkoeFUzv4","Deaimon: Recipe for Happiness":"TVup3UuwfGI","Konohana Kitan":"XnOWZOwoRow","Super Cub":"NbWU6B0qjMY","Do It Yourself!!":"pxRszOIy9eA","mono":"YJzMiDd8RyM","SSSS.Gridman":"2Z1HU4aalLU","SSSS.Dynazenon":"qzZB6Z1YbSs","MF Ghost":"_BGFUbJcJi8","Kageki Shojo!!":"KtYHWiyOu_c","Those Snow White Notes":"p8Dj5q13VPw","Draw This, Then Die!":"jI61NtGuxV4","Kill Blue":"9sEiONbweqI","Kaya-chan Isn't Scary":"un9g38-wbHw","Kusunoki's Garden of Gods":"3FxoxWjrrVg","The Demon King's Daughter Is Too Kind!!":"r1s7ch904z4","Liar Game":"FIPOXj00ysQ","Snowball Earth":"0vTK8SWTgws","Black Torch":"2clp09dITKY","Overgeared":"e1Km0FqUZl0","Dragon Ball Super: Beerus":"CFgEL7ei8VE","Magic Knight Rayearth (2026)":"67GqhfLw3ys","Romelia War Chronicle":"PxXPcoo8uGM","The Vermilion Mask":"iX4N-Z5Hbxw","A Tale of the Secret Saint":"9oBywQ403ZA","Your Name.":"k4xGqY5IDBE","Grandpa and Grandma Turn Young Again":"awdUSdy0k9g","My Clueless First Friend":"2zepo52nU_w","Irina: The Vampire Cosmonaut":"2j-l9SzQdCU","My Awkward Senpai":"K4aYZ-CWdqc","Mechanical Marie":"X0um7anNddA","Wash It All Away":"URcT4mR6KSU","The Magical Girl and the Evil Lieutenant Used to Be Archenemies":"39_TsQt-_9Q","I Can't Understand What My Husband Is Saying":"UZhI7a2j9mk","Remake Our Life!":"cFAx8fMWqpM","I'm Giving the Disgraced Noble Lady I Rescued a Crash Course in Naughtiness":"ViXrE3SbST4","Hokkaido Gals Are Super Adorable!":"AwY-j4ZV570","Cinderella Chef":"3TmIXThzoVk","Love is Like a Cocktail":"iJV0dZ56uLs","I'm Getting Married to a Girl I Hate in My Class":"ss7htgZZw8Y","The Shiunji Family Children":"nuw6sVgSNhc","Uzaki-chan Wants to Hang Out!":"6nmmzbar1fA","My Tiny Senpai":"Q4DoDFH_MHo","Saint Cecilia and Pastor Lawrence":"c71Z6oqrWyE","Welcome to Japan, Ms. Elf!":"JpzsHob9cfc","ATRI -My Dear Moments-":"3P2OQ-VnNzM","My Next Life as a Villainess: The Movie":"EMteo5cmzb8","My Bride is a Mermaid":"EFcs-kVNpos","Trapped in a Dating Sim: The World of Otome Games Is Tough for Mobs":"8G9dunL-zPI","Detektiv Conan: Der purpurrote Liebesbrief":"d44tuuPbAw8","The World God Only Knows":"OdBmj4TWqzk","The Café Terrace and Its Goddesses":"SyoNRBW3g7g","Time of Eve":"Xru2rINDuXE","Somali and the Forest Spirit":"XRIXy8zngZc","The Yuzuki Family's Four Sons":"FoZBTpc2DiU","A Certain Scientific Railgun":"rIDa2o3bGlY","Alderamin on the Sky":"Mq3YB_ueHdo","Negative Positive Angler":"X0O40QEozOo","Trillion Game":"UZQUVskHqao","SHIBOYUGI: Playing Death Games to Put Food on the Table":"rqp_JkzslnM","Overtake!":"ra8E2whNNac","Smile Down the Runway":"u5g-E9aB08k","The Aquatope on White Sand":"N41qUI3MvJk","Interviews with Monster Girls":"XaoWL6Lvyjo","Squid Girl":"YhxbmA1noxg","The Royal Tutor":"Zb3xSrejKx0","Viral Hit":"zKFWWXhcZrQ","Mr. Osomatsu":"_4P4P1Q-3k4","NEW GAME!":"-5jO-orwaQE","How to Keep a Mummy":"hvZI_AvstKc","Cells at Work! CODE BLACK":"4D_V8jnviRM","The Concierge":"0r4lFOkTiAc","Touring After the Apocalypse":"H6tlbeQ5rzA","Tokyo Ravens":"KzNBDzjHRvQ","Pandora Hearts":"9Psc_hBkOoc","Ga-Rei: Zero":"50sj0Gxqrlk","Joker Game":"Gm9MVyCTyUU","Detectives These Days Are Crazy!":"ice20U2dAv4","See You Tomorrow at the Food Court":"U6OpyZBkYm4","Let This Grieving Soul Retire":"g_DvFLdgBFI","Chio's School Road":"piWbD3V2Lj8","The Genius Prince's Guide to Raising a Nation Out of Debt":"PfR1IGHIfxo","Bartender: Glass of God":"JlIqRNxdTIs","The Masterful Cat Is Depressed Again Today":"FIp4KGfLdrI","Heroines Run the Show":"y20zBmpuSVY","Skull-face Bookseller Honda-san":"MLSGck3SKv8","Kuma Kuma Kuma Bear":"dsvA2PTWTLM","Demon Lord 2099":"BBEAucO24Qw","Ameku M.D.: Doctor Detective":"0Hr5Gu8nG8w","A Mangaka's Weirdly Wonderful Workplace":"B3oDeY86E9Q","Li'l Miss Vampire Can't Suck Right":"y9e0wTKaAXI","The Weakest Tamer Began a Journey to Pick Up Trash":"LtwLjXQ3p1A","My Home Hero":"R7n9LJJPwHM","The Dungeon of Black Company":"Dz55QzZxJWg","The Vampire Dies in No Time":"6OESeiNBSxo","How Heavy Are the Dumbbells You Lift?":"2YPtn01c66M","Wave, Listen to Me!":"n9CsQWT1cTM","Diary of Our Days at the Breakwater":"PAvLwvItvts","Play It Cool, Guys":"f4Onn1yQGUA","The Helpful Fox Senko-san":"DUF5Ov7hmkM","Tonari no Yokai-san":"9h0pUypVDs8","She and Her Cat: Everything Flows":"6Y3OtzPl50M","The Girl from the Other Side":"kbSwcQRdasE","Lupin Zero":"6H1Sd53SOhI","Digimon Beatbreak":"naNctHU5MQE","Fairy Tail: 100 Years Quest":"E1a5MRYIGUk","My Hero Academia: Two Heroes":"70W0u35wa48","My Hero Academia: You're Next":"X_r-M3coFe4","My Hero Academia: Vigilantes":"84F2-8QExiY","That Time I Got Reincarnated as a Slime: Scarlet Bond":"fG8fUTen5NI","Gintama: Mr. Ginpachi's Zany Class":"e5x47GIm6Po","Psycho-Pass: The Movie":"f1mMt1RUP8s","Gridman Universe":"RxhWoqnXQlc","Zombie Land Saga: Yumeginga Paradise":"irI7CoyF_Hk","Bungou Stray Dogs: Dead Apple":"6ySfGSAbNc0","Inuyasha the Movie: Affections Touching Across Time":"u_iiFP0-tEc","Inuyasha the Movie 3: Swords of an Honorable Ruler":"u_iiFP0-tEc","BanG Dream! Ave Mujica":"Souwq8yepWQ","Detektiv Conan: Das schwarze U-Boot":"0jIpAPLbpt0","Detektiv Conan: Die Halloween-Braut":"sJwIGd22Cew","TsumaSho":"eNC0Q-hSlSU","Malevolent Spirits: Mononogatari":"T9aokABLYOM","Burn the Witch":"VnQZcum2se4"};
+const WATCH = {"Frieren – Nach dem Ende der Reise":[209939],"Die Tagebücher der Apothekerin":[195516,200927],"One Piece":[-21],"Dandadan":[198966],"Oshi no Ko – Mein Star":[209827],"Spy x Family":[219714],"One Punch Man":[204747],"Grand Blue Dreaming":[217136],"Mushoku Tensei":[217434],"Lord of the Mysteries":[206874],"Witch Hat Atelier":[213702],"Das Band der Unterwelt":[217013],"Aoashi":[191788],"Naruto Shippuden":[165523],"Blue Lock":[199404],"Shangri-La Frontier":[189323],"Ascendance of a Bookworm":[217712],"Gachiakuta":[204436],"Detektiv Conan":[-235],"Classroom of the Elite":[213477],"Black Clover":[195604],"Mashle: Magic and Muscles":[177704],"Tokyo Revengers":[178083],"Ace of the Diamond":[213658],"SK8 the Infinity":[153676],"Oblivion Battery":[184141],"Rurouni Kenshin":[188665],"Laid-Back Camp":[184072],"Skip and Loafer":[185657],"Bocchi the Rock!":[186712],"The Rising of the Shield Hero":[199185],"Sentenced to Be a Hero":[209963],"Naruto":[165523],"Firefly Wedding":[-205909],"The Cold Sato-san is Only Sweet to Me":[-209502],"PSYREN":[-204011],"Alya Sometimes Hides Her Feelings in Russian":[181641],"Tune In to the Midnight Heart":[209762],"Spice and Wolf: Merchant Meets the Wise Wolf":[181951],"Makeine: Too Many Losing Heroines!":[189796],"Though I Am an Inept Villainess":[217070],"Victoria of Many Faces":[216272],"Witch Watch":[199793],"Marriagetoxin":[213752],"Chitose Is in the Ramune Bottle":[198727],"The Cat and the Dragon":[217011],"Fate/strange Fake":[209984],"Wistoria: Wand and Sword":[213656],"Tsukimichi -Moonlit Fantasy-":[178467],"The Wrong Way to Use Healing Magic":[179981],"BanG Dream! It's MyGO!!!!!":[189121],"Please Excuse My Younger Brothers":[-203490],"Hello, I am a Witch and my Crush Wants me to Make a Love Potion!":[-207191],"From Far Away":[-209463],"Even Though I'm a Super Timid Noble Girl, I Accepted the Bet From My Cunning Fiancé":[-200455],"The King's Avatar":[198705],"Sabikui Bisco":[167151],"Dragon Ball DAIMA":[206814],"MF Ghost":[209876],"Draw This, Then Die!":[217329],"Kill Blue":[213628],"Liar Game":[217460],"Snowball Earth":[213579],"Overgeared":[-212888],"Dragon Ball Super: Beerus":[-206814],"Magic Knight Rayearth (2026)":[-178868],"Romelia War Chronicle":[-180894,219243],"The Vermilion Mask":[-195571],"A Tale of the Secret Saint":[-187402],"A Certain Scientific Railgun":[186743],"The Weakest Tamer Began a Journey to Pick Up Trash":[203855],"BanG Dream! Ave Mujica":[189121]};
+const AIR0 = {"t":1794646989,"m":{"21":[1,1798985760,1181,1999,10,20,0],"235":[1,1794646800,1220,1996,1,8,0],"153676":[2,0,0,0,0,0,0],"165523":[2,0,0,0,0,0,0],"167151":[2,0,0,0,0,0,0],"177704":[2,0,0,2027,1,9,0],"178083":[1,1795193580,8,2026,10,3,13],"178467":[2,0,0,0,0,0,0],"178868":[1,1795013160,7,2026,10,7,0],"179981":[2,0,0,0,0,0,0],"180894":[1,1794657600,7,2026,10,3,12],"181641":[2,0,0,2027,0,0,0],"181951":[2,0,0,2027,0,0,0],"184072":[2,0,0,2027,4,0,0],"184141":[2,0,0,2027,0,0,0],"185657":[2,0,0,2027,4,0,0],"186712":[2,0,0,0,0,0,0],"186743":[2,0,0,0,0,0,0],"187402":[1,1794661200,8,2026,10,3,0],"188665":[2,0,0,0,0,0,0],"189121":[2,0,0,2027,1,8,0],"189323":[2,1800172800,1,2027,1,10,0],"189796":[2,0,0,0,0,0,0],"191788":[1,1794729600,7,2026,10,4,24],"195516":[1,1795183200,8,2026,10,2,12],"195571":[1,1795249800,7,2026,10,10,0],"195604":[1,1794664800,7,2026,10,3,0],"198705":[2,0,0,2026,0,0,0],"198727":[1,1794924000,6,2026,10,13,11],"198966":[2,0,0,2027,0,0,0],"199185":[2,0,0,2027,0,0,0],"199404":[2,0,0,0,0,0,0],"199793":[2,0,0,0,0,0,0],"200455":[1,1794753000,7,2026,10,4,12],"200927":[2,0,0,2027,4,0,12],"203490":[1,1795186800,20,2026,7,4,24],"203855":[2,0,0,0,0,0,0],"204011":[1,1794837600,6,2026,10,5,0],"204436":[2,0,0,0,0,0,0],"204747":[2,0,0,2027,1,0,0],"205909":[1,1795185000,7,2026,10,9,12],"206814":[1,1794752160,6,2026,10,11,0],"206874":[2,0,0,2027,0,0,0],"207191":[1,1794832200,7,2026,10,5,12],"209463":[1,1794754800,7,2026,10,5,0],"209502":[1,1794920400,7,2026,10,6,12],"209762":[2,0,0,2027,0,0,0],"209827":[2,0,0,0,0,0,0],"209876":[2,0,0,0,0,0,0],"209939":[2,0,0,2027,10,0,0],"209963":[2,0,0,0,0,0,0],"209984":[2,0,0,0,0,0,0],"212888":[1,1794753000,8,2026,9,27,12],"213477":[2,0,0,0,0,0,0],"213579":[2,0,0,0,0,0,0],"213628":[2,0,0,0,0,0,0],"213656":[2,0,0,0,0,0,0],"213658":[1,1794731400,6,2026,10,11,0],"213702":[2,0,0,0,0,0,0],"213752":[2,0,0,2027,1,0,0],"216272":[2,0,0,0,0,0,0],"217011":[2,0,0,2027,0,0,0],"217013":[2,0,0,0,0,0,0],"217070":[2,0,0,2027,1,0,0],"217136":[2,0,0,0,0,0,0],"217329":[2,0,0,0,0,0,0],"217434":[2,0,0,2027,0,0,0],"217460":[2,0,0,0,0,0,0],"217712":[2,0,0,0,0,0,0],"219243":[2,0,0,2027,4,0,12],"219714":[2,0,0,2027,0,0,0]}};
+const REAL_HOST = /(^|\.)github\.io$/.test(location.hostname) || location.hostname === "localhost";
+const KEY_AIR = "cr-top100-air", KEY_NEWSDAY = "cr-top100-news-day", KEY_DAYTIP = "cr-top100-daytip", KEY_NEWSMODE = "cr-top100-news-mode";
+const V_PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z" fill="currentColor"/></svg>';
+const V_CLOCK = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+const V_BM = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
+const DAY_MS = 864e5;
+const day0 = t => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); };
+let air = (() => { const c = load(KEY_AIR, null); return c && c.t > AIR0.t && c.m ? c : { t: AIR0.t, m: AIR0.m }; })();
+let airBusy = false;
+// V370: Die Termine holt ein täglicher Lauf bei GitHub (tools/news.js) und legt sie als news.json ab. Die App lädt nur diese eine Datei
+// (höchstens alle 3 Stunden). Darin steht auch, welche Titel gerade eine laufende oder angekündigte Staffel haben (w), das ersetzt WATCH.
+const NEWS_URL = "https://raw.githubusercontent.com/nlaupp02/anime-bestenliste/main/news.json";
+async function airRefresh() {
+  const now = Math.floor(Date.now() / 1000);
+  if (!REAL_HOST || airBusy || now - (air.c || 0) < 3 * 3600) return;
+  airBusy = true;
+  try {
+    const r = await fetch(NEWS_URL, { cache: "no-store" });
+    if (!r.ok) throw new Error("news");
+    const js = await r.json();
+    if (js && js.t >= air.t && js.m && js.w) { air = { t: js.t, m: js.m, w: js.w, c: now }; store(KEY_AIR, air); v369Refresh(); }
+    else { air.c = now; }
+  } catch (e) {} finally { airBusy = false; }
+}
+// Nächster Termin eines Titels: { kind: "ep" (Folge mit Zeitpunkt) | "soon" (Staffel angekündigt), at, ep, first, own, y, mo, d, mid }
+function airOf(it) {
+  const ids = (air.w || WATCH)[it.key]; if (!ids) return null;
+  const now = Date.now(); let best = null;
+  for (const raw of ids) {
+    const a = air.m[Math.abs(raw)]; if (!a) continue;
+    const [st, at, ep, y, mo, d] = a; let x = null;
+    if (at && at * 1000 > now - 36 * 3600e3) x = { it, kind: "ep", at: at * 1000, ep, first: ep === 1, own: raw < 0, mid: Math.abs(raw) };
+    else if (st === 2) {
+      const t = y ? new Date(y, (mo || 12) - 1, d || (mo ? 28 : 31), 23).getTime() : Infinity;
+      if (t > now - 2 * DAY_MS) x = { it, kind: "soon", at: t, y, mo, d, own: raw < 0, mid: Math.abs(raw) }; // Termin schon vorbei: Daten veraltet, nichts zeigen
+    }
+    if (x && (!best || x.at < best.at)) best = x;
+  }
+  return best;
+}
+// Alle Termine, nach Zeit sortiert. Dieselbe Staffel nur einmal (z. B. Naruto und Naruto Shippuden: gleiche Fortsetzung)
+function airItems(only) {
+  const seenM = new Map();
+  for (const it of items) {
+    if ((prisc && !isRom(it)) || (only && !only(it))) continue;
+    const x = airOf(it); if (!x) continue;
+    const old = seenM.get(x.mid);
+    if (!old || (x.own && !old.own)) seenM.set(x.mid, x);
+  }
+  return [...seenM.values()].sort((a, b) => a.at - b.at || b.it.mine - a.it.mine);
+}
+const MON_DE = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
+function dayLabel(t) {
+  const d = Math.round((day0(t) - day0(Date.now())) / DAY_MS);
+  return d === 0 ? "Heute" : d === 1 ? "Morgen" : d === -1 ? "Gestern" : new Date(t).toLocaleDateString("de-DE", { weekday: "short", day: "numeric", month: "short" });
+}
+function soonText(x) {
+  if (x.d) return "startet am " + new Date(x.y, x.mo - 1, x.d).toLocaleDateString("de-DE", x.y !== new Date().getFullYear() ? { day: "numeric", month: "short", year: "numeric" } : { day: "numeric", month: "short" });
+  return x.mo ? `startet im ${MON_DE[x.mo - 1]} ${x.y}` : x.y ? `startet ${x.y}` : "ist angekündigt";
+}
+const capFirst = s => s.charAt(0).toUpperCase() + s.slice(1);
+
+// --- Fenster: Trailer oben, Termin ---
+function dtDress(el, it) {
+  dtStrip(el);
+  const yt = TRAILER[it.key];
+  if (yt) {
+    const t = document.createElement(REAL_HOST ? "button" : "a");
+    t.className = "trb"; t.dataset.yt = yt;
+    if (REAL_HOST) { t.type = "button"; t.setAttribute("aria-label", "Trailer abspielen");
+      t.innerHTML = `<img alt="" decoding="async" draggable="false" src="https://i.ytimg.com/vi/${yt}/hq720.jpg" onload="if(this.naturalWidth<200&&!this.dataset.f){this.dataset.f=1;this.src='https://i.ytimg.com/vi/${yt}/mqdefault.jpg'}" onerror="this.remove()"><span class="trl">Trailer</span><span class="trp">${V_PLAY}</span>`;
+    } else { t.href = "https://www.youtube.com/watch?v=" + yt; t.target = "_blank"; t.rel = "noopener";
+      t.innerHTML = `<span class="trl">Trailer</span><span class="trp">${V_PLAY}</span><span class="trn">Öffnet YouTube. In der echten App läuft der Trailer direkt hier.</span>`; }
+    el.prepend(t);
+  }
+  const x = airOf(it), foot = el.querySelector(":scope > .foot");
+  if (x && foot) {
+    const p = document.createElement("p"); p.className = "nxl";
+    p.innerHTML = V_CLOCK + "<span>" + (x.kind === "ep"
+      ? (x.at <= Date.now() ? `Neue Folge: <b>${dayLabel(x.at)}</b> · Folge ${x.ep}` : `${x.first ? (x.own ? "Start" : "Neue Staffel") : "Nächste Folge"}: <b>${dayLabel(x.at)}</b> · Folge ${x.ep}`)
+      : `${x.own ? "Der Anime" : "Neue Staffel"} <b>${soonText(x)}</b>`) + "</span>";
+    foot.before(p);
+  }
+}
+function dtStrip(el) { el.querySelectorAll(":scope > .trb, :scope > .trx, :scope > .nxl, :scope > .sim").forEach(y => y.remove()); }
+function trPlay(tb) {
+  if (!tb || tb.classList.contains("on") || tb.tagName !== "BUTTON") return;
+  const yt = tb.dataset.yt; tb.classList.add("on");
+  tb.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${yt}?autoplay=1&playsinline=1&rel=0&cc_load_policy=1&cc_lang_pref=de&hl=de" title="Trailer" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+  const a = document.createElement("a"); a.className = "trx"; a.href = "https://www.youtube.com/watch?v=" + yt; a.target = "_blank"; a.rel = "noopener"; a.textContent = "Läuft nicht? Auf YouTube öffnen";
+  tb.after(a);
+}
+// --- Tipp des Tages (nur im Reiter Alle, ohne Suche und Filter) ---
+function dayTipPick() {
+  const d = isoDay(new Date()), tag = d + (prisc ? "p" : "");
+  const mem = load(KEY_DAYTIP, null);
+  if (mem && mem.d === tag) { const it = items.find(x => x.id === mem.id); if (it) return it; }
+  const pool0 = byMine.filter(it => it.mine >= 8 && (!prisc || isRom(it))), pool = pool0.filter(it => !seen.has(it.id));
+  const L = pool.length ? pool : pool0; if (!L.length) return null;
+  let h = 7; for (const c of tag) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  const it = L[h % L.length];
+  store(KEY_DAYTIP, { d: tag, id: it.id });
+  return it;
+}
+const hookOf = it => { if (it.note) return it.note; const m = it.desc.match(/^.{30,150}?[.!?](?=\s|$)/); return m ? m[0] : it.desc.slice(0, 120) + "…"; };
+let dtSig = "";
+function renderDayTip() {
+  const box = $("#dayTip"), body = $("#dtBody"); if (!box || !body) return;
+  const active = state.q || activeKeys().some(k => state[k] !== DEFAULTS[k]);
+  const on = state.view === "all" && !neuView && !active;
+  const it = on ? dayTipPick() : null;
+  // V370: Mit Suche, Filter oder in „Neu in der Liste“ bleibt statt der Karte nur eine schmale Würfel-Zeile (wenn der Würfel in der Karte sitzt)
+  const slim = state.view === "all" && !it && $("#pick").parentNode === box;
+  box.hidden = !it && !slim;
+  box.classList.toggle("slim", slim);
+  if (it) {
+    const u = coverOf(it), sig = [it.id, u, saved.has(it.id), seen.has(it.id)].join("|");
+    if (sig !== dtSig) {
+      dtSig = sig; box.classList.toggle("nocv", !u); box.dataset.open = it.id;
+      body.innerHTML = (u ? `<i class="dt-bg" style="background-image:url(&quot;${esc(u)}&quot;)" aria-hidden="true"></i>` : "") + `<div class="dt-in">
+        <span class="dt-tag">${prisc ? "💘 TIPP DES TAGES" : "TIPP DES TAGES"}</span>
+        ${u ? `<span class="dt-cv"><img${coverAttrs(u, "96px")} alt="" decoding="async" draggable="false" onerror="this.closest('.dt').classList.add('nocv')"></span>` : ""}
+        <div class="dt-l"><h3 class="dt-t">${splitT(it.title)}</h3>
+        <span class="dt-g">${it.genres.map(esc).join(" · ")}</span>
+        <p class="dt-h">${esc(hookOf(it))}</p></div>
+        <div class="dt-m"><span class="rt ${tier(it.mine)}">${fmt(it.mine)}</span>${it.dub === "de" ? '<span class="de">Deutsch</span>' : ""}<span>${esc(it.len)}</span></div>
+        <div class="dt-b">${TRAILER[it.key] ? `<button type="button" class="dt-btn w" data-tr>${V_PLAY}Trailer</button>` : ""}<button type="button" class="dt-btn o" data-more>Ansehen</button>${seen.has(it.id) ? "" : `<button type="button" class="dt-btn q" data-sv aria-pressed="${saved.has(it.id)}" aria-label="${saved.has(it.id) ? "Gemerkt" : "Merken"}">${V_BM}</button>`}</div>
+      </div>`;
+    }
+  }
+}
+
+// --- News-Reiter ---
+let newsSig = "";
+// „Meine Titel“ = gemerkt oder gesehen. Ohne eigene Wahl: Meine, sobald es dort etwas gibt, sonst Alle.
+const newsOwn = it => saved.has(it.id) || seen.has(it.id);
+let newsMode = load(KEY_NEWSMODE, "");
+// Der rote Punkt am Reiter gilt nur für eigene Titel (sonst wäre er fast jeden Tag an)
+function newsToday() { const t0 = day0(Date.now()); return airItems(newsOwn).filter(x => x.kind === "ep" && day0(x.at) === t0).length; }
+function updNewsDot() { const d = $("#newsDot"); if (d) d.hidden = !(newsToday() && load(KEY_NEWSDAY, "") !== isoDay(new Date()) && state.view !== "news"); }
+function renderNews() {
+  const box = $("#news"); if (!box) return;
+  const now = Date.now(), every = airItems(), mine = airItems(newsOwn);
+  const mode = newsMode === "mine" || newsMode === "all" ? newsMode : mine.length ? "mine" : "all";
+  const all = mode === "mine" ? mine : every;
+  let week = all.filter(x => x.kind === "ep" && x.at < now + 7 * DAY_MS), soon = all.filter(x => !(x.kind === "ep" && x.at < now + 7 * DAY_MS));
+  // Groß oben: der nächste Staffelstart mit festem Termin (höchstens 60 Tage hin)
+  const big = all.find(x => !x.own && ((x.kind === "ep" && x.first) || (x.kind === "soon" && x.d)) && x.at < now + 60 * DAY_MS) || null;
+  if (big) { week = week.filter(x => x !== big); soon = soon.filter(x => x !== big); }
+  const dated = soon.filter(x => x.at !== Infinity), open = soon.filter(x => x.at === Infinity);
+  const nNew = items.filter(it => isFresh(it) && (!prisc || isRom(it))).length;
+  const lastDay = Object.keys(ADDED).sort().pop() || "";
+  const sig = JSON.stringify([air.t, prisc, isoDay(new Date()), nNew, mode, mine.length, every.length, all.map(x => [x.it.id, x.at, coverOf(x.it)])]);
+  if (sig === newsSig) return; newsSig = sig;
+  const th = it => { const u = coverOf(it); return `<span class="th">${u ? `<img${coverAttrs(u, "50px")} alt="" loading="lazy" decoding="async" draggable="false" onerror="this.remove()">` : ""}</span>`; };
+  const rowEp = x => `<button type="button" class="nw-it" data-open="${x.it.id}">${th(x.it)}<span class="tx"><small class="${day0(x.at) <= day0(now) ? "red" : ""}">${esc(dayLabel(x.at))} · ${x.first ? (x.own ? "Start" : "Neue Staffel") : "Neue Folge"}</small><b>${esc(x.it.title)}</b><span class="ln">Folge ${x.ep}</span></span><span class="go" aria-hidden="true">›</span></button>`;
+  const rowSoon = x => `<button type="button" class="nw-it" data-open="${x.it.id}">${th(x.it)}<span class="tx"><small class="gld">${x.own ? "Neu" : "Neue Staffel"}</small><b>${esc(x.it.title)}</b><span class="ln">${x.kind === "ep" ? `${x.first ? "Start" : "Folge " + x.ep} am ${esc(dayLabel(x.at))}` : esc(capFirst(soonText(x)))}</span></span><span class="go" aria-hidden="true">›</span></button>`;
+  let h = `<div class="nw-seg" role="group" aria-label="Welche Titel"><button type="button" data-nm="mine" aria-pressed="${mode === "mine"}">Meine Titel<span>${mine.length}</span></button><button type="button" data-nm="all" aria-pressed="${mode === "all"}">Alle<span>${every.length}</span></button></div>`;
+  if (big) { const u = coverOf(big.it);
+    h += `<button type="button" class="nw-big" data-open="${big.it.id}"><span class="nw-ban${u ? "" : " nocv"}">${u ? `<i class="bg" style="background-image:url(&quot;${esc(u)}&quot;)" aria-hidden="true"></i><img${coverAttrs(u, "104px")} alt="" decoding="async" draggable="false" onerror="this.parentNode.classList.add('nocv');this.remove()">` : ""}<span class="nw-tag">NEUE STAFFEL</span><b>${esc(shortT(big.it.title))}</b></span><span class="nw-in">${V_CLOCK}<span>${big.kind === "ep" ? `Start: <b>${esc(dayLabel(big.at))}</b>` : `<b>${esc(capFirst(soonText(big)))}</b>`}</span></span></button>`; }
+  if (week.length) h += `<h3 class="nw-h">Diese Woche</h3>` + week.map(rowEp).join("");
+  if (dated.length) h += `<h3 class="nw-h">Bald</h3>` + dated.slice(0, 12).map(rowSoon).join("");
+  if (open.length) h += `<h3 class="nw-h">Angekündigt</h3>` + open.slice(0, 12).map(rowSoon).join("");
+  if (!big && !week.length && !soon.length) h += `<p class="nw-empty">${mode === "mine" ? (saved.size + seen.size ? "Zu deinen gemerkten und gesehenen Titeln gibt es gerade nichts Neues." : "Hier erscheinen Neuigkeiten zu Titeln, die du gemerkt oder als gesehen markiert hast.") : "Gerade läuft keine neue Staffel von Titeln aus der Liste."}</p>`;
+  if (nNew) h += `<h3 class="nw-h">Liste</h3><button type="button" class="nw-it" data-neu><span class="th">+${nNew}</span><span class="tx"><small>${lastDay ? esc(dayName(lastDay)) : ""}</small><b>${nNew} ${prisc ? "neue Romanzen" : "neue Titel"} in der Liste</b><span class="ln">Antippen zum Ansehen</span></span><span class="go" aria-hidden="true">›</span></button>`;
+  h += `<p class="nw-note">Termine nach der Ausstrahlung in Japan – auf Crunchyroll meist am selben Tag, die deutsche Synchro kommt später. Stand: ${new Date(air.t * 1000).toLocaleDateString("de-DE", { day: "numeric", month: "long" })}${REAL_HOST ? "" : " (im Artifact fest, in der echten App immer aktuell)"}.</p>`;
+  box.innerHTML = h;
+}
+function v369Refresh() {
+  newsSig = ""; if (state.view === "news") renderNews();
+  renderDayTip(); updNewsDot();
+}
+const IT369 = new Map(items.map(it => [it.id, it]));
+$("#dayTip").addEventListener("click", e => {
+  const id = $("#dayTip").dataset.open; if (!id || e.target.closest(".pick-btn") || $("#dayTip").classList.contains("slim")) return;
+  if (e.target.closest("[data-sv]")) { setMark(id, "save", !saved.has(id)); renderDayTip(); return; }
+  const tr = !!e.target.closest("[data-tr]");
+  openShelf(id);
+  if (tr && shelfEl) trPlay(shelfEl.querySelector(":scope > .trb"));
+});
+$("#news").addEventListener("click", e => {
+  const nm = e.target.closest("[data-nm]"); if (nm) { newsMode = nm.dataset.nm; store(KEY_NEWSMODE, newsMode); newsSig = ""; renderNews(); return; }
+  const o = e.target.closest("[data-open]"); if (o) { openShelf(o.dataset.open); return; }
+  if (e.target.closest("[data-neu]")) { scrollMem.news = getY(); delete scrollMem.all; state.view = "all"; neuView = true; sync(); ++tabToken; render(); jumpTo(0); }
+});
+if (isAppMode()) $("#dayTip").append($("#pick"));
+setTimeout(updNewsDot, 1500); setTimeout(airRefresh, 6000);
 const setCover = (img, u, sizes) => { const b = bigOf(u); if (b) { img.sizes = sizes; img.srcset = `${u} 230w, ${b} 460w`; } img.src = u; };
 const COVER_Q = {
   "Frieren – Nach dem Ende der Reise": "Sousou no Frieren", "Die Tagebücher der Apothekerin": "Kusuriya no Hitorigoto", "Oshi no Ko – Mein Star": "Oshi no Ko",
@@ -3582,7 +3880,7 @@ function warmCovers() {
 function applyCovers() {
   const any = items.some(coverOf);
   document.documentElement.classList.toggle("covers", any);
-  tipRow();
+  tipRow(); v369Refresh();
   if (any && $("#tiles").childElementCount) renderTiles();
   if (any && state.view === "seen" && shelfList.length) renderShelf(shelfList);
   if (any && state.view === "saved") renderCmp(cmpList); // Cover kamen nach: in der Gemerkt-Liste nachtragen
@@ -3843,6 +4141,16 @@ function render() {
   requestAnimationFrame(onScroll);
   if (!cardEls) { buildCards(); applyCovers(); setTimeout(loadCovers, 1200); setTimeout(frCards, 0); } // Freunde in den Kacheln (aus dem Speicher, sofort)
   requestAnimationFrame(() => { if (window.fitAll) window.fitAll(); });
+  // V369: Tipp des Tages (nur Alle), News-Reiter
+  renderDayTip();
+  const newsView = state.view === "news";
+  $("#news").hidden = !newsView;
+  if (newsView) {
+    $("#tiles").hidden = true; $("#gbar").hidden = true; $("#list").hidden = true; $("#empty").hidden = true;
+    renderNews(); tipRow(); status(-1);
+    store(KEY_NEWSDAY, isoDay(new Date())); updNewsDot(); airRefresh();
+    return;
+  }
   const tilesView = state.view === "genres" && !state.g2;
   $("#tiles").hidden = !tilesView;
   $("#gbar").hidden = !(state.view === "genres" && state.g2);
@@ -4021,18 +4329,21 @@ function shelfMark(el) {
   el.before(ph);
   return ph;
 }
-function openShelf(id) {
+function openShelf(id, plain) {
   if (shelfEl) return; // schon offen (z. B. Leertaste nochmal gedrückt): sonst landet die Karte nicht mehr in der Liste
   const el = cardEls.get(id); if (!el) return;
   shelfPh = shelfMark(el); shelfEl = el; cvLive(el);
+  el._wasHid = el.hidden;
   el.hidden = false; $("#shelfOne").append(el); shelfOv.hidden = false;
   const x = document.createElement("button"); x.type = "button"; x.className = "ov-btn sclose"; x.dataset.close = ""; x.textContent = "Schließen"; el.append(x);
+  // V369: Trailer und Termin (nicht im Würfel-Fenster)
+  if (!plain) { const it = IT369.get(id); if (it) dtDress(el, it); $(".shelf-one").scrollTop = 0; }
   requestAnimationFrame(() => { if (window.fitAll) window.fitAll(); });
 }
 function closeShelf() {
   pkUnstage();
   const o = $("#shelfOne").querySelector(":scope > .card.pk-out"); if (o) pkReturn(o);
-  if (shelfEl) { shelfEl.getAnimations().forEach(a => a.cancel()); pkStrip(shelfEl); }
+  if (shelfEl) { shelfEl.getAnimations().forEach(a => a.cancel()); pkStrip(shelfEl); dtStrip(shelfEl); }
   $(".shelf-one").classList.remove("pk-x");
   pickOpen = false; shelfOv.classList.remove("pk", "pk-pre");
   if (shelfEl && shelfPh) shelfPh.replaceWith(shelfEl);
@@ -4045,6 +4356,7 @@ $("#shelf").addEventListener("click", e => { const li = e.target.closest("li[dat
 $("#shelf").addEventListener("keydown", e => { const li = e.target.closest("li[data-id]"); if (li && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openShelf(li.dataset.id); } });
 shelfOv.addEventListener("click", e => {
   if (e.target.closest("[data-close]")) { closeShelf(); return; }
+  const tb = e.target.closest(".trb"); if (tb) { trPlay(tb); return; }
   const m = e.target.closest(".more");
   if (m) { const d = m.previousElementSibling, open = d.classList.toggle("clamp") === false;
     m.firstChild.textContent = open ? "Weniger" : "Mehr lesen"; m.setAttribute("aria-expanded", String(open)); return; }
@@ -4106,6 +4418,7 @@ function setMark(id, act, on) {
     if ((tipsIn && tipsIn.length) || document.querySelector(".frw.tip")) { frCardSig = ""; frCards(); tipRow(); } // Tipp gesehen oder gemerkt: Zeile und Reihe anpassen
     store(act === "seen" ? KEY.seen : KEY.saved, [...set]);
     if (unsave) store(KEY.saved, [...saved]);
+    renderDayTip();
     if (!b) return;
     if ((act === "seen" && (state.hideSeen || state.view === "seen" || (unsave && state.view === "saved"))) || (act === "save" && state.view === "saved")) { render(); return; }
     if (state.view === "genres" && !state.g2) { render(); return; } // Kachelübersicht: Zähler der Kacheln, nicht der Karten
@@ -4115,7 +4428,12 @@ function setMark(id, act, on) {
 }
 $("#list").addEventListener("click", e => {
   const b = e.target.closest("button[data-act]");
-  if (!b) return;
+  if (!b) {
+    // V369: Cover oder Titel antippen öffnet das Fenster (Trailer, Termin)
+    const hit = e.target.closest(".cv, h2"), li = hit && !e.target.closest("a, button") && hit.closest(".card"), k = li && li.querySelector("[data-id]");
+    if (k) openShelf(k.dataset.id);
+    return;
+  }
   if (b.dataset.act === "share") { tipOrShare(b.dataset.id); return; }
   const id = b.dataset.id, act = b.dataset.act, on = !(act === "seen" ? seen : saved).has(id);
   // Gesehen wieder entfernen nur nach Nachfrage, weil es den Fortschritt verändert
@@ -4289,7 +4607,7 @@ function pkStrip(c) { c.querySelectorAll(":scope > .sclose, :scope > .reroll, :s
 function pkMount(pick) {
   if (shelfEl) return false;
   const el = cardEls.get(pick.id); if (!el) return false;
-  openShelf(pick.id); if (shelfEl !== el) return false;
+  openShelf(pick.id, true); if (shelfEl !== el) return false;
   pickOpen = true; shelfOv.classList.add("pk", "pk-pre");
   pkDress(el); $(".shelf-one").scrollTop = 0;
   return true;
@@ -4657,7 +4975,7 @@ const saveSession = () => {
 };
 const resume = (() => {
   if (!SC) return null;
-  try { const r = JSON.parse(sessionStorage.getItem(SESSION) || "null"); return r && ["all", "genres", "saved", "seen"].includes(r.view) ? r : null; } catch (e) { return null; }
+  try { const r = JSON.parse(sessionStorage.getItem(SESSION) || "null"); return r && ["all", "genres", "news", "saved", "seen"].includes(r.view) ? r : null; } catch (e) { return null; }
 })();
 if (resume) {
   state.view = resume.view;
