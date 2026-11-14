@@ -1,0 +1,32 @@
+# Holt einmal am Tag die Termine für den News-Reiter (neue Folgen, neue Staffeln) und legt sie als news.json ab.
+name: News aktualisieren
+on:
+  schedule:
+    - cron: "17 3 * * *" # täglich 03:17 Uhr Weltzeit (in Deutschland 04:17 bzw. 05:17 Uhr)
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: news
+  cancel-in-progress: false
+jobs:
+  news:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Termine holen
+        run: node tools/news.js
+      - name: Speichern
+        run: |
+          git config user.name "news-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add news.json
+          if ! git diff --cached --quiet; then
+            git commit -m "News: Stand $(date -u +%F)"
+            git pull --rebase
+            git push
+          fi
