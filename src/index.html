@@ -1036,6 +1036,8 @@ html.prisc .avr.fr-l { background: linear-gradient(135deg, #FF8FC4, #FF6FA8); co
 /* Umschalter wie bei iPhone-Apps: „Gesehen von“ darüber, dann „Nur Max“ | „Euch beiden“, die Zahl als kleines Abzeichen */
 .fp-sw { display: grid; gap: 6px; min-width: 0; }
 .fp-lb { padding-left: 2px; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.fp-lbr { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; min-width: 0; }
+.fp-all { flex: none; font: inherit; font-size: 13px; font-weight: 700; color: var(--gold); background: none; border: 0; padding: 6px 2px; margin: -6px 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .fp-seg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); min-width: 0; padding: 3px; border-radius: 12px; background: var(--paper); border: 1px solid var(--line); }
 .fp-seg button { min-width: 0; display: flex; justify-content: center; align-items: center; gap: 6px; font: inherit; font-size: 13.5px; font-weight: 700; color: var(--muted); background: none; border: 0; border-radius: 9px; padding: 8px 6px; white-space: nowrap; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .fp-seg button span { min-width: 0; display: flex; }
@@ -1683,7 +1685,7 @@ html:not(.app) .dt { max-width: 560px; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V384</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V385</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-s a">Anderer Tipp</span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -2956,6 +2958,9 @@ const byAddedOf = list => [...list].sort((a, b) => (addedDay[b.key] || "").local
 // Hauptgenre für „Deine Lieblingsgenres“: meist das erste Genre, bei diesen Titeln passt ein anderes besser
 const MAIN_G = {"Yatagarasu": "Fantasy", "Raven of the Inner Palace": "Mystery", "Though I Am an Inept Villainess": "Romance", "Saga of Tanya the Evil": "Isekai", "Mobile Suit Gundam": "Sci-Fi", "Mobile Suit Gundam Wing": "Sci-Fi", "Mobile Suit Gundam 00": "Sci-Fi"};
 let neuView = false; // eigene Ansicht „Neu in der Liste“ (nur im Reiter Alle, wird nicht gespeichert)
+// V385: „Alle ansehen“ im Freundes-Profil – zeigt die Titel des Freundes als normale Liste im Reiter Alle (wird nicht gespeichert).
+// { txt: Text der Leiste, ids: Set der Titel, both: gemeinsam gesehen?, uid: Freund, from: Reiter, aus dem man kam }
+let frView = null;
 const byNew = [...items].sort((a, b) => (REL[b.key] || "").localeCompare(REL[a.key] || "") || b.mine - a.mine);
 // In „Gesehen“ gibt es kein Sortieren (im Regal sieht man kein Datum): dort immer nach Wertung
 const effSort = () => state.view === "seen" ? "mine" : state.sort;
@@ -3215,7 +3220,14 @@ document.addEventListener("keydown", e => { if (e.key === "Escape" && !prisAsk.h
 $("#prisAskOk").addEventListener("click", () => { prisAsk.hidden = true; setPrisc(false, true); render(); });
 $("#prisOff").addEventListener("click", askPrisc);
 $("#newBtn").addEventListener("click", () => { neuView = true; render(); });
-$("#neuOff").addEventListener("click", () => { neuView = false; render(); });
+$("#neuOff").addEventListener("click", () => {
+  if (!frView) { neuView = false; render(); return; }
+  // Zurück aus „Alle ansehen“: wieder in den Reiter, aus dem man kam, und das Profil des Freundes öffnen
+  const v = frView; frView = null;
+  const tab = v.from && v.from !== "all" ? document.getElementById("tab-" + v.from) : null;
+  if (tab) tab.click(); else render();
+  setTimeout(() => { if (friends.some(f => f.uid === v.uid)) { frTab = v.both ? "both" : "new"; frCur = ""; frShow(v.uid); } }, 0);
+});
 $("#prisBar").hidden = !prisc;
 if (prisc) { const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = "#1C1019"; }
 // iPhone: Für die Tastatur verschiebt das iPhone die (sonst stillstehende) Seite. Danach wieder an ihren Platz.
@@ -3357,7 +3369,7 @@ document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click
     if (v === state.view) return;
     // Wechselt man schnell hintereinander, zeigt der Inhalt noch den alten Reiter: dessen Stelle nicht unter dem neuen Namen merken
     if (!tabPending) scrollMem[memKey()] = getY();
-    if (neuView) { neuView = false; delete scrollMem.all; }
+    if (neuView || frView) { neuView = false; frView = null; delete scrollMem.all; }
     // Blase und Inhalt im selben Bild umstellen: Sonst sah man ein, zwei Bilder lang noch die Cover des alten Reiters
     // (beim Schwung-Scrollen sogar weiterlaufend). Das Umschalten ist inzwischen schnell genug dafür.
     state.view = v; sync();
@@ -3372,7 +3384,7 @@ document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click
     else jumpTo(0); // neuer Reiter: oben mit Überschrift anfangen
     return;
   }
-  state.view = v; if (v === "genres") state.g2 = ""; neuView = false;
+  state.view = v; if (v === "genres") state.g2 = ""; neuView = false; frView = null;
   sync(); render();
 }));
 const toMain = () => { const t = document.querySelector("main").getBoundingClientRect().top; if (t < 0) jumpTo(getY() + t); };
@@ -3497,10 +3509,11 @@ function filtered() {
   return (neuView ? byAddedOf(sorted()) : sorted()).filter(it =>
     (neuView || effSort() !== "neu" || isNeu(it)) &&
     (!neuView || isFresh(it)) &&
+    (!frView || frView.ids.has(it.id)) &&
     (!inGenre || inSel(it)) &&
     (!state.type || it.type === state.type) &&
     (!state.onlyDe || it.dub === "de") &&
-    (!state.hideSeen || state.view === "seen" || !seen.has(it.id)) &&
+    (!state.hideSeen || state.view === "seen" || (frView && frView.both) || !seen.has(it.id)) &&
     (state.view !== "saved" || saved.has(it.id)) &&
     (state.view !== "seen" || seen.has(it.id)) &&
     qOk(it) &&
@@ -3529,12 +3542,13 @@ function status(n) {
   // Neu in der Liste: Hinweis nur in Alle, in der Neu-Ansicht stattdessen die Leiste (im Priscilla-Modus ersetzt sie die pinke Leiste)
   const nNew = items.filter(it => isFresh(it) && (!prisc || isRom(it))).length;
   if (neuView && (state.view !== "all" || !nNew)) neuView = false;
+  if (frView && state.view !== "all") frView = null;
   $("#newTxt").textContent = `${nNew} neu in der Liste`;
-  $("#newBtn").hidden = !(state.view === "all" && !neuView && nNew && !active);
+  $("#newBtn").hidden = !(state.view === "all" && !neuView && !frView && nNew && !active);
   const nShow = neuView && n >= 0 ? n : nNew;
-  $("#neuTxt").textContent = prisc ? `✦ Neue Romanzen · ${nShow} Titel` : `✦ Neu in der Liste · ${nShow} Titel`;
-  $("#neuBar").hidden = !neuView;
-  $("#prisBar").hidden = !prisc || neuView;
+  $("#neuTxt").textContent = frView ? `${frView.txt} · ${n >= 0 ? n : frView.ids.size} Titel` : prisc ? `✦ Neue Romanzen · ${nShow} Titel` : `✦ Neu in der Liste · ${nShow} Titel`;
+  $("#neuBar").hidden = !(neuView || frView);
+  $("#prisBar").hidden = !prisc || neuView || !!frView;
 }
 
 // Pro Genre ein eigener Tipp, kein Titel doppelt:
@@ -3867,7 +3881,7 @@ let dtSig = "";
 function renderDayTip() {
   const box = $("#dayTip"), body = $("#dtBody"); if (!box || !body) return;
   const active = state.q || activeKeys().some(k => state[k] !== DEFAULTS[k]);
-  const on = state.view === "all" && !neuView && !active;
+  const on = state.view === "all" && !neuView && !frView && !active;
   const it = on ? dayTipPick() : null;
   box.hidden = !it;
   if (it) {
@@ -4269,6 +4283,7 @@ function render() {
   }
   if (state.view === "genres") { $("#gtitle").textContent = state.g2; $("#gback").textContent = prisc ? "← Alle Themen" : "← Alle Genres"; }
   if (neuView && state.view !== "all") neuView = false;
+  if (frView && state.view !== "all") frView = null;
   $("#list").classList.toggle("nv", neuView);
   const list = filtered(), show = new Set(list.map(it => it.id)), gName = state.view === "genres" ? state.g2 : "";
   if (state.view !== "seen") placeCards(list);
@@ -4675,7 +4690,7 @@ if (matchMedia("(hover: hover) and (pointer: fine)").matches) { const s = docume
 function pickOne() {
   let pool = filtered().filter(it => !seen.has(it.id));
   if (!pool.length && byMine.some(it => !seen.has(it.id))) {
-    Object.assign(state, DEFAULTS, { q: "" }); $("#q").value = ""; neuView = false; sync(); render();
+    Object.assign(state, DEFAULTS, { q: "" }); $("#q").value = ""; neuView = false; frView = null; sync(); render();
     pool = filtered().filter(it => !seen.has(it.id));
   }
   if (!pool.length) return null;
@@ -5888,7 +5903,7 @@ function frShow(uid) {
     <div class="fp-head frk rt${st.rt}"><span class="fp-av">${frFace(f)}<span class="fr-kj" aria-hidden="true">${st.kj}</span></span>
       <div class="fp-who"><b class="fp-name" id="fpName">${nm}</b><div class="fp-rank">${esc(st.rank)} <small>· ${st.n} ${prisc ? "Romanzen" : "gesehen"}</small></div></div></div>
     <div class="fp-stats"><div><b>${st.n}</b><small>${prisc ? "Romanzen" : "Gesehen"}</small></div><div><b>${hrs}</b><small>Stunden</small></div><div><b>${fav ? esc(favName(fav[0])) : "–"}</b><small>${favWord()}</small></div></div>
-    <div class="fp-sw"><small class="fp-lb" aria-hidden="true">Von ${esc(f.name.trim().split(/\s+/)[0])}</small><div class="fp-seg" role="tablist" aria-label="Gesehen von ${nm}">${tab("new", "<i>Für dich neu</i>", `Von ${nm} gesehen, von dir noch nicht`)}${tab("both", "<i>Gemeinsam</i>", "Von euch beiden gesehen")}</div></div>
+    <div class="fp-sw"><div class="fp-lbr"><small class="fp-lb" aria-hidden="true">Von ${esc(f.name.trim().split(/\s+/)[0])}</small>${show.length > 3 ? `<button type="button" class="fp-all" id="fpAll" aria-label="Alle ${show.length} Titel als Liste ansehen">Alle ansehen ›</button>` : ""}</div><div class="fp-seg" role="tablist" aria-label="Gesehen von ${nm}">${tab("new", "<i>Für dich neu</i>", `Von ${nm} gesehen, von dir noch nicht`)}${tab("both", "<i>Gemeinsam</i>", "Von euch beiden gesehen")}</div></div>
     <p class="fp-none"${show.length ? " hidden" : ""}>${none}</p>
     <ul class="shelf fp-row" id="fpShelf"${show.length ? "" : " hidden"}></ul>
     <button type="button" class="lg-link fp-rm" id="fpRm">Als Freund entfernen</button>`;
@@ -5925,6 +5940,18 @@ frOv.addEventListener("click", e => {
   const li = e.target.closest("li[data-id]"); if (li) { openShelf(li.dataset.id); return; }
   const tb = e.target.closest("[data-tab]");
   if (tb) { frTab = tb.dataset.tab; frShow(frCur); const r = $("#fpShelf"); if (r) r.scrollLeft = 0; return; }
+  if (e.target.closest("#fpAll")) { // V385: die gezeigten Titel als normale Liste im Reiter Alle
+    const f = friends.find(x => x.uid === frCur); if (!f) return;
+    const both = frTab === "both", nm = f.name.trim().split(/\s+/)[0], list = frStat(f).list.filter(it => seen.has(it.id) === both);
+    if (!list.length) return;
+    const from = state.view;
+    scrollMem[memKey()] = getY(); delete scrollMem.all;
+    frOv.hidden = true; frCur = ""; frListOv.hidden = true;
+    state.view = "all"; neuView = false;
+    frView = { txt: both ? `Mit ${nm} gemeinsam gesehen` : `Von ${nm} · für dich neu`, ids: new Set(list.map(it => it.id)), both, uid: f.uid, from };
+    sync(); ++tabToken; render(); jumpTo(0);
+    return;
+  }
   if (e.target.closest("#fpRm")) {
     const f = friends.find(x => x.uid === frCur); rmUid = frCur;
     $("#frAskTitle").textContent = `${f ? f.name : "Freund"} als Freund entfernen?`;
