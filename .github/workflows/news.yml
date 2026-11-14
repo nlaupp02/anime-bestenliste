@@ -1,4 +1,5 @@
 # Holt einmal am Tag die Termine für den News-Reiter (neue Folgen, neue Staffeln) und legt sie als news.json ab.
+# Gleicht dabei auch die Angaben „Staffeln · Folgen“ ab: eindeutige Änderungen stehen in news.json (l), alles andere in check.json.
 name: News aktualisieren
 on:
   schedule:
@@ -24,7 +25,7 @@ jobs:
         run: |
           git config user.name "news-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add news.json
+          git add news.json check.json tools/len-base.json
           if ! git diff --cached --quiet; then
             git commit -m "News: Stand $(date -u +%F)"
             git pull --rebase
