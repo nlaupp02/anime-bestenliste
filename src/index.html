@@ -3664,29 +3664,26 @@ const V_CLOCK = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy=
 const V_BM = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
 const DAY_MS = 864e5;
 const day0 = t => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); };
-let air = (() => { const c = load(KEY_AIR, null); return c && c.t > AIR0.t && c.m ? c : AIR0; })();
+let air = (() => { const c = load(KEY_AIR, null); return c && c.t > AIR0.t && c.m ? c : { t: AIR0.t, m: AIR0.m }; })();
 let airBusy = false;
+// V370: Die Termine holt ein täglicher Lauf bei GitHub (tools/news.js) und legt sie als news.json ab. Die App lädt nur diese eine Datei
+// (höchstens alle 3 Stunden). Darin steht auch, welche Titel gerade eine laufende oder angekündigte Staffel haben (w), das ersetzt WATCH.
+const NEWS_URL = "https://raw.githubusercontent.com/nlaupp02/anime-bestenliste/main/news.json";
 async function airRefresh() {
-  const ids = [...new Set(Object.values(WATCH).flat().map(Math.abs))];
-  if (!REAL_HOST || airBusy || !ids.length || Date.now() / 1000 - air.t < 3 * 3600) return;
+  const now = Math.floor(Date.now() / 1000);
+  if (!REAL_HOST || airBusy || now - (air.c || 0) < 3 * 3600) return;
   airBusy = true;
   try {
-    const m = {};
-    for (let i = 0; i < ids.length; i += 50) {
-      const r = await fetch("https://graphql.anilist.co", { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ query: `query{Page(perPage:50){media(id_in:[${ids.slice(i, i + 50)}],type:ANIME){id status episodes nextAiringEpisode{airingAt episode} startDate{year month day}}}}` }) });
-      if (!r.ok) throw new Error("air");
-      const js = await r.json();
-      js.data.Page.media.forEach(x => { const n = x.nextAiringEpisode, s = x.startDate || {};
-        m[x.id] = [x.status === "RELEASING" ? 1 : x.status === "NOT_YET_RELEASED" ? 2 : 0, n ? n.airingAt : 0, n ? n.episode : 0, s.year || 0, s.month || 0, s.day || 0, x.episodes || 0]; });
-    }
-    air = { t: Math.floor(Date.now() / 1000), m }; store(KEY_AIR, air);
-    v369Refresh();
+    const r = await fetch(NEWS_URL, { cache: "no-store" });
+    if (!r.ok) throw new Error("news");
+    const js = await r.json();
+    if (js && js.t >= air.t && js.m && js.w) { air = { t: js.t, m: js.m, w: js.w, c: now }; store(KEY_AIR, air); v369Refresh(); }
+    else { air.c = now; }
   } catch (e) {} finally { airBusy = false; }
 }
 // Nächster Termin eines Titels: { kind: "ep" (Folge mit Zeitpunkt) | "soon" (Staffel angekündigt), at, ep, first, own, y, mo, d, mid }
 function airOf(it) {
-  const ids = WATCH[it.key]; if (!ids) return null;
+  const ids = (air.w || WATCH)[it.key]; if (!ids) return null;
   const now = Date.now(); let best = null;
   for (const raw of ids) {
     const a = air.m[Math.abs(raw)]; if (!a) continue;
@@ -3748,7 +3745,7 @@ function dtStrip(el) { el.querySelectorAll(":scope > .trb, :scope > .trx, :scope
 function trPlay(tb) {
   if (!tb || tb.classList.contains("on") || tb.tagName !== "BUTTON") return;
   const yt = tb.dataset.yt; tb.classList.add("on");
-  tb.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${yt}?autoplay=1&playsinline=1&rel=0" title="Trailer" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+  tb.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${yt}?autoplay=1&playsinline=1&rel=0&cc_load_policy=1&cc_lang_pref=de&hl=de" title="Trailer" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
   const a = document.createElement("a"); a.className = "trx"; a.href = "https://www.youtube.com/watch?v=" + yt; a.target = "_blank"; a.rel = "noopener"; a.textContent = "Läuft nicht? Auf YouTube öffnen";
   tb.after(a);
 }
