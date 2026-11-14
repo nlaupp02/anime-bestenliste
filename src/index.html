@@ -1565,14 +1565,13 @@ html:not(.app) #shelfOv.pk { padding-bottom: 40px; }
 .dt-t { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 24px; line-height: 1.1; overflow-wrap: anywhere; }
 .dt-t .sub { display: block; font-family: var(--f-body); font-weight: 700; font-size: 14px; line-height: 1.25; color: var(--muted); margin-top: 4px; }
 .dt-g { color: var(--muted); font-size: 13.5px; }
-.dt-m { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-top: 2px; font-size: 13px; color: var(--muted); }
+.dt-m { display: flex; align-items: center; gap: 4px 11px; flex-wrap: wrap; margin-top: 2px; font-size: 13px; color: var(--muted); }
 .dt-m .rt { font-family: var(--f-display); border-radius: 999px; padding: 1px 9px; font-size: 13px; border: 1.5px solid var(--hanko); color: var(--hanko); background: var(--hanko-soft); }
 .dt-m .rt.top { background: var(--gold); border-color: var(--gold); color: var(--on-gold); }
 .dt-m .rt.low { border-color: var(--muted); color: var(--muted); background: none; }
 .dt-m .de { color: var(--ok); font-weight: 700; }
-.dt-m .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--muted); opacity: .7; }
 .dt-b { grid-column: 1 / -1; display: flex; gap: 8px; margin-top: 14px; }
-.dt-btn { height: 40px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; font: inherit; font-weight: 700; font-size: 14px; padding: 0 14px; cursor: pointer; white-space: nowrap; background: none; color: var(--ink); -webkit-tap-highlight-color: transparent; }
+.dt-btn { height: 40px; border-radius: 10px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 7px; font: inherit; font-weight: 700; font-size: 14px; padding: 0 14px; cursor: pointer; white-space: nowrap; background: none; color: var(--ink); -webkit-tap-highlight-color: transparent; }
 .dt-btn svg { width: 15px; height: 15px; }
 .dt-btn.w { background: var(--ink); color: var(--paper); border: 0; }
 .dt-btn.o { flex: 1; border: 1px solid rgba(232, 234, 243, .45); }
@@ -1683,7 +1682,7 @@ html:not(.app) .dt { max-width: 560px; }
       <button type="button" class="ib-x" id="ibClose" aria-label="Hinweis schließen"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     </div>
     <h2 class="vtitle" id="vtitle"><span id="vtText"></span></h2>
-    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V382</span></span></div>
+    <div class="eyebrow"><button type="button" class="acct" id="acct" hidden aria-label="Konto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><span class="stand">Stand: November 2026 <span class="ver">· V383</span></span></div>
     <h1>Die besten Animes auf <span class="red">Crunchyroll</span><span class="seal" aria-hidden="true"></span></h1>
     <div class="counts" id="counts"></div>
     <button type="button" class="pick-btn" id="pick"><span class="pick-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.2" cy="8.2" r="1.6" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.6" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.6" fill="currentColor"/></svg></span><span class="pick-s a">Anderer Tipp</span><span class="pick-txt"><b>Was soll ich schauen?</b><small>Hier tippen für einen zufälligen Tipp</small></span><span class="pick-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -3879,9 +3878,9 @@ function renderDayTip() {
         <span class="dt-tag">${prisc ? "💘 TIPP DES TAGES" : "TIPP DES TAGES"}</span>
         <div class="dt-l"><h3 class="dt-t">${splitT(it.title)}</h3>
           <span class="dt-g">${it.genres.map(esc).join(" · ")}</span>
-          <div class="dt-m"><span class="rt ${tier(it.mine)}">${fmt(it.mine)}</span>${it.dub === "de" ? '<span class="de">Deutsch</span>' : it.dub === "sub" ? "<span>Untertitel</span>" : ""}${it.dub === "de" || it.dub === "sub" ? '<i class="dot" aria-hidden="true"></i>' : ""}<span>${esc(it.len)}</span></div></div>
+          <div class="dt-m"><span class="rt ${tier(it.mine)}">${fmt(it.mine)}</span>${it.dub === "de" ? '<span class="de">Deutsch</span>' : it.dub === "sub" ? "<span>Untertitel</span>" : ""}<span>${esc(it.len)}</span></div></div>
         ${u ? `<span class="dt-cv"><img${coverAttrs(u, "92px")} alt="" decoding="async" draggable="false" onerror="this.closest('.dt').classList.add('nocv')"></span>` : ""}
-        <div class="dt-b">${TRAILER[it.key] ? `<button type="button" class="dt-btn w" data-act="trailer">${V_PLAY}Trailer</button>` : ""}<button type="button" class="dt-btn o" data-more>Ansehen</button>${isSeen ? "" : `<button type="button" class="dt-btn q" data-act="save" aria-pressed="${isSaved}" aria-label="${isSaved ? "Gemerkt" : "Merken"}">${V_BM}</button>`}</div>
+        <div class="dt-b">${TRAILER[it.key] ? `<button type="button" class="dt-btn w" data-act="trailer">${V_PLAY}Trailer</button>` : ""}<a class="dt-btn o" href="${crUrl(it)}" target="_blank" rel="noopener">Ansehen</a>${isSeen ? "" : `<button type="button" class="dt-btn q" data-act="save" aria-pressed="${isSaved}" aria-label="${isSaved ? "Gemerkt" : "Merken"}">${V_BM}</button>`}</div>
       </div>`;
     }
   }
@@ -3932,7 +3931,7 @@ function v369Refresh() {
 const IT369 = new Map(items.map(it => [it.id, it]));
 $("#dayTip").addEventListener("click", e => {
   const id = $("#dayTip").dataset.open; if (!id || e.target.closest(".pick-btn")) return;
-  if (e.target.closest("a")) return; // Crunchyroll-Link: nur die Seite öffnen
+  if (e.target.closest("a")) return; // „Ansehen“ ist ein Link zur Serie auf Crunchyroll: nur die Seite öffnen, kein Fenster
   const b = e.target.closest("button[data-act]");
   if (b) { // dieselben Knöpfe wie in der Liste
     const act = b.dataset.act;
