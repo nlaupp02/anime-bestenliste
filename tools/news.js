@@ -7,6 +7,7 @@
 //   w: je Titel (Name wie in der Liste) die AniList-Nummern der laufenden oder angekündigten Staffeln (negativ = der Titel selbst)
 //   m: je AniList-Nummer [Status 1 läuft / 2 angekündigt, Zeitpunkt nächste Folge, Folge, Startjahr, -monat, -tag, Folgen gesamt]
 //   l: je Titel eine berichtigte Längenangabe („12 Folgen“ statt „12 Folgen, läuft gerade“) – siehe Abgleich unten
+// Daneben covers.json: je Titel die Adresse des Covers bei AniList (für die Momentaufnahme COVER0 in der App, siehe tools/seed.js)
 //
 // Abgleich (seit V381): Stimmen „Staffeln · Folgen“ in der Liste noch?
 //   tools/len-base.json hält je Serie fest, welcher Text in der Liste steht und wie die Staffeln bei AniList an dem Tag standen
@@ -107,7 +108,7 @@ function lenCheck(keys, rows, chain, M, base, nowMs) {
 
 (async () => {
   const ids = loadIds(), keys = Object.keys(ids);
-  const F = "id idMal status format episodes nextAiringEpisode{airingAt episode} startDate{year month day} relations{edges{relationType(version:2) node{id type format status}}}";
+  const F = "id idMal status format episodes coverImage{large} nextAiringEpisode{airingAt episode} startDate{year month day} relations{edges{relationType(version:2) node{id type format status}}}";
   const M = {};
   const page = async (arg, list) => {
     for (let i = 0; i < list.length; i += 40) {
@@ -119,6 +120,12 @@ function lenCheck(keys, rows, chain, M, base, nowMs) {
   const byMal = {}; Object.values(M).forEach(x => { if (x.idMal) byMal[x.idMal] = x.id; });
   const found = keys.filter(k => byMal[ids[k]]).length;
   if (found < keys.length * 0.9) throw new Error(`Nur ${found} von ${keys.length} Titeln gefunden – news.json bleibt, wie sie ist`);
+
+  // Cover-Adressen je Titel (covers.json). Daraus wird beim Bauen der App die Momentaufnahme COVER0 (tools/seed.js):
+  // Die App muss AniList dann nicht mehr selbst nach Covern fragen (dort sind nur noch 30 Abfragen pro Minute erlaubt).
+  const cov = {};
+  for (const k of keys.slice().sort()) { const x = M[byMal[ids[k]]], u = x && x.coverImage && x.coverImage.large; if (typeof u === "string" && u.startsWith("https://")) cov[k] = u; }
+  if (Object.keys(cov).length >= keys.length * 0.9) fs.writeFileSync(path.join(ROOT, "covers.json"), JSON.stringify(cov).replace(/","/g, '",\n"') + "\n");
 
   // Fortsetzungen verfolgen (nur Serien, keine Filme)
   const OKF = ["TV", "TV_SHORT", "ONA"], chain = {};
@@ -158,6 +165,6 @@ function lenCheck(keys, rows, chain, M, base, nowMs) {
   fs.writeFileSync(basePath, JSON.stringify(ord).replace(/\},"/g, '},\n"') + "\n");
   fs.writeFileSync(path.join(ROOT, "check.json"), JSON.stringify({ t, serien: Object.keys(ord).length, auto: chk.auto, pruefen: chk.pruefen }, null, 1) + "\n");
   fs.writeFileSync(path.join(ROOT, "news.json"), JSON.stringify({ t, w, m, l: chk.l }) + "\n");
-  console.log(`${keys.length} Titel, ${found} gefunden, ${Object.keys(M).length} Staffeln geprüft, ${Object.keys(w).length} Titel mit Neuigkeiten`);
+  console.log(`${keys.length} Titel, ${found} gefunden, ${Object.keys(M).length} Staffeln geprüft, ${Object.keys(w).length} Titel mit Neuigkeiten, ${Object.keys(cov).length} Cover`);
   console.log(`Abgleich: ${Object.keys(ord).length} Serien (${Object.keys(ord).length - had} neu festgehalten), ${chk.auto.length} automatisch angepasst, ${chk.pruefen.length} zu prüfen`);
 })().catch(e => { console.error(e.message || e); process.exit(1); });
